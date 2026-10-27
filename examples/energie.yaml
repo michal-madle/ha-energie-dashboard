@@ -1,0 +1,44 @@
+# =============================================================================
+# Energie Dashboard – kompletní konfigurace jedné karty (CURRENT_SPEC.md, Konfigurace)
+#
+# Jsou tu VŠECHNA nastavení. Klíč bez hodnoty (např. "power:") nebo smazaný klíč
+# = výchozí hodnota; entity výchozí hodnotu nemají (nenastavená entita = „––“).
+# ID potvrdil export entit z 24. 10. 2026 (ENTITY_MAP.md).
+# =============================================================================
+type: custom:ha-energie-dashboard
+
+title: Energie                  # nadpis karty; "" ho vynechá
+
+# Toky energie (střídač)
+pv:
+  power: sensor.goodwe_pv_power                         # výkon FVE (W)
+battery:
+  power: sensor.goodwe_battery_power                    # výkon baterie (W), kladné = vybíjení
+  state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
+grid:
+  power: sensor.goodwe_meter_active_power_total         # elektroměr (W), záporné = odběr ze sítě
+house:
+  power: sensor.goodwe_house_consumption                # spotřeba domu (W), včetně wallboxu
+
+# Systémy
+car:
+  state_of_charge: sensor.parkovani_bmw_i3_soc          # nabití auta (%)
+  range: sensor.i3_120_range_ev_remaining_range         # dojezd (km)
+wallbox:
+  power: sensor.wallbox_total_power                     # výkon wallboxu (W)
+  status: sensor.wallbox_charge_status                  # Disconnected / Waiting / Charging
+  boost: switch.wallbox_boost                           # boost wallboxu (switch.…)
+  block_charging: switch.wallbox_1_block_charging       # zablokovat nabíjení (bojler má přednost)
+  prioritize_connected: switch.wallbox_2_prioritize_when_connected  # přednost před bojlerem, když je auto připojené
+boiler:
+  power: sensor.tuv_power_total                         # výkon bojleru (W)
+  temperature: sensor.tuv_temperature                   # teplota vody v bojleru (°C)
+  boost: switch.tuv_boost                               # boost bojleru (switch.…)
+  target_temperature: number.tuv_2_1_target_temperature # cíl ohřevu z přebytku (number.…, 20–85 °C)
+  boost_target_temperature: number.tuv_2_2_boost_target_temperature  # cíl ohřevu v boostu (number.…); nesmí být vyšší než cíl z přebytku
+tank:
+  water_heater: water_heater.technicka_mistnost_tado_tepla_voda  # zásobník (water_heater.…)
+mixing:
+  valve_c1: switch.technicka_mistnost_ventil_c1         # ventil C1 (switch.…)
+  valve_c2: switch.technicka_mistnost_ventil_c2         # ventil C2 (switch.…); mísí = C1 vypnutý a C2 zapnutý
+  script: script.prepnout_miseni_vody                   # přepnutí mísení (script.…), obsah skriptu k ověření

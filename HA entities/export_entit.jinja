@@ -1,0 +1,88 @@
+{#-
+  Energie dům – export entit pro ENTITY_MAP.md (postup: HA entities/README.md)
+
+  Vložit do: Home Assistant → Nástroje → Šablona
+  (do verze 2026.7 se Nástroje jmenovaly „Nástroje pro vývojáře“).
+  Nic v Home Assistantu nemění, jen čte.
+
+  Výstup: JSON seznam ve formátu složky „HA entities/“ (entity, name, state),
+  doplněný o údaje k ověření: system, unit, device_class, state_class,
+  last_changed, last_updated, last_reported a vybrané atributy.
+
+  Rozsah podle kotvy (entita, kterou známe):
+    integration = všechny entity integrace, ke které kotva patří
+    device      = všechny entity zařízení kotvy
+    entity      = jen kotva
+  Kotva, která v Home Assistantu není, se vypíše se "state": null
+  a poznámkou „kotva nenalezena“ – tak se rozhodnou rozpory ID (AUDIT.md).
+  Repozitář je veřejný: hodnota entity, jejíž ID nebo název obsahuje slovo
+  ze seznamu „hide“ (poloha GPS, sériové číslo, MAC adresa), se vypíše jako
+  "(skryto)".
+  Pro menší výstup smažte řádky systémů, které nepotřebujete.
+-#}
+{%- set systems = [
+  {'system': 'FVE, baterie, elektroměr', 'scope': 'integration', 'anchors': ['sensor.goodwe_pv_power']},
+  {'system': 'Wallbox, Bojler (FVE)', 'scope': 'integration', 'anchors': ['sensor.wallbox_total_power', 'sensor.tuv_power_total']},
+  {'system': 'Zásobník (Plyn)', 'scope': 'device', 'anchors': ['water_heater.technicka_mistnost_tado_tepla_voda', 'water_heater.tepla_voda_tepla_voda']},
+  {'system': 'Mísení vody', 'scope': 'device', 'anchors': ['switch.technicka_mistnost_ventil_c1', 'switch.technicka_mistnost_ventil_c2', 'switch.technicka_mistnost_ventil_c1_switch_1', 'switch.technicka_mistnost_ventil_c2_switch_1']},
+  {'system': 'Mísení vody', 'scope': 'entity', 'anchors': ['script.prepnout_miseni_vody']},
+  {'system': 'Auto', 'scope': 'integration', 'anchors': ['sensor.i3_120_range_ev_remaining_range']},
+  {'system': 'Auto', 'scope': 'entity', 'anchors': ['sensor.parkovani_bmw_i3_soc']},
+] -%}
+{%- set keep = ['options', 'temperature', 'current_temperature', 'operation_mode', 'operation_list', 'min_temp', 'max_temp', 'min', 'max', 'step', 'mode'] -%}
+{%- set hide = ['zemepisna', 'latitude', 'longitude', 'gps', 'serial_number', 'mac_address'] -%}
+{%- set ns = namespace(seen=[], rows=[]) -%}
+{%- for s in systems -%}
+  {%- for anchor in s.anchors -%}
+    {%- if states[anchor] is none -%}
+      {%- if anchor not in ns.seen -%}
+        {%- set ns.seen = ns.seen + [anchor] -%}
+        {%- set ns.rows = ns.rows + [{'system': s.system, 'entity': anchor, 'name': none, 'state': none, 'note': 'kotva nenalezena'}] -%}
+      {%- endif -%}
+    {%- else -%}
+      {%- set entry = config_entry_id(anchor) -%}
+      {%- set device = device_id(anchor) -%}
+      {%- if s.scope == 'integration' and entry is string -%}
+        {%- set found = integration_entities(config_entry_attr(entry, 'domain')) | list -%}
+      {%- elif s.scope != 'entity' and device is string -%}
+        {%- set found = device_entities(device) | list -%}
+      {%- else -%}
+        {%- set found = [anchor] -%}
+      {%- endif -%}
+      {%- for e in found | sort -%}
+        {%- if e not in ns.seen -%}
+          {%- set ns.seen = ns.seen + [e] -%}
+          {%- set st = states[e] -%}
+          {%- if st is none -%}
+            {%- set ns.rows = ns.rows + [{'system': s.system, 'entity': e, 'name': none, 'state': none, 'note': 'bez stavu (vypnutá nebo nenačtená entita)'}] -%}
+          {%- else -%}
+            {%- set a = st.attributes -%}
+            {%- set text = (e ~ ' ' ~ (st.name or '')) | lower -%}
+            {%- set secret = namespace(on=false) -%}
+            {%- for h in hide if h in text -%}
+              {%- set secret.on = true -%}
+            {%- endfor -%}
+            {%- set extra = namespace(items=[]) -%}
+            {%- for k in keep if k in a -%}
+              {%- set extra.items = extra.items + [(k, a[k])] -%}
+            {%- endfor -%}
+            {%- set ns.rows = ns.rows + [{
+              'system': s.system,
+              'entity': e,
+              'name': st.name,
+              'state': '(skryto)' if secret.on else st.state,
+              'unit': a.get('unit_of_measurement'),
+              'device_class': a.get('device_class'),
+              'state_class': a.get('state_class'),
+              'attributes': dict(extra.items),
+              'last_changed': st.last_changed.isoformat(),
+              'last_updated': st.last_updated.isoformat(),
+              'last_reported': st.last_reported.isoformat()
+            }] -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endfor -%}
+{{ ns.rows | to_json(pretty_print=true) }}

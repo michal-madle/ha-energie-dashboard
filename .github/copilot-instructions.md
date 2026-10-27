@@ -1,0 +1,41 @@
+# Copilot Instructions
+
+## Project scope and sources of truth
+
+- This repository builds a Home Assistant Lovelace **custom frontend card** `custom:ha-energie-dashboard`, distributed through HACS. It replaces the dashboard "Energie dům" (`/energie-dum`) with one card, as `ha-klima-dashboard` did for the rooms. It is not a Home Assistant integration, automation package, or backend service. Keep card implementation changes in `src/` unless the request requires another surface.
+- Before changing product behavior, read `CURRENT_SPEC.md` and the relevant parts of `ENTITY_MAP.md`. `CURRENT_SPEC.md` defines intended behavior and contains only decisions the user made; `ENTITY_MAP.md` records each entity's meaning, unit, sign, source, and whether an export in `HA entities/` confirms it. `README.md` describes installation and the current implementation. `examples/energie.yaml` demonstrates the card configuration but does not override the spec.
+- `MEMORY_SUMMARIZED.md` is a short project memory; `TODO.md` lists open items that are not part of the spec; `AUDIT.md` lists open conflicts between sources. There is no history file: superseded decisions are deleted, not archived. Prefer the current spec over older notes or existing code when they disagree (the card's code keeps the old look until the Apple HIG rewrite, see the spec, Stav implementace).
+- Do not invent entity IDs, attributes, units, signs, values of states, configuration keys of other cards, or Home Assistant behavior. Anything not confirmed by an export or by the user stays optional or becomes a question for the user. Back every claim about Home Assistant or an integration with a source: code at a release tag, release notes, or the integration's documentation; name the source in the commit or TODO item.
+- The spec includes features that are not implemented yet. Treat it as the product contract, but implement only the requested scope; do not claim a specified feature already exists just because it is documented.
+- `.github/skills/`, `.github/evals/`, `CLAUDE.md` and the eval scripts of the Home Assistant skill set are not part of this repository. Do not add them without the user's consent.
+
+## Product behavior to preserve
+
+- The card is mobile-first: iPhone 14 Pro at 393 × 852 portrait and 852 × 393 landscape, no horizontal scrolling at any width from 320 px, every interactive element with an effective touch target of at least 44 × 44 px (measured by hit-testing), dark and light theme, accessibility (axe-core, keyboard, VoiceOver).
+- State matters more than numbers: at a glance the card shows where energy flows now and what needs attention. It describes state, it does not advise. Colour marks a deviation only; the normal state has no dominant green.
+- Missing, `unknown`, `unavailable`, invalid, and stale values are not alarms: keep the icon, show `––` in a neutral colour. Never report "everything is fine" from incomplete data.
+- Signs and units are part of the entity contract in `ENTITY_MAP.md` (for example battery power positive = discharging, grid meter power negative = import). Do not flip a sign, rescale a value, or trust a declared unit without a confirmed source; some entities declare a wrong unit.
+- Controls change real devices (boosts, water mixing valves). Tapping a value or a tile never switches anything (it opens the history); a control acts only through its own control, and the confirmation pattern is an open decision (TODO P1.6). The two mixing valves are never on together and are switched together. Never call a service an entity does not offer.
+- Preserve Czech user-facing labels and `cs-CZ` number formatting. Name systems by the naming rule in the spec. Do not change thresholds, colour semantics, entity mappings, or interactions based on guesswork; ask when the spec leaves a material decision open.
+
+## Implementation conventions
+
+- The card is implemented in strict TypeScript with Lit 3 and split by responsibility: `src/index.ts` registers the element and card metadata; `src/ha-energie-dashboard.ts` contains the main `LitElement`; `src/types.ts` defines shared types; `src/config.ts` validates and normalizes config; `src/model.ts` reads the entities and derives the flows; `src/sankey.ts` draws the diagram; `src/icons.ts` holds the own SVG icons; `src/ed-slider.ts` and `src/ed-segmented.ts` are the slider and segmented controls; `src/styles.ts` contains card styles; and `src/utils.ts` contains pure helpers. There is no card editor.
+- Every setting lives in the card's YAML configuration. Every key is optional; a key without a value (`null`) means the default. A wrong value stops the card with an error that names the key; an unknown key inside a section of the card is an error; unknown top-level keys are tolerated because Home Assistant adds its own (for example `grid_options`, `view_layout`).
+- Keep `hass` as a Lit property with `@property({ attribute: false })`; use `@state()` only for internal reactive state. Filter updates so unrelated entity changes do not rerender the card. Keep `render()` free of side effects and clean up any listeners, timers, or subscriptions added outside Lit's declarative event bindings.
+- Keep entity-state handling defensive. Treat Home Assistant state strings and attributes as runtime data; validate configuration at `setConfig`, avoid unchecked assumptions, and do not hide errors behind broad catches or success-shaped defaults.
+- Render dynamic values with Lit `html` templates and property/event bindings. Do not interpolate entity-provided values into `innerHTML` or construct executable markup from state data.
+- Keep styles scoped to the card and responsive. Colours are CSS custom properties `--ed-…`: the dark set is the default, the light set overrides it. Surfaces and colours follow the spec (Apple HIG) and are drawn by the card itself, not taken from the Home Assistant theme; only dark/light follows `hass.themes.darkMode`. Do not add card-mod, Mushroom, Power Flow Card Plus, button-card, or another runtime dependency.
+- Preserve keyboard operation, visible focus, accessible names equal to the visible text (WCAG 2.5.3), and touch-friendly interactions. Keep Home Assistant events composed and bubbling when they need to cross the card's shadow boundary.
+- Keep custom-element and `window.customCards` registration idempotent. Preserve the public card type `custom:ha-energie-dashboard` and its HACS module-resource contract.
+- The repository is public. Never commit personal data from Home Assistant: GPS positions, serial numbers, MAC addresses, credentials or tokens. The export template in `HA entities/` hides them; check every new export before committing it.
+- Do not edit Home Assistant `.storage` files or a live instance's dashboards from this code task. Anything the user must do in Home Assistant is delivered as YAML with step-by-step instructions.
+
+## Change and verification workflow
+
+- Every round follows the same order: `CURRENT_SPEC.md` → implementation → `TODO.md`, `README.md` (and `ENTITY_MAP.md` only with confirmed entities); the user's decisions go into `CURRENT_SPEC.md` with date and, where useful, their words, and the text they replace is deleted → `npm run build` → `npm test` twice → commit in Czech without diacritics → push to `main`.
+- Make the smallest complete change that satisfies the request. Preserve existing behavior outside the requested change.
+- If a change adds or alters public card configuration, update `examples/energie.yaml` (it lists every setting with its default; a test checks it) and the README.
+- Do not hand-edit the generated `ha-energie-dashboard.js`; regenerate it with `npm run build` from the repository root. The build runs `tsc --noEmit`, `vite build` (entry `src/index.ts`, one ES module in `dist/`), and `.github/scripts/copy-build.mjs`, which copies it to the root file used by HACS.
+- `npm test` builds the card and runs the Playwright tests on `tests/harness.html` with fake Home Assistant data; `npm run coverage` runs them with code coverage. Never report a build, test, or visual check as passing unless it was actually run; if a check cannot run, say why.
+- What cannot be verified in the browser (iPhone app, haptics, real devices) goes to `TODO.md` as an item to verify; state that visual behavior was not verified rather than guessing.
