@@ -1,32 +1,122 @@
-import type { DashboardConfig, EntitySections, SectionName, Settings } from "./types";
+import type { Colors, DashboardConfig, EntitySections, NumberSettings, SectionName, Settings, Titles } from "./types";
 
 /*
  * Card configuration (CURRENT_SPEC.md, Konfigurace): every key is optional. A key without a
  * value (`power:` in YAML, i.e. null) is the same as no key, so the example can list every
  * setting. Entities have no default: an entity that is not configured is missing data ("––").
- * A wrong value stops the card with an error that names the key; nothing is silently ignored,
- * except unknown top-level keys, which Home Assistant adds itself (grid_options, view_layout).
+ * Every number (limit, threshold, scale) and colour has a default, listed below. A wrong value
+ * stops the card with an error that names the key; nothing is silently ignored, except unknown
+ * top-level keys, which Home Assistant adds itself (grid_options, view_layout).
  */
 
 export const DEFAULT_TITLE = "Energie";
 
 /**
- * Keys of every section and the domain an entity must have, where the card will call a service
- * on it or read a domain-specific attribute (undefined = any entity).
+ * Keys of every entity section and the domain an entity must have, where the card will call a
+ * service on it or read a domain-specific attribute (undefined = any entity).
  */
 export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[Name], string | undefined> } = {
   pv: { power: undefined },
   battery: { power: undefined, state_of_charge: undefined },
   grid: { power: undefined },
   house: { power: undefined },
-  car: { state_of_charge: undefined, range: undefined },
-  wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", prioritize_connected: "switch" },
+  car: { state_of_charge: undefined, range: undefined, image: "image" },
+  wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", prioritize_connected: "switch", charging_power: "number" },
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch", script: "script" },
 };
 
 export const SECTION_NAMES = Object.keys(SECTION_KEYS) as SectionName[];
+
+interface Range {
+  /** Default value. */
+  value: number;
+  /** Accepted range, inclusive. */
+  min: number;
+  max: number;
+  integer?: boolean;
+  /** Unit and meaning, for the error message. */
+  what: string;
+}
+
+const range = (value: number, min: number, max: number, what: string, integer = false): Range => ({ value, min, max, what, integer });
+
+/** Every number of the card with its default (the units are in the example configuration). */
+export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof NumberSettings[Section]]: Range } } = {
+  battery: { reserve: range(20, 0, 100, "% battery reserve") },
+  car: { charge_limit: range(80, 1, 100, "% charge limit marker") },
+  wallbox: {
+    phases: range(3, 1, 3, "number of phases", true),
+    power_min: range(4200, 0, 100000, "W, lowest charging power (all phases)"),
+    power_max: range(11100, 0, 100000, "W, highest charging power (all phases)"),
+    power_step: range(300, 1, 100000, "W, step of the charging power (all phases)"),
+    priority_min_sun: range(200, 0, 100000, "W of sun above which a waiting car is reported"),
+  },
+  boiler: {
+    target_min: range(20, 0, 100, "°C, lowest target"),
+    target_max: range(85, 0, 100, "°C, highest target"),
+    target_step: range(5, 1, 50, "°C, target step"),
+    scale_min: range(10, -50, 100, "°C, empty end of the meter and the tank"),
+    gauge_max: range(60, 0, 150, "°C, full end of the meter"),
+    schema_max: range(70, 0, 150, "°C, full end of the tank drawing"),
+    cold_below: range(30, 0, 100, "°C, below this the water is drawn cold"),
+    hot_from: range(45, 0, 100, "°C, from this the water is drawn hot"),
+  },
+  tank: {
+    temp_min: range(30, 0, 100, "°C, lowest temperature"),
+    temp_max: range(65, 0, 100, "°C, highest temperature"),
+    temp_step: range(5, 1, 50, "°C, temperature step"),
+  },
+  flows: {
+    idle_threshold: range(10, 0, 1000, "W, below this a flow counts as none"),
+    kw_from: range(1000, 100, 100000, "W, from this any power is shown in kW"),
+    sun_covers: range(50, 0, 10000, "W of sun that counts as covering the house"),
+    export_notice: range(300, 0, 100000, "W of export that counts as a surplus"),
+    battery_flow: range(50, 0, 10000, "W of battery power that counts as charging"),
+    source_min_share: range(15, 0, 100, "% a source needs to be named in a text"),
+    grid_deviation_share: range(50, 0, 100, "% of the grid above which it is a deviation"),
+    band_max_px_per_kw: range(10, 0.5, 50, "px per kW, thickness of the bands"),
+    band_min_px: range(1.6, 0.5, 10, "px, thinnest band"),
+  },
+  scale: {
+    sun: range(10000, 100, 1000000, "W, full strength of the sun tile"),
+    battery: range(5000, 100, 1000000, "W, full strength of the battery tiles"),
+    grid: range(10000, 100, 1000000, "W, full strength of the grid tiles"),
+    house: range(10000, 100, 1000000, "W, full strength of the house tile"),
+    car: range(11100, 100, 1000000, "W, full strength of the car tile"),
+    boiler: range(4000, 100, 1000000, "W, full strength of the boiler tile"),
+  },
+  ui: { revert_after: range(6, 1, 60, "s until a chosen value falls back to the real state") },
+};
+
+/** Colours of the card with their defaults. */
+export const COLORS: Colors = {
+  sun: "#FFD60A",
+  battery: "#30D158",
+  grid: "#3D8BFF",
+  house: "#BF5AF2",
+  car: "#40D0E6",
+  boiler: "#FF6F59",
+  accent: "#0A84FF",
+  button: "#0A6ED1",
+  warning: "#FF9230",
+  cold: "#3CD3FE",
+  neutral: "#8E8E93",
+};
+
+/** Headings of the three panels with their defaults. */
+export const TITLES: Titles = { electricity: "Elektřina", car: "BMW i3", water: "Teplá voda" };
+
+/** Every setting as a dotted key, for the example configuration and its test. */
+export const CONFIG_KEYS: string[] = [
+  "type",
+  "title",
+  ...SECTION_NAMES.flatMap((name) => Object.keys(SECTION_KEYS[name]).map((key) => `${name}.${key}`)),
+  ...Object.entries(NUMBERS).flatMap(([section, keys]) => Object.keys(keys).map((key) => `${section}.${key}`)),
+  ...Object.keys(TITLES).map((key) => `titles.${key}`),
+  ...Object.keys(COLORS).map((key) => `colors.${key}`),
+];
 
 function fail(message: string): never {
   throw new Error(`Energie Dashboard: ${message}`);
@@ -73,7 +163,9 @@ function entityId(value: unknown, where: string, domain: string | undefined): st
 function entitySection<Name extends SectionName>(config: DashboardConfig, name: Name): EntitySections[Name] {
   const input = section(config[name], name);
   const keys = SECTION_KEYS[name] as Record<string, string | undefined>;
-  checkKeys(input, Object.keys(keys), name);
+  // A section may also hold numbers (battery.reserve, wallbox.power_min …): only entity keys are read here.
+  const extra = Object.keys((NUMBERS as Record<string, Record<string, Range>>)[name] ?? {});
+  checkKeys(input, [...Object.keys(keys), ...extra], name);
   const result: Record<string, string> = {};
   for (const [key, domain] of Object.entries(keys)) {
     const id = entityId(input[key], `${name}.${key}`, domain);
@@ -82,6 +174,83 @@ function entitySection<Name extends SectionName>(config: DashboardConfig, name: 
     }
   }
   return result as EntitySections[Name];
+}
+
+function numbers(config: DashboardConfig): NumberSettings {
+  const result: Record<string, Record<string, number>> = {};
+  for (const [name, keys] of Object.entries(NUMBERS) as Array<[string, Record<string, Range>]>) {
+    const input = section(config[name], name);
+    const entityKeys = Object.keys((SECTION_KEYS as Record<string, object>)[name] ?? {});
+    checkKeys(input, [...entityKeys, ...Object.keys(keys)], name);
+    result[name] = {};
+    for (const [key, spec] of Object.entries(keys)) {
+      const raw = input[key];
+      const where = `${name}.${key}`;
+      if (raw === undefined || raw === null) {
+        result[name][key] = spec.value;
+        continue;
+      }
+      if (typeof raw !== "number" || !Number.isFinite(raw)) {
+        fail(`${where} must be a number (${spec.what}).`);
+      }
+      if (raw < spec.min || raw > spec.max || (spec.integer && !Number.isInteger(raw))) {
+        fail(`${where} must be ${spec.integer ? "a whole number " : "a number "}from ${spec.min} to ${spec.max} (${spec.what}), not ${raw}.`);
+      }
+      result[name][key] = raw;
+    }
+  }
+  return result as unknown as NumberSettings;
+}
+
+function colors(config: DashboardConfig): Colors {
+  const input = section(config.colors, "colors");
+  checkKeys(input, Object.keys(COLORS), "colors");
+  const result: Record<string, string> = { ...COLORS };
+  for (const key of Object.keys(COLORS)) {
+    const raw = input[key];
+    if (raw === undefined || raw === null) {
+      continue;
+    }
+    if (typeof raw !== "string" || !/^#[0-9a-fA-F]{6}$/.test(raw.trim())) {
+      fail(`colors.${key} must be a colour like #FFD60A (six hex digits).`);
+    }
+    result[key] = raw.trim().toUpperCase();
+  }
+  return result as unknown as Colors;
+}
+
+function titles(config: DashboardConfig): Titles {
+  const input = section(config.titles, "titles");
+  checkKeys(input, Object.keys(TITLES), "titles");
+  const result: Record<string, string> = { ...TITLES };
+  for (const key of Object.keys(TITLES)) {
+    const raw = input[key];
+    if (raw === undefined || raw === null) {
+      continue;
+    }
+    if (typeof raw !== "string" || raw.trim() === "") {
+      fail(`titles.${key} must be a non-empty text.`);
+    }
+    result[key] = raw.trim();
+  }
+  return result as unknown as Titles;
+}
+
+/** Pairs that must be ordered: a lower limit above its upper limit would give a broken scale. */
+function checkOrder(num: NumberSettings): void {
+  const pairs: Array<[number, number, string, string, boolean]> = [
+    [num.wallbox.power_min, num.wallbox.power_max, "wallbox.power_min", "wallbox.power_max", true],
+    [num.boiler.target_min, num.boiler.target_max, "boiler.target_min", "boiler.target_max", true],
+    [num.boiler.scale_min, num.boiler.gauge_max, "boiler.scale_min", "boiler.gauge_max", true],
+    [num.boiler.scale_min, num.boiler.schema_max, "boiler.scale_min", "boiler.schema_max", true],
+    [num.boiler.cold_below, num.boiler.hot_from, "boiler.cold_below", "boiler.hot_from", false],
+    [num.tank.temp_min, num.tank.temp_max, "tank.temp_min", "tank.temp_max", true],
+  ];
+  for (const [low, high, lowKey, highKey, strict] of pairs) {
+    if (strict ? low >= high : low > high) {
+      fail(`${lowKey} (${low}) must be ${strict ? "below" : "at most"} ${highKey} (${high}).`);
+    }
+  }
 }
 
 export function normalizeConfig(config: DashboardConfig): Settings {
@@ -96,5 +265,7 @@ export function normalizeConfig(config: DashboardConfig): Settings {
   if (entities.mixing.valve_c1 && entities.mixing.valve_c1 === entities.mixing.valve_c2) {
     fail("mixing.valve_c1 and mixing.valve_c2 must be two different valves.");
   }
-  return { title: config.title ?? DEFAULT_TITLE, entities };
+  const num = numbers(config);
+  checkOrder(num);
+  return { title: config.title ?? DEFAULT_TITLE, entities, titles: titles(config), num, colors: colors(config) };
 }

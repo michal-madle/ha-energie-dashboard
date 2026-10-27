@@ -12,9 +12,10 @@ Co uživatel nerozhodl, se nedomýšlí: je to otázka v `TODO.md`. Kde jsem kv�
 
 ## Stav implementace
 
-- **Kód karty** čte skutečné entity a kreslí Sankey diagram toků (dlaždice zdrojů a spotřebičů, pásy podle zdrojů), tři měřiče (baterie, auto, bojler), upozornění a ovládání: Boost wallboxu a bojleru, Zablokovat nabíjení, Přednost před bojlerem, cíl ohřevu bojleru (přetoky, boost), režim a teplota zásobníku. Klepnutí na dlaždici otevře historii entity v Home Assistantu.
-- **Kód nezahrnuje:** karty BMW i3 a Teplá voda a jejich detaily, mísení vody (jen konfigurace; obsah skriptu není ověřen), obrázek auta (`car.image`), dojezd, 24h historii, historii po klepnutí, potvrzování ovládání (TODO P1.6).
-- **Vzhled kódu je starý** (skleněné dlaždice, `ha-switch`, barvy z motivu Home Assistantu, segmentový ovladač 56 px). Přepíše se podle oddílu Vzhled podle Apple HIG, až uživatel schválí design. Do té doby platí tato specifikace i proti kódu.
+- **Kód karty (prototyp)** čte skutečné entity a kreslí tři panely v podobě podle Apple HIG: **Elektřina** (věta o stavu, Sankey, tři měřiče), **BMW i3** (obrázek, nabití, dojezd, měřič s limitem, upozornění, „Odkud auto nabíjí“ při nabíjení, řádky Wallbox a Boost) a **Teplá voda** (schéma bojleru, zásobníku a mísení, řádky Zásobník (plyn) a Boost bojleru). Řádky Boost, Boost bojleru a Zásobník se rozbalují a obsahují ovládání: segment Přetoky | Boost, nabíjecí výkon (jen v boostu, celkový výkon všech fází), Zablokovat nabíjení, Přednost před bojlerem, cíl ohřevu bojleru, režim a teplotu zásobníku, Mísení vody s potvrzením. Klepnutí na dlaždici otevře historii entity.
+- **Konfigurace:** každá proměnná (limity, prahy, stupnice, kroky, barvy, nadpisy) je klíč s výchozí hodnotou; v kódu žádná skrytá konstanta není (oddíl Konfigurace).
+- **Kód nezahrnuje:** souhrn dnešních součtů pod nadpisem, podbarvení dlaždice Dům podle podílů zdrojů, 24h historii a historii po klepnutí, „Jak dlouho“, ovládání limitu nabití auta, stáří dat auta, rozlišení „světlé varianty accessible“ při zvýšeném kontrastu (TODO P4.3), potvrzování ostatního ovládání (TODO P1.6).
+- **Obrázek auta** se bere z atributu `entity_picture` entity `car.image`; chybí-li entita, panel je bez obrázku.
 - **Návrh** v canvasu „Energie – návrh karty“ (Elektřina, BMW i3, Teplá voda, detail auta a wallboxu, detail teplé vody; jedna interaktivní deska) odpovídá této specifikaci. Rozdíly návrhu proti ní jsou v `TODO.md`.
 - Karta nemá ověřenou funkci v živém Home Assistantu: entity a směr přetoku musí uživatel zkontrolovat.
 
@@ -93,10 +94,10 @@ Zadání (stav k 17. 10. 2026) a YAML dnešního dashboardu, potvrzené exportem
 
 ## Karta Elektřina (Sankey)
 
-- Pořadí shora: nadpis „Energie“ a věta o stavu s dnešními součty („Dnes vyrobeno X kWh · ze sítě Y kWh · do sítě Z kWh“) → upozornění (jen když je; objeví se nad diagramem) → Sankey → tři měřiče. Pod nadpisem karty Elektřina je věta o stavu („Přebytek jde do sítě“, „Slunce nabíjí baterii i auto“ …) s tečkou ve stavové barvě. V návrhu je ovládání v kartách BMW i3 a Teplá voda a v jejich detailech; kód kola 2 má pod měřiči ještě sekci Ovládání (Nabíjení auta, Bojler, Zásobník).
-- **Sankey:** vlevo zdroje (Slunce, Baterie, Síť), vpravo spotřebiče (Dům = ostatní spotřeba, Auto, Bojler, Do baterie, Do sítě); vždy všech 3 + 5 dlaždic, neaktivní jsou zašedlé s šedou ikonou (měsíc, pauza, pomlčka, zástrčka) a slovem místo nuly (bez výroby, nevybíjí, neodebírá, vypnuto, nenabíjí, nedodává; auto připojeno / odpojeno); chybějící data „––“. Dlaždice 116 × 50 px (kód kola 2 má 118–132 × 50 px), bez vodorovného posouvání od 320 px.
-- **Pás** = tok jednoho zdroje do jednoho spotřebiče: barva zdroje (slunce, baterie, síť), tloušťka = výkon (jedno měřítko pro všechny, max. 10 px/kW, min. 1,6 px), okraje se průhledně ztrácejí pod dlaždicí, po středu tečou bílé tečky (rychlost podle výkonu). Oranžová se v tocích nepoužívá (uživatel 26. 10.: „Oranžová mi nic neřekne“). Dlaždice Dům je podbarvená podle podílů zdrojů. Animace respektují `prefers-reduced-motion` (tečky stojí).
-- **Měřiče** pod diagramem: Baterie (značka rezervy 20 %, při ≤ 20 % oranžová), Auto → 80 % (značka limitu), Bojler (10–60 °C).
+- Pořadí shora: nadpis „Energie“ a věta o stavu s dnešními součty („Dnes vyrobeno X kWh · ze sítě Y kWh · do sítě Z kWh“) → upozornění (jen když je; objeví se nad diagramem) → Sankey → tři měřiče. Pod nadpisem karty Elektřina je věta o stavu („Přebytek jde do sítě“, „Slunce nabíjí baterii i auto“ …) s tečkou ve stavové barvě. Ovládání je v kartách BMW i3 a Teplá voda a v jejich rozbalovacích řádcích.
+- **Sankey:** vlevo zdroje (Slunce, Baterie, Síť), vpravo spotřebiče (Dům = ostatní spotřeba, Auto, Bojler, Do baterie, Do sítě); vždy všech 3 + 5 dlaždic, neaktivní jsou zašedlé s šedou ikonou (měsíc, pauza, pomlčka, zástrčka) a slovem místo nuly (bez výroby, nevybíjí, neodebírá, vypnuto, nenabíjí, nedodává; auto připojeno / odpojeno); chybějící data „––“. Dlaždice 116–132 × 50 px (šířka 35 % diagramu), bez vodorovného posouvání od 320 px.
+- **Pás** = tok jednoho zdroje do jednoho spotřebiče: barva zdroje (slunce, baterie, síť), tloušťka = výkon (jedno měřítko pro všechny, `flows.band_max_px_per_kw` 10, `flows.band_min_px` 1,6), okraje se průhledně ztrácejí pod dlaždicí, po středu tečou bílé tečky (rychlost podle výkonu). Oranžová se v tocích nepoužívá (uživatel 26. 10.: „Oranžová mi nic neřekne“). Dlaždice Dům je podbarvená podle podílů zdrojů. Animace respektují `prefers-reduced-motion` (tečky stojí).
+- **Měřiče** pod diagramem: Baterie (značka rezervy `battery.reserve` 20 %, při ≤ rezervě oranžová), Auto → `car.charge_limit` 80 % (značka limitu), Bojler (`boiler.scale_min` 10 až `boiler.gauge_max` 60 °C).
 - Klepnutí na dlaždici otevře v Home Assistantu historii entity (`hass-more-info`).
 - Upozornění (stálá výška se tu nehlídá): „Nabíjení auta je zablokované.“ a, když platí přednost před bojlerem, auto je připojené, nenabíjí a slunce je nad 200 W: „Auto je připojené, ale nenabíjí…“ (oranžově).
 - **Stav boost ze sítě:** slunce málo, baterie nevybíjí, dům bere ze sítě, boost auta i bojleru zapnutý. Boost zapnutý je odchylka → oranžová (ikona a text stavu); stav elektřiny „Dům jede ze sítě“ (barva sítě); baterie „nevybíjí“ šedě.
@@ -183,18 +184,40 @@ Struktura klíčů (sekce podle systémů) je moje rozhodnutí (TODO P1.13):
 
 | Klíč | Výchozí | Význam |
 |---|---|---|
-| `title` | `Energie` | nadpis; `""` ho vynechá |
+| `title` | `Energie` | nadpis nad kartami; `""` ho vynechá |
+| `titles.electricity`, `titles.car`, `titles.water` | `Elektřina`, `BMW i3`, `Teplá voda` | nadpisy tří panelů |
 | `pv.power` | – | výkon FVE |
 | `battery.power`, `battery.state_of_charge` | – | výkon a nabití baterie |
+| `battery.reserve` | `20` | % rezerva baterie (značka na měřiči, pod ní oranžově) |
 | `grid.power` | – | výkon na elektroměru |
 | `house.power` | – | spotřeba domu |
 | `car.state_of_charge`, `car.range` | – | nabití a dojezd auta |
-| `wallbox.power`, `wallbox.status`, `wallbox.boost` | – | výkon, stav a boost wallboxu (`boost` je entita `switch.…`) |
+| `car.image` | – | obrázek auta (`image.…`, adresa v atributu `entity_picture`) |
+| `car.charge_limit` | `80` | % limit nabití auta (značka na měřičích) |
+| `wallbox.power`, `wallbox.status`, `wallbox.boost` | – | výkon, stav a boost wallboxu (`boost` je `switch.…`) |
 | `wallbox.block_charging`, `wallbox.prioritize_connected` | – | zablokovat nabíjení a přednost před bojlerem (`switch.…`) |
+| `wallbox.charging_power` | – | nabíjecí výkon v boostu (`number.…`, W na fázi; k ověření) |
+| `wallbox.phases` | `3` | počet fází; celkový výkon = hodnota entity × fáze |
+| `wallbox.power_min`, `wallbox.power_max`, `wallbox.power_step` | `4200`, `11100`, `300` | W, rozsah a krok nabíjecího výkonu (všechny fáze) |
+| `wallbox.priority_min_sun` | `200` | W slunce, od kterého karta hlásí, že přednostní auto čeká |
 | `boiler.power`, `boiler.temperature`, `boiler.boost` | – | výkon, teplota a boost bojleru (`boost` je `switch.…`) |
-| `boiler.target_temperature`, `boiler.boost_target_temperature` | – | cíl ohřevu z přebytku a v boostu (`number.…`, 20–85 °C) |
-| `tank.water_heater` | – | zásobník (entita `water_heater.…`) |
-| `mixing.valve_c1`, `mixing.valve_c2`, `mixing.script` | – | ventily C1 a C2 (`switch.…`) a skript přepnutí (`script.…`) |
+| `boiler.target_temperature`, `boiler.boost_target_temperature` | – | cíl ohřevu z přebytku a v boostu (`number.…`) |
+| `boiler.target_min`, `boiler.target_max`, `boiler.target_step` | `20`, `85`, `5` | °C, rozsah a krok cíle ohřevu |
+| `boiler.scale_min`, `boiler.gauge_max`, `boiler.schema_max` | `10`, `60`, `70` | °C, prázdný konec stupnice a plný konec měřiče a schématu |
+| `boiler.cold_below`, `boiler.hot_from` | `30`, `45` | °C, hranice studené a teplé vody ve schématu |
+| `tank.water_heater` | – | zásobník (`water_heater.…`) |
+| `tank.temp_min`, `tank.temp_max`, `tank.temp_step` | `30`, `65`, `5` | °C, rozsah a krok teploty zásobníku |
+| `mixing.valve_c1`, `mixing.valve_c2`, `mixing.script` | – | ventily mísení (`switch.…`) a skript přepnutí (`script.…`) |
+| `flows.idle_threshold` | `10` | W, pod tím se tok bere jako žádný |
+| `flows.kw_from` | `1000` | W, od tohoto se všechny výkony ukazují v kW |
+| `flows.sun_covers`, `flows.export_notice`, `flows.battery_flow` | `50`, `300`, `50` | W, prahy vět o stavu (slunce pokrývá dům, přebytek do sítě, nabíjení baterie) |
+| `flows.source_min_share`, `flows.grid_deviation_share` | `15`, `50` | %, podíl zdroje pojmenovaný v textu; podíl sítě, nad kterým je to odchylka |
+| `flows.band_max_px_per_kw`, `flows.band_min_px` | `10`, `1.6` | px, nejtlustší (na kW) a nejtenčí pás ve Sankey |
+| `scale.sun`, `scale.battery`, `scale.grid`, `scale.house`, `scale.car`, `scale.boiler` | `10000`, `5000`, `10000`, `10000`, `11100`, `4000` | W, výkon, při kterém má dlaždice plný odstín a záři |
+| `ui.revert_after` | `6` | s, po kterých se zvolená hodnota vrátí na skutečný stav, když ji Home Assistant nepotvrdí |
+| `colors.sun`, `.battery`, `.grid`, `.house`, `.car`, `.boiler` | `#FFD60A`, `#30D158`, `#3D8BFF`, `#BF5AF2`, `#40D0E6`, `#FF6F59` | barvy zdrojů a spotřebičů (`#RRGGBB`) |
+| `colors.accent`, `.button`, `.warning` | `#0A84FF`, `#0A6ED1`, `#FF9230` | akcent ovladačů, hlavní tlačítko, odchylka a upozornění |
+| `colors.cold`, `.neutral` | `#3CD3FE`, `#8E8E93` | studená voda ve schématu; vypnuté ikony a vlažná voda |
 
 - Kontroly: `title` je text; sekce je mapa klíčů; entita má tvar `doména.objekt` (malá písmena, číslice, `_`); u `boost`, `block_charging`, `prioritize_connected`, `target_temperature`, `boost_target_temperature`, `valve_c1`, `valve_c2`, `water_heater` a `script` musí sedět doména, protože na ně bude karta volat služby nebo číst jejich atributy; `valve_c1` a `valve_c2` nesmějí být stejná entita.
 

@@ -34,7 +34,7 @@ Pravidla:
 | [P3.2](#p3-2) | Rozhodnutí | Licence repozitáře |
 | [P3.3](#p3-3) | Návrh | Budoucí řízení (scénáře AZ Routeru, 80 %, noc bez ohřevu z baterie) |
 | [P4.1](#p4-1) | Rozhodnutí | Modrá Síť × modrý akcent ovladačů |
-| [P4.2](#p4-2) | Návrh | Kód karty přepsat podle Apple HIG |
+| [P4.2](#p4-2) | Rozhodnutí | Prototyp: co chybí a co jsem rozhodl sám |
 | [P4.3](#p4-3) | Návrh | Zvýšený kontrast a skleněný jezdec při dotyku |
 | [P4.4](#p4-4) | Chyba | Návrh se v několika místech rozchází se specifikací |
 
@@ -190,9 +190,19 @@ Mimo rozsah (`CURRENT_SPEC.md`, Mimo rozsah): scénáře AZ Routeru (boost auta 
 HIG (Color): „Avoid using the same color to mean different things.“ Síť je `#3D8BFF`, akcent posuvníků a přepínačů `#0A84FF`. Rozhodnutí: buď Síť jiným odstínem (např. systemIndigo `#6D7CFF`), nebo akcent ovladačů neutrální. Zatím ponecháno, protože modrou Síť uživatel schválil dříve.
 
 <a id="p4-2"></a>
-### P4.2 Kód karty přepsat podle Apple HIG · Návrh
+### P4.2 Prototyp: co chybí a co jsem rozhodl sám · Rozhodnutí
 
-Kód karty (kolo 2) má starý vzhled. Po schválení designu přepsat `src/styles.ts`, `ed-slider`, `ed-segmented` a nahradit `ha-switch` vlastním přepínačem podle oddílu Vzhled podle Apple HIG v `CURRENT_SPEC.md`; upravit testy (rozměry, axe v obou režimech).
+Prototyp karty je v podobě podle Apple HIG (tři panely, vlastní přepínač, slider a segmentový ovladač) a čte živá data; všechny limity, prahy, stupnice, barvy a nadpisy jsou v konfiguraci.
+
+**Neimplementováno:** souhrn dnešních součtů pod nadpisem, 24h historie a historie po klepnutí, „Jak dlouho“, ovládání limitu nabití auta (limit je jen značka na měřiči), stáří dat auta, podbarvení dlaždice Dům podle podílů zdrojů (dlaždice má odstín barvy Dům), zvýšený kontrast (P4.3).
+
+**Rozhodl jsem sám, čeká na potvrzení:**
+- Nadpisy panelů jsou klíče `titles.*` (výchozí „Elektřina“, „BMW i3“, „Teplá voda“), aby auto nebylo napevno BMW.
+- Řádek Wallbox otevře historii výkonu; rozbalují se řádky Boost, Boost bojleru a Zásobník (plyn). Mísení vody je v detailu Zásobníku.
+- „Odkud auto nabíjí“ ukazuje okamžité podíly zdrojů, ne průměr za 5 minut; ve větě stavu je jen „Nabíjí ze slunce“ bez dodatku „· boost“ (uživatel 27. 10.: „Zapnuto neuvádět“).
+- Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu.
+- Studená a vlažná voda ve schématu mají barvy `colors.cold` a `colors.neutral`.
+- Nabíjecí výkon používá `wallbox.charging_power` (v příkladu `number.wallbox_7_1_manual_charging_power`, k ověření v živém Home Assistantu); ID obrázku auta obsahuje VIN, v příkladu je zástupné `image.bmw_i3_vin_image`.
 
 <a id="p4-3"></a>
 ### P4.3 Zvýšený kontrast a skleněný jezdec při dotyku · Návrh
@@ -210,4 +220,4 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 
 `npm test` sestaví kartu a spustí testy v prohlížeči (Playwright, Chromium) na zkušební stránce `tests/harness.html` s náhradními daty: chybná konfigurace (chyba s názvem klíče, prázdná hodnota = výchozí), příklad YAML obsahuje všechna nastavení, bez vodorovného posouvání na šířkách 320–768 px a na telefonu na šířku (852 × 393), axe-core v tmavém i světlém režimu, chybějící a nedostupná data jako „––“ s ikonou a neutrální barvou, přepínání režimů. Co se v prohlížeči ověřit nedá, je v P1.11.
 
-Stav kódu: 17 testů, dvakrát po sobě prošly (Sankey, měřiče, ovládání, posuvník a výběr, přístupnost v obou režimech). Po přepisu vzhledu (P4.2) se testy upraví. Pokrytí kódu (`npm run coverage`) se po posledních změnách neměřilo.
+Stav kódu: 33 testů, dvakrát po sobě prošly (konfigurace včetně čísel a barev, Sankey a měřiče, karty auta a vody, rozbalovací detaily a ovládání, mísení s potvrzením, rozměry prvků podle HIG, rozložení, chybějící data, přístupnost v obou režimech). Pokrytí kódu (`npm run coverage`) se po posledních změnách neměřilo.

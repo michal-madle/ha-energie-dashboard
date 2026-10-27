@@ -11,9 +11,10 @@ export interface SegmentOption {
 }
 
 /**
- * Choice of one of a few options (role radiogroup): a long, tall capsule with a glass thumb that
- * slides under the chosen option, in the style of iOS 27 (CURRENT_SPEC.md, Přepínače voleb).
- * Colours come from the Home Assistant theme. Fires `ed-select` with `detail.value`.
+ * Choice of one of a few options (role radiogroup), Apple HIG Segmented controls (CURRENT_SPEC.md,
+ * Vzhled podle Apple HIG, Segmentový ovladač): a capsule 48 px high (66 px when an option has a
+ * second line) with a white thumb that slides under the chosen option, which gets a black label.
+ * Fires `ed-select` with `detail.value`.
  */
 export class EdSegmented extends LitElement {
   @property({ attribute: false }) options: SegmentOption[] = [];
@@ -24,53 +25,32 @@ export class EdSegmented extends LitElement {
   static styles = css`
     :host {
       display: block;
-      --ed-seg-h: 56px;
     }
     .track {
       position: relative;
       display: grid;
       grid-template-columns: repeat(var(--n), minmax(0, 1fr));
       box-sizing: border-box;
-      height: var(--ed-seg-h);
-      padding: 5px;
+      min-height: 48px;
+      padding: 3px;
       border-radius: 999px;
-      background: color-mix(in srgb, var(--primary-text-color, #212121) 9%, transparent);
-      box-shadow:
-        inset 0 1px 3px rgb(0 0 0 / 28%),
-        inset 0 0 0 1px color-mix(in srgb, var(--primary-text-color, #212121) 8%, transparent);
+      background: var(--ed-track, #2c2c2e);
+    }
+    .track.tall {
+      min-height: 66px;
     }
     .thumb {
       position: absolute;
-      top: 5px;
-      bottom: 5px;
-      left: 5px;
-      width: calc((100% - 10px) / var(--n));
+      top: 3px;
+      bottom: 3px;
+      left: 3px;
+      width: calc((100% - 6px) / var(--n));
       box-sizing: border-box;
       border-radius: 999px;
-      background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--primary-text-color, #212121) 26%, transparent),
-        color-mix(in srgb, var(--primary-text-color, #212121) 12%, transparent)
-      );
-      border: 1px solid color-mix(in srgb, var(--primary-text-color, #212121) 22%, transparent);
-      box-shadow:
-        0 4px 14px rgb(0 0 0 / 30%),
-        inset 0 1px 0 rgb(255 255 255 / 45%),
-        inset 0 -8px 12px rgb(255 255 255 / 5%);
-      -webkit-backdrop-filter: blur(10px) saturate(1.6);
-      backdrop-filter: blur(10px) saturate(1.6);
+      background: var(--ed-seg-thumb, #fff);
+      box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
       transform: translateX(calc(var(--i) * 100%));
-      transition: transform 0.32s cubic-bezier(0.3, 1.25, 0.5, 1);
-    }
-    .thumb::before {
-      content: "";
-      position: absolute;
-      left: 12%;
-      right: 12%;
-      top: 2px;
-      height: 42%;
-      border-radius: 999px;
-      background: linear-gradient(180deg, rgb(255 255 255 / 30%), rgb(255 255 255 / 0%));
+      transition: transform 0.28s cubic-bezier(0.3, 1.1, 0.5, 1);
     }
     .thumb[hidden] {
       display: none;
@@ -88,25 +68,24 @@ export class EdSegmented extends LitElement {
       border: 0;
       border-radius: 999px;
       background: transparent;
-      color: color-mix(in srgb, var(--secondary-text-color, #727272) 65%, var(--primary-text-color, #212121));
+      color: var(--ed-seg-text, #ebebf5);
       font: inherit;
-      font-size: 16px;
-      font-weight: 500;
-      line-height: 20px;
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 22px;
       cursor: pointer;
       transition: color 0.2s;
     }
     button .detail {
       font-size: 13px;
-      line-height: 16px;
-      font-weight: 400;
+      line-height: 18px;
     }
     button[aria-checked="true"] {
-      color: var(--primary-text-color, #212121);
+      color: var(--ed-seg-selected, #000);
       font-weight: 600;
     }
     button:focus-visible {
-      outline: 2px solid var(--primary-color, #03a9f4);
+      outline: 2px solid var(--ed-accent, #0a84ff);
       outline-offset: -3px;
     }
     button:disabled {
@@ -126,7 +105,7 @@ export class EdSegmented extends LitElement {
     const enabled = this.options.filter((option) => !option.disabled);
     const tabbable = this.options[index]?.value ?? enabled[0]?.value;
     return html`<div
-      class="track"
+      class="track ${this.options.some((option) => option.detail) ? "tall" : ""}"
       role="radiogroup"
       aria-label=${this.label}
       style="--n:${Math.max(1, this.options.length)};--i:${Math.max(0, index)}"

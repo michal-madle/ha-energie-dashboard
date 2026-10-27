@@ -30,7 +30,7 @@ export interface Band {
 }
 
 export function layout(width: number): Layout {
-  const tileW = Math.round(Math.max(118, Math.min(132, width * 0.38)));
+  const tileW = Math.round(Math.max(116, Math.min(132, width * 0.35)));
   const h = 50;
   const gap = 6;
   const height = SINKS.length * h + (SINKS.length - 1) * gap;
@@ -41,7 +41,14 @@ export function layout(width: number): Layout {
 
 const n = (value: number) => value.toFixed(1);
 
-export function bands(flows: Flow[], lay: Layout): Band[] {
+export interface BandScale {
+  /** Thickest band per kW (px). */
+  maxPxPerKw: number;
+  /** Thinnest band (px). */
+  minPx: number;
+}
+
+export function bands(flows: Flow[], lay: Layout, band: BandScale): Band[] {
   if (!flows.length) return [];
   const sums = (key: "from" | "to") => {
     const total = new Map<string, number>();
@@ -49,8 +56,8 @@ export function bands(flows: Flow[], lay: Layout): Band[] {
     return total;
   };
   const peak = Math.max(...sums("from").values(), ...sums("to").values());
-  const scale = Math.min(10 / 1000, 44 / peak); // px per W: at most 10 px per kW, and the busiest tile still fits
-  const thick = (flow: Flow) => Math.max(1.6, flow.watts * scale);
+  const scale = Math.min(band.maxPxPerKw / 1000, 44 / peak); // px per W: at most maxPxPerKw per kW, and the busiest tile still fits
+  const thick = (flow: Flow) => Math.max(band.minPx, flow.watts * scale);
 
   const cursorLeft = new Map<Source, number>();
   for (const source of SOURCES) {

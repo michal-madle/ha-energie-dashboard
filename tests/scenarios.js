@@ -36,6 +36,8 @@ const EVENING = {
   "switch.technicka_mistnost_ventil_c1": state("on"),
   "switch.technicka_mistnost_ventil_c2": state("off"),
   "script.prepnout_miseni_vody": state("off"),
+  "image.bmw_i3_vin_image": state("2026-10-24T10:00:00", { entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='83'%3E%3Crect width='168' height='83' rx='20' fill='%23888'/%3E%3C/svg%3E" }),
+  "number.wallbox_7_1_manual_charging_power": state("1400", { min: 1400, max: 3700, step: 100, unit_of_measurement: "W" }),
 };
 
 /** Noon: the sun charges the car and the battery, the boiler heats, a little goes to the grid. */
@@ -88,14 +90,10 @@ window.__test = test;
 // Like Home Assistant: the frontend reports the dark mode in effect (?theme=light for the light one).
 const light = params.get("theme") === "light";
 if (light) {
-  // Home Assistant's default light theme around the card.
-  document.documentElement.style.background = "#fafafa";
-  document.body.style.background = "#fafafa";
-  document.body.style.color = "#212121";
-  for (const [name, value] of Object.entries({
-    "--primary-text-color": "#212121", "--secondary-text-color": "#727272", "--divider-color": "rgb(0 0 0 / 12%)",
-    "--card-background-color": "#ffffff", "--secondary-background-color": "#e5e5e5", "--state-icon-color": "#44739e",
-  })) document.body.style.setProperty(name, value);
+  // The page around the card in Home Assistant's light mode.
+  document.documentElement.style.background = "#f2f2f7";
+  document.body.style.background = "#f2f2f7";
+  document.body.style.color = "#000";
 }
 
 const card = document.createElement("ha-energie-dashboard");

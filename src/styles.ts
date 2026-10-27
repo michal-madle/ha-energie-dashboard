@@ -1,86 +1,119 @@
 import { css } from "lit";
 
 /*
- * Home Assistant look (CURRENT_SPEC.md, Vzhled): ha-card, the theme's colours, font and radius.
- * Only the colours of the energy sources are the card's own (--ed-…); the sliders and choices
- * are styled in ed-slider.ts and ed-segmented.ts.
+ * Look of the card (CURRENT_SPEC.md, Vzhled podle Apple HIG): the card draws its own surfaces,
+ * independent of the Home Assistant theme; it only follows its dark / light mode. Dark is the
+ * default, `:host([data-light])` is the light set. The colours of the sources and the accent come
+ * from the card configuration (set as --ed-sun … on the root element in the component).
  */
 export const styles = css`
   :host {
     display: block;
-    color: var(--primary-text-color);
-    --ed-sun: #ffd60a;
-    --ed-bat: #30d158;
-    --ed-grid: #3d8bff;
-    --ed-home: #bf5af2;
-    --ed-car: #40d0e6;
-    --ed-boil: #ff6f59;
-    --ed-bg: var(--ha-card-background, var(--card-background-color, #fff));
-    --ed-radius: var(--ha-card-border-radius, 12px);
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Inter, Roboto, sans-serif;
-    font-feature-settings: "tnum" 1, "cv11" 1;
+    --ed-card: #1c1c1e;
+    --ed-tile: #2c2c2e;
+    --ed-track: #2c2c2e;
+    --ed-text: #ffffff;
+    --ed-secondary: #98989f;
+    --ed-off: #8e8e93;
+    --ed-sep: rgb(84 84 88 / 65%);
+    --ed-bar: rgb(255 255 255 / 14%);
+    --ed-tick: rgb(255 255 255 / 28%);
+    --ed-switch-off: rgb(120 120 128 / 36%);
+    --ed-seg-thumb: #ffffff;
+    --ed-seg-text: #ebebf5;
+    --ed-seg-selected: #000000;
+    --ed-btn: rgb(118 118 128 / 24%);
+    --ed-badge: rgb(255 255 255 / 8%);
+    color: var(--ed-text);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, Roboto, "Helvetica Neue", sans-serif;
+    font-feature-settings: "tnum" 1;
     -webkit-font-smoothing: antialiased;
   }
 
-  ha-card {
-    display: block;
-    overflow: hidden;
+  :host([data-light]) {
+    --ed-card: #ffffff;
+    --ed-tile: #f2f2f7;
+    --ed-track: #f2f2f7;
+    --ed-text: #000000;
+    --ed-secondary: #5f5f66;
+    --ed-off: #8e8e93;
+    --ed-sep: rgb(60 60 67 / 29%);
+    --ed-bar: rgb(60 60 67 / 18%);
+    --ed-tick: rgb(60 60 67 / 30%);
+    --ed-switch-off: rgb(120 120 128 / 32%);
+    --ed-seg-text: #000000;
+    --ed-badge: rgb(60 60 67 / 8%);
   }
 
-  .dashboard {
+  .page {
     display: grid;
     gap: 12px;
     min-width: 0;
-    padding: 16px;
   }
 
-  .header h1 {
+  h1,
+  h2,
+  p {
     margin: 0;
-    font-size: var(--ha-card-header-font-size, 24px);
-    font-weight: 500;
-    line-height: 32px;
   }
 
-  .summary {
+  h1 {
+    padding: 4px 4px 0;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 34px;
+  }
+
+  .panel {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 16px 16px 12px;
+    border-radius: 12px;
+    background: var(--ed-card);
+    overflow: hidden;
+  }
+
+  .panel h2 {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 28px;
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  /* The state line under a heading: a dot and a sentence in the colour of the energy source. */
+  .state {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin: 2px 0 0;
-    color: var(--sc);
-    font-size: 14px;
+    gap: 6px;
+    color: var(--sc, var(--ed-secondary));
+    font-size: 15px;
     font-weight: 500;
     line-height: 20px;
   }
 
-  /* Light theme: the source colour darkened, so the text keeps 4.5 : 1 on white. */
-  :host([data-light]) .summary {
-    color: color-mix(in srgb, var(--sc) 40%, var(--primary-text-color));
+  :host([data-light]) .state {
+    color: color-mix(in srgb, var(--sc, var(--ed-secondary)) 45%, #000);
   }
 
-  .summary .dot {
+  .state .dot {
     flex: none;
     width: 8px;
     height: 8px;
-    border-radius: 50%;
-    background: var(--sc);
+    border-radius: 4px;
+    background: var(--sc, var(--ed-secondary));
   }
 
-  .notice {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-    border-radius: var(--ed-radius);
-    background: var(--secondary-background-color);
-    font-size: 14px;
-    line-height: 20px;
-  }
-
-  .notice.warn {
-    background: color-mix(in srgb, var(--warning-color, #ff9800) 18%, var(--ed-bg));
-  }
-
-  /* ------------------------------------------------------------- Sankey */
+  /* ------------------------------------------------------------ Sankey */
   .flow {
     position: relative;
     width: 100%;
@@ -113,135 +146,103 @@ export const styles = css`
     }
   }
 
-  /* Glass tiles of the approved design (blur, specular highlight, tint by the source). */
   .tile {
     position: absolute;
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 0 8px;
-    border: 1px solid color-mix(in srgb, var(--primary-text-color) 20%, transparent);
-    border-radius: 16px;
-    background: linear-gradient(155deg, color-mix(in srgb, var(--primary-text-color) 12%, transparent), color-mix(in srgb, var(--primary-text-color) 3%, transparent));
-    color: var(--primary-text-color);
+    gap: 8px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ed-tile);
+    color: var(--ed-text);
     font: inherit;
     text-align: left;
     cursor: pointer;
-    -webkit-backdrop-filter: blur(18px) saturate(1.8);
-    backdrop-filter: blur(18px) saturate(1.8);
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 30%),
-      0 6px 16px rgb(0 0 0 / 22%);
-  }
-
-  .tile::before {
-    content: "";
-    position: absolute;
-    left: 10%;
-    right: 10%;
-    top: 2px;
-    height: 34%;
-    border-radius: 999px;
-    background: linear-gradient(180deg, rgb(255 255 255 / 20%), rgb(255 255 255 / 0%));
-    pointer-events: none;
   }
 
   .tile.on {
-    border-color: color-mix(in srgb, var(--tc) 55%, transparent);
-    background: linear-gradient(155deg, color-mix(in srgb, var(--tc) calc(var(--tint) + 8%), transparent), color-mix(in srgb, var(--tc) calc(var(--tint) - 14%), transparent));
+    background: color-mix(in srgb, var(--tc) var(--tint), var(--ed-tile));
   }
 
-  .tile.house.on {
-    background: var(--house-bg, linear-gradient(155deg, color-mix(in srgb, var(--tc) var(--tint), transparent), transparent));
-  }
-
-  .tile:focus-visible {
-    outline: 2px solid var(--primary-color);
+  .tile:focus-visible,
+  .row-btn:focus-visible,
+  .btn:focus-visible {
+    outline: 2px solid var(--ed-accent);
     outline-offset: 2px;
   }
 
-  .icon {
-    position: relative;
+  .tile .icon {
     flex: none;
-    width: 24px;
-    height: 24px;
-    fill: var(--secondary-text-color);
+    width: 26px;
+    height: 26px;
+    fill: var(--ed-off);
   }
 
-  .tile.on .icon {
-    fill: var(--tc);
-    filter: drop-shadow(0 0 var(--gr) color-mix(in srgb, var(--tc) var(--ga), transparent));
-  }
-
+  .tile.on .icon,
   .tile.on .icon2 {
     fill: var(--tc);
   }
 
-  .tile.house.on .icon {
-    fill: var(--primary-text-color);
-    filter: none;
+  .tile.on .icon {
+    filter: drop-shadow(0 0 var(--gr) color-mix(in srgb, var(--tc) var(--ga), transparent));
   }
 
-  .n-icon {
-    flex: none;
-    width: 22px;
-    height: 22px;
-    fill: var(--secondary-text-color);
-  }
-
-  .notice.warn .n-icon {
-    fill: var(--warning-color, #ff9800);
-  }
-
-  .text {
-    position: relative;
+  .tile .text {
     display: flex;
     flex-direction: column;
     min-width: 0;
   }
 
-  .name {
-    color: var(--secondary-text-color);
+  .tile .name {
+    color: var(--ed-secondary);
     font-size: 12px;
+    font-weight: 500;
     line-height: 15px;
     white-space: nowrap;
   }
 
-  .value {
-    font-size: 16px;
+  /* On a tinted tile the secondary grey is too faint (4.5 : 1): the name takes the text colour. */
+  .tile.on .name {
+    color: color-mix(in srgb, var(--ed-text) 82%, transparent);
+  }
+
+  .tile .value {
+    font-size: 15px;
     font-weight: 600;
     line-height: 20px;
+    letter-spacing: -0.01em;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
 
   .tile.idle .value {
-    color: var(--secondary-text-color);
-    font-size: 12px;
+    color: var(--ed-secondary);
+    font-size: 13px;
     font-weight: 400;
   }
 
-  /* ------------------------------------------------------------- gauges */
+  /* ------------------------------------------------------------ gauges */
   .gauges {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
+    margin-top: 4px;
   }
 
   .gauge {
     box-sizing: border-box;
     min-width: 0;
     padding: 8px 10px 10px;
-    border: 1px solid color-mix(in srgb, var(--primary-text-color) 14%, transparent);
-    border-radius: 16px;
-    background: linear-gradient(180deg, color-mix(in srgb, var(--primary-text-color) 9%, transparent), color-mix(in srgb, var(--primary-text-color) 3%, transparent));
-    box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%);
+    border-radius: 12px;
+    background: var(--ed-tile);
   }
 
   .g-label {
-    color: var(--secondary-text-color);
+    color: var(--ed-secondary);
     font-size: 12px;
+    font-weight: 500;
     line-height: 15px;
     white-space: nowrap;
   }
@@ -250,6 +251,7 @@ export const styles = css`
     font-size: 17px;
     font-weight: 600;
     line-height: 22px;
+    letter-spacing: -0.01em;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -259,11 +261,12 @@ export const styles = css`
     height: 5px;
     margin-top: 6px;
     border-radius: 3px;
-    background: color-mix(in srgb, var(--primary-text-color) 14%, transparent);
+    background: var(--ed-bar);
   }
 
   .bar .fill {
-    height: 100%;
+    position: absolute;
+    inset: 0 auto 0 0;
     border-radius: 3px;
   }
 
@@ -274,72 +277,407 @@ export const styles = css`
     width: 2px;
     margin-left: -1px;
     border-radius: 1px;
-    background: var(--primary-text-color);
+    background: var(--ed-text);
     opacity: 0.8;
   }
 
-  /* ----------------------------------------------------------- controls */
-  .controls {
-    display: grid;
-    gap: 16px;
-    padding-top: 4px;
-    border-top: 1px solid var(--divider-color);
+  /* --------------------------------------------------------------- car */
+  .car-top {
+    position: relative;
+    height: 148px;
   }
 
-  .controls h2 {
-    margin: 12px 0 0;
-    color: var(--secondary-text-color);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
+  .car-art {
+    position: absolute;
+    right: -4px;
+    bottom: 0;
+    width: 236px;
+    height: 132px;
+    pointer-events: none;
   }
 
-  .ctl {
-    display: grid;
-    gap: 12px;
+  .car-art .glow {
+    position: absolute;
+    inset: auto 6px 2px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--glow), transparent);
   }
 
-  .ctl-head,
-  .slider-row {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: baseline;
-    column-gap: 12px;
+  .car-art .shadow {
+    position: absolute;
+    inset: auto 14px 9px 22px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 65%), transparent);
   }
 
-  .ctl-title {
-    font-size: 16px;
-    line-height: 22px;
+  .car-art img {
+    position: absolute;
+    right: 8px;
+    bottom: 10px;
+    display: block;
+    width: 168px;
+    max-height: 100px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgb(0 0 0 / 45%));
   }
 
-  .ctl-state,
-  .hint {
-    color: var(--secondary-text-color);
-    font-size: 13px;
-    line-height: 18px;
+  .car-soc {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
   }
 
-  .slider-row ed-slider,
-  .slider-row .fold {
-    grid-column: 1 / -1;
+  .soc {
+    font-size: 52px;
+    font-weight: 400;
+    line-height: 54px;
+    letter-spacing: -0.5px;
+    font-variant-numeric: tabular-nums;
   }
 
-  .slider-label {
+  .soc small {
+    color: var(--ed-secondary);
+    font-size: 20px;
+  }
+
+  .range {
+    color: var(--ed-secondary);
     font-size: 15px;
     line-height: 20px;
   }
 
-  .slider-value {
-    font-size: 22px;
+  .range b {
+    color: var(--ed-text);
     font-weight: 500;
-    line-height: 28px;
+  }
+
+  .meter {
+    position: relative;
+    height: 34px;
+    border-radius: 12px;
+    background: var(--ed-tile);
+    overflow: hidden;
+  }
+
+  .meter .fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 12px;
+    background: var(--ed-car);
+  }
+
+  .meter .ticks {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, transparent 0, transparent calc(10% - 1px), rgb(0 0 0 / 28%) calc(10% - 1px), rgb(0 0 0 / 28%) 10%);
+  }
+
+  .meter .limit {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: 2px solid var(--ed-text);
+    opacity: 0.8;
+  }
+
+  .meter-label {
+    position: relative;
+    height: 16px;
+    margin-top: 4px;
+    color: var(--ed-secondary);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .meter-label span {
+    position: absolute;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+
+  .notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--ed-tile);
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .notice.warn {
+    background: color-mix(in srgb, var(--ed-warning) 16%, var(--ed-card));
+  }
+
+  .notice svg {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin-top: 1px;
+    fill: var(--ed-secondary);
+  }
+
+  .notice.warn svg {
+    fill: var(--ed-warning);
+  }
+
+  .mix {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mix-head {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ed-secondary);
+    font-size: 15px;
+    line-height: 20px;
     font-variant-numeric: tabular-nums;
   }
 
-  .slider-value.dim {
-    color: var(--secondary-text-color);
+  .mix-bar {
+    display: flex;
+    gap: 3px;
+    height: 20px;
+    border-radius: 7px;
+    overflow: hidden;
   }
 
+  .mix-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 12px;
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  .mix-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mix-legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  .mix-legend em {
+    color: var(--ed-secondary);
+    font-style: normal;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --------------------------------------------------------- hot water */
+  .water {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr) 96px;
+    align-items: start;
+    padding-top: 6px;
+  }
+
+  .tank-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tank {
+    position: relative;
+    width: 96px;
+    height: 132px;
+    box-sizing: border-box;
+    border-radius: 20px;
+    background: var(--ed-tile);
+    overflow: hidden;
+  }
+
+  .tank-water {
+    position: absolute;
+    inset: auto 0 0;
+    border-top: 2px solid transparent;
+  }
+
+  .tank-target {
+    position: absolute;
+    inset: 0 0 auto;
+    border-top: 1px dashed var(--ed-text);
+    opacity: 0.5;
+  }
+
+  .tank-temp {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tank-temp.top {
+    align-items: flex-start;
+    padding-top: 14px;
+  }
+
+  .tank-temp small {
+    padding-top: 6px;
+    color: color-mix(in srgb, var(--ed-text) 82%, transparent);
+    font-size: 17px;
+  }
+
+  .tank-caption {
+    width: 120px;
+    margin: 0 -12px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .tank-caption b {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  .tank-caption span {
+    color: var(--ed-secondary);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .tank-caption span.src {
+    color: var(--c);
+  }
+
+  :host([data-light]) .tank-caption span.src {
+    color: color-mix(in srgb, var(--c) 45%, #000);
+  }
+
+  .mixing {
+    display: block;
+    width: 100%;
+    height: 132px;
+  }
+
+  .mixing text {
+    font-family: inherit;
+    fill: var(--ed-secondary);
+  }
+
+  /* ------------------------------------------------------------- lists */
+  .group {
+    margin: 0;
+    padding: 2px 12px;
+    list-style: none;
+    border-radius: 12px;
+    background: var(--ed-tile);
+  }
+
+  .group > li + li {
+    border-top: 1px solid var(--ed-sep);
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 60px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+  }
+
+  .row-btn {
+    cursor: pointer;
+  }
+
+  .badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--bc, transparent) 16%, var(--ed-badge));
+  }
+
+  .badge svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--bc, var(--ed-off));
+  }
+
+  .row-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .row-title {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 21px;
+  }
+
+  .row-sub {
+    color: var(--ed-secondary);
+    font-size: 15px;
+    line-height: 20px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .row-sub b {
+    color: var(--c, var(--ed-text));
+    font-weight: 500;
+  }
+
+  .row-sub.accent {
+    color: var(--c);
+  }
+
+  :host([data-light]) .row-sub.accent,
+  :host([data-light]) .row-sub b {
+    color: color-mix(in srgb, var(--c, var(--ed-text)) 45%, #000);
+  }
+
+  .row-aside {
+    color: var(--ed-secondary);
+    font-size: 13px;
+    line-height: 18px;
+    text-align: right;
+  }
+
+  .chevron {
+    width: 16px;
+    height: 16px;
+    fill: var(--ed-off);
+    transition: transform 0.28s ease;
+  }
+
+  .open .chevron {
+    transform: rotate(90deg);
+  }
+
+  /* Detail of a row: grows open under the row, inside the same group. */
   .fold {
     display: grid;
     grid-template-rows: 0fr;
@@ -361,9 +699,50 @@ export const styles = css`
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fold {
+    .fold,
+    .chevron {
       transition: none;
     }
+  }
+
+  .detail {
+    display: grid;
+    gap: 14px;
+    padding: 4px 0 14px;
+  }
+
+  .field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: 12px;
+  }
+
+  .field ed-slider {
+    grid-column: 1 / -1;
+    margin-top: 6px;
+  }
+
+  .field-label {
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .field-value {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .field-value.dim {
+    color: var(--ed-secondary);
+  }
+
+  .hint {
+    color: var(--ed-secondary);
+    font-size: 13px;
+    line-height: 18px;
   }
 
   .switch-row {
@@ -371,20 +750,57 @@ export const styles = css`
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
-    min-height: 48px;
+    min-height: 56px;
   }
 
   .switch-text {
     display: flex;
     flex-direction: column;
-    font-size: 16px;
+  }
+
+  .switch-title {
+    font-size: 17px;
     line-height: 22px;
   }
 
+  .confirm {
+    display: grid;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--ed-card);
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .confirm .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .btn {
+    min-height: 44px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--ed-btn);
+    color: var(--ed-text);
+    font: inherit;
+    font-size: 17px;
+    cursor: pointer;
+  }
+
+  .btn.primary {
+    background: var(--ed-button);
+    color: #fff;
+    font-weight: 600;
+  }
+
   .feedback {
-    margin: 0;
     min-height: 18px;
-    color: var(--secondary-text-color);
+    padding: 0 4px;
+    color: var(--ed-secondary);
     font-size: 13px;
     line-height: 18px;
   }

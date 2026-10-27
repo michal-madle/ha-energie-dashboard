@@ -1,14 +1,12 @@
-import type { HomeAssistant, Settings } from "./types";
+import type { EntitySections, HomeAssistant, NumberSettings, Settings } from "./types";
 import { readNumber, readText } from "./utils";
 
 /*
- * Power flows of the card (CURRENT_SPEC.md, Karta Elektřina = Sankey). Everything is derived from
+ * Power flows of the card (CURRENT_SPEC.md, Karta Elektřina (Sankey)). Everything is derived from
  * the measured values and the signs of ENTITY_MAP.md; nothing is derived from a difference of the
- * sources, except which source feeds the loads (shares of the measured source flows).
+ * sources, except which source feeds the loads (shares of the measured source flows). Every
+ * threshold comes from the configuration (settings.num).
  */
-
-/** Below this power (W) a flow counts as none: sensors jitter around zero. */
-export const EPS = 10;
 
 export type Source = "sun" | "bat" | "grid";
 export const SOURCES: readonly Source[] = ["sun", "bat", "grid"];
@@ -61,6 +59,7 @@ export function carLink(status: string | undefined): CarLink {
 
 export function buildModel(hass: HomeAssistant | undefined, settings: Settings): FlowModel {
   const e = settings.entities;
+  const eps = settings.num.flows.idle_threshold;
   const sun = positive(readNumber(hass, e.pv.power));
   const battery = readNumber(hass, e.battery.power); // + discharging, − charging (measured 15. 10.)
   const grid = readNumber(hass, e.grid.power); // − import (measured); + export (sign by definition, TODO P1.11)
@@ -82,7 +81,7 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
   };
   const total = toLoads.sun + toLoads.bat + toLoads.grid;
   const share: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
-  if (total > EPS) {
+  if (total > eps) {
     for (const source of SOURCES) share[source] = toLoads[source] / total;
   }
 
@@ -93,14 +92,14 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
     ["boil", boil],
   ];
   for (const [sink, watts] of loads) {
-    if (!watts || watts <= EPS) continue;
+    if (!watts || watts <= eps) continue;
     for (const source of SOURCES) {
       const part = watts * share[source];
-      if (part > EPS / 2) flows.push({ from: source, to: sink, watts: part });
+      if (part > eps / 2) flows.push({ from: source, to: sink, watts: part });
     }
   }
-  if ((batIn ?? 0) > EPS) flows.push({ from: "sun", to: "batIn", watts: batIn! });
-  if ((exp ?? 0) > EPS) flows.push({ from: "sun", to: "gridOut", watts: exp! });
+  if ((batIn ?? 0) > eps) flows.push({ from: "sun", to: "batIn", watts: batIn! });
+  if ((exp ?? 0) > eps) flows.push({ from: "sun", to: "gridOut", watts: exp! });
 
   const model: FlowModel = {
     sun, batDis, batIn, imp, exp, other, car, boil, share, flows,
@@ -110,32 +109,69 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
     boilTemp: readNumber(hass, e.boiler.temperature),
     carLink: carLink(readText(hass, e.wallbox.status)),
   };
-  Object.assign(model, summarize(model));
+  Object.assign(model, summarize(model, settings.num.flows));
   return model;
 }
 
 /** The sentence under the title (what the sun does; otherwise where the house gets its energy). */
-export function summarize(m: FlowModel): { summary?: string; summarySource?: Source } {
+export function summarize(m: FlowModel, flows: NumberSettings["flows"]): { summary?: string; summarySource?: Source } {
+  const eps = flows.idle_threshold;
   const noData = [m.sun, m.batDis, m.imp, m.other].every((value) => value === undefined);
   if (noData) return {};
   // The sun covers the house when nothing is taken from the battery or the grid.
-  const sunCovers = (m.sun ?? 0) > 50 && (m.imp ?? 0) <= EPS && (m.batDis ?? 0) <= EPS;
+  const sunCovers = (m.sun ?? 0) > flows.sun_covers && (m.imp ?? 0) <= eps && (m.batDis ?? 0) <= eps;
   if (sunCovers) {
     let text: string;
-    if ((m.exp ?? 0) > 300 && (m.batIn ?? 0) < 50) text = "Přebytek jde do sítě";
-    else if ((m.car ?? 0) > EPS) text = `Slunce nabíjí ${(m.batIn ?? 0) > 50 ? "baterii i " : ""}auto`;
-    else if ((m.batIn ?? 0) > 50) text = "Slunce nabíjí baterii";
+    if ((m.exp ?? 0) > flows.export_notice && (m.batIn ?? 0) < flows.battery_flow) text = "Přebytek jde do sítě";
+    else if ((m.car ?? 0) > eps) text = `Slunce nabíjí ${(m.batIn ?? 0) > flows.battery_flow ? "baterii i " : ""}auto`;
+    else if ((m.batIn ?? 0) > flows.battery_flow) text = "Slunce nabíjí baterii";
     else text = "Slunce pokrývá dům";
     return { summary: text, summarySource: "sun" };
   }
   const { sun, bat, grid } = m.share;
-  if (grid > 0.5) return { summary: "Dům jede ze sítě", summarySource: "grid" };
-  if (sun < 0.15 && grid < 0.15 && bat > 0) return { summary: "Dům jede z baterie", summarySource: "bat" };
-  const list = ([["ze slunce", sun, "sun"], ["z baterie", bat, "bat"], ["ze sítě", grid, "grid"]] as const)
-    .filter((item) => item[1] >= 0.15)
-    .sort((a, b) => b[1] - a[1]);
+  if (grid > flows.grid_deviation_share / 100) return { summary: "Dům jede ze sítě", summarySource: "grid" };
+  const min = flows.source_min_share / 100;
+  if (sun < min && grid < min && bat > 0) return { summary: "Dům jede z baterie", summarySource: "bat" };
+  const list = sourceList(m.share, min);
   if (!list.length) return { summary: "Dům nic neodebírá" };
-  const names = { "ze slunce": "slunce", "z baterie": "baterie", "ze sítě": "sítě" } as const;
-  const text = `Dům bere ${list[0][0]}${list.slice(1).map((item) => ` a ${names[item[0]]}`).join("")}`;
-  return { summary: text, summarySource: list[0][2] };
+  const names = { sun: "slunce", bat: "baterie", grid: "sítě" } as const;
+  const text = `Dům bere ${SOURCE_TEXT[list[0]]}${list.slice(1).map((source) => ` a ${names[source]}`).join("")}`;
+  return { summary: text, summarySource: list[0] };
+}
+
+const SOURCE_TEXT: Record<Source, string> = { sun: "ze slunce", bat: "z baterie", grid: "ze sítě" };
+
+/** Sources with a share of at least `min` (0–1), largest first; the sun first on a tie. */
+export function sourceList(share: Record<Source, number>, min: number): Source[] {
+  return SOURCES.filter((source) => share[source] >= min).sort((a, b) => share[b] - share[a]);
+}
+
+export interface SourceText {
+  /** "ze slunce", "z baterie a sítě" … */
+  text: string;
+  /** The largest source. */
+  main: Source;
+  /** More than the configured share comes from the grid: a deviation (orange). */
+  deviation: boolean;
+}
+
+/** Where a load gets its energy, as text (CURRENT_SPEC.md, Auto: smíšené nabíjení); the sun when nothing is measured. */
+export function sourceText(share: Record<Source, number>, flows: NumberSettings["flows"]): SourceText {
+  const names = { sun: "slunce", bat: "baterie", grid: "sítě" } as const;
+  let list = sourceList(share, flows.source_min_share / 100);
+  if (!list.length) list = ["sun"];
+  const deviation = share.grid > flows.grid_deviation_share / 100;
+  return { text: SOURCE_TEXT[list[0]] + list.slice(1).map((source) => ` a ${names[source]}`).join(""), main: deviation ? "grid" : list[0], deviation };
+}
+
+/** State of the water mixing from its two valves (CURRENT_SPEC.md, Mísení vody). */
+export type Mixing = "on" | "off" | "unclear" | undefined;
+
+export function mixingState(hass: HomeAssistant | undefined, mixing: EntitySections["mixing"]): Mixing {
+  const c1 = readText(hass, mixing.valve_c1);
+  const c2 = readText(hass, mixing.valve_c2);
+  if (c1 === undefined || c2 === undefined) return undefined;
+  if (c1 === "off" && c2 === "on") return "on";
+  if (c1 === "on" && c2 === "off") return "off";
+  return "unclear";
 }

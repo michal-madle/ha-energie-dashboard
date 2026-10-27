@@ -35,9 +35,9 @@ const whole = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
 
 export type PowerUnit = "W" | "kW";
 
-/** One unit for every value of the card: kW when any power reaches 1 kW, otherwise W. */
-export function powerUnit(values: Array<number | undefined>): PowerUnit {
-  return values.some((value) => value !== undefined && Math.abs(value) >= 1000) ? "kW" : "W";
+/** One unit for every value of the card: kW when any power reaches `from` W (flows.kw_from), otherwise W. */
+export function powerUnit(values: Array<number | undefined>, from = 1000): PowerUnit {
+  return values.some((value) => value !== undefined && Math.abs(value) >= from) ? "kW" : "W";
 }
 
 export function formatPower(watts: number, unit: PowerUnit): string {

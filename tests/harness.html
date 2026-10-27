@@ -5,65 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Energie Dashboard – test</title>
   <style>
-    /* Roboto like the Home Assistant frontend, so text widths match the app. */
-    @font-face { font-family: Roboto; font-weight: 400; src: url(/node_modules/@fontsource/roboto/files/roboto-latin-400-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F, U+2190-21FF; }
-    @font-face { font-family: Roboto; font-weight: 400; src: url(/node_modules/@fontsource/roboto/files/roboto-latin-ext-400-normal.woff2) format("woff2"); unicode-range: U+0100-024F, U+1E00-1EFF; }
-    @font-face { font-family: Roboto; font-weight: 500; src: url(/node_modules/@fontsource/roboto/files/roboto-latin-500-normal.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
-    @font-face { font-family: Roboto; font-weight: 500; src: url(/node_modules/@fontsource/roboto/files/roboto-latin-ext-500-normal.woff2) format("woff2"); unicode-range: U+0100-024F, U+1E00-1EFF; }
-    html { background: #111; }
+    html { background: #000; }
     body {
       margin: 0;
-      background: #111;
-      color: var(--primary-text-color);
-      font-family: Roboto, sans-serif;
-      /* Home Assistant's default dark theme (the light one is set by scenarios.js). */
-      --primary-text-color: #e1e1e1;
-      --secondary-text-color: #9b9b9b;
-      --primary-color: #03a9f4;
-      --divider-color: rgb(225 225 225 / 12%);
-      --card-background-color: #1c1c1c;
-      --secondary-background-color: #282828;
-      --state-icon-color: #44739e;
-      --warning-color: #ff9800;
-      --ha-card-border-radius: 12px;
+      background: #000;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, Roboto, sans-serif;
     }
     main { padding: 4px 8px; }
   </style>
-  <script>
-    // Minimal stand-ins for the Home Assistant elements the card uses.
-    customElements.define("ha-card", class extends HTMLElement {
-      constructor() {
-        super();
-        this.attachShadow({ mode: "open" }).innerHTML =
-          '<style>:host{display:block;background:var(--ha-card-background,var(--card-background-color));border-radius:var(--ha-card-border-radius,12px);box-shadow:var(--ha-card-box-shadow,none);border:1px solid var(--divider-color)}</style><slot></slot>';
-      }
-    });
-    // ha-icon draws the same neutral ring for every icon name (the real icons come from Home Assistant).
-    customElements.define("ha-icon", class extends HTMLElement {
-      connectedCallback() {
-        const size = getComputedStyle(this).getPropertyValue("--mdc-icon-size").trim() || "24px";
-        this.style.display = "inline-flex";
-        this.style.width = size;
-        this.style.height = size;
-        this.innerHTML = `<svg viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="display:block"><circle cx="12" cy="12" r="8"/></svg>`;
-      }
-    });
-    // ha-switch of Home Assistant: a switch that fires `change`.
-    customElements.define("ha-switch", class extends HTMLElement {
-      static get observedAttributes() { return ["disabled", "aria-label"]; }
-      constructor() {
-        super();
-        this.attachShadow({ mode: "open" }).innerHTML = '<style>input{appearance:none;-webkit-appearance:none;width:52px;height:32px;margin:0;border-radius:16px;background:#555;position:relative;cursor:pointer}input::after{content:"";position:absolute;top:2px;left:2px;width:28px;height:28px;border-radius:50%;background:#fff;transition:left .2s}input:checked{background:#03a9f4}input:checked::after{left:22px}input:disabled{opacity:.5}</style><input type="checkbox" role="switch">';
-        this.input = this.shadowRoot.querySelector("input");
-        this.input.addEventListener("change", () => this.dispatchEvent(new Event("change", { bubbles: true })));
-      }
-      get checked() { return this.input.checked; }
-      set checked(value) { this.input.checked = !!value; }
-      get disabled() { return this.input.disabled; }
-      set disabled(value) { this.input.disabled = !!value; }
-      attributeChangedCallback() { this.input.disabled = this.hasAttribute("disabled"); this.input.setAttribute("aria-label", this.getAttribute("aria-label") ?? ""); }
-    });
-  </script>
   <script type="module" src="/tests/scenarios.js"></script>
 </head>
 <body>
