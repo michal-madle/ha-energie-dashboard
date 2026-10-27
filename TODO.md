@@ -210,7 +210,8 @@ Prototyp karty je v podobě podle Apple HIG (tři panely, vlastní přepínač, 
 - Popisky pod přepínači Zablokovat nabíjení a Přednost před bojlerem popisují důsledek („Auto nenabíjí, přebytek ohřívá vodu“, „Auto nabíjí dřív než bojler“), ne stav; znění je moje, ověř, že sedí na skutečné chování wallboxu a AZ Routeru.
 - Přetažení nebo dvojklepnutí pro Přetoky | Boost je můj návrh podle iOS vzoru „posunutím potvrdit“; dlouhý stisk jsem nezvolil (nezjistitelný, bez alternativy pro čtečky). Pokud chceš jen dlouhý stisk nebo jen dvojklepnutí, stačí říct.
 - Práh toků je jeden, `flows.idle_threshold` 100 W; klíče `sun_covers` a `battery_flow` (50 W) odpadají, aby věta o stavu nebyla v rozporu s dlaždicí („nevyrábí“ při 80 W).
-- Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu.
+- Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu pod 100 %.
+- Jemný rámeček dlaždic Sankey (1 px, `rgba(255,255,255,.14)`) a obloukové měřiče Teplé vody (stupnice z posuvníků, zásobník jako nastavená hodnota bez měřené) jsou návrh; rozměry oblouku (124 × 112 px, silnice 9 px) a skupina Upozornění nahoře čekají na potvrzení.
 - Studená a vlažná voda ve schématu mají barvy `colors.cold` a `colors.neutral`.
 - Nabíjecí výkon používá `wallbox.charging_power` (v příkladu `number.wallbox_7_1_manual_charging_power`, k ověření v živém Home Assistantu); ID obrázku auta obsahuje VIN, v příkladu je zástupné `image.bmw_i3_vin_image`.
 
@@ -225,6 +226,7 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 - Kód má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem, hodnoty „0,0 kW“, větu s dnešními součty pod nadpisem a historii entity po klepnutí na dlaždici; spec je ruší nebo mění (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
 - Měřič nabití auta v kartě BMW i3 má lesklou výplň a vnitřní stín; spec: ploché povrchy bez lesku.
 - Upozornění a část detailů používají oranžovou `#FF9F0A`; spec: odchylka je `#FF9230`.
+- Kód má v kartě auta malý obrázek, značku „limit“ i při 100 % (`car.charge_limit` výchozí `80`, spec `100`), nádrže místo obloukových měřičů, mísení s textem, pořadí Přetoky | Boost u bojleru, dílky gauge bez poměrného plnění a upozornění uvnitř karty auta; spec to mění, kód zůstává, dokud se neřekne.
 
 ## Jak se testuje
 
