@@ -208,10 +208,10 @@ Prototyp karty je v podobě podle Apple HIG (tři panely, vlastní přepínač, 
 - „Odkud auto nabíjí“ ukazuje okamžité podíly zdrojů, ne průměr za 5 minut; ve větě stavu je jen „Nabíjí ze slunce“ bez dodatku „· boost“ (uživatel 27. 10.: „Zapnuto neuvádět“).
 - Stav v dlaždicích (uživatel 27. 10.: „Ty % musí být zobrazeny lépe“, pak „malý HIG gauge diskrétní“, pak „Ty malé % vpravo nahoře … pryč. Budou se zobrazovat na popup“): dole diskrétní gauge o 10 dílcích, číslo (%, °C) jen v popupu po klepnutí na dlaždici spolu s denním součtem; nabití auta jen u připojeného auta. Zvolil jsem diskrétní variantu (stejné dílky po 10 % jako měřič v kartě auta); dlaždice jsou 56 px vysoké. Dlaždice Do baterie se jmenuje „Baterie“ (směr říká pás a druhý řádek). Popup jako HIG popover se šipkou, zavírá se klepnutím mimo; všechny součty najednou jsou ve velkém popupu po klepnutí na záhlaví Elektřiny; denní součty jsou jen v něm (Baterie i Síť mají vstup i výstup), stálý blok v kartě není.
 - Popisky pod přepínači Zablokovat nabíjení a Přednost před bojlerem popisují důsledek („Auto nenabíjí, přebytek ohřívá vodu“, „Auto nabíjí dřív než bojler“), ne stav; znění je moje, ověř, že sedí na skutečné chování wallboxu a AZ Routeru.
-- Přetažení nebo dvojklepnutí pro Přetoky | Boost je můj návrh podle iOS vzoru „posunutím potvrdit“; dlouhý stisk jsem nezvolil (nezjistitelný, bez alternativy pro čtečky). Pokud chceš jen dlouhý stisk nebo jen dvojklepnutí, stačí říct.
+- Přetažení nebo dvojklepnutí pro Přetoky | Boost u auta (a Vypnuto | Zapnuto u mísení) je můj návrh podle iOS vzoru „posunutím potvrdit“; dlouhý stisk jsem nezvolil (nezjistitelný, bez alternativy pro čtečky). Pokud chceš jen dlouhý stisk nebo jen dvojklepnutí, stačí říct.
 - Práh toků je jeden, `flows.idle_threshold` 100 W; klíče `sun_covers` a `battery_flow` (50 W) odpadají, aby věta o stavu nebyla v rozporu s dlaždicí („nevyrábí“ při 80 W).
 - Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu pod 100 %.
-- Jemný rámeček dlaždic Sankey (1 px, `rgba(255,255,255,.14)`) a obloukové měřiče Teplé vody (barevný přechod podle teploty, trend ↑ ↓ → z čidla za 15 min, zásobník jako nastavená hodnota, mísení jako spojka s kapkou) jsou návrh; rozměry oblouku (124 × 112 px, silnice 9 px) a skupina Upozornění nahoře čekají na potvrzení.
+- Jemný rámeček dlaždic Sankey (1 px, `rgba(255,255,255,.14)`) a obloukové měřiče Teplé vody (barevný přechod podle teploty, výkon místo trendu, stejná stupnice 15 až max(Přetoky, 65) °C, zásobník jako nastavená hodnota, mísení jako spojka s kapkou) jsou návrh; rozměry oblouku (124 × 112 px, silnice 9 px) a skupina Upozornění nahoře čekají na potvrzení.
 - Barva výplně obloukových měřičů teplé vody je přechod `colors.temp_scale` (kód zatím používá `colors.cold` a `colors.neutral`).
 - Nabíjecí výkon používá `wallbox.charging_power` (v příkladu `number.wallbox_7_1_manual_charging_power`, k ověření v živém Home Assistantu); ID obrázku auta obsahuje VIN, v příkladu je zástupné `image.bmw_i3_vin_image`.
 
@@ -226,7 +226,7 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 - Kód má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem, hodnoty „0,0 kW“, větu s dnešními součty pod nadpisem a historii entity po klepnutí na dlaždici; spec je ruší nebo mění (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
 - Měřič nabití auta v kartě BMW i3 má lesklou výplň a vnitřní stín; spec: ploché povrchy bez lesku.
 - Upozornění a část detailů používají oranžovou `#FF9F0A`; spec: odchylka je `#FF9230`.
-- Kód má v kartě auta malý obrázek, značku „limit“ i při 100 % (`car.charge_limit` výchozí `80`, spec `100`), nádrže místo obloukových měřičů, mísení s textem, pořadí Přetoky | Boost u bojleru, dílky gauge bez poměrného plnění a upozornění uvnitř karty auta; spec to mění, kód zůstává, dokud se neřekne.
+- Kód má v kartě auta malý obrázek, značku „limit“ i při 100 % (`car.charge_limit` výchozí `80`, spec `100`), nádrže místo obloukových měřičů, mísení s textem, Boost bojleru jako přepínač s rozbalovacími cílovými teplotami místo segmentového ovladače, dílky gauge bez poměrného plnění a upozornění uvnitř karty auta; spec to mění, kód zůstává, dokud se neřekne.
 
 ## Jak se testuje
 
