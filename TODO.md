@@ -31,6 +31,7 @@ Pravidla:
 | [P2.9](#p2-9) | Rozhodnutí | Krok výkonu nabíjení wallboxu (0,3 kW, nebo 0,6 kW odshora) |
 | [P2.10](#p2-10) | Rozhodnutí | Odkud nabíjí auto: průměr a hystereze |
 | [P2.11](#p2-11) | Rozhodnutí | Sytost ohřevu v historii bojleru |
+| [P2.12](#p2-12) | Ověření | Denní součty: čítače pro auto a bojler |
 | [P3.2](#p3-2) | Rozhodnutí | Licence repozitáře |
 | [P3.3](#p3-3) | Návrh | Budoucí řízení (scénáře AZ Routeru, 80 %, noc bez ohřevu z baterie) |
 | [P4.1](#p4-1) | Rozhodnutí | Modrá Síť × modrý akcent ovladačů |
@@ -170,6 +171,11 @@ V létě se zdroje nabíjení mění i několikrát za minutu (pár sekund ze s�
 
 Výplň ohřevu pod křivkou teploty má tři stupně sytosti (24 / 44 / 68 % jako vlny topení v Klima). Návrh hranic: třetiny největšího výkonu bojleru. Ten není ověřený: `number.tuv_1_max_power` je 1325 W a bojler je připojený na 3 fáze (`switch.tuv_1_1_connected_l1` až `_l3`), takže maximum je buď 1,3 kW, nebo asi 4 kW – podle toho, zda je nastavení na fázi. V návrhu: do 0,9 kW slabý, do 1,8 kW střední, nad 1,8 kW silný.
 
+<a id="p2-12"></a>
+### P2.12 Denní součty: čítače pro auto a bojler · Ověření
+
+Blok Dnes potřebuje energii za den pro Slunce, Baterii (vybito, nabito), Síť (odebráno, dodáno), Auto, Bojler a Dům. První čtyři mají ověřené čítače střídače (`ENTITY_MAP.md`; denní součet = rozdíl čítače od půlnoci, např. přes `utility_meter` nebo statistiky Home Assistantu). Pro auto (wallbox) a bojler (AZ Router) čítač energie v `ENTITY_MAP.md` není. Možnosti: čítač, pokud ho zařízení nabízí; jinak integrál výkonu (helper Riemann sum) s drobnou chybou. Dům = zbytek, takže chyba měření se v něm sečte; návrh drží rovnost zdrojů a spotřeby. Ověřit v živém Home Assistantu, než se blok implementuje.
+
 ## P3 – doladění
 
 <a id="p3-2"></a>
@@ -200,7 +206,7 @@ Prototyp karty je v podobě podle Apple HIG (tři panely, vlastní přepínač, 
 - Nadpisy panelů jsou klíče `titles.*` (výchozí „Elektřina“, „BMW i3“, „Teplá voda“), aby auto nebylo napevno BMW.
 - Řádek Wallbox otevře historii výkonu; rozbalují se řádky Boost, Boost bojleru a Zásobník (plyn). Mísení vody je v detailu Zásobníku.
 - „Odkud auto nabíjí“ ukazuje okamžité podíly zdrojů, ne průměr za 5 minut; ve větě stavu je jen „Nabíjí ze slunce“ bez dodatku „· boost“ (uživatel 27. 10.: „Zapnuto neuvádět“).
-- Stav v dlaždicích (uživatel 27. 10.: „Ty % musí být zobrazeny lépe“, pak „malý HIG gauge diskrétní, nebo HIG progress“): hodnota vpravo v řádku názvu (52 °C, 88 %, 62 %) a dole diskrétní gauge o 10 dílcích; nabití auta jen u připojeného auta. Zvolil jsem diskrétní variantu (stejné dílky po 10 % jako měřič v kartě auta); dlaždice jsou 56 px vysoké. Dlaždice Do baterie se jmenuje „Baterie“ (směr říká pás a druhý řádek).
+- Stav v dlaždicích (uživatel 27. 10.: „Ty % musí být zobrazeny lépe“, pak „malý HIG gauge diskrétní“, pak „Ty malé % vpravo nahoře … pryč. Budou se zobrazovat na popup“): dole diskrétní gauge o 10 dílcích, číslo (%, °C) jen v popupu po klepnutí na dlaždici spolu s denním součtem; nabití auta jen u připojeného auta. Zvolil jsem diskrétní variantu (stejné dílky po 10 % jako měřič v kartě auta); dlaždice jsou 56 px vysoké. Dlaždice Do baterie se jmenuje „Baterie“ (směr říká pás a druhý řádek). Popup jako HIG popover se šipkou, zavírá se klepnutím mimo; blok Dnes pod diagramem nahrazuje větu s dnešními součty pod nadpisem.
 - Přetažení nebo dvojklepnutí pro Přetoky | Boost je můj návrh podle iOS vzoru „posunutím potvrdit“; dlouhý stisk jsem nezvolil (nezjistitelný, bez alternativy pro čtečky). Pokud chceš jen dlouhý stisk nebo jen dvojklepnutí, stačí říct.
 - Práh toků je jeden, `flows.idle_threshold` 100 W; klíče `sun_covers` a `battery_flow` (50 W) odpadají, aby věta o stavu nebyla v rozporu s dlaždicí („nevyrábí“ při 80 W).
 - Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu.
@@ -215,7 +221,7 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 <a id="p4-4"></a>
 ### P4.4 Návrh se v několika místech rozchází se specifikací · Chyba
 
-- Návrh má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem a hodnoty „0,0 kW“; spec je ruší (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
+- Kód má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem, hodnoty „0,0 kW“, větu s dnešními součty pod nadpisem a historii entity po klepnutí na dlaždici; spec je ruší nebo mění (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
 - Měřič nabití auta v kartě BMW i3 má lesklou výplň a vnitřní stín; spec: ploché povrchy bez lesku.
 - Upozornění a část detailů používají oranžovou `#FF9F0A`; spec: odchylka je `#FF9230`.
 
