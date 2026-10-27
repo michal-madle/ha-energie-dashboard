@@ -14,7 +14,7 @@ Co uživatel nerozhodl, se nedomýšlí: je to otázka v `TODO.md`. Kde jsem kv�
 
 - **Kód karty (prototyp)** čte skutečné entity a kreslí tři panely v podobě podle Apple HIG: **Elektřina** (věta o stavu, Sankey, tři měřiče), **BMW i3** (obrázek, nabití, dojezd, měřič s limitem, upozornění, „Odkud auto nabíjí“ při nabíjení, řádky Wallbox a Boost) a **Teplá voda** (schéma bojleru, zásobníku a mísení, řádky Zásobník (plyn) a Boost bojleru). Řádky Boost, Boost bojleru a Zásobník se rozbalují a obsahují ovládání: segment Přetoky | Boost, nabíjecí výkon (jen v boostu, celkový výkon všech fází), Zablokovat nabíjení, Přednost před bojlerem, cíl ohřevu bojleru, režim a teplotu zásobníku, Mísení vody s potvrzením. Klepnutí na dlaždici otevře historii entity.
 - **Konfigurace:** každá proměnná (limity, prahy, stupnice, kroky, barvy, nadpisy) je klíč s výchozí hodnotou; v kódu žádná skrytá konstanta není (oddíl Konfigurace).
-- **Kód nezahrnuje:** souhrn dnešních součtů pod nadpisem, podbarvení dlaždice Dům podle podílů zdrojů, 24h historii a historii po klepnutí, „Jak dlouho“, ovládání limitu nabití auta, stáří dat auta, rozlišení „světlé varianty accessible“ při zvýšeném kontrastu (TODO P4.3), potvrzování ostatního ovládání (TODO P1.6).
+- **Kód nezahrnuje:** potlačení šumu sítě do ±99 W (`flows.grid_idle_below`, oddíl Toky energie), souhrn dnešních součtů pod nadpisem, podbarvení dlaždice Dům podle podílů zdrojů, 24h historii a historii po klepnutí, „Jak dlouho“, ovládání limitu nabití auta, stáří dat auta, rozlišení „světlé varianty accessible“ při zvýšeném kontrastu (TODO P4.3), potvrzování ostatního ovládání (TODO P1.6).
 - **Obrázek auta** se bere z atributu `entity_picture` entity `car.image`; chybí-li entita, panel je bez obrázku.
 - **Návrh** v canvasu „Energie – návrh karty“ (Elektřina, BMW i3, Teplá voda, detail auta a wallboxu, detail teplé vody; jedna interaktivní deska) odpovídá této specifikaci. Rozdíly návrhu proti ní jsou v `TODO.md`.
 - Karta nemá ověřenou funkci v živém Home Assistantu: entity a směr přetoku musí uživatel zkontrolovat.
@@ -89,6 +89,7 @@ Zadání (stav k 17. 10. 2026) a YAML dnešního dashboardu, potvrzené exportem
 - Směr toku se určuje jen ze znamének ze Zdrojů pravdy. **Směr přetoku do sítě:** kladná hodnota elektroměru se bere jako dodávka do sítě (záporná jako odběr, to je změřené). Kladné znaménko zatím není změřené při větším přetoku (TODO P1.11), proto se při prvním přetoku musí ověřit; stačí pak otočit znaménko v `src/model.ts`.
 - Spotřeba domu ze střídače zahrnuje wallbox i bojler (uživatel 25. 10.: „Do domu se počítá bojler i auto“; měření 25. 10.: dům 10,7 kW = auto 1,4 + bojler 4,0 + ostatní 5,3 kW). Dům v návrhu = ostatní spotřeba, tedy celková spotřeba domu bez wallboxu a bojleru; zda tak i v kartě, je otevřené (TODO P1.8).
 - Zdroje energie pro spotřebiče se dělí podle podílu naměřených toků (slunce bez nabíjení baterie a přetoku, vybíjení baterie, odběr ze sítě); nabíjení baterie a přetok do sítě jsou jen ze slunce.
+- **Šum na elektroměru** (uživatel 27. 10.: „Při výrobě FVE občas skáče pár W ± ze sítě. Pokud je to do ±99 W, tak to zobrazovat jako nic. Žádné 0.0 odebírá nebo posílá“): výkon sítě s absolutní hodnotou pod `flows.grid_idle_below` (výchozí 100 W, tedy do ±99 W) je žádný tok. Dlaždice Síť a Do sítě jsou neaktivní se slovem „neodebírá“ a „nedodává“ (ne „0,0 kW“, ne „5 W“), nemají pás, odběr ani přetok se nepočítá do podílů zdrojů (věty o stavu a texty „ze sítě“ ji tedy nejmenují) a nepočítá se do výběru jednotky W / kW. Platí všude, kde karta čte výkon sítě; od 100 W se hodnota ukáže normálně. Ostatní toky mají jen práh `flows.idle_threshold` (10 W).
 - Hodnoty pocházejí z různých registrů a okamžiků, proto se součet zdrojů nemusí přesně rovnat spotřebě domu (`AUDIT.md` bod 1). Karta neodvozuje stav „vyrovnáno“ ani jinou hodnotu z rozdílu.
 - **Jednotky:** všechny hodnoty v jedné jednotce: kW (jedna desetina), když je některý výkon aspoň 1 kW, jinak W. Energie (kWh) s jednou desetinou. Čísla podle `cs-CZ`.
 
@@ -209,6 +210,7 @@ Struktura klíčů (sekce podle systémů) je moje rozhodnutí (TODO P1.13):
 | `tank.temp_min`, `tank.temp_max`, `tank.temp_step` | `30`, `65`, `5` | °C, rozsah a krok teploty zásobníku |
 | `mixing.valve_c1`, `mixing.valve_c2`, `mixing.script` | – | ventily mísení (`switch.…`) a skript přepnutí (`script.…`) |
 | `flows.idle_threshold` | `10` | W, pod tím se tok bere jako žádný |
+| `flows.grid_idle_below` | `100` | W, výkon sítě s absolutní hodnotou pod tím (šum elektroměru) je žádný tok; `0` šum nepotlačuje |
 | `flows.kw_from` | `1000` | W, od tohoto se všechny výkony ukazují v kW |
 | `flows.sun_covers`, `flows.export_notice`, `flows.battery_flow` | `50`, `300`, `50` | W, prahy vět o stavu (slunce pokrývá dům, přebytek do sítě, nabíjení baterie) |
 | `flows.source_min_share`, `flows.grid_deviation_share` | `15`, `50` | %, podíl zdroje pojmenovaný v textu; podíl sítě, nad kterým je to odchylka |
