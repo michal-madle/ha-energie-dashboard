@@ -75,7 +75,7 @@ Zastaralá data podle exportu 24. 10. (`ENTITY_MAP.md`, Jak často entity hlás�
 ### P1.6 Jak potvrzovat ovládání · Rozhodnutí
 
 Možnosti: (a) jako předvolby žaluzií v kartě Klima – dvojité klepnutí do 400 ms nebo podržení 550 ms, jednoduché klepnutí jen ukáže bublinu „Podržte nebo klepněte dvakrát“, haptika; (b) klepnutí otevře list s tlačítkem „Zapnout boost“; (c) jedno klepnutí jako v dnešním dashboardu.
-Rozhodnuto 27. 10. (uživatel): Přetoky | Boost přetažením nebo dvojklepnutím, mísení vody posuvníkem „posunutím potvrdit“; variantu (a) s podržením jsem nezvolil. Původní doporučení: (a) pro oba boosty i mísení. Důvod: stejný pohyb jako v kartě Klima, chrání před náhodným klepnutím při posouvání, nepřidává dialog; boost wallboxu umí odebírat asi 4 kW ze sítě nebo baterie, takže náhodné zapnutí něco stojí. Při chybě služby haptika a hláška u tlačítka; nedostupná entita nic neodešle.
+Rozhodnuto 27. 10. (uživatel): Přetoky | Boost přetažením nebo dvojklepnutím, mísení vody stejným ovladačem Vypnuto | Zapnuto (vlevo vypnuto, vpravo zapnuto); variantu (a) s podržením jsem nezvolil. Původní doporučení: (a) pro oba boosty i mísení. Důvod: stejný pohyb jako v kartě Klima, chrání před náhodným klepnutím při posouvání, nepřidává dialog; boost wallboxu umí odebírat asi 4 kW ze sítě nebo baterie, takže náhodné zapnutí něco stojí. Při chybě služby haptika a hláška u tlačítka; nedostupná entita nic neodešle.
 
 <a id="p1-7"></a>
 ### P1.7 Pravidlo pro názvy · Rozhodnutí
