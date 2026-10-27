@@ -200,7 +200,7 @@ Prototyp karty je v podobě podle Apple HIG (tři panely, vlastní přepínač, 
 - Nadpisy panelů jsou klíče `titles.*` (výchozí „Elektřina“, „BMW i3“, „Teplá voda“), aby auto nebylo napevno BMW.
 - Řádek Wallbox otevře historii výkonu; rozbalují se řádky Boost, Boost bojleru a Zásobník (plyn). Mísení vody je v detailu Zásobníku.
 - „Odkud auto nabíjí“ ukazuje okamžité podíly zdrojů, ne průměr za 5 minut; ve větě stavu je jen „Nabíjí ze slunce“ bez dodatku „· boost“ (uživatel 27. 10.: „Zapnuto neuvádět“).
-- Stav v dlaždicích (uživatel 27. 10.: „Ty % musí být zobrazeny lépe“): hodnota vpravo v řádku názvu (52 °C, 88 %, 62 %), ikona baterie a teploměru jako ukazatel úrovně (iOS), nabití auta jen u připojeného auta. Dlaždice Do baterie se jmenuje „Baterie“ (směr říká pás a druhý řádek). Podoba ikon a pořadí v řádku je můj návrh.
+- Stav v dlaždicích (uživatel 27. 10.: „Ty % musí být zobrazeny lépe“, pak „malý HIG gauge diskrétní, nebo HIG progress“): hodnota vpravo v řádku názvu (52 °C, 88 %, 62 %) a dole diskrétní gauge o 10 dílcích; nabití auta jen u připojeného auta. Zvolil jsem diskrétní variantu (stejné dílky po 10 % jako měřič v kartě auta); dlaždice jsou 56 px vysoké. Dlaždice Do baterie se jmenuje „Baterie“ (směr říká pás a druhý řádek).
 - Přetažení nebo dvojklepnutí pro Přetoky | Boost je můj návrh podle iOS vzoru „posunutím potvrdit“; dlouhý stisk jsem nezvolil (nezjistitelný, bez alternativy pro čtečky). Pokud chceš jen dlouhý stisk nebo jen dvojklepnutí, stačí říct.
 - Práh toků je jeden, `flows.idle_threshold` 100 W; klíče `sun_covers` a `battery_flow` (50 W) odpadají, aby věta o stavu nebyla v rozporu s dlaždicí („nevyrábí“ při 80 W).
 - Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu.
