@@ -200,6 +200,9 @@ Prototyp karty je v podobě podle Apple HIG (tři panely, vlastní přepínač, 
 - Nadpisy panelů jsou klíče `titles.*` (výchozí „Elektřina“, „BMW i3“, „Teplá voda“), aby auto nebylo napevno BMW.
 - Řádek Wallbox otevře historii výkonu; rozbalují se řádky Boost, Boost bojleru a Zásobník (plyn). Mísení vody je v detailu Zásobníku.
 - „Odkud auto nabíjí“ ukazuje okamžité podíly zdrojů, ne průměr za 5 minut; ve větě stavu je jen „Nabíjí ze slunce“ bez dodatku „· boost“ (uživatel 27. 10.: „Zapnuto neuvádět“).
+- Dlaždice Do baterie má název zkrácený na „Baterie“ a nese nabití baterie; Bojler nese teplotu (uživatel chtěl obě hodnoty „u chlívků spotřeby“, na 116 px se název nevejde).
+- Přetažení nebo dvojklepnutí pro Přetoky | Boost je můj návrh podle iOS vzoru „posunutím potvrdit“; dlouhý stisk jsem nezvolil (nezjistitelný, bez alternativy pro čtečky). Pokud chceš jen dlouhý stisk nebo jen dvojklepnutí, stačí říct.
+- Práh toků je jeden, `flows.idle_threshold` 100 W; klíče `sun_covers` a `battery_flow` (50 W) odpadají, aby věta o stavu nebyla v rozporu s dlaždicí („nevyrábí“ při 80 W).
 - Měřič nabití auta je plochý v barvě Auto, s ryskami po 10 % a značkou limitu.
 - Studená a vlažná voda ve schématu mají barvy `colors.cold` a `colors.neutral`.
 - Nabíjecí výkon používá `wallbox.charging_power` (v příkladu `number.wallbox_7_1_manual_charging_power`, k ověření v živém Home Assistantu); ID obrázku auta obsahuje VIN, v příkladu je zástupné `image.bmw_i3_vin_image`.
@@ -212,8 +215,8 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 <a id="p4-4"></a>
 ### P4.4 Návrh se v několika místech rozchází se specifikací · Chyba
 
+- Návrh má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem a hodnoty „0,0 kW“; spec je ruší (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
 - Měřič nabití auta v kartě BMW i3 má lesklou výplň a vnitřní stín; spec: ploché povrchy bez lesku.
-- Lišty měřičů v kartě Elektřina mají záři (`box-shadow`); spec: lišta 5 px v barvě zdroje na plochém podkladu.
 - Upozornění a část detailů používají oranžovou `#FF9F0A`; spec: odchylka je `#FF9230`.
 
 ## Jak se testuje
