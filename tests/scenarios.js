@@ -127,7 +127,7 @@ test.dropThemes = () => {
 test.update = (changes) => {
   const next = { ...current, states: { ...current.states } };
   for (const [id, value] of Object.entries(changes)) {
-    next.states[id] = state(value);
+    next.states[id] = typeof value === "object" ? state(value.state, value.attributes) : state(value);
   }
   current = next;
   card.hass = next;

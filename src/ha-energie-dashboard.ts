@@ -23,6 +23,7 @@ const TILE_VAR: Record<TileKey, string> = {
   house: "--ed-house", car: "--ed-car", boil: "--ed-boiler", batIn: "--ed-battery", gridOut: "--ed-grid",
 };
 const TANK_MODES: Record<string, string> = { auto: "Auto", heat: "Manual", off: "Off" };
+const BOOST_OPTIONS: SegmentOption[] = [{ value: "off", label: "Přetoky" }, { value: "on", label: "Boost" }];
 
 /** Where the time the boiler last heated is kept, so the "boiler only while heating" tile survives a reload. */
 const HEATING_KEY = "ha-energie-dashboard:boiler-heating";
@@ -126,6 +127,8 @@ export class HaEnergieDashboard extends LitElement {
   @state() private _pop?: TileKey;
   @state() private _all = false;
   @state() private _now = Date.now();
+  /** A temperature of the tank just chosen, shown until Home Assistant reports it. */
+  @state() private _tankTemp?: { id: string; value: number };
 
   private _observer?: ResizeObserver;
   private _timers = new Map<string, number>();
@@ -197,6 +200,9 @@ export class HaEnergieDashboard extends LitElement {
         settled.forEach(([id]) => delete next[id]);
         this._optimistic = next;
       }
+    }
+    if (changed.has("hass") && this._tankTemp && attribute(entityState(this.hass, this._tankTemp.id), "temperature") === this._tankTemp.value) {
+      this._tankTemp = undefined;
     }
     // The end of the hold after heating: draw again when the boiler tile has to go.
     const s = this._config;
@@ -605,7 +611,7 @@ export class HaEnergieDashboard extends LitElement {
     const meterLabel = `Nabití auta ${soc === undefined ? "bez dat" : `${formatNumber(soc)} %`}${hasLimit ? `, limit ${formatNumber(limit)} %` : ""}`;
     const w = e.wallbox;
     const mode = boost === "on" ? "on" : boost === "off" ? "off" : "";
-    const modeOptions: SegmentOption[] = [{ value: "off", label: "Přetoky" }, { value: "on", label: "Boost" }];
+    const modeOptions = BOOST_OPTIONS;
     const modeSub = boost === "on" ? "Boost · bere i ze sítě a z baterie" : boost === "off" ? "Přetoky · jen z přebytku" : NO_DATA;
 
     return html`<section class="panel" aria-labelledby="h-car">
@@ -781,14 +787,11 @@ export class HaEnergieDashboard extends LitElement {
             </div>
           </div>
           ${b.boost
-            ? html`<div class="boost">
-                <div class="boost-text"><div id="l-boost">Boost</div><div class="boost-sub ${boostOn ? "warn" : ""}">${boost === undefined ? NO_DATA : boostOn ? "i ze sítě a z baterie" : "jen z přebytku"}</div></div>
-                <ed-switch
-                  guarded hintPlacement="above" label="Boost bojleru" .checked=${boostOn} ?disabled=${boost === undefined}
-                  .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
-                  @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setBoost("boiler", event.detail.checked)}
-                ></ed-switch>
-              </div>`
+            ? html`<ed-segmented
+                compact guarded .options=${BOOST_OPTIONS} .value=${boost ?? ""} label="Režim ohřevu bojleru" ?disabled=${boost === undefined}
+                .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
+                @ed-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("boiler", event.detail.value === "on")}
+              ></ed-segmented>`
             : nothing}
         </div>
       </div>
@@ -872,7 +875,9 @@ export class HaEnergieDashboard extends LitElement {
     const mode = this.shown(id);
     const off = mode === "off";
     const manual = mode === "heat";
-    const set = attribute(entity, "temperature");
+    const reported = attribute(entity, "temperature");
+    const chosen = this._tankTemp;
+    const set = chosen && chosen.id === id ? chosen.value : reported;
     const gMin = s.num.water.gauge_min;
     const gMax = Math.max(s.num.water.gauge_max, readNumber(this.hass, s.entities.boiler.target_temperature) ?? 0);
     // The tank has no measured temperature: the gauge shows the set value (Off: the minimum the boiler keeps).
@@ -880,8 +885,7 @@ export class HaEnergieDashboard extends LitElement {
     const list = Array.isArray(entity?.attributes?.operation_list) ? (entity!.attributes.operation_list as string[]) : Object.keys(TANK_MODES);
     const options: SegmentOption[] = Object.keys(TANK_MODES).filter((value) => list.includes(value)).map((value) => ({ value, label: TANK_MODES[value] }));
     const open = !!this._open.tank;
-    const min = Math.max(nt.temp_min, attribute(entity, "min_temp") ?? nt.temp_min);
-    const max = Math.min(nt.temp_max, attribute(entity, "max_temp") ?? nt.temp_max);
+    const { min, max } = this.tankRange(s);
     const modeName = mode === undefined ? NO_DATA : (TANK_MODES[mode] ?? mode);
     const plan = off ? "kotel drží minimum" : manual ? "nastaveno ručně" : "podle plánu";
     const summary = shownTemp === undefined ? NO_DATA : off ? `${formatNumber(nt.temp_min)} °C · vypnuto` : `${formatNumber(shownTemp)} °C · ${manual ? "ručně" : "podle plánu"}`;
@@ -1005,7 +1009,30 @@ export class HaEnergieDashboard extends LitElement {
   private async setTank(id: string, mode: string): Promise<void> {
     this._feedback = "";
     this.choose(id, mode);
-    await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: mode }, id, "Režim zásobníku");
+    if (!(await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: mode }, id, "Režim zásobníku"))) return;
+    // Manual must start inside the range of the card (the tank may report 30 °C, the lowest it knows): set the nearest allowed temperature.
+    if (mode === "heat") {
+      const { min, max } = this.tankRange(this._config!);
+      const current = attribute(entityState(this.hass, id), "temperature");
+      if (current === undefined || current < min || current > max) await this.setTemperature(id, clamp(current ?? min, min, max));
+    }
+  }
+
+  /** The range of the tank temperature: the configured one, narrowed by what the entity allows. */
+  private tankRange(s: Settings): { min: number; max: number } {
+    const entity = entityState(this.hass, s.entities.tank.water_heater);
+    return {
+      min: Math.max(s.num.tank.temp_min, attribute(entity, "min_temp") ?? s.num.tank.temp_min),
+      max: Math.min(s.num.tank.temp_max, attribute(entity, "max_temp") ?? s.num.tank.temp_max),
+    };
+  }
+
+  private async setTemperature(id: string, temperature: number): Promise<boolean> {
+    // Shown at once; if Home Assistant does not report it in time, the real value comes back.
+    this._tankTemp = { id, value: temperature };
+    window.clearTimeout(this._timers.get("tank-temp"));
+    this._timers.set("tank-temp", window.setTimeout(() => (this._tankTemp = undefined), (this._config?.num.ui.revert_after ?? 6) * 1000));
+    return this.call("water_heater", "set_temperature", { entity_id: id, temperature }, id, "Teplota zásobníku");
   }
 
   /** Moving the temperature in Auto switches the tank to Manual first (CURRENT_SPEC.md, Zásobník). */
@@ -1015,7 +1042,7 @@ export class HaEnergieDashboard extends LitElement {
       this.choose(id, "heat");
       if (!(await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: "heat" }, id, "Režim zásobníku"))) return;
     }
-    await this.call("water_heater", "set_temperature", { entity_id: id, temperature }, id, "Teplota zásobníku");
+    await this.setTemperature(id, temperature);
   }
 
   /** The script toggles the valves, so it is called only when the wanted state differs from the real one. */

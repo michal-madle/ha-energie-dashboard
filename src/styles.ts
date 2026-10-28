@@ -859,42 +859,18 @@ export const styles = css`
 
   .warn,
   .mode-sub.warn,
-  .boost-sub.warn,
   .hint.warn {
     color: var(--ed-warning);
   }
 
   :host([data-light]) .warn,
   :host([data-light]) .mode-sub.warn,
-  :host([data-light]) .boost-sub.warn,
   :host([data-light]) .hint.warn {
     color: color-mix(in srgb, var(--ed-warning) 45%, #000);
   }
 
   .source-line .dim {
     color: var(--ed-secondary);
-  }
-
-  .boost {
-    position: relative;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 8px;
-    min-height: 44px;
-  }
-
-  .boost-text {
-    min-width: 0;
-    font-size: 17px;
-    line-height: 22px;
-  }
-
-  .boost-sub {
-    color: var(--ed-secondary);
-    font-size: 12px;
-    line-height: 16px;
-    white-space: nowrap;
   }
 
   .subrow {

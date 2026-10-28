@@ -118,7 +118,7 @@ const expandAll = async (page: Page) => {
 /** The sentence of the n-th state line (0 Elektřina, 1 auto, 2 voda). */
 const stateLine = (page: Page, index: number) => page.locator(".state").nth(index);
 
-const update = (page: Page, changes: Record<string, string>) =>
+const update = (page: Page, changes: Record<string, string | { state: string; attributes: Record<string, unknown> }>) =>
   page.evaluate((value) => {
     // @ts-expect-error test hook
     window.__test.update(value);
@@ -636,19 +636,30 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     await expect(page.getByRole("switch", { name: "Zablokovat nabíjení" })).toHaveCount(0);
   });
 
-  test("chráněné ovládání: jedno klepnutí jen ukáže nápovědu, podržení nebo dvojklik přepne", async ({ page }) => {
+  test("chráněný přepínač (Mísení): jedno klepnutí jen ukáže nápovědu, podržení přepne", async ({ page }) => {
     await open(page, "full");
-    const boost = page.getByRole("switch", { name: "Boost bojleru" });
-    await boost.click();
+    const toggle = page.getByRole("switch", { name: "Mísení vody" });
+    await toggle.click();
     expect(await calls(page)).toEqual([]);
-    await expect(page.locator("ha-energie-dashboard").locator("ed-switch").filter({ has: boost }).locator(".hint")).toContainText("Podržte nebo klepněte dvakrát.");
+    await expect(page.locator("ed-switch .hint")).toContainText("Podržte nebo klepněte dvakrát.");
     await page.waitForTimeout(3300);
     await expect(page.locator("ed-switch .hint")).toHaveCount(0);
-    await hold(boost);
+    await hold(toggle);
+    expect(await calls(page)).toEqual([{ domain: "script", service: "turn_on", data: { entity_id: "script.prepnout_miseni_vody" } }]);
+  });
+
+  test("Boost bojleru je Přetoky | Boost jako zásobník: klepnutí jen poradí, dvojklik a podržení přepne", async ({ page }) => {
+    await open(page, "full");
+    const boost = radio(page, "Režim ohřevu bojleru", "Boost");
+    await expect(page.locator("ed-segmented[compact]").first()).toBeVisible();
+    await boost.click();
+    expect(await calls(page)).toEqual([]);
+    await expect(page.locator(".source ed-segmented .hint").first()).toContainText("Podržte, přetáhněte nebo klepněte dvakrát.");
+    await boost.dblclick();
     expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.tuv_boost" } }]);
     await expect(boost).toHaveAttribute("aria-checked", "true");
-    await boost.dblclick();
-    expect((await calls(page)).slice(1)).toEqual([{ domain: "switch", service: "turn_off", data: { entity_id: "switch.tuv_boost" } }]);
+    await hold(radio(page, "Režim ohřevu bojleru", "Přetoky"));
+    expect((await calls(page)).at(-1)).toEqual({ domain: "switch", service: "turn_off", data: { entity_id: "switch.tuv_boost" } });
   });
 
   test("Přetoky | Boost: klepnutí nic nepošle a poradí, dvojklik i podržení přepne, klávesnice hned", async ({ page }) => {
@@ -753,6 +764,28 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     ]);
   });
 
+  test("Manual začne v rozsahu: zásobník hlásí 30 °C, karta nastaví nejnižší povolenou a ukáže ji hned; pak jde měnit", async ({ page }) => {
+    await open(page, "full");
+    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "auto", attributes: { temperature: 30, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] } } });
+    await radio(page, "Režim zásobníku", "Manual").click();
+    expect(await calls(page)).toEqual([
+      { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
+      { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 38 } },
+    ]);
+    await expect(page.locator(".arc-num b").nth(1)).toHaveText("38");
+    // Home Assistant to potvrdí; pak jde teplota změnit.
+    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "heat", attributes: { temperature: 38, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] } } });
+    await expand(page, "Teplota");
+    const slider = page.locator('ed-slider[label="Teplota zásobníku"]');
+    await slider.locator("input").evaluate((input: HTMLInputElement) => {
+      input.value = "52";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect((await calls(page)).at(-1)).toEqual({ domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 52 } });
+    await expect(page.locator(".arc-num b").nth(1)).toHaveText("52");
+  });
+
   test("Teplota a doba: v Auto změna přepne na Manual a pak nastaví teplotu; v Off je neaktivní; meze z konfigurace", async ({ page }) => {
     await open(page, "full");
     await expand(page, "Teplota");
@@ -767,7 +800,10 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
       { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 45 } },
     ]);
-    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": "off" });
+    // Home Assistant potvrdí Manual a 45 °C, potom se zásobník vypne.
+    const attributes = { temperature: 45, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] };
+    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "heat", attributes } });
+    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "off", attributes } });
     await expect(slider.locator("input")).toBeDisabled();
   });
 
@@ -847,10 +883,10 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
 
   test("klávesnice: mezerník na chráněném přepínači přepne hned; nechráněný taky", async ({ page }) => {
     await open(page, "full");
-    const boost = page.getByRole("switch", { name: "Boost bojleru" });
-    await boost.focus();
+    const mixing = page.getByRole("switch", { name: "Mísení vody" });
+    await mixing.focus();
     await page.keyboard.press("Space");
-    expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.tuv_boost" } }]);
+    expect(await calls(page)).toEqual([{ domain: "script", service: "turn_on", data: { entity_id: "script.prepnout_miseni_vody" } }]);
     await expand(page, "Wallbox");
     const toggle = page.getByRole("switch", { name: "Zablokovat nabíjení" });
     await toggle.focus();
