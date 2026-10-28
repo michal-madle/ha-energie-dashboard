@@ -558,21 +558,30 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
     });
   }
 
-  test("popover dlaždice zůstane celý v kartě na nejužší i nejširší šířce", async ({ page }) => {
-    for (const width of [320, 393, 768]) {
-      await open(page, "day", width);
-      for (const key of ["sun", "gridOut", "house", "grid"]) {
+  test("popover dlaždice i záhlaví zůstane celý v panelu (panel mu udělá místo) na nejužší i nejširší šířce", async ({ page }) => {
+    const inside = (width: number, what: string) =>
+      expect
+        .poll(async () =>
+          page.evaluate((tag) => {
+            const root = document.querySelector(tag)!.shadowRoot!;
+            const pop = root.querySelector(".pop")!.getBoundingClientRect();
+            const panel = root.querySelector(".pop")!.closest(".panel")!.getBoundingClientRect();
+            const flow = root.querySelector(".flow")!.getBoundingClientRect();
+            return [pop.left >= flow.left - 0.5 || pop.left >= panel.left, pop.right <= panel.right + 0.5, pop.top >= panel.top, pop.bottom <= panel.bottom + 0.5];
+          }, CARD),
+          what + " " + width,
+        )
+        .toEqual([true, true, true, true]);
+    for (const [scenario, width] of [["day", 320], ["day", 393], ["day", 768], ["full", 393], ["grid", 360]] as const) {
+      await open(page, scenario, width);
+      for (const key of await tileKeys(page)) {
         await page.locator(`.tile[data-tile="${key}"]`).click();
-        const box = await page.evaluate((tag) => {
-          const root = document.querySelector(tag)!.shadowRoot!;
-          const pop = root.querySelector(".pop")!.getBoundingClientRect();
-          const flow = root.querySelector(".flow")!.getBoundingClientRect();
-          return { left: pop.left - flow.left, right: flow.right - pop.right };
-        }, CARD);
-        expect(box.left, `${width} ${key}`).toBeGreaterThanOrEqual(-0.5);
-        expect(box.right, `${width} ${key}`).toBeGreaterThanOrEqual(-0.5);
+        await inside(width, `${scenario} ${key}`);
         await page.keyboard.press("Escape");
       }
+      await page.locator(".title-btn").click();
+      await inside(width, `${scenario} záhlaví`);
+      await page.keyboard.press("Escape");
     }
   });
 });
