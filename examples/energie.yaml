@@ -35,6 +35,7 @@ car:
   range: sensor.i3_120_range_ev_remaining_range         # dojezd (km)
   image: image.bmw_i3_vin_image                         # obrázek auta (image.…); ID obsahuje VIN, doplňte své
   charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
+  image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
 wallbox:
   power: sensor.wallbox_total_power                     # výkon wallboxu (W)
   status: sensor.wallbox_charge_status                  # Disconnected / Waiting / Charging

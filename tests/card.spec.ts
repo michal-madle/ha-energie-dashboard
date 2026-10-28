@@ -152,7 +152,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       const bare = structuredClone(config);
       for (const key of ["title", "titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
-        battery: ["reserve"], car: ["charge_limit"],
+        battery: ["reserve"], car: ["charge_limit", "image_scale"],
         wallbox: ["phases", "power_min", "power_max", "power_step", "priority_min_sun"],
         boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes"],
         tank: ["temp_min", "temp_max", "temp_step"],
@@ -187,7 +187,8 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
       [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
       [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
-      [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, image, charge_limit\)/],
+      [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, image, charge_limit, image_scale\)/],
+      [{ car: { image_scale: 5 } }, /car\.image_scale must be a number from 0\.5 to 3/],
       [{ title: 5 }, /title must be a text/],
       [{ titles: { car: "" } }, /titles\.car must be a non-empty text/],
       [{ titles: { auto: "Auto" } }, /titles: unknown key "auto"/],
@@ -520,7 +521,9 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
           });
           const panels = [...root.querySelectorAll<HTMLElement>(".panel")].map((panel) => {
             const box = panel.getBoundingClientRect();
-            return { left: box.left, right: box.right, over: panel.scrollWidth > panel.clientWidth + 0.5 };
+            // The enlarged car picture is meant to reach over the edge (and is clipped); nothing else may.
+            const over = [...panel.querySelectorAll<HTMLElement>("*")].some((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
+            return { left: box.left, right: box.right, over };
           });
           // The compact Auto | Manual | Off of the tank is 40 px by the design; everything else 44 px.
           const controls = [...root.querySelectorAll("ed-segmented:not([compact]), ed-slider")].flatMap((host) =>

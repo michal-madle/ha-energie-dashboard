@@ -52,7 +52,10 @@ const range = (value: number, min: number, max: number, what: string, integer = 
 /** Every number of the card with its default (the units are in the example configuration). */
 export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof NumberSettings[Section]]: Range } } = {
   battery: { reserve: range(20, 0, 100, "% battery reserve") },
-  car: { charge_limit: range(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)") },
+  car: {
+    charge_limit: range(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
+    image_scale: range(2, 0.5, 3, "× size of the car picture (grows up and to the sides, the bottom stays)"),
+  },
   wallbox: {
     phases: range(3, 1, 3, "number of phases", true),
     power_min: range(4200, 0, 100000, "W, lowest charging power (all phases)"),

@@ -104,6 +104,8 @@ export const styles = css`
     padding: 16px 16px 12px;
     border-radius: 12px;
     background: var(--ed-card);
+    /* The enlarged car picture may reach over the edges of the card. */
+    overflow: hidden;
   }
 
   .panel h2 {
@@ -566,6 +568,8 @@ export const styles = css`
     width: 276px;
     height: 150px;
     pointer-events: none;
+    /* Scaled up from the ground line, around the car (ui: car.image_scale). */
+    transform-origin: 61% 100%;
   }
 
   .car-art .glow {
@@ -887,7 +891,7 @@ export const styles = css`
     gap: 10px;
     width: 100%;
     min-height: 48px;
-    padding: 0 12px;
+    padding: 4px 12px;
     color: var(--ed-text);
     cursor: pointer;
   }
@@ -905,14 +909,12 @@ export const styles = css`
     white-space: nowrap;
   }
 
+  /* On the narrowest phones the value wraps to a second line instead of being cut. */
   .rowbtn-value {
-    overflow: hidden;
     color: var(--ed-secondary);
     font-size: 15px;
     line-height: 20px;
     text-align: right;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .rowbtn-value b {

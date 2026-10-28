@@ -59,7 +59,7 @@ export type SectionName = keyof EntitySections;
 /** Numeric settings (limits, thresholds, scales); every one has a default (config.ts, NUMBERS). */
 export interface NumberSettings {
   battery: { reserve: number };
-  car: { charge_limit: number };
+  car: { charge_limit: number; image_scale: number };
   wallbox: { phases: number; power_min: number; power_max: number; power_step: number; priority_min_sun: number };
   boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
   water: { gauge_min: number; gauge_max: number };

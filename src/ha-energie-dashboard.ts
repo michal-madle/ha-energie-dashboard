@@ -615,8 +615,8 @@ export class HaEnergieDashboard extends LitElement {
     const modeSub = boost === "on" ? "Boost · bere i ze sítě a z baterie" : boost === "off" ? "Přetoky · jen z přebytku" : NO_DATA;
 
     return html`<section class="panel" aria-labelledby="h-car">
-      <div class="car-top">
-        <div class="car-art" aria-hidden="true">
+      <div class="car-top" style="height:${Math.round(168 + 40 * Math.max(0, s.num.car.image_scale - 1))}px">
+        <div class="car-art" aria-hidden="true" style="transform:scale(${s.num.car.image_scale})">
           <div class="glow" style="background:radial-gradient(closest-side, ${glow}, transparent)"></div><div class="shadow"></div>
           ${typeof picture === "string" && picture ? html`<img src=${picture} alt="" />` : nothing}
         </div>
