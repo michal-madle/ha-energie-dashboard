@@ -4,7 +4,8 @@
 # Jsou tu VŠECHNA nastavení s výchozími hodnotami. Klíč bez hodnoty (např. "power:") nebo
 # smazaný klíč = výchozí hodnota. Entity výchozí hodnotu nemají (nenastavená entita = „––“).
 # ID entit potvrdil export z 24. 10. 2026 (ENTITY_MAP.md). Špatná hodnota zastaví kartu
-# chybou, která jmenuje klíč; neznámý klíč v sekci je také chyba.
+# chybou, která jmenuje klíč; neznámý klíč v sekci je také chyba. Test hlídá, že tu žádné
+# nastavení nechybí.
 # =============================================================================
 type: custom:ha-energie-dashboard
 
@@ -22,7 +23,7 @@ pv:
 battery:
   power: sensor.goodwe_battery_power                    # výkon baterie (W), kladné = vybíjení
   state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
-  reserve: 20                                           # % rezerva baterie (značka na ukazateli, oranžová pod ní)
+  reserve: 20                                           # % rezerva baterie (pod ní je výplň dlaždice Baterie oranžová)
 grid:
   power: sensor.goodwe_meter_active_power_total         # elektroměr (W), záporné = odběr ze sítě
 house:
@@ -33,7 +34,7 @@ car:
   state_of_charge: sensor.parkovani_bmw_i3_soc          # nabití auta (%)
   range: sensor.i3_120_range_ev_remaining_range         # dojezd (km)
   image: image.bmw_i3_vin_image                         # obrázek auta (image.…); ID obsahuje VIN, doplňte své
-  charge_limit: 80                                      # % limit nabití auta (značka na měřiči)
+  charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
 wallbox:
   power: sensor.wallbox_total_power                     # výkon wallboxu (W)
   status: sensor.wallbox_charge_status                  # Disconnected / Waiting / Charging
@@ -57,28 +58,39 @@ boiler:
   target_min: 20                                        # °C nejnižší cíl ohřevu
   target_max: 85                                        # °C nejvyšší cíl ohřevu
   target_step: 5                                        # °C krok cíle ohřevu
-  scale_min: 10                                         # °C prázdný konec ukazatele a schématu
-  gauge_max: 60                                         # °C plný konec ukazatele bojleru
-  schema_max: 70                                        # °C plný konec schématu nádrže
-  cold_below: 30                                        # °C pod tím je voda ve schématu studená
-  hot_from: 45                                          # °C od tohoto je voda ve schématu teplá
+  show: always                                          # always = dlaždice Bojler v diagramu vždy; heating = jen při ohřevu a hold_minutes po něm
+  hold_minutes: 15                                      # min, jak dlouho po konci ohřevu zůstane dlaždice vidět (jen při show: heating)
+water:
+  gauge_min: 15                                         # °C začátek obou obloukových měřičů a výplně dlaždice Bojler
+  gauge_max: 65                                         # °C konec měřičů (platí vyšší z této hodnoty a cíle Přetoky)
 tank:
   water_heater: water_heater.technicka_mistnost_tado_tepla_voda  # zásobník (water_heater.…)
-  temp_min: 30                                          # °C nejnižší teplota zásobníku
+  temp_min: 38                                          # °C nejnižší teplota zásobníku (v Off drží kotel toto minimum)
   temp_max: 65                                          # °C nejvyšší teplota zásobníku
-  temp_step: 5                                          # °C krok teploty zásobníku
+  temp_step: 1                                          # °C krok teploty zásobníku
 mixing:
   valve_c1: switch.technicka_mistnost_ventil_c1         # ventil C1 (switch.…)
   valve_c2: switch.technicka_mistnost_ventil_c2         # ventil C2 (switch.…); mísí = C1 vypnutý a C2 zapnutý
   script: script.prepnout_miseni_vody                   # přepnutí mísení (script.…), obsah skriptu k ověření
 
+# ------------------------------------------------ dnešní součty (jen v popupech, kWh)
+# Čítače, které se o půlnoci vynulují. Ze střídačových čítačů je udělá utility_meter,
+# viz examples/denni_soucty.yaml. Bez entity ukáže popup u příslušného řádku „––“.
+# Čítač energie auta (wallbox) a bojleru (AZ Router) zatím není ověřený (TODO P2.12).
+daily:
+  pv_generation: sensor.energie_fve_dnes                # vyrobeno (kWh)
+  battery_charge: sensor.energie_baterie_nabito_dnes    # nabito do baterie (kWh)
+  battery_discharge: sensor.energie_baterie_vybito_dnes # vybito z baterie (kWh)
+  grid_import: sensor.energie_sit_odber_dnes            # odebráno ze sítě (kWh)
+  grid_export: sensor.energie_sit_dodavka_dnes          # dodáno do sítě (kWh)
+  car:                                                  # nabito do auta (kWh), bez čítače prázdné
+  boiler:                                               # ohřev bojleru (kWh), bez čítače prázdné
+
 # ------------------------------------------------------- toky: prahy a kreslení
 flows:
-  idle_threshold: 10                                    # W pod tím se tok bere jako žádný
+  idle_threshold: 100                                   # W pod tím se tok bere jako žádný (platí i pro věty o stavu)
   kw_from: 1000                                         # W od tohoto se všechny výkony ukazují v kW
-  sun_covers: 50                                        # W slunce, od kterého slunce „pokrývá dům“
   export_notice: 300                                    # W přetoků do sítě, od kterých je to „přebytek“
-  battery_flow: 50                                      # W výkonu baterie, od kterého se píše o nabíjení baterie
   source_min_share: 15                                  # % podíl zdroje, od kterého se ve větě jmenuje
   grid_deviation_share: 50                              # % podíl sítě, nad kterým je to odchylka (oranžová)
   band_max_px_per_kw: 10                                # px na kW, nejtlustší pásy ve Sankey
@@ -96,6 +108,9 @@ scale:
 # ------------------------------------------------------------------------- vzhled
 ui:
   revert_after: 6                                       # s po té se zvolená hodnota vrátí na skutečný stav, když ji HA nepotvrdí
+  hold_ms: 550                                          # ms podržení, které přepne chráněný ovladač (Mísení, Boost, Přetoky | Boost)
+  double_tap_ms: 400                                    # ms mezi dvěma klepnutími dvojklepnutí
+  hint_seconds: 3                                       # s, po která zůstane nápověda „Podržte nebo klepněte dvakrát.“
 colors:
   sun: "#FFD60A"                                        # slunce
   battery: "#30D158"                                    # baterie
@@ -104,7 +119,13 @@ colors:
   car: "#40D0E6"                                        # auto
   boiler: "#FF6F59"                                     # bojler
   accent: "#0A84FF"                                     # přepínače, slider, zvýraznění
-  button: "#0A6ED1"                                     # hlavní tlačítko (potvrzení)
   warning: "#FF9230"                                    # odchylka, upozornění, boost
-  cold: "#3CD3FE"                                       # studená voda ve schématu
-  neutral: "#8E8E93"                                    # vypnuté ikony, vlažná voda
+  neutral: "#8E8E93"                                    # vypnuté ikony a šedé texty
+  cold: "#64D2FF"                                       # studená půlka kapky mísení vody
+  hot: "#FF9F0A"                                        # teplá půlka kapky mísení vody
+  temp_scale:                                           # barva výplně obloukových měřičů podle teploty (°C, rostoucí)
+    - { temp: 20, color: "#0A84FF" }
+    - { temp: 32, color: "#5AC8FA" }
+    - { temp: 44, color: "#FFD60A" }
+    - { temp: 58, color: "#FF9F0A" }
+    - { temp: 85, color: "#FF453A" }

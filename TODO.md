@@ -225,14 +225,12 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 <a id="p4-4"></a>
 ### P4.4 Návrh se v několika místech rozchází se specifikací · Chyba
 
-- Kód má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem, hodnoty „0,0 kW“, větu s dnešními součty pod nadpisem a historii entity po klepnutí na dlaždici; spec je ruší nebo mění (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
-- Kód přepíná Boost bojleru, Boost wallboxu a mísení jedním klepnutím; spec: podržení 550 ms nebo dvojklepnutí s nápovědou (viz Chráněný přepínač).
-- Měřič nabití auta v kartě BMW i3 má lesklou výplň a vnitřní stín; spec: ploché povrchy bez lesku.
-- Upozornění a část detailů používají oranžovou `#FF9F0A`; spec: odchylka je `#FF9230`.
-- Kód má v kartě auta malý obrázek, značku „limit“ i při 100 % (`car.charge_limit` výchozí `80`, spec `100`), nádrže místo obloukových měřičů, mísení s textem, Boost bojleru jako přepínač s rozbalovacími cílovými teplotami místo segmentového ovladače, dílky gauge bez poměrného plnění a upozornění uvnitř karty auta; spec to mění, kód zůstává, dokud se neřekne.
+- Prototyp v kódu (28. 10.) už odpovídá návrhu v1.17; zbývá rozdíl v tom, co kód nezahrnuje (viz `CURRENT_SPEC.md`, Stav implementace): „Jak dlouho“, detailní obrazovky Voda a Wallbox, historie, ovládání limitu nabití auta.
+- Čas posledního ohřevu bojleru (`boiler.show: heating`) se drží jen v `localStorage` prohlížeče; po jeho vymazání se dlaždice Bojler ukáže, dokud nezačne ohřev. Spolehlivější by byl pomocný senzor v Home Assistantu (návrh, nerozhodnuto).
+- Denní součty v popupech potřebují čítače z `examples/denni_soucty.yaml` (utility_meter z ověřených celkových čítačů střídače); čítače pro auto a bojler viz P2.12, do té doby ukazují součty „––“.
 
 ## Jak se testuje
 
 `npm test` sestaví kartu a spustí testy v prohlížeči (Playwright, Chromium) na zkušební stránce `tests/harness.html` s náhradními daty: chybná konfigurace (chyba s názvem klíče, prázdná hodnota = výchozí), příklad YAML obsahuje všechna nastavení, bez vodorovného posouvání na šířkách 320–768 px a na telefonu na šířku (852 × 393), axe-core v tmavém i světlém režimu, chybějící a nedostupná data jako „––“ s ikonou a neutrální barvou, přepínání režimů. Co se v prohlížeči ověřit nedá, je v P1.11.
 
-Stav kódu: 33 testů, dvakrát po sobě prošly (konfigurace včetně čísel a barev, Sankey a měřiče, karty auta a vody, rozbalovací detaily a ovládání, mísení s potvrzením, rozměry prvků podle HIG, rozložení, chybějící data, přístupnost v obou režimech). Pokrytí kódu (`npm run coverage`) se po posledních změnách neměřilo.
+Stav kódu: 48 testů prošlo (konfigurace včetně čísel a barev, Sankey a hladiny, skrývání Auta a Bojleru, popupy, upozornění, karty auta a vody, chráněné ovládání podržením a dvojklikem, rozměry prvků podle HIG, rozložení, chybějící data, přístupnost v obou režimech). Pokrytí kódu (`npm run coverage`) se po posledních změnách neměřilo.

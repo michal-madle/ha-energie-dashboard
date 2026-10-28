@@ -29,13 +29,21 @@ export interface Band {
   thickness: number;
 }
 
-export function layout(width: number): Layout {
-  const tileW = Math.round(Math.max(116, Math.min(132, width * 0.35)));
-  const h = 50;
+/**
+ * Geometry for the visible consumers (3 to 5 tiles, CURRENT_SPEC.md: Auto jen když je připojené,
+ * Bojler jen při ohřevu): the column of consumers is as short as the visible tiles, the sources
+ * sit on the left (three tiles in a row when there are only three consumers, otherwise spread).
+ */
+export function layout(width: number, visible: readonly Sink[] = SINKS): Layout {
+  const tileW = Math.round(Math.max(116, Math.min(132, width * 0.377)));
+  const h = 56;
   const gap = 6;
-  const height = SINKS.length * h + (SINKS.length - 1) * gap;
-  const right = Object.fromEntries(SINKS.map((sink, i) => [sink, h / 2 + i * (h + gap)])) as Record<Sink, number>;
-  const left = Object.fromEntries(SOURCES.map((source, i) => [source, ((i + 0.5) * height) / SOURCES.length])) as Record<Source, number>;
+  const rows = Math.max(1, visible.length);
+  const height = rows * h + (rows - 1) * gap;
+  const right = Object.fromEntries(visible.map((sink, i) => [sink, h / 2 + i * (h + gap)])) as Record<Sink, number>;
+  const left = Object.fromEntries(
+    SOURCES.map((source, i) => [source, rows < 4 ? h / 2 + i * (h + gap) : ((i + 0.5) * height) / SOURCES.length]),
+  ) as Record<Source, number>;
   return { width, tile: { w: tileW, h }, gap, height, left, right, xa: tileW - 8, xb: width - tileW + 8 };
 }
 
@@ -48,7 +56,9 @@ export interface BandScale {
   minPx: number;
 }
 
-export function bands(flows: Flow[], lay: Layout, band: BandScale): Band[] {
+export function bands(all: Flow[], lay: Layout, band: BandScale): Band[] {
+  // A consumer without a tile (hidden car or boiler) has no band either.
+  const flows = all.filter((flow) => flow.to in lay.right);
   if (!flows.length) return [];
   const sums = (key: "from" | "to") => {
     const total = new Map<string, number>();
@@ -65,7 +75,7 @@ export function bands(flows: Flow[], lay: Layout, band: BandScale): Band[] {
     cursorLeft.set(source, lay.left[source] - total / 2);
   }
   const cursorRight = new Map<Sink, number>();
-  for (const sink of SINKS) {
+  for (const sink of SINKS.filter((item) => item in lay.right)) {
     const total = flows.filter((flow) => flow.to === sink).reduce((sum, flow) => sum + thick(flow), 0);
     cursorRight.set(sink, lay.right[sink] - total / 2);
   }
@@ -77,7 +87,7 @@ export function bands(flows: Flow[], lay: Layout, band: BandScale): Band[] {
       cursorLeft.set(source, cursorLeft.get(source)! + thick(flow));
     }
   }
-  for (const sink of SINKS) {
+  for (const sink of SINKS.filter((item) => item in lay.right)) {
     for (const flow of flows.filter((f) => f.to === sink).sort((a, b) => SOURCES.indexOf(a.from) - SOURCES.indexOf(b.from))) {
       y1.set(flow, cursorRight.get(sink)!);
       cursorRight.set(sink, cursorRight.get(sink)! + thick(flow));

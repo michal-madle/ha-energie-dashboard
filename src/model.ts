@@ -50,6 +50,12 @@ export interface FlowModel {
 
 const positive = (value: number | undefined): number | undefined => (value === undefined ? undefined : Math.max(0, value));
 
+/**
+ * Whether a power counts as a flow: from `flows.idle_threshold` W (default 100) upwards. Below it
+ * (noise such as ±99 W on the meter) there is no flow at all (CURRENT_SPEC.md, Toky energie).
+ */
+export const isOn = (watts: number | undefined, idle: number): boolean => watts !== undefined && watts >= idle;
+
 export function carLink(status: string | undefined): CarLink {
   if (status === "Disconnected") return "disconnected";
   if (status === "Waiting") return "connected";
@@ -59,7 +65,7 @@ export function carLink(status: string | undefined): CarLink {
 
 export function buildModel(hass: HomeAssistant | undefined, settings: Settings): FlowModel {
   const e = settings.entities;
-  const eps = settings.num.flows.idle_threshold;
+  const idle = settings.num.flows.idle_threshold;
   const sun = positive(readNumber(hass, e.pv.power));
   const battery = readNumber(hass, e.battery.power); // + discharging, − charging (measured 15. 10.)
   const grid = readNumber(hass, e.grid.power); // − import (measured); + export (sign by definition, TODO P1.11)
@@ -73,15 +79,17 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
   const exp = grid === undefined ? undefined : Math.max(0, grid);
   const other = house === undefined ? undefined : Math.max(0, house - (car ?? 0) - (boil ?? 0));
 
+  // Only flows from the threshold up take part in the shares and in the bands (noise is no flow).
+  const real = (value: number | undefined) => (isOn(value, idle) ? value! : 0);
   // What each source gives to the loads: the sun without what it puts into the battery and the grid.
   const toLoads: Record<Source, number> = {
-    sun: Math.max(0, (sun ?? 0) - (batIn ?? 0) - (exp ?? 0)),
-    bat: batDis ?? 0,
-    grid: imp ?? 0,
+    sun: Math.max(0, real(sun) - real(batIn) - real(exp)),
+    bat: real(batDis),
+    grid: real(imp),
   };
   const total = toLoads.sun + toLoads.bat + toLoads.grid;
   const share: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
-  if (total > eps) {
+  if (total > 0) {
     for (const source of SOURCES) share[source] = toLoads[source] / total;
   }
 
@@ -92,14 +100,14 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
     ["boil", boil],
   ];
   for (const [sink, watts] of loads) {
-    if (!watts || watts <= eps) continue;
+    if (!isOn(watts, idle)) continue;
     for (const source of SOURCES) {
-      const part = watts * share[source];
-      if (part > eps / 2) flows.push({ from: source, to: sink, watts: part });
+      const part = watts! * share[source];
+      if (part > 0.5) flows.push({ from: source, to: sink, watts: part });
     }
   }
-  if ((batIn ?? 0) > eps) flows.push({ from: "sun", to: "batIn", watts: batIn! });
-  if ((exp ?? 0) > eps) flows.push({ from: "sun", to: "gridOut", watts: exp! });
+  if (isOn(batIn, idle)) flows.push({ from: "sun", to: "batIn", watts: batIn! });
+  if (isOn(exp, idle)) flows.push({ from: "sun", to: "gridOut", watts: exp! });
 
   const model: FlowModel = {
     sun, batDis, batIn, imp, exp, other, car, boil, share, flows,
@@ -115,16 +123,17 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
 
 /** The sentence under the title (what the sun does; otherwise where the house gets its energy). */
 export function summarize(m: FlowModel, flows: NumberSettings["flows"]): { summary?: string; summarySource?: Source } {
-  const eps = flows.idle_threshold;
+  const idle = flows.idle_threshold;
+  const on = (value: number | undefined) => isOn(value, idle);
   const noData = [m.sun, m.batDis, m.imp, m.other].every((value) => value === undefined);
   if (noData) return {};
   // The sun covers the house when nothing is taken from the battery or the grid.
-  const sunCovers = (m.sun ?? 0) > flows.sun_covers && (m.imp ?? 0) <= eps && (m.batDis ?? 0) <= eps;
+  const sunCovers = on(m.sun) && !on(m.imp) && !on(m.batDis);
   if (sunCovers) {
     let text: string;
-    if ((m.exp ?? 0) > flows.export_notice && (m.batIn ?? 0) < flows.battery_flow) text = "Přebytek jde do sítě";
-    else if ((m.car ?? 0) > eps) text = `Slunce nabíjí ${(m.batIn ?? 0) > flows.battery_flow ? "baterii i " : ""}auto`;
-    else if ((m.batIn ?? 0) > flows.battery_flow) text = "Slunce nabíjí baterii";
+    if ((m.exp ?? 0) > flows.export_notice && !on(m.batIn)) text = "Přebytek jde do sítě";
+    else if (on(m.car)) text = `Slunce nabíjí ${on(m.batIn) ? "baterii i " : ""}auto`;
+    else if (on(m.batIn)) text = "Slunce nabíjí baterii";
     else text = "Slunce pokrývá dům";
     return { summary: text, summarySource: "sun" };
   }

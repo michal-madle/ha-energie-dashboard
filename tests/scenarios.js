@@ -38,6 +38,14 @@ const EVENING = {
   "script.prepnout_miseni_vody": state("off"),
   "image.bmw_i3_vin_image": state("2026-10-24T10:00:00", { entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='83'%3E%3Crect width='168' height='83' rx='20' fill='%23888'/%3E%3C/svg%3E" }),
   "number.wallbox_7_1_manual_charging_power": state("1400", { min: 1400, max: 3700, step: 100, unit_of_measurement: "W" }),
+  // Today's counters (examples/denni_soucty.yaml); the car and boiler ones are not in the example configuration.
+  "sensor.energie_fve_dnes": state("18.4", { unit_of_measurement: "kWh" }),
+  "sensor.energie_baterie_nabito_dnes": state("5.2", { unit_of_measurement: "kWh" }),
+  "sensor.energie_baterie_vybito_dnes": state("3.1", { unit_of_measurement: "kWh" }),
+  "sensor.energie_sit_odber_dnes": state("2.6", { unit_of_measurement: "kWh" }),
+  "sensor.energie_sit_dodavka_dnes": state("4.9", { unit_of_measurement: "kWh" }),
+  "sensor.test_auto_dnes": state("6.0", { unit_of_measurement: "kWh" }),
+  "sensor.test_bojler_dnes": state("2500", { unit_of_measurement: "Wh" }),
 };
 
 /** Noon: the sun charges the car and the battery, the boiler heats, a little goes to the grid. */

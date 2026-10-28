@@ -13,7 +13,7 @@ const require = createRequire(import.meta.url);
 const AXE = require.resolve("axe-core/axe.min.js");
 const WIDTHS = [320, 360, 375, 393, 430, 768];
 const LANDSCAPE = [852, 393] as const;
-const TILES = ["Slunce", "Baterie", "Síť", "Dům", "Auto", "Bojler", "Do baterie", "Do sítě"];
+const TILES = ["sun", "bat", "grid", "house", "car", "boil", "batIn", "gridOut"];
 const CARD = "ha-energie-dashboard";
 
 // ------------------------------------------------------------------ helpers
@@ -76,19 +76,22 @@ async function axeViolations(page: Page, skip: string[] = []): Promise<string[]>
   }, skip);
 }
 
-/** What every tile shows: name, visible value and the label a screen reader gets. */
+/** What every tile shows: key, visible value and the label a screen reader gets. */
 const readTiles = (page: Page) =>
   page.evaluate((tag) => {
     const root = document.querySelector(tag)!.shadowRoot!;
     return [...root.querySelectorAll<HTMLElement>(".tile")].map((tile) => ({
+      key: tile.dataset.tile!,
       name: tile.querySelector(".name")?.textContent?.trim(),
       value: tile.querySelector(".value")?.textContent?.trim(),
       aria: tile.getAttribute("aria-label"),
       on: tile.classList.contains("on"),
+      style: tile.getAttribute("style") ?? "",
     }));
   }, CARD);
 
-const tile = async (page: Page, name: string) => (await readTiles(page)).find((item) => item.name === name)!;
+const tile = async (page: Page, key: string) => (await readTiles(page)).find((item) => item.key === key)!;
+const tileKeys = async (page: Page) => (await readTiles(page)).map((item) => item.key);
 
 /** Service calls the card made on the fake hass. */
 const calls = (page: Page) =>
@@ -97,17 +100,17 @@ const calls = (page: Page) =>
     return window.__test.calls as Array<{ domain: string; service: string; data: Record<string, unknown> }>;
   });
 
-/** Opens the detail of a list row (Boost, Boost bojleru, Zásobník (plyn)) and waits for the animation. */
+/** Opens a detail (fold) by the title of its row button and waits for the animation. */
 async function expand(page: Page, title: string): Promise<void> {
-  const row = page.locator(".row-btn").filter({ has: page.locator(".row-title", { hasText: new RegExp(`^${title.replace(/[()]/g, "\\$&")}$`) }) });
+  const row = page.locator(".row-btn, .rowbtn").filter({ hasText: title }).first();
   if ((await row.getAttribute("aria-expanded")) !== "true") await row.click();
   await settle(page);
 }
 
 const expandAll = async (page: Page) => {
-  for (const title of ["Boost", "Boost bojleru", "Zásobník (plyn)"]) {
-    const row = page.locator(".row-btn").filter({ has: page.locator(".row-title", { hasText: new RegExp(`^${title.replace(/[()]/g, "\\$&")}$`) }) });
-    if ((await row.getAttribute("aria-expanded")) !== "true") await row.click();
+  for (const title of ["Wallbox", "Cílové teploty", "Teplota"]) {
+    const row = page.locator(".row-btn, .rowbtn").filter({ hasText: title }).first();
+    if ((await row.count()) && (await row.getAttribute("aria-expanded")) !== "true") await row.click();
   }
   await settle(page);
 };
@@ -115,15 +118,16 @@ const expandAll = async (page: Page) => {
 /** The sentence of the n-th state line (0 Elektřina, 1 auto, 2 voda). */
 const stateLine = (page: Page, index: number) => page.locator(".state").nth(index);
 
-/** Subtitle of a list row by its title. */
-const rowText = (page: Page, title: string) =>
-  page.locator(".row").filter({ has: page.locator(".row-title", { hasText: new RegExp(`^${title.replace(/[()]/g, "\\$&")}$`) }) }).locator(".row-sub");
-
 const update = (page: Page, changes: Record<string, string>) =>
   page.evaluate((value) => {
     // @ts-expect-error test hook
     window.__test.update(value);
   }, changes);
+
+/** Hold a protected control for longer than ui.hold_ms. */
+const hold = (locator: ReturnType<Page["locator"]>) => locator.click({ delay: 700 });
+
+const alertTitles = (page: Page) => page.locator(".alert .row-title").allTextContents();
 
 // ------------------------------------------------------------- configuration
 
@@ -144,13 +148,13 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         card.setConfig(value);
         return JSON.stringify(card._config);
       };
-      // Without title, titles, numbers and colours: the defaults must be the values of the example.
+      // Without title, titles, numbers, colours and the scale: the defaults must be the values of the example.
       const bare = structuredClone(config);
-      for (const key of ["title", "titles", "flows", "scale", "ui", "colors"]) delete bare[key];
+      for (const key of ["title", "titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
         battery: ["reserve"], car: ["charge_limit"],
         wallbox: ["phases", "power_min", "power_max", "power_step", "priority_min_sun"],
-        boiler: ["target_min", "target_max", "target_step", "scale_min", "gauge_max", "schema_max", "cold_below", "hot_from"],
+        boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes"],
         tank: ["temp_min", "temp_max", "temp_step"],
       })) for (const key of keys) delete bare[section][key];
       return [normalized(config), normalized(bare)];
@@ -158,7 +162,12 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(explicit).toEqual(implicit);
     const settings = JSON.parse(explicit);
     expect(settings.entities.boiler.boost_target_temperature).toBe("number.tuv_2_2_boost_target_temperature");
+    expect(settings.entities.daily.pv_generation).toBe("sensor.energie_fve_dnes");
     expect(settings.num.wallbox.power_max).toBe(11100);
+    expect(settings.num.flows.idle_threshold).toBe(100);
+    expect(settings.num.ui).toEqual({ revert_after: 6, hold_ms: 550, double_tap_ms: 400, hint_seconds: 3 });
+    expect(settings.tempScale).toHaveLength(5);
+    expect(settings.boilerShow).toBe("always");
   });
 
   test("chybná hodnota zastaví kartu srozumitelnou chybou s názvem klíče; prázdná hodnota = výchozí", async ({ page }) => {
@@ -169,10 +178,12 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       [{ wallbox: { charging_power: "sensor.wallbox_power" } }, /wallbox\.charging_power must be a number entity/],
       [{ boiler: { boost: "input_boolean.tuv_boost" } }, /boiler\.boost must be a switch entity/],
       [{ boiler: { target_temperature: "sensor.tuv_cil" } }, /boiler\.target_temperature must be a number entity/],
+      [{ boiler: { show: "sometimes" } }, /boiler\.show must be one of/],
       [{ tank: { water_heater: "climate.tepla_voda" } }, /tank\.water_heater must be a water_heater entity/],
       [{ car: { image: "sensor.obrazek" } }, /car\.image must be a image entity/],
       [{ mixing: { script: "prepnout_miseni_vody" } }, /mixing\.script must be an entity ID such as script\.example/],
       [{ mixing: { valve_c1: "switch.ventil", valve_c2: "switch.ventil" } }, /mixing\.valve_c1 and mixing\.valve_c2 must be two different valves/],
+      [{ daily: { car: "Sensor Auto" } }, /daily\.car must be an entity ID/],
       [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
       [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
       [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
@@ -184,11 +195,14 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       [{ battery: { reserve: 120 } }, /battery\.reserve must be a number from 0 to 100 \(% battery reserve\), not 120/],
       [{ wallbox: { phases: 2.5 } }, /wallbox\.phases must be a whole number from 1 to 3/],
       [{ wallbox: { power_min: 12000, power_max: 4000 } }, /wallbox\.power_min \(12000\) must be below wallbox\.power_max \(4000\)/],
-      [{ boiler: { cold_below: 50, hot_from: 40 } }, /boiler\.cold_below \(50\) must be at most boiler\.hot_from \(40\)/],
+      [{ water: { gauge_min: 60, gauge_max: 30 } }, /water\.gauge_min \(60\) must be below water\.gauge_max \(30\)/],
+      [{ ui: { hold_ms: 10 } }, /ui\.hold_ms must be a whole number from 200 to 3000/],
       [{ flows: { idle: 5 } }, /flows: unknown key "idle"/],
       [{ scale: { sun: 0 } }, /scale\.sun must be a number from 100/],
       [{ colors: { sun: "yellow" } }, /colors\.sun must be a colour like #FFD60A/],
-      [{ colors: { sky: "#FFFFFF" } }, /colors: unknown key "sky"/],
+      [{ colors: { button: "#FFFFFF" } }, /colors: unknown key "button"/],
+      [{ colors: { temp_scale: [{ temp: 20, color: "#0A84FF" }] } }, /colors\.temp_scale must be a list of at least two points/],
+      [{ colors: { temp_scale: [{ temp: 50, color: "#0A84FF" }, { temp: 20, color: "#FF453A" }] } }, /colors\.temp_scale: temperatures must rise/],
     ];
     for (const [patch, message] of cases) {
       expect(await configError(page, patch), JSON.stringify(patch)).toMatch(message);
@@ -196,7 +210,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(await configError(page, ["pv"] as unknown as Record<string, unknown>, true)).toMatch(/configuration must be a mapping/);
     const accepted: Array<[Record<string, unknown>, boolean]> = [
       [{ title: "" }, false],
-      [{ title: null, pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { script: null }, colors: null, flows: { kw_from: null } }, false],
+      [{ title: null, pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { script: null }, colors: null, flows: { kw_from: null }, daily: null }, false],
       [{ theme: "light", grid_options: { columns: 12 }, view_layout: { position: "main" } }, false],
       [{ battery: { reserve: 0 }, colors: { sun: "#ff0000" } }, false],
       [{ type: "custom:ha-energie-dashboard" }, true],
@@ -217,16 +231,24 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     await reconfigure(page, {
       titles: { electricity: "Proud", car: "Moje auto", water: "Voda" },
       car: { ...config.car, charge_limit: 90 },
-      battery: { ...config.battery, reserve: 30 },
-      flows: { kw_from: 100000 },
-      colors: { sun: "#FF0000" },
+      flows: { ...config.flows, kw_from: 100000 },
+      colors: { ...config.colors, sun: "#FF0000" },
     });
     await expect(page.locator(".panel h2")).toHaveText(["Proud", "Moje auto", "Voda"]);
-    await expect(page.locator(".gauge .g-label").nth(1)).toHaveText("Auto → 90 %");
     await expect(page.locator(".meter .limit")).toHaveAttribute("style", /left:90%/);
-    await expect(page.locator(".gauge .tick").first()).toHaveAttribute("style", /left:30%/);
+    await expect(page.locator(".meter-label")).toContainText("limit 90 %");
     await expect(page.locator(".page")).toHaveAttribute("style", /--ed-sun:#FF0000/);
-    expect((await tile(page, "Slunce")).value).toMatch(/^6\s800 W$/);
+    expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
+  });
+
+  test("limit nabíjení 100 % se v měřiči nekreslí; práh toku z konfigurace rozhoduje, co je tok", async ({ page }) => {
+    await open(page, "day");
+    await expect(page.locator(".meter .limit")).toHaveCount(0);
+    await update(page, { "sensor.goodwe_battery_power": "-90" }); // pod 100 W: baterie nenabíjí
+    expect((await tile(page, "batIn")).on).toBe(false);
+    const config = example();
+    await reconfigure(page, { flows: { ...config.flows, idle_threshold: 50 } });
+    expect((await tile(page, "batIn")).on).toBe(true);
   });
 });
 
@@ -236,119 +258,244 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
   test("poledne: hodnoty ve všech dlaždicích v jedné jednotce, pásy podle zdrojů, věta o stavu", async ({ page }) => {
     await open(page, "day");
     const tiles = await readTiles(page);
-    expect(tiles.map((item) => item.name)).toEqual(TILES);
-    const shown = Object.fromEntries(tiles.map((item) => [item.name, item.value]));
+    expect(tiles.map((item) => item.key)).toEqual(TILES);
+    const shown = Object.fromEntries(tiles.map((item) => [item.key, item.value]));
     // Dům = spotřeba bez auta (4,1 kW) a bojleru (1,2 kW): 5,8 − 5,3 = 0,5 kW; všude kW s jednou desetinou.
-    expect(shown).toMatchObject({ Slunce: "6,8 kW", Auto: "4,1 kW", Bojler: "1,2 kW", Dům: "0,5 kW", "Do baterie": "0,8 kW", "Do sítě": "0,2 kW" });
-    expect(shown.Baterie).toBe("nevybíjí");
-    expect(shown["Síť"]).toBe("neodebírá");
+    expect(shown).toMatchObject({ sun: "6,8 kW", car: "4,1 kW", boil: "1,2 kW", house: "0,5 kW", batIn: "0,8 kW", gridOut: "0,2 kW" });
+    expect(shown.bat).toBe("nevybíjí");
+    expect(shown.grid).toBe("neodebírá");
     await expect(stateLine(page, 0)).toContainText("Slunce nabíjí baterii i auto");
-    // Jeden pás za zdroj a spotřebič: slunce → dům, auto, bojler, baterie, síť.
     await expect(page.locator(".flow svg path.dots")).toHaveCount(5);
     const fills = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
     expect(new Set(fills)).toEqual(new Set(["url(#rg-sun)"]));
   });
 
-  test("večer: dům z baterie a sítě, bez slunce; malé hodnoty ve W", async ({ page }) => {
+  test("večer: dům z baterie a sítě, bez slunce; malé hodnoty ve W; Auto jen připojené", async ({ page }) => {
     await open(page, "full");
-    const shown = Object.fromEntries((await readTiles(page)).map((item) => [item.name, item.value]));
-    expect(shown).toMatchObject({ Slunce: "nevyrábí", Baterie: "351 W", "Síť": "148 W", Dům: "459 W", Auto: "připojeno", Bojler: "vypnuto" });
+    const shown = Object.fromEntries((await readTiles(page)).map((item) => [item.key, item.value]));
+    expect(shown).toMatchObject({ sun: "bez výroby", bat: "351 W", grid: "148 W", house: "459 W", car: "připojeno", boil: "bez ohřevu", batIn: "nenabíjí", gridOut: "nedodává" });
     await expect(stateLine(page, 0)).toContainText("Dům bere z baterie a sítě");
     const fills = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
     expect(new Set(fills)).toEqual(new Set(["url(#rg-bat)", "url(#rg-grid)"]));
   });
 
-  test("boost ze sítě: dům jede ze sítě, pásy ze sítě k autu a bojleru", async ({ page }) => {
+  test("boost ze sítě: dům jede ze sítě, pásy ze sítě k autu a bojleru; dům jede ze sítě není upozornění", async ({ page }) => {
     await open(page, "grid");
     await expect(stateLine(page, 0)).toContainText("Dům jede ze sítě");
-    expect((await tile(page, "Síť")).value).toBe("10,3 kW");
-    expect((await tile(page, "Auto")).aria).toBe("Auto 5,3 kW");
+    expect((await tile(page, "grid")).value).toBe("10,3 kW");
+    expect((await tile(page, "car")).aria).toBe("Auto 5,3 kW, nabíjí, nabití 50 %");
     const fills = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
     expect(fills.filter((fill) => fill === "url(#rg-grid)").length).toBe(3);
   });
 
-  test("tap na dlaždici otevře historii entity (hass-more-info)", async ({ page }) => {
-    await open(page, "day");
-    const detail = page.evaluate(
-      () => new Promise((resolve) => document.addEventListener("hass-more-info", (event) => resolve((event as CustomEvent).detail), { once: true })),
-    );
-    await page.locator(".tile", { hasText: "Slunce" }).click();
-    expect(await detail).toEqual({ entityId: "sensor.goodwe_pv_power" });
+  test("šum pod prahem 100 W není tok: žádný pás, dlaždice nesvítí", async ({ page }) => {
+    await open(page, "full");
+    await update(page, { "sensor.goodwe_battery_power": "60", "sensor.goodwe_meter_active_power_total": "-40", "sensor.goodwe_house_consumption": "99" });
+    await expect(page.locator(".flow svg path.dots")).toHaveCount(0);
+    for (const item of await readTiles(page)) expect(item.on, item.key).toBe(false);
   });
 
-  test("ukazatele: baterie pod rezervou oranžově, auto má značku limitu, bojler jde na stupnici 10–60 °C", async ({ page }) => {
+  test("hladina v dlaždici: baterie, auto a bojler jako výplň pozadí; baterie pod rezervou oranžově", async ({ page }) => {
     await open(page, "day");
-    const gauges = page.locator(".gauge");
-    await expect(gauges.nth(0).locator(".fill")).toHaveAttribute("style", /width:88%;background:var\(--ed-battery\)/);
-    await expect(gauges.nth(1).locator(".g-label")).toHaveText("Auto → 80 %");
-    await expect(gauges.nth(2).locator(".fill")).toHaveAttribute("style", /width:84%/); // (52 − 10) / 50
+    const bat = await tile(page, "batIn");
+    expect(bat.style).toMatch(/linear-gradient\(90deg.*88\.0%/);
+    expect(bat.style).not.toContain("--ed-warning");
+    expect((await tile(page, "bat")).style).toContain("var(--ed-fill-idle)"); // nevybíjí: šedá výplň
+    expect((await tile(page, "car")).style).toMatch(/--ed-car.*62\.0%|62\.0%.*--ed-car/);
+    expect((await tile(page, "boil")).style).toMatch(/linear-gradient\(90deg/);
     await update(page, { "sensor.goodwe_battery_state_of_charge": "15" });
-    await expect(gauges.nth(0).locator(".fill")).toHaveAttribute("style", /background:var\(--ed-warning\)/);
+    expect((await tile(page, "batIn")).style).toContain("var(--ed-warning)");
+    expect((await tile(page, "bat")).style).toContain("15.0%");
+  });
+
+  test("dlaždice Dům má barvu podle podílů zdrojů", async ({ page }) => {
+    await open(page, "full");
+    const house = (await tile(page, "house")).style;
+    expect(house).toContain("--ed-battery");
+    expect(house).toContain("--ed-grid");
+    expect(house).not.toContain("--ed-sun");
+  });
+
+  test("Auto jen když je připojené; Bojler při show: heating jen při ohřevu a hold_minutes po něm", async ({ page }) => {
+    await open(page, "full");
+    expect(await tileKeys(page)).toEqual(TILES);
+    await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
+    expect(await tileKeys(page)).toEqual(TILES.filter((key) => key !== "car"));
+    await expect(page.locator(".flow")).toHaveAttribute("style", /height:\d+px/);
+    await update(page, { "sensor.wallbox_charge_status": "Charging", "sensor.wallbox_total_power": "2000" });
+    expect(await tileKeys(page)).toContain("car");
+    // Disconnected, ale wallbox ještě dodává: dlaždice zůstane.
+    await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
+    expect(await tileKeys(page)).toContain("car");
+
+    // Bojler: show heating, ohřev dávno skončil.
+    await page.addInitScript(() => localStorage.setItem("ha-energie-dashboard:boiler-heating", String(Date.now() - 3_600_000)));
+    await open(page, "full");
+    await reconfigure(page, { boiler: { ...example().boiler, show: "heating" } });
+    expect(await tileKeys(page)).not.toContain("boil");
+    await update(page, { "sensor.tuv_power_total": "1500" });
+    expect(await tileKeys(page)).toContain("boil");
+    await update(page, { "sensor.tuv_power_total": "0" });
+    expect(await tileKeys(page), "po ohřevu ještě hold").toContain("boil");
+    // Bez dat se dlaždice neschovává.
+    await open(page, "unavailable");
+    await reconfigure(page, { boiler: { ...example().boiler, show: "heating" } });
+    expect(await tileKeys(page)).toContain("boil");
+  });
+
+  test("hold po ohřevu přežije načtení stránky (localStorage), pozdě po ohřevu dlaždice zmizí", async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem("ha-energie-dashboard:boiler-heating", String(Date.now() - 5 * 60_000)));
+    await open(page, "full");
+    await reconfigure(page, { boiler: { ...example().boiler, show: "heating" } });
+    expect(await tileKeys(page)).toContain("boil");
+    await reconfigure(page, { boiler: { ...example().boiler, show: "heating", hold_minutes: 3 } });
+    await page.evaluate(() => {
+      // @ts-expect-error test hook
+      window.__test.card.requestUpdate();
+    });
+    await expect.poll(async () => (await tileKeys(page)).includes("boil")).toBe(false);
+  });
+
+  test("popover dlaždice: dnešní součty, hladina; zavře se Escapem i klepnutím mimo", async ({ page }) => {
+    await open(page, "day");
+    const sun = page.locator('.tile[data-tile="sun"]');
+    await sun.click();
+    const pop = page.getByRole("dialog", { name: "Slunce" });
+    await expect(pop).toBeVisible();
+    await expect(pop).toContainText("Dnes vyrobeno");
+    await expect(pop).toContainText("18,4 kWh");
+    await expect(sun).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await expect(pop).toHaveCount(0);
+    await page.locator('.tile[data-tile="batIn"]').click();
+    const battery = page.getByRole("dialog", { name: "Baterie" });
+    await expect(battery).toContainText("88 %");
+    await expect(battery).toContainText("Dnes nabito");
+    await expect(battery).toContainText("5,2 kWh");
+    await page.locator(".scrim").click({ position: { x: 5, y: 5 } });
+    await expect(battery).toHaveCount(0);
+    // Auto bez čítače: „––“, ne vymyšlené číslo.
+    await page.locator('.tile[data-tile="car"]').click();
+    await expect(page.getByRole("dialog", { name: "Auto" })).toContainText("––");
+  });
+
+  test("klepnutí na záhlaví: Dnes · kWh, Zdroje a Spotřeba; Dům je zbytek; bez čítačů auta a bojleru „––“", async ({ page }) => {
+    await open(page, "day");
+    await page.locator(".title-btn").click();
+    const day = page.getByRole("dialog", { name: /Dnes/ });
+    await expect(day).toBeVisible();
+    await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("18,4");
+    await expect(day.getByRole("list", { name: "Spotřeba" })).toContainText("––");
+    await page.keyboard.press("Escape");
+    const config = example();
+    await reconfigure(page, { daily: { ...config.daily, car: "sensor.test_auto_dnes", boiler: "sensor.test_bojler_dnes" } });
+    await page.locator(".title-btn").click();
+    // 18,4 + 2,6 + 3,1 − 4,9 − 5,2 − 6,0 − 2,5 = 5,5 kWh; zdroje i spotřeba dají 24,1.
+    const use = day.getByRole("list", { name: "Spotřeba" });
+    await expect(use).toContainText("24,1");
+    await expect(use.getByRole("listitem").first()).toContainText("5,5");
+    await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("24,1");
+  });
+});
+
+// ------------------------------------------------------------------ alerts
+
+test.describe("upozornění (CURRENT_SPEC.md, Upozornění)", () => {
+  test("jen skutečné odchylky; baterie na rezervě a dům na síti upozornění nejsou", async ({ page }) => {
+    await open(page, "full");
+    await expect(page.locator(".alerts")).toHaveCount(0);
+    await update(page, { "sensor.goodwe_battery_state_of_charge": "12" });
+    await expect(page.locator(".alerts")).toHaveCount(0);
+    await update(page, { "sensor.goodwe_pv_power": "900" });
+    expect(await alertTitles(page)).toEqual(["Auto je připojené, ale nenabíjí"]);
+    await update(page, { "switch.wallbox_1_block_charging": "on" });
+    expect(await alertTitles(page)).toEqual(["Nabíjení auta je zablokované"]);
+  });
+
+  test("Boost wallboxu (jen s připojeným autem) a Boost bojleru", async ({ page }) => {
+    await open(page, "grid");
+    expect(await alertTitles(page)).toEqual(["Boost wallboxu je zapnutý", "Boost bojleru je zapnutý"]);
+    await update(page, { "sensor.wallbox_charge_status": "Disconnected", "sensor.wallbox_total_power": "0" });
+    expect(await alertTitles(page)).toEqual(["Boost bojleru je zapnutý"]);
   });
 });
 
 // ------------------------------------------------------------------ panels
 
 test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler, Zásobník, Mísení vody)", () => {
-  test("auto nabíjí ze slunce: stav, odkud auto nabíjí, řádky Wallbox a Boost", async ({ page }) => {
+  test("auto nabíjí ze slunce: stav, odkud auto nabíjí, řádek Wallbox, stáří dat", async ({ page }) => {
     await open(page, "day");
     await expect(stateLine(page, 1)).toHaveText("Nabíjí ze slunce");
     await expect(page.locator(".soc")).toContainText("62");
     await expect(page.locator(".range")).toContainText("95 km");
     await expect(page.locator(".mix-head")).toContainText("Odkud auto nabíjí");
     await expect(page.locator(".mix-legend")).toContainText("Slunce100 %");
-    await expect(rowText(page, "Wallbox")).toContainText("nabíjí 4,1 kW");
-    await expect(rowText(page, "Boost")).toHaveText("Vypnuto");
+    await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí 4,1 kW");
+    await expect(page.locator(".row-aside")).toHaveText("z auta právě teď");
     await expect(page.locator(".car-art img")).toHaveAttribute("src", /^data:image\/svg/);
+    await expect(page.locator(".mode-sub")).toHaveText("Přetoky · jen z přebytku");
   });
 
-  test("večer: auto připojené, nenabíjí; bez „Odkud auto nabíjí“", async ({ page }) => {
+  test("večer: auto připojené, nenabíjí; bez „Odkud auto nabíjí“; odpojené", async ({ page }) => {
     await open(page, "full");
     await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí");
     await expect(page.locator(".mix")).toHaveCount(0);
-    await expect(rowText(page, "Wallbox")).toHaveText("nenabíjí");
+    await expect(page.locator(".row-btn .row-sub")).toHaveText("nenabíjí");
     await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
     await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
     await expect(stateLine(page, 1)).toHaveText("Odpojeno");
-    await update(page, { "switch.wallbox_boost": "on" });
-    await expect(rowText(page, "Boost")).toHaveText("Auto není připojeno");
-    await update(page, { "sensor.wallbox_charge_status": "Waiting" });
-    await expect(rowText(page, "Boost")).toHaveText("Auto nenabíjí");
   });
 
-  test("boost ze sítě: texty „Nabíjí ze sítě“ a „Hřeje ze sítě“, odchylka oranžově", async ({ page }) => {
+  test("boost ze sítě: „Nabíjí ze sítě · Boost“ a „Bojler ohřívá ze sítě“, odchylka oranžově", async ({ page }) => {
     await open(page, "grid");
-    await expect(rowText(page, "Boost")).toHaveText("Nabíjí ze sítě");
-    await expect(rowText(page, "Boost bojleru")).toHaveText("Hřeje ze sítě");
-    await expect(stateLine(page, 2)).toHaveText("Bojler ohřívá ze sítě");
+    await expect(stateLine(page, 1)).toHaveText("Nabíjí ze sítě · Boost");
+    await expect(stateLine(page, 2)).toHaveText("Bojler ohřívá ze sítě · Boost");
     expect(await stateLine(page, 1).evaluate((el) => (el as HTMLElement).style.getPropertyValue("--sc"))).toBe("var(--ed-warning)");
     await expect(page.locator(".mix-legend")).toContainText("Síť96 %");
+    await expect(page.locator(".mode-sub")).toHaveText("Boost · bere i ze sítě a z baterie");
   });
 
-  test("voda ve schématu: barva podle teploty a ohřevu, značka cíle, mísení podle ventilů", async ({ page }) => {
-    await open(page, "full");
-    const water = page.locator(".tank").first().locator(".tank-water");
-    await expect(water).toHaveAttribute("style", /border-top-color:var\(--ed-cold\)/); // 15 °C
-    await update(page, { "sensor.tuv_temperature": "35" });
-    await expect(water).toHaveAttribute("style", /border-top-color:var\(--ed-off\)/);
-    await update(page, { "sensor.tuv_temperature": "50" });
-    await expect(water).toHaveAttribute("style", /border-top-color:var\(--ed-warning\)/);
-    // Cíl přetoků 60 °C na stupnici 10–70 °C: čárkovaná značka 17 % od horního okraje.
-    await expect(page.locator(".tank-target")).toHaveAttribute("style", /top:1[67](\.\d+)?%/);
-    await expect(page.locator(".mixing text").nth(1)).toHaveText("vypnuto");
-    await update(page, { "switch.technicka_mistnost_ventil_c1": "off", "switch.technicka_mistnost_ventil_c2": "on" });
-    await expect(page.locator(".mixing text").nth(1)).toHaveText("zapnuto");
-    await update(page, { "switch.technicka_mistnost_ventil_c1": "on", "switch.technicka_mistnost_ventil_c2": "on" });
-    await expect(page.locator(".mixing text").nth(1)).toHaveText("nejasné");
+  test("měřič nabití auta: limit jen pod 100 %, popisek čtečky", async ({ page }) => {
+    await open(page, "day");
+    await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %");
+    await expect(page.locator(".meter .fill")).toHaveAttribute("style", /width:62%/);
+    await reconfigure(page, { car: { ...example().car, charge_limit: 80 } });
+    await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %, limit 80 %");
   });
 
-  test("zásobník: nastavená teplota a režim v řádku i ve schématu", async ({ page }) => {
-    await open(page, "full");
-    await expect(rowText(page, "Zásobník (plyn)")).toHaveText("nastaveno 40 °C · režim auto");
-    await expect(page.locator(".tank").nth(1).locator(".tank-temp")).toContainText("40");
+  test("teplá voda: oblouky se stupnicí z konfigurace, cíl a výkon bojleru, zásobník ukazuje nastavenou teplotu", async ({ page }) => {
+    await open(page, "day");
+    const arcs = page.locator(".arc");
+    await expect(arcs).toHaveCount(2);
+    await expect(arcs.nth(0).locator(".arc-num b")).toHaveText("52");
+    await expect(arcs.nth(0)).toHaveAttribute("aria-label", /Bojler 52 °C, ohřívá výkonem 1,2 kW, cíl 60 °C, stupnice 15 až 65 °C/);
+    await expect(arcs.nth(0).locator(".arc-min")).toHaveText("15");
+    await expect(arcs.nth(0).locator(".arc-max")).toHaveText("65");
+    await expect(page.locator(".source-line").nth(0)).toContainText("cíl 60 °C");
+    await expect(arcs.nth(1).locator(".arc-num b")).toHaveText("40");
+    await expect(page.locator(".source-line").nth(1)).toContainText("Auto · podle plánu");
+    await expect(arcs.nth(1)).toHaveAttribute("aria-label", /naměřená teplota není/);
+    // Off: oblouk ukazuje minimum, které kotel drží (tank.temp_min).
     await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": "off" });
-    await expect(rowText(page, "Zásobník (plyn)")).toContainText("režim vypnuto");
-    await expect(page.locator(".tank-caption").nth(1)).toContainText("vypnuto");
+    await expect(arcs.nth(1).locator(".arc-num b")).toHaveText("38");
+    await expect(page.locator(".source-line").nth(1)).toContainText("Off");
+    // Stejná teplota má na obou obloucích stejnou barvu (jedna stupnice).
+    const colours = await arcs.evaluateAll((list) => list.map((arc) => [...arc.querySelectorAll("svg path")].map((path) => path.getAttribute("stroke"))));
+    expect(colours[0].filter((c) => c !== "var(--ed-gauge-track)").length).toBeGreaterThan(colours[1].filter((c) => c !== "var(--ed-gauge-track)").length);
+  });
+
+  test("mísení: kapsle mezi dlaždicemi podle ventilů, nejasný stav je nepřepnutelný", async ({ page }) => {
+    await open(page, "full");
+    const capsule = page.getByRole("group", { name: "Mísení vody" });
+    const toggle = capsule.getByRole("switch", { name: "Mísení vody" });
+    await expect(toggle).toHaveAttribute("aria-checked", "false");
+    await expect(page.locator(".link.on")).toHaveCount(0);
+    await update(page, { "switch.technicka_mistnost_ventil_c1": "off", "switch.technicka_mistnost_ventil_c2": "on" });
+    await expect(toggle).toHaveAttribute("aria-checked", "true");
+    await expect(page.locator(".link.on")).toHaveCount(2);
+    await update(page, { "switch.technicka_mistnost_ventil_c1": "on", "switch.technicka_mistnost_ventil_c2": "on" });
+    await expect(toggle).toBeDisabled();
+    await expect(capsule).toContainText("nejasný stav ventilů");
   });
 });
 
@@ -356,10 +503,9 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
 
 test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
   for (const scenario of ["full", "day", "grid", "unavailable"]) {
-  test(`${scenario}: bez vodorovného posouvání na 320–768 px i na šířku, nic se neořízne ani nepřekrývá, cíle aspoň 44 px`, async ({ page }) => {
-    test.setTimeout(120_000);
-    const sizes = [...WIDTHS.map((width) => [width, 852] as const), LANDSCAPE];
-    {
+    test(`${scenario}: bez vodorovného posouvání na 320–768 px i na šířku, nic se neořízne ani nepřekrývá, cíle aspoň 44 px`, async ({ page }) => {
+      test.setTimeout(120_000);
+      const sizes = [...WIDTHS.map((width) => [width, 852] as const), LANDSCAPE];
       for (const [width, height] of sizes) {
         await open(page, scenario, width, height);
         await expandAll(page);
@@ -370,21 +516,23 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
           const boxes = [...root.querySelectorAll<HTMLElement>(".tile")].map((item) => {
             const box = item.getBoundingClientRect();
             const text = item.querySelector<HTMLElement>(".text")!;
-            return { name: item.querySelector(".name")?.textContent, left: box.left, right: box.right, top: box.top, bottom: box.bottom, height: box.height, cut: text.scrollWidth > text.clientWidth + 0.5 || text.getBoundingClientRect().right > box.right + 0.5 };
+            return { name: item.dataset.tile, left: box.left, right: box.right, top: box.top, bottom: box.bottom, height: box.height, cut: text.scrollWidth > text.clientWidth + 0.5 || text.getBoundingClientRect().right > box.right + 0.5 };
           });
           const panels = [...root.querySelectorAll<HTMLElement>(".panel")].map((panel) => {
             const box = panel.getBoundingClientRect();
             return { left: box.left, right: box.right, over: panel.scrollWidth > panel.clientWidth + 0.5 };
           });
-          const controls = [...root.querySelectorAll("ed-segmented, ed-slider")].flatMap((host) =>
+          // The compact Auto | Manual | Off of the tank is 40 px by the design; everything else 44 px.
+          const controls = [...root.querySelectorAll("ed-segmented:not([compact]), ed-slider")].flatMap((host) =>
             [...(host.shadowRoot?.querySelectorAll<HTMLElement>("button, input") ?? [])].map((el) => el.getBoundingClientRect().height),
           );
-          const rows = [...root.querySelectorAll<HTMLElement>(".row")].map((row) => row.getBoundingClientRect().height);
-          return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows };
+          const rows = [...root.querySelectorAll<HTMLElement>(".row, .rowbtn")].map((row) => row.getBoundingClientRect().height);
+          const sources = [...root.querySelectorAll<HTMLElement>(".source")].map((el) => ({ over: el.scrollWidth > el.clientWidth + 0.5, right: el.getBoundingClientRect().right }));
+          return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources };
         }, CARD);
         expect(layout.scrollWidth, at).toBeLessThanOrEqual(width);
         expect(layout.card.right, at).toBeLessThanOrEqual(width);
-        for (const panel of layout.panels) {
+        for (const panel of [...layout.panels, ...layout.sources]) {
           expect(panel.over, `${at}: panel`).toBe(false);
           expect(panel.right, `${at}: panel`).toBeLessThanOrEqual(width);
         }
@@ -394,7 +542,6 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
           expect(box.cut, `${at}: ${box.name}`).toBe(false);
           expect(box.height, `${at}: ${box.name}`).toBeGreaterThanOrEqual(44);
         }
-        // Dlaždice v jednom sloupci se nepřekrývají.
         for (const a of layout.boxes) {
           for (const b of layout.boxes) {
             if (a !== b && a.left === b.left) {
@@ -405,9 +552,26 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
         for (const height of layout.controls) expect(height, at).toBeGreaterThanOrEqual(44);
         for (const height of layout.rows) expect(height, at).toBeGreaterThanOrEqual(44);
       }
+    });
+  }
+
+  test("popover dlaždice zůstane celý v kartě na nejužší i nejširší šířce", async ({ page }) => {
+    for (const width of [320, 393, 768]) {
+      await open(page, "day", width);
+      for (const key of ["sun", "gridOut", "house", "grid"]) {
+        await page.locator(`.tile[data-tile="${key}"]`).click();
+        const box = await page.evaluate((tag) => {
+          const root = document.querySelector(tag)!.shadowRoot!;
+          const pop = root.querySelector(".pop")!.getBoundingClientRect();
+          const flow = root.querySelector(".flow")!.getBoundingClientRect();
+          return { left: pop.left - flow.left, right: flow.right - pop.right };
+        }, CARD);
+        expect(box.left, `${width} ${key}`).toBeGreaterThanOrEqual(-0.5);
+        expect(box.right, `${width} ${key}`).toBeGreaterThanOrEqual(-0.5);
+        await page.keyboard.press("Escape");
+      }
     }
   });
-  }
 });
 
 // ------------------------------------------------------------- missing data
@@ -419,10 +583,11 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
         await open(page, scenario, 393, 852, theme);
         const at = `${scenario} ${theme}`;
         const tiles = await readTiles(page);
-        expect(tiles.map((item) => item.name), at).toEqual(TILES);
+        expect(tiles.map((item) => item.key), at).toEqual(TILES);
         for (const item of tiles) {
-          expect(item.value, `${at}: ${item.name}`).toBe("––");
-          expect(item.on, `${at}: ${item.name}`).toBe(false);
+          expect(item.value, `${at}: ${item.key}`).toBe("––");
+          expect(item.on, `${at}: ${item.key}`).toBe(false);
+          expect(item.aria, `${at}: ${item.key}`).toMatch(/bez dat/);
         }
         await expect(page.locator(".flow svg path.dots"), at).toHaveCount(0);
         for (const index of [0, 1, 2]) {
@@ -431,57 +596,89 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
         }
         await expect(page.locator(".soc"), at).toContainText("––");
         await expect(page.locator(".mix"), at).toHaveCount(0);
-        await expect(page.locator(".mixing text").nth(1), at).toHaveText("––");
+        await expect(page.locator(".alerts"), at).toHaveCount(0);
+        await expect(page.locator(".arc-num b"), at).toHaveText(["––", "––"]);
+        await expect(page.getByRole("switch", { name: "Mísení vody" }), at).toBeDisabled();
+        await expect(page.locator(".row-aside"), at).toHaveText("");
       }
     }
-    // A pushed state change is picked up at once.
     await open(page, "missing");
     await update(page, { "sensor.goodwe_pv_power": "2400", "sensor.goodwe_house_consumption": "1000", "sensor.goodwe_meter_active_power_total": "1400" });
-    expect((await tile(page, "Slunce")).value).toBe("2,4 kW");
-    expect((await tile(page, "Do sítě")).value).toBe("1,4 kW");
+    expect((await tile(page, "sun")).value).toBe("2,4 kW");
+    expect((await tile(page, "gridOut")).value).toBe("1,4 kW");
+  });
+
+  test("denní součty bez čítačů: „––“ v popoveru i v záhlaví, žádné odhady", async ({ page }) => {
+    await open(page, "unavailable");
+    await page.locator(".title-btn").click();
+    const day = page.getByRole("dialog", { name: /Dnes/ });
+    await expect(day.locator(".day-total b")).toHaveText(["––", "––"]);
   });
 });
 
 // ------------------------------------------------------------------ controls
 
 test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
-  const pick = (page: Page, label: string, option: string) =>
-    page.locator(`ed-segmented`).filter({ has: page.locator(`[aria-label="${label}"]`) }).getByRole("radio", { name: option }).click();
+  const radio = (page: Page, label: string, option: string) =>
+    page.locator("ed-segmented").filter({ has: page.locator(`[aria-label="${label}"]`) }).getByRole("radio", { name: option });
 
-  test("řádky s detailem se rozbalují a sbalují (aria-expanded), zavřený detail není ovladatelný", async ({ page }) => {
+  test("Wallbox se rozbalí a sbalí (aria-expanded), zavřený detail není ovladatelný", async ({ page }) => {
     await open(page, "full");
-    const row = page.locator(".row-btn").filter({ has: page.locator(".row-title", { hasText: /^Boost$/ }) });
+    const row = page.locator(".row-btn");
     await expect(row).toHaveAttribute("aria-expanded", "false");
-    await expect(page.getByRole("radio", { name: "Přetoky" })).toHaveCount(0);
+    await expect(page.getByRole("switch", { name: "Zablokovat nabíjení" })).toHaveCount(0);
     await row.click();
     await settle(page);
     await expect(row).toHaveAttribute("aria-expanded", "true");
-    await expect(page.getByRole("radio", { name: "Přetoky" })).toHaveCount(1);
+    await expect(page.getByRole("switch", { name: "Zablokovat nabíjení" })).toHaveCount(1);
     await row.click();
     await settle(page);
-    await expect(page.getByRole("radio", { name: "Přetoky" })).toHaveCount(0);
+    await expect(page.getByRole("switch", { name: "Zablokovat nabíjení" })).toHaveCount(0);
   });
 
-  test("Boost wallboxu a bojleru volá switch; vybraná volba se ukáže hned", async ({ page }) => {
+  test("chráněné ovládání: jedno klepnutí jen ukáže nápovědu, podržení nebo dvojklik přepne", async ({ page }) => {
     await open(page, "full");
-    await expandAll(page);
-    await pick(page, "Režim nabíjení auta", "Boost");
-    await pick(page, "Režim ohřevu bojleru a jeho cílová teplota", "Boost");
-    expect(await calls(page)).toEqual([
-      { domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } },
-      { domain: "switch", service: "turn_on", data: { entity_id: "switch.tuv_boost" } },
-    ]);
-    await expect(page.getByRole("radio", { name: "Boost" }).first()).toHaveAttribute("aria-checked", "true");
-    // Bez potvrzení od Home Assistantu se volba po ui.revert_after vrátí na skutečný stav.
-    await page.waitForTimeout(6300);
-    await expect(page.getByRole("radio", { name: "Boost" }).first()).toHaveAttribute("aria-checked", "false");
+    const boost = page.getByRole("switch", { name: "Boost bojleru" });
+    await boost.click();
+    expect(await calls(page)).toEqual([]);
+    await expect(page.locator("ha-energie-dashboard").locator("ed-switch").filter({ has: boost }).locator(".hint")).toContainText("Podržte nebo klepněte dvakrát.");
+    await page.waitForTimeout(3300);
+    await expect(page.locator("ed-switch .hint")).toHaveCount(0);
+    await hold(boost);
+    expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.tuv_boost" } }]);
+    await expect(boost).toHaveAttribute("aria-checked", "true");
+    await boost.dblclick();
+    expect((await calls(page)).slice(1)).toEqual([{ domain: "switch", service: "turn_off", data: { entity_id: "switch.tuv_boost" } }]);
+  });
+
+  test("Přetoky | Boost: klepnutí nic nepošle a poradí, dvojklik i podržení přepne, klávesnice hned", async ({ page }) => {
+    await open(page, "full");
+    await radio(page, "Režim nabíjení auta", "Boost").click();
+    expect(await calls(page)).toEqual([]);
+    await expect(page.locator("ed-segmented .hint").first()).toContainText("Podržte, přetáhněte nebo klepněte dvakrát.");
+    await radio(page, "Režim nabíjení auta", "Boost").dblclick();
+    expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
+    await expect(radio(page, "Režim nabíjení auta", "Boost")).toHaveAttribute("aria-checked", "true");
+    await hold(radio(page, "Režim nabíjení auta", "Přetoky"));
+    expect((await calls(page)).at(-1)).toEqual({ domain: "switch", service: "turn_off", data: { entity_id: "switch.wallbox_boost" } });
+  });
+
+  test("Přetoky | Boost jde přetáhnout jezdcem", async ({ page }) => {
+    await open(page, "full");
+    const track = page.locator("ed-segmented").first().locator(".track");
+    const box = (await track.boundingBox())!;
+    await page.mouse.move(box.x + box.width * 0.25, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.6, box.y + box.height / 2, { steps: 6 });
+    await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2, { steps: 4 });
+    await page.mouse.up();
+    expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
   });
 
   test("Boost při zablokovaném nabíjení nejdřív zablokování vypne a řekne to", async ({ page }) => {
     await open(page, "full");
     await update(page, { "switch.wallbox_1_block_charging": "on" });
-    await expand(page, "Boost");
-    await pick(page, "Režim nabíjení auta", "Boost");
+    await radio(page, "Režim nabíjení auta", "Boost").dblclick();
     expect((await calls(page)).map((call) => `${call.service} ${call.data.entity_id}`)).toEqual([
       "turn_off switch.wallbox_1_block_charging",
       "turn_on switch.wallbox_boost",
@@ -489,9 +686,19 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     await expect(page.locator(".feedback")).toContainText("blokování jsem vypnul");
   });
 
-  test("přepínače Zablokovat nabíjení a Přednost před bojlerem volají switch", async ({ page }) => {
+  test("volba se ukáže hned a bez potvrzení od Home Assistantu se po ui.revert_after vrátí", async ({ page }) => {
     await open(page, "full");
-    await expand(page, "Boost");
+    await expand(page, "Wallbox");
+    const block = page.getByRole("switch", { name: "Zablokovat nabíjení" });
+    await block.click();
+    await expect(block).toHaveAttribute("aria-checked", "true");
+    await page.waitForTimeout(6300);
+    await expect(block).toHaveAttribute("aria-checked", "false");
+  });
+
+  test("přepínače Zablokovat nabíjení a Přednost před bojlerem volají switch jedním klepnutím", async ({ page }) => {
+    await open(page, "full");
+    await expand(page, "Wallbox");
     const block = page.getByRole("switch", { name: "Zablokovat nabíjení" });
     const priority = page.getByRole("switch", { name: "Přednost před bojlerem" });
     await expect(block).toHaveAttribute("aria-checked", "false");
@@ -502,17 +709,14 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       { domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_1_block_charging" } },
       { domain: "switch", service: "turn_off", data: { entity_id: "switch.wallbox_2_prioritize_when_connected" } },
     ]);
-    await expect(block).toHaveAttribute("aria-checked", "true");
   });
 
   test("nabíjecí výkon: jen v boostu, celkový výkon všech fází, entita dostane výkon na fázi", async ({ page }) => {
     await open(page, "full");
-    await expand(page, "Boost");
-    await expect(page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]')).toHaveCount(0);
+    await expect(page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]')).toBeHidden();
     await open(page, "grid");
-    await expand(page, "Boost");
     const slider = page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]');
-    // Entita drží 1400 W na fázi (min 1400, max 3700): na kartě 4,2–11,1 kW po 0,3 kW.
+    await expect(slider).toBeVisible();
     expect(await slider.evaluate((el: HTMLElement & { min: number; max: number; step: number; value: number }) => [el.min, el.max, el.step, el.value])).toEqual([4.2, 11.1, 0.3, 4.2]);
     await expect(page.locator(".field-value").first()).toHaveText("4,2 kW");
     await slider.locator("input").evaluate((input: HTMLInputElement) => {
@@ -523,54 +727,65 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     expect(await calls(page)).toEqual([{ domain: "number", service: "set_value", data: { entity_id: "number.wallbox_7_1_manual_charging_power", value: 2200 } }]);
   });
 
-  test("posuvník bojleru: cíl přetoků ≥ cíl boostu; slider volá number.set_value; zásobník volá water_heater", async ({ page }) => {
+  test("Cílové teploty: Přetoky ≥ Boost, slidery volají number.set_value", async ({ page }) => {
     await open(page, "full");
-    await expandAll(page);
-    const slider = page.locator('ed-slider[label^="Cíl ohřevu bojleru"]');
-    // Cíl z přebytku (60) nesmí pod cíl boostu (55).
-    expect(await slider.evaluate((el: HTMLElement & { min: number; max: number }) => [el.min, el.max])).toEqual([55, 85]);
-    await slider.locator("input").evaluate((input: HTMLInputElement) => {
+    await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky 60 · Boost 55 °C");
+    await expand(page, "Cílové teploty");
+    const solar = page.locator('ed-slider[label="Cíl ohřevu bojleru, Přetoky"]');
+    const boost = page.locator('ed-slider[label="Cíl ohřevu bojleru, Boost"]');
+    expect(await solar.evaluate((el: HTMLElement & { min: number; max: number; step: number }) => [el.min, el.max, el.step])).toEqual([55, 85, 5]);
+    expect(await boost.evaluate((el: HTMLElement & { min: number; max: number }) => [el.min, el.max])).toEqual([20, 60]);
+    await solar.locator("input").evaluate((input: HTMLInputElement) => {
       input.value = "70";
       input.dispatchEvent(new Event("input", { bubbles: true }));
       input.dispatchEvent(new Event("change", { bubbles: true }));
     });
-    await pick(page, "Režim zásobníku", "Manual");
+    expect(await calls(page)).toEqual([{ domain: "number", service: "set_value", data: { entity_id: "number.tuv_2_1_target_temperature", value: 70 } }]);
+  });
+
+  test("zásobník: Auto | Manual | Off volá water_heater jedním klepnutím", async ({ page }) => {
+    await open(page, "full");
+    await radio(page, "Režim zásobníku", "Manual").click();
+    await radio(page, "Režim zásobníku", "Off").click();
     expect(await calls(page)).toEqual([
-      { domain: "number", service: "set_value", data: { entity_id: "number.tuv_2_1_target_temperature", value: 70 } },
       { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
+      { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "off" } },
     ]);
   });
 
-  test("teplota zásobníku jen v režimu Manual, v mezích z konfigurace", async ({ page }) => {
+  test("Teplota a doba: v Auto změna přepne na Manual a pak nastaví teplotu; v Off je neaktivní; meze z konfigurace", async ({ page }) => {
     await open(page, "full");
-    await expand(page, "Zásobník (plyn)");
+    await expand(page, "Teplota");
     const slider = page.locator('ed-slider[label="Teplota zásobníku"]');
-    await expect(slider).toBeHidden();
-    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": "heat" });
-    await settle(page);
-    await expect(slider).toBeVisible();
-    expect(await slider.evaluate((el: HTMLElement & { min: number; max: number; step: number }) => [el.min, el.max, el.step])).toEqual([30, 65, 5]);
+    expect(await slider.evaluate((el: HTMLElement & { min: number; max: number; step: number }) => [el.min, el.max, el.step])).toEqual([38, 65, 1]);
+    await slider.locator("input").evaluate((input: HTMLInputElement) => {
+      input.value = "45";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+    expect(await calls(page)).toEqual([
+      { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
+      { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 45 } },
+    ]);
+    await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": "off" });
+    await expect(slider.locator("input")).toBeDisabled();
   });
 
-  test("mísení: přepnutí se nejdřív potvrdí, pak se zavolá skript; nejasný stav je nepřepnutelný", async ({ page }) => {
+  test("mísení: chráněný přepínač zavolá skript jen když se přání liší od skutečného stavu", async ({ page }) => {
     await open(page, "full");
-    await expand(page, "Zásobník (plyn)");
-    await pick(page, "Mísení vody", "Zapnuto");
-    await expect(page.getByRole("alertdialog")).toContainText("Přepnout mísení vody na zapnuto?");
-    await page.getByRole("button", { name: "Zrušit" }).click();
+    const toggle = page.getByRole("switch", { name: "Mísení vody" });
+    await toggle.click();
     expect(await calls(page)).toEqual([]);
-    await pick(page, "Mísení vody", "Zapnuto");
-    await page.getByRole("button", { name: "Přepnout" }).click();
+    await toggle.dblclick();
     expect(await calls(page)).toEqual([{ domain: "script", service: "turn_on", data: { entity_id: "script.prepnout_miseni_vody" } }]);
-    await update(page, { "switch.technicka_mistnost_ventil_c2": "on" });
-    await expect(page.locator("ed-segmented").filter({ has: page.locator('[aria-label="Mísení vody"]') }).getByRole("radio", { name: "Zapnuto" })).toBeDisabled();
   });
 
   test("nedostupná entita: ovládání je neaktivní a nic se neodešle", async ({ page }) => {
     await open(page, "unavailable");
     await expandAll(page);
-    for (const radio of await page.getByRole("radio").all()) await expect(radio).toBeDisabled();
+    for (const control of await page.getByRole("radio").all()) await expect(control).toBeDisabled();
     for (const toggle of await page.getByRole("switch").all()) await expect(toggle).toBeDisabled();
+    for (const toggle of await page.getByRole("switch").all()) await toggle.dispatchEvent("click");
     expect(await calls(page)).toEqual([]);
   });
 
@@ -580,32 +795,23 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     const sizes = await page.evaluate(() => {
       const root = document.querySelector("ha-energie-dashboard")!.shadowRoot!;
       const rect = (el: Element) => el.getBoundingClientRect();
-      const seg = rect(root.querySelector("ed-segmented")!.shadowRoot!.querySelector(".track")!);
+      const seg = rect(root.querySelector("ed-segmented:not([compact])")!.shadowRoot!.querySelector(".track")!);
+      const compact = rect(root.querySelector("ed-segmented[compact]")!.shadowRoot!.querySelector(".track")!);
       const input = root.querySelector('ed-slider[label^="Cíl ohřevu bojleru"]')!.shadowRoot!.querySelector("input")!;
-      // The thumb is a pseudo element that getComputedStyle does not resolve reliably: read its rule.
       const sheets = [...((input.getRootNode() as ShadowRoot).adoptedStyleSheets ?? []), ...(input.getRootNode() as ShadowRoot).styleSheets];
       const rule = sheets.flatMap((sheet) => [...sheet.cssRules]).find((r) => (r as CSSStyleRule).selectorText === "input::-webkit-slider-thumb") as CSSStyleRule;
       const thumb = rule.style;
       const toggle = root.querySelector("ed-switch")!.shadowRoot!;
       const track = rect(toggle.querySelector("button")!);
       const knob = rect(toggle.querySelector(".thumb")!);
-      return { seg: seg.height, slider: rect(input).height, thumb: [parseFloat(thumb.width), parseFloat(thumb.height)], track: [track.width, track.height], knob: [knob.width, knob.height] };
+      return { seg: seg.height, compact: compact.height, slider: rect(input).height, thumb: [parseFloat(thumb.width), parseFloat(thumb.height)], track: [track.width, track.height], knob: [knob.width, knob.height] };
     });
     expect(sizes.seg).toBeGreaterThanOrEqual(48);
+    expect(sizes.compact).toBe(40);
     expect(sizes.slider).toBe(52);
     expect(sizes.thumb).toEqual([38, 24]);
     expect(sizes.track).toEqual([60, 32]);
     expect(sizes.knob).toEqual([40, 26]);
-  });
-
-  test("zablokované nabíjení a nevyužitá přednost se ukážou jako upozornění v kartě auta", async ({ page }) => {
-    await open(page, "full");
-    await expect(page.locator(".notice")).toHaveCount(0);
-    await update(page, { "sensor.goodwe_pv_power": "900" });
-    await expect(page.locator(".notice.warn")).toContainText("Přednost před bojlerem je zapnutá, auto je připojené, ale nenabíjí");
-    await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí");
-    await update(page, { "switch.wallbox_1_block_charging": "on" });
-    await expect(page.locator(".notice")).toHaveText(/Nabíjení auta je zablokované/);
   });
 });
 
@@ -613,33 +819,52 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
 
 test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", () => {
   for (const theme of ["dark", "light"] as const) {
-    test(`axe (${theme}): karta bez porušení, i bez dat, bez nadpisu a s rozbalenými detaily`, async ({ page }) => {
+    test(`axe (${theme}): karta bez porušení, i bez dat, bez nadpisu, s rozbalenými detaily a s popoverem`, async ({ page }) => {
       for (const scenario of ["full", "day", "grid", "unavailable", "missing"]) {
         await open(page, scenario, 393, 852, theme);
         expect(await axeViolations(page), scenario).toEqual([]);
         await expandAll(page);
         expect(await axeViolations(page), `${scenario} rozbaleno`).toEqual([]);
       }
+      await open(page, "day", 393, 852, theme);
+      await page.locator('.tile[data-tile="batIn"]').click();
+      expect(await axeViolations(page), "popover dlaždice").toEqual([]);
+      await page.keyboard.press("Escape");
+      await page.locator(".title-btn").click();
+      expect(await axeViolations(page), "popover záhlaví").toEqual([]);
       await reconfigure(page, { title: "" });
       expect(await axeViolations(page, ["page-has-heading-one"]), "title: \"\"").toEqual([]);
     });
   }
 
-  test("klávesnice: šipky přepínají volbu v radiogroupu a jezdec jde ovládat šipkami", async ({ page }) => {
+  test("klávesnice: šipka na Přetoky | Boost přepne hned, bez podržení", async ({ page }) => {
     await open(page, "full");
-    await expand(page, "Boost");
     const first = page.locator("ed-segmented").first().getByRole("radio", { name: "Přetoky" });
     await first.focus();
     await page.keyboard.press("ArrowRight");
     expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
   });
 
-  test("přepínač jde ovládat mezerníkem a čte se jako switch s názvem řádku", async ({ page }) => {
+  test("klávesnice: mezerník na chráněném přepínači přepne hned; nechráněný taky", async ({ page }) => {
     await open(page, "full");
-    await expand(page, "Boost");
+    const boost = page.getByRole("switch", { name: "Boost bojleru" });
+    await boost.focus();
+    await page.keyboard.press("Space");
+    expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.tuv_boost" } }]);
+    await expand(page, "Wallbox");
     const toggle = page.getByRole("switch", { name: "Zablokovat nabíjení" });
     await toggle.focus();
     await page.keyboard.press("Space");
-    expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_1_block_charging" } }]);
+    expect((await calls(page)).at(-1)).toEqual({ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_1_block_charging" } });
+  });
+
+  test("dlaždice a záhlaví jdou ovládat klávesnicí a Escape zavře popover", async ({ page }) => {
+    await open(page, "day");
+    const sun = page.locator('.tile[data-tile="sun"]');
+    await sun.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Slunce" })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 });

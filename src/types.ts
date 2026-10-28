@@ -42,6 +42,16 @@ export interface EntitySections {
   boiler: { power?: EntityId; temperature?: EntityId; boost?: EntityId; target_temperature?: EntityId; boost_target_temperature?: EntityId };
   tank: { water_heater?: EntityId };
   mixing: { valve_c1?: EntityId; valve_c2?: EntityId; script?: EntityId };
+  /** Energy of today in kWh (counters that restart at midnight, e.g. utility_meter); shown only in the popups. */
+  daily: {
+    pv_generation?: EntityId;
+    battery_charge?: EntityId;
+    battery_discharge?: EntityId;
+    grid_import?: EntityId;
+    grid_export?: EntityId;
+    car?: EntityId;
+    boiler?: EntityId;
+  };
 }
 
 export type SectionName = keyof EntitySections;
@@ -51,30 +61,20 @@ export interface NumberSettings {
   battery: { reserve: number };
   car: { charge_limit: number };
   wallbox: { phases: number; power_min: number; power_max: number; power_step: number; priority_min_sun: number };
-  boiler: {
-    target_min: number;
-    target_max: number;
-    target_step: number;
-    scale_min: number;
-    gauge_max: number;
-    schema_max: number;
-    cold_below: number;
-    hot_from: number;
-  };
+  boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
+  water: { gauge_min: number; gauge_max: number };
   tank: { temp_min: number; temp_max: number; temp_step: number };
   flows: {
     idle_threshold: number;
     kw_from: number;
-    sun_covers: number;
     export_notice: number;
-    battery_flow: number;
     source_min_share: number;
     grid_deviation_share: number;
     band_max_px_per_kw: number;
     band_min_px: number;
   };
   scale: { sun: number; battery: number; grid: number; house: number; car: number; boiler: number };
-  ui: { revert_after: number };
+  ui: { revert_after: number; hold_ms: number; double_tap_ms: number; hint_seconds: number };
 }
 
 export type NumberSection = keyof NumberSettings;
@@ -88,11 +88,18 @@ export interface Colors {
   car: string;
   boiler: string;
   accent: string;
-  button: string;
   warning: string;
-  /** Water below the cold limit, and the neutral grey of idle icons and lukewarm water. */
-  cold: string;
+  /** The neutral grey of idle icons and texts. */
   neutral: string;
+  /** The two halves of the drop of the water mixing. */
+  cold: string;
+  hot: string;
+}
+
+/** One point of the temperature colour scale of the hot-water gauges. */
+export interface TempStop {
+  temp: number;
+  color: string;
 }
 
 /** Headings of the three panels; every one has a default (config.ts, TITLES). */
@@ -115,6 +122,10 @@ export interface Settings {
   titles: Titles;
   num: NumberSettings;
   colors: Colors;
+  /** Colour scale of the temperature gauges, ordered by temperature. */
+  tempScale: TempStop[];
+  /** Whether the boiler tile is always in the diagram or only while it heats (and `boiler.hold_minutes` after). */
+  boilerShow: "always" | "heating";
 }
 
 declare global {

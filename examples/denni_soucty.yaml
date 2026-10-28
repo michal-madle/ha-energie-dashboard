@@ -1,0 +1,22 @@
+# Denní součty pro popupy karty Energie (konfigurace karty, sekce "daily").
+# Vložte do configuration.yaml (nebo do balíčku) a znovu načtěte YAML / restartujte Home Assistant.
+# Každý utility_meter vezme ověřený celoživotní čítač střídače (ENTITY_MAP.md, total_increasing)
+# a o půlnoci ho vynuluje; vznikne senzor sensor.<název>, např. sensor.energie_fve_dnes.
+# Čítač energie auta (wallbox) a bojleru (AZ Router) zatím není ověřený (TODO P2.12):
+# `daily.car` a `daily.boiler` zůstanou prázdné, popup tam ukáže „––“.
+utility_meter:
+  energie_fve_dnes:
+    source: sensor.goodwe_total_pv_generation
+    cycle: daily
+  energie_baterie_nabito_dnes:
+    source: sensor.goodwe_total_battery_charge
+    cycle: daily
+  energie_baterie_vybito_dnes:
+    source: sensor.goodwe_total_battery_discharge
+    cycle: daily
+  energie_sit_odber_dnes:
+    source: sensor.goodwe_meter_total_energy_import
+    cycle: daily
+  energie_sit_dodavka_dnes:
+    source: sensor.goodwe_meter_total_energy_export
+    cycle: daily

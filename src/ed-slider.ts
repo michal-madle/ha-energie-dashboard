@@ -13,6 +13,8 @@ export class EdSlider extends LitElement {
   @property({ type: Number }) min = 0;
   @property({ type: Number }) max = 100;
   @property({ type: Number }) step = 1;
+  /** Distance of the ticks under the bar; 0 = the step. */
+  @property({ type: Number }) tickStep = 0;
   @property({ type: Number }) value = 0;
   @property() label = "";
   /** Spoken value, e.g. "40 °C"; defaults to the number. */
@@ -96,11 +98,13 @@ export class EdSlider extends LitElement {
       left: 33px;
       right: 33px;
       bottom: 7px;
-      display: flex;
-      justify-content: space-between;
+      height: 5px;
       pointer-events: none;
     }
     .ticks i {
+      position: absolute;
+      top: 0;
+      margin-left: -1px;
       width: 2px;
       height: 5px;
       border-radius: 1px;
@@ -122,8 +126,9 @@ export class EdSlider extends LitElement {
     const fraction = Math.max(0, Math.min(1, (shown - this.min) / span));
     // The fill ends under the thumb centre: the thumb centre moves over the track width minus the thumb width.
     const fill = `calc(19px + (100% - 38px) * ${fraction})`;
-    const count = Math.round(span / (this.step || 1)) + 1;
-    const ticks = count >= 2 && count <= 40 ? Array.from({ length: count }, () => html`<i></i>`) : [];
+    const every = this.tickStep || this.step || 1;
+    const count = Math.floor(span / every + 1e-9) + 1;
+    const ticks = count >= 2 && count <= 40 ? Array.from({ length: count }, (_, k) => html`<i style="left:${(((k * every) / span) * 100).toFixed(2)}%"></i>`) : [];
     return html`<div class="wrap">
         <input
           type="range"
