@@ -27,7 +27,7 @@ export interface HomeAssistant {
  */
 export interface EntitySections {
   pv: { power?: EntityId };
-  battery: { power?: EntityId; state_of_charge?: EntityId };
+  battery: { power?: EntityId; state_of_charge?: EntityId; depth_of_discharge?: EntityId };
   grid: { power?: EntityId };
   house: { power?: EntityId };
   car: { state_of_charge?: EntityId; range?: EntityId; image?: EntityId };
@@ -41,7 +41,7 @@ export interface EntitySections {
   };
   boiler: { power?: EntityId; temperature?: EntityId; boost?: EntityId; target_temperature?: EntityId; boost_target_temperature?: EntityId };
   tank: { water_heater?: EntityId };
-  mixing: { valve_c1?: EntityId; valve_c2?: EntityId; script?: EntityId };
+  mixing: { valve_c1?: EntityId; valve_c2?: EntityId };
   /** Energy of today in kWh (counters that restart at midnight, e.g. utility_meter); shown only in the popups. */
   daily: {
     pv_generation?: EntityId;

@@ -23,7 +23,8 @@ pv:
 battery:
   power: sensor.goodwe_battery_power                    # výkon baterie (W), kladné = vybíjení
   state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
-  reserve: 20                                           # % rezerva baterie (pod ní je výplň dlaždice Baterie oranžová)
+  depth_of_discharge: number.goodwe_depth_of_discharge_on_grid  # hloubka vybití ze střídače (%); rezerva = 100 − hodnota (80 % → rezerva 20 %)
+  reserve: 20                                           # % rezerva baterie, jen když střídač hloubku vybití nehlásí (pod ní je výplň dlaždice Baterie oranžová)
 grid:
   power: sensor.goodwe_meter_active_power_total         # elektroměr (W), záporné = odběr ze sítě
 house:
@@ -71,8 +72,7 @@ tank:
   temp_step: 1                                          # °C krok teploty zásobníku
 mixing:
   valve_c1: switch.technicka_mistnost_ventil_c1         # ventil C1 (switch.…)
-  valve_c2: switch.technicka_mistnost_ventil_c2         # ventil C2 (switch.…); mísí = C1 vypnutý a C2 zapnutý
-  script: script.prepnout_miseni_vody                   # přepnutí mísení (script.…), obsah skriptu k ověření
+  valve_c2: switch.technicka_mistnost_ventil_c2         # ventil C2 (switch.…); mísí = C1 vypnutý a C2 zapnutý; karta spíná oba ventily přímo
 
 # ------------------------------------------------ dnešní součty (jen v popupech, kWh)
 # Čítače, které se o půlnoci vynulují. Ze střídačových čítačů je udělá utility_meter,

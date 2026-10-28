@@ -181,7 +181,6 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       [{ boiler: { show: "sometimes" } }, /boiler\.show must be one of/],
       [{ tank: { water_heater: "climate.tepla_voda" } }, /tank\.water_heater must be a water_heater entity/],
       [{ car: { image: "sensor.obrazek" } }, /car\.image must be a image entity/],
-      [{ mixing: { script: "prepnout_miseni_vody" } }, /mixing\.script must be an entity ID such as script\.example/],
       [{ mixing: { valve_c1: "switch.ventil", valve_c2: "switch.ventil" } }, /mixing\.valve_c1 and mixing\.valve_c2 must be two different valves/],
       [{ daily: { car: "Sensor Auto" } }, /daily\.car must be an entity ID/],
       [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
@@ -211,7 +210,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(await configError(page, ["pv"] as unknown as Record<string, unknown>, true)).toMatch(/configuration must be a mapping/);
     const accepted: Array<[Record<string, unknown>, boolean]> = [
       [{ title: "" }, false],
-      [{ title: null, pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { script: null }, colors: null, flows: { kw_from: null }, daily: null }, false],
+      [{ title: null, pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { valve_c1: null }, colors: null, flows: { kw_from: null }, daily: null }, false],
       [{ theme: "light", grid_options: { columns: 12 }, view_layout: { position: "main" } }, false],
       [{ battery: { reserve: 0 }, colors: { sun: "#ff0000" } }, false],
       [{ type: "custom:ha-energie-dashboard" }, true],
@@ -307,6 +306,16 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
     await update(page, { "sensor.goodwe_battery_state_of_charge": "15" });
     expect((await tile(page, "batIn")).style).toContain("var(--ed-warning)");
     expect((await tile(page, "bat")).style).toContain("15.0%");
+  });
+
+  test("rezerva baterie se bere z nastavení střídače (100 − hloubka vybití), jinak z battery.reserve", async ({ page }) => {
+    await open(page, "day");
+    await update(page, { "sensor.goodwe_battery_state_of_charge": "35" });
+    expect((await tile(page, "batIn")).style).not.toContain("var(--ed-warning)"); // hloubka 80 % → rezerva 20 %
+    await update(page, { "number.goodwe_depth_of_discharge_on_grid": "50" }); // rezerva 50 %
+    expect((await tile(page, "batIn")).style).toContain("var(--ed-warning)");
+    await update(page, { "number.goodwe_depth_of_discharge_on_grid": "unavailable" }); // záloha: battery.reserve 20 %
+    expect((await tile(page, "batIn")).style).not.toContain("var(--ed-warning)");
   });
 
   test("dlaždice Dům má barvu podle podílů zdrojů", async ({ page }) => {
@@ -454,6 +463,8 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
     await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
     await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
     await expect(stateLine(page, 1)).toHaveText("Odpojeno");
+    await expect(page.locator(".row-btn .row-sub")).toHaveCount(0); // řádek Wallbox se s odpojeným autem schová
+    await expect(page.getByText("Zablokovat nabíjení")).toHaveCount(0);
   });
 
   test("boost ze sítě: „Nabíjí ze sítě · Boost“ a „Bojler ohřívá ze sítě“, odchylka oranžově", async ({ page }) => {
@@ -494,7 +505,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
     expect(colours[0].filter((c) => c !== "var(--ed-gauge-track)").length).toBeGreaterThan(colours[1].filter((c) => c !== "var(--ed-gauge-track)").length);
   });
 
-  test("mísení: kapsle mezi dlaždicemi podle ventilů, nejasný stav je nepřepnutelný", async ({ page }) => {
+  test("mísení: kapsle mezi dlaždicemi podle ventilů; z nejasného stavu jde přepnout na mísení", async ({ page }) => {
     await open(page, "full");
     const capsule = page.getByRole("group", { name: "Mísení vody" });
     const toggle = capsule.getByRole("switch", { name: "Mísení vody" });
@@ -504,8 +515,13 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
     await expect(toggle).toHaveAttribute("aria-checked", "true");
     await expect(page.locator(".link.on")).toHaveCount(2);
     await update(page, { "switch.technicka_mistnost_ventil_c1": "on", "switch.technicka_mistnost_ventil_c2": "on" });
-    await expect(toggle).toBeDisabled();
+    await expect(toggle).toBeEnabled();
     await expect(capsule).toContainText("nejasný stav ventilů");
+    await toggle.dblclick();
+    expect(await calls(page)).toEqual([
+      { domain: "switch", service: "turn_off", data: { entity_id: "switch.technicka_mistnost_ventil_c1" } },
+      { domain: "switch", service: "turn_on", data: { entity_id: "switch.technicka_mistnost_ventil_c2" } },
+    ]);
   });
 });
 
@@ -666,7 +682,10 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     await page.waitForTimeout(3300);
     await expect(page.locator("ed-switch .hint")).toHaveCount(0);
     await hold(toggle);
-    expect(await calls(page)).toEqual([{ domain: "script", service: "turn_on", data: { entity_id: "script.prepnout_miseni_vody" } }]);
+    expect(await calls(page)).toEqual([
+      { domain: "switch", service: "turn_off", data: { entity_id: "switch.technicka_mistnost_ventil_c1" } },
+      { domain: "switch", service: "turn_on", data: { entity_id: "switch.technicka_mistnost_ventil_c2" } },
+    ]);
   });
 
   test("Boost bojleru je Přetoky | Boost jako zásobník: klepnutí jen poradí, dvojklik a podržení přepne", async ({ page }) => {
@@ -828,13 +847,16 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     await expect(slider.locator("input")).toBeDisabled();
   });
 
-  test("mísení: chráněný přepínač zavolá skript jen když se přání liší od skutečného stavu", async ({ page }) => {
+  test("mísení: chráněný přepínač přepne oba ventily přímo", async ({ page }) => {
     await open(page, "full");
     const toggle = page.getByRole("switch", { name: "Mísení vody" });
     await toggle.click();
     expect(await calls(page)).toEqual([]);
     await toggle.dblclick();
-    expect(await calls(page)).toEqual([{ domain: "script", service: "turn_on", data: { entity_id: "script.prepnout_miseni_vody" } }]);
+    expect(await calls(page)).toEqual([
+      { domain: "switch", service: "turn_off", data: { entity_id: "switch.technicka_mistnost_ventil_c1" } },
+      { domain: "switch", service: "turn_on", data: { entity_id: "switch.technicka_mistnost_ventil_c2" } },
+    ]);
   });
 
   test("nedostupná entita: ovládání je neaktivní a nic se neodešle", async ({ page }) => {
@@ -907,7 +929,10 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
     const mixing = page.getByRole("switch", { name: "Mísení vody" });
     await mixing.focus();
     await page.keyboard.press("Space");
-    expect(await calls(page)).toEqual([{ domain: "script", service: "turn_on", data: { entity_id: "script.prepnout_miseni_vody" } }]);
+    expect(await calls(page)).toEqual([
+      { domain: "switch", service: "turn_off", data: { entity_id: "switch.technicka_mistnost_ventil_c1" } },
+      { domain: "switch", service: "turn_on", data: { entity_id: "switch.technicka_mistnost_ventil_c2" } },
+    ]);
     await expand(page, "Wallbox");
     const toggle = page.getByRole("switch", { name: "Zablokovat nabíjení" });
     await toggle.focus();

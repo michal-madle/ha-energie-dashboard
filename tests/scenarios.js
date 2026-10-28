@@ -37,7 +37,7 @@ const EVENING = {
   "water_heater.technicka_mistnost_tado_tepla_voda": state("auto", { temperature: 40, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] }),
   "switch.technicka_mistnost_ventil_c1": state("on"),
   "switch.technicka_mistnost_ventil_c2": state("off"),
-  "script.prepnout_miseni_vody": state("off"),
+  "number.goodwe_depth_of_discharge_on_grid": state("80"),
   "image.bmw_i3_vin_image": state("2026-10-24T10:00:00", { entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='83'%3E%3Crect width='168' height='83' rx='20' fill='%23888'/%3E%3C/svg%3E" }),
   "number.wallbox_7_1_manual_charging_power": state("1400", { min: 1400, max: 3700, step: 100, unit_of_measurement: "W" }),
   // Today's counters (examples/denni_soucty.yaml); the car and boiler ones are not in the example configuration.

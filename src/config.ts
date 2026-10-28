@@ -17,14 +17,14 @@ export const DEFAULT_TITLE = "Energie";
  */
 export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[Name], string | undefined> } = {
   pv: { power: undefined },
-  battery: { power: undefined, state_of_charge: undefined },
+  battery: { power: undefined, state_of_charge: undefined, depth_of_discharge: "number" },
   grid: { power: undefined },
   house: { power: undefined },
   car: { state_of_charge: undefined, range: undefined, image: "image" },
   wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", prioritize_connected: "switch", charging_power: "number" },
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
-  mixing: { valve_c1: "switch", valve_c2: "switch", script: "script" },
+  mixing: { valve_c1: "switch", valve_c2: "switch" },
   daily: { pv_generation: undefined, battery_charge: undefined, battery_discharge: undefined, grid_import: undefined, grid_export: undefined, car: undefined, boiler: undefined },
 };
 

@@ -11,16 +11,10 @@ Pravidla:
 
 | Č. | Druh | Bod |
 |---|---|---|
-| [P1.1](#p1-1) | Rozhodnutí | Potvrdit pracovní cíl |
-| [P1.2](#p1-2) | Rozhodnutí | Co musí být vidět na první pohled |
-| [P1.5](#p1-5) | Rozhodnutí | Které situace hlásit; kdy jsou data zastaralá |
-| [P1.6](#p1-6) | Rozhodnutí | Jak potvrzovat ovládání |
-| [P1.7](#p1-7) | Rozhodnutí | Pravidlo pro názvy |
-| [P1.8](#p1-8) | Rozhodnutí | „Dům“: celkový odběr, nebo bez wallboxu a bojleru |
-| [P1.9](#p1-9) | Rozhodnutí | Mísení vody: neplatná kombinace a čím přepínat |
-| [P1.11](#p1-11) | Ověření | Znaménko elektroměru při přetoku, bojler ve spotřebě domu |
-| [P1.12](#p1-12) | Rozhodnutí | Rezerva baterie: 20 %, nebo nastavení střídače |
-| [P1.13](#p1-13) | Rozhodnutí | Potvrdit rozhodnutí, která jsem udělal sám |
+| [P1.5](#p1-5) | Rozhodnutí | Kdy jsou data zastaralá |
+| [P1.8](#p1-8) | Rozhodnutí | „Dům“: odečet wallboxu a bojleru z jednoho zdroje |
+| [P1.9](#p1-9) | Rozhodnutí | Mísení vody: neplatná kombinace |
+| [P1.11](#p1-11) | Ověření | Bojler ve spotřebě domu |
 | [P2.1](#p2-1) | Rozhodnutí | Telefon na šířku: jeden, nebo dva sloupce |
 | [P2.2](#p2-2) | Rozhodnutí | Odkazy na nástěnky Baterie a BMW |
 | [P2.3](#p2-3) | Ověření | Hodnoty stavu wallboxu mimo tři známé |
@@ -41,83 +35,29 @@ Pravidla:
 
 ## P1 – chyby a rozhodnutí, která blokují
 
-<a id="p1-1"></a>
-### P1.1 Potvrdit pracovní cíl · Rozhodnutí
-
-Návrh ze zadání: „na první pohled je vidět, kam teď teče energie a co potřebuje pozornost; stav je důležitější než číslo.“
-Doporučení: potvrdit beze změny a doplnit, že karta nic neradí (stejně jako Klima: stav popisuje, neradí).
-
-<a id="p1-2"></a>
-### P1.2 Co musí být vidět na první pohled · Rozhodnutí
-
-Doporučení (první obrazovka iPhonu na výšku, bez posouvání): odkud se teď bere energie a kam jde (FVE, Síť, Baterie → Dům, Auto, Bojler), nabití baterie, stav auta (připojené / nabíjí, nabití) a upozornění, jen když nějaké je. Teplota bojleru, nastavení zásobníku, mísení a boosty jsou o úroveň níž (karty systémů).
-Důvod: na tyto otázky odpovídá dnešní dashboard až po prohlédnutí celé obrazovky diagramu; čísla jsou až druhá úroveň.
-
 <a id="p1-5"></a>
-### P1.5 Které situace hlásit; kdy jsou data zastaralá · Rozhodnutí
+### P1.5 Kdy jsou data zastaralá · Rozhodnutí
 
-Doporučení:
-
-| Situace | Hlásit? | Jak |
-|---|---|---|
-| Auto připojené a nenabíjí (Waiting) | ano, jako stav | neutrálně „Připojeno, nenabíjí“ – je to běžné čekání na přebytek, ne chyba |
-| Baterie u rezervy (≤ 20 %) | ano | oranžová výplň dlaždice Baterie a poznámka v popupu (ne upozornění, viz spec) |
-| Přetok do sítě | ano, jako stav | u řádku Síť „přetok“; až po ověření znaménka (P1.11) |
-| Staré údaje z auta | ano, neutrálně | „před 3 h“ šedě u auta, starší než 1 h; nikdy poplach (auto data posílá po událostech) |
-| Boost zapnutý | ano | oranžově (odebírá i ze sítě nebo baterie) |
-| Ventily mísení v neplatné kombinaci | ano | viz P1.9 |
-| Studený bojler | ne | není chyba |
-| Nedostupná data střídače | ano, neutrálně | „––“; žádný souhrn „v pořádku“ |
-
-Zastaralá data podle exportu 24. 10. (`ENTITY_MAP.md`, Jak často entity hlásí): střídač a AZ Router hlásí každých několik sekund, hodnota bez hlášení déle než 5 min je zastaralá; zásobník hlásí řídce (11 min), zastaralý po 60 min; ventily a skript hlásí jen při změně, takže stáří hlášení se u nich nepoužije (jen dostupnost); u auta se stáří nebere z nabití (to se u zaparkovaného auta nemění), ale z času poslední zprávy z auta (`sensor.garaz_bmw_i3_2`), šedě od 1 h. Pravidlo zastaralých dat nesmí pro ventily a auto stát na `last_reported` (`AUDIT.md` bod 6).
-
-<a id="p1-6"></a>
-### P1.6 Jak potvrzovat ovládání · Rozhodnutí
-
-Možnosti: (a) jako předvolby žaluzií v kartě Klima – dvojité klepnutí do 400 ms nebo podržení 550 ms, jednoduché klepnutí jen ukáže bublinu „Podržte nebo klepněte dvakrát“, haptika; (b) klepnutí otevře list s tlačítkem „Zapnout boost“; (c) jedno klepnutí jako v dnešním dashboardu.
-Rozhodnuto 27. 10. (uživatel): Přetoky | Boost přetažením nebo dvojklepnutím, mísení vody stejným ovladačem Vypnuto | Zapnuto (vlevo vypnuto, vpravo zapnuto); variantu (a) s podržením jsem nezvolil. Rozhodnuto 28. 10. (uživatel): mísení vody nemůže být na jedno klepnutí, platí podržení (550 ms) nebo dvojklepnutí s nápovědou, stejně u Boostu bojleru a Boostu wallboxu (u něj i přetažení). Ostatní přepínače (Přednost před bojlerem, Zablokovat nabíjení, Auto | Manual | Off) zůstávají na jedno klepnutí; čeká na potvrzení, zda je chránit také. Původní doporučení: (a) pro oba boosty i mísení. Důvod: stejný pohyb jako v kartě Klima, chrání před náhodným klepnutím při posouvání, nepřidává dialog; boost wallboxu umí odebírat asi 4 kW ze sítě nebo baterie, takže náhodné zapnutí něco stojí. Při chybě služby haptika a hláška u tlačítka; nedostupná entita nic neodešle.
-
-<a id="p1-7"></a>
-### P1.7 Pravidlo pro názvy · Rozhodnutí
-
-Návrh pravidla (obdoba Topení / Klimatizace): systém se jmenuje tím, co je nebo co dělá; když mají dvě zařízení stejnou funkci, rozliší je zdroj energie v závorce. Nikdy výrobce, model ani integrace (GoodWe, AZ Router, Tado, Nous, BMW, BavarianData); ID entit se nemění.
-Názvy podle pravidla: FVE, Síť, Dům, Baterie, **Auto** (místo „BMW i3“), Wallbox, Bojler (FVE), Zásobník (Plyn), Mísení vody; ovládání Boost wallboxu, Boost bojleru. „Solární“ z dnešního dashboardu (výchozí popisek Power Flow Card Plus) se nahradí „FVE“.
+Rozhodnuto 28. 10.: zapnutý boost se hlásí jako stav. Zbývá práh zastaralosti, karta zatím zastaralé hodnoty nijak neoznačuje.
+Doporučení podle exportu 24. 10. (`ENTITY_MAP.md`, Jak často entity hlásí): střídač a AZ Router hlásí každých několik sekund, hodnota bez hlášení déle než 5 min je zastaralá; zásobník hlásí řídce (11 min), zastaralý po 60 min; ventily hlásí jen při změně, takže se u nich stáří nepoužije (jen dostupnost); u auta se stáří bere z času poslední zprávy z auta (`sensor.garaz_bmw_i3_2`), šedě od 1 h. Zastaralá hodnota je neutrální (nikdy oranžová ani červená). Pravidlo zastaralých dat nesmí pro ventily a auto stát na `last_reported` (`AUDIT.md` bod 6).
 
 <a id="p1-8"></a>
-### P1.8 „Dům“: celkový odběr, nebo bez wallboxu a bojleru · Rozhodnutí
+### P1.8 „Dům“: odečet wallboxu a bojleru z jednoho zdroje · Rozhodnutí
 
-Spotřeba domu ze střídače zahrnuje wallbox (měřeno 15. 10.) a bojler (uživatel 25. 10.; ověření P1.11). Návrh ukazuje „Dům“ jako ostatní spotřebu (celek bez wallboxu a bojleru), dnešní dashboard celkový odběr a wallbox a bojler navíc jako samostatné spotřebiče.
-Doporučení: „Dům“ = celkový odběr jako dnes a auto a bojler pod ním jako „z toho“ („Dům 5,0 kW · z toho auto 4,0 kW“). Důvod: nic se nepočítá dvakrát ani neodečítá hodnoty z různých registrů a okamžiků (`AUDIT.md` bod 1), takže se nemůže objevit záporný „zbytek domu“.
+Rozhodnuto 28. 10.: Dům = spotřeba domu bez wallboxu a bojleru, ale všechny tři hodnoty mají být ze stejného zdroje (nemíchat GoodWe a AZ Router, každý měří v jiný čas a obnovuje jinak). Karta teď počítá `house.power` (GoodWe, včetně auta a bojleru) − `wallbox.power` − `boiler.power` (AZ Router), tedy právě to míchání.
+Otázka: má GoodWe vlastní měření výkonu wallboxu a bojleru (pak je dám do konfigurace a odečítat se bude jen v GoodWe), nebo se má Dům počítat jen z hodnot, které se obnovily ve stejném okně (např. do 10 s od sebe, jinak se drží poslední shodná hodnota)? Do rozhodnutí zůstává dnešní výpočet se spodní mezí 0.
 
 <a id="p1-9"></a>
-### P1.9 Mísení vody: neplatná kombinace a čím přepínat · Rozhodnutí
+### P1.9 Mísení vody: neplatná kombinace · Rozhodnutí
 
-1. Oba ventily zapnuté nebo oba vypnuté: dnešní dashboard ukáže červeně „Nejasný stav“ (i u nedostupného ventilu). Doporučení: nedostupný ventil „––“ neutrálně; oba zapnuté / oba vypnuté oranžově „Ventily: oba zapnuté“ / „oba vypnuté“ – je to skutečná odchylka, ne chybějící údaj.
-2. Čím přepínat: doporučení je volat váš `script.prepnout_miseni_vody`, aby přepínání bylo na jednom místě. Potřebuju jeho YAML, abych ověřil, že přepíná oba ventily současně a nikdy nenechá zapnuté oba (`AUDIT.md` bod 3).
-3. Ověřit, zda ještě běží automatizace Tuya „Vypnout FVE cirkulaci“ (17:58) a skript na Synology (`AUDIT.md` bod 2); karta pak ukáže, že mísení vypnulo něco jiného, jen skutečným stavem ventilů.
+Rozhodnuto 28. 10.: karta přepíná mísení ručně, přímo ventily C1 a C2 (bez skriptu); automatizace řeší uživatel sám.
+Zbývá zobrazení kombinace oba zapnuté / oba vypnuté: dnes neutrální „nejasný stav ventilů“ a přepínač jde použít. Doporučení: oranžově „Ventily: oba zapnuté“ / „oba vypnuté“ – je to skutečná odchylka, ne chybějící údaj; nedostupný ventil „––“ neutrálně.
 
 <a id="p1-11"></a>
-### P1.11 Znaménko elektroměru při přetoku, bojler ve spotřebě domu · Ověření
+### P1.11 Bojler ve spotřebě domu · Ověření
 
-Karta bere kladnou hodnotu elektroměru jako dodávku do sítě (odběr záporný, to je změřené). Když se při prvním přetoku ukáže opak, stačí otočit znaménko v `src/model.ts`.
-
-1. Při větším přetoku (baterie plná, slunce) zapsat `sensor.goodwe_meter_active_power_total` a stav SEMS+: kladné = přetok?
-2. Když bojler topí (`sensor.tuv_power_total` > 0), roste o totéž `sensor.goodwe_house_consumption`? Z odečtu screenshotu 25. 10. ano (dům 10,7 kW = auto 1,4 + bojler 4,0 + ostatní 5,3 kW), přímé ověření chybí.
-
-<a id="p1-12"></a>
-### P1.12 Rezerva baterie: 20 %, nebo nastavení střídače · Rozhodnutí
-
-Export 24. 10.: hloubka vybití ve střídači je 80 %, tedy rezerva 20 % – shodně se zadáním. Zbývá rozhodnout, odkud ji karta vezme.
-Doporučení: ze střídače (`number.goodwe_depth_of_discharge_on_grid`, rezerva = 100 − hodnota), aby karta po změně nastavení nehlásila podle staré hranice; klíč `battery.reserve` v konfiguraci jen jako náhrada, když entita chybí. Důvod: jeden zdroj pravdy, nastavení střídače se mění.
-
-<a id="p1-13"></a>
-### P1.13 Potvrdit rozhodnutí, která jsem udělal sám · Rozhodnutí
-
-1. Nadpis karty bez klíče `title` je „Energie“.
-2. Struktura konfigurace po systémech (`pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `tank`, `mixing`), entity bez výchozích ID (nenakonfigurovaná = „––“); `boost`, ventily, zásobník a skript musí mít správnou doménu.
-3. Export entit má navíc ke klíčům vzoru (`entity`, `name`, `state`) i `system`, `unit`, `device_class`, `state_class`, `last_changed`, `last_updated`, `last_reported` a vybrané atributy (`options`, nastavení zásobníku). Důvod: jednotky, výčty hodnot a stáří dat se jinak ověřit nedají.
-4. Karta používá názvy z dnešního dashboardu, dokud nerozhodnete P1.7.
-5. Neznámé klíče na horní úrovni karty se tolerují jako ve vzoru, takže překlep v názvu sekce (`walbox:`) se neohlásí. Alternativa: seznam klíčů, které přidává Home Assistant, a ostatní odmítnout – vyžaduje ověřit ten seznam ve zdrojích frontendu.
+Znaménka potvrdil uživatel 28. 10.: kladné hodnoty jsou přetoky do sítě a vybíjení baterie.
+Když bojler topí (`sensor.tuv_power_total` > 0), roste o totéž `sensor.goodwe_house_consumption`? Z odečtu screenshotu 25. 10. ano (dům 10,7 kW = auto 1,4 + bojler 4,0 + ostatní 5,3 kW), přímé ověření chybí.
 
 ## P2 – denní používání
 

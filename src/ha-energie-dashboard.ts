@@ -350,7 +350,7 @@ export class HaEnergieDashboard extends LitElement {
     const idle = s.num.flows.idle_threshold;
     const link = model.carLink;
     const soc = model.soc;
-    const low = soc !== undefined && soc <= s.num.battery.reserve;
+    const low = soc !== undefined && soc <= this.batteryReserve(s);
     const batLevel = (active: boolean): Level | undefined =>
       soc === undefined ? undefined : { f: soc / 100, active, color: low ? "var(--ed-warning)" : "var(--ed-battery)", a1: low ? 0.5 : 0.58 };
     const batText = (what: string) =>
@@ -509,7 +509,7 @@ export class HaEnergieDashboard extends LitElement {
     const p = (watts: number | undefined) => (watts === undefined ? NO_DATA : formatPower(watts, unit));
     const on = (watts: number | undefined) => isOn(watts, idle);
     const soc = model.soc;
-    const low = soc !== undefined && soc <= s.num.battery.reserve;
+    const low = soc !== undefined && soc <= this.batteryReserve(s);
     const batNow = on(model.batDis) ? `vybíjí ${p(model.batDis)}` : on(model.batIn) ? `nabíjí ${p(model.batIn)}` : soc === undefined ? NO_DATA : "nevybíjí";
     const battery: PopInfo = {
       title: "Baterie", now: batNow,
@@ -666,7 +666,7 @@ export class HaEnergieDashboard extends LitElement {
             ${this.renderPowerFold(s, boost === "on")}
           </div>`
         : nothing}
-      ${this.renderWallboxGroup(s, model, charging, srcColor, unit)}
+      ${this.carVisible(s, model) ? this.renderWallboxGroup(s, model, charging, srcColor, unit) : nothing}
     </section>`;
   }
 
@@ -864,11 +864,10 @@ export class HaEnergieDashboard extends LitElement {
   /** Mixing: a capsule between the two tiles, joined to them by lines (solid when on, dotted when off). */
   private renderMixing(s: Settings): TemplateResult | typeof nothing {
     const m = s.entities.mixing;
-    if (!(m.script && m.valve_c1 && m.valve_c2) && !m.valve_c1 && !m.valve_c2) return nothing;
-    const state = mixingState(this.hass, m);
+    if (!m.valve_c1 && !m.valve_c2) return nothing;
+    const state = mixingState(this.shown(m.valve_c1), this.shown(m.valve_c2));
     const on = state === "on";
-    const known = state === "on" || state === "off";
-    const canSwitch = !!(m.script && m.valve_c1 && m.valve_c2);
+    const canSwitch = !!(m.valve_c1 && m.valve_c2);
     const note = state === "unclear" ? "nejasný stav ventilů" : state === undefined ? "bez dat" : "";
     return html`
       <div class="link ${on ? "on" : ""}" aria-hidden="true"></div>
@@ -879,9 +878,9 @@ export class HaEnergieDashboard extends LitElement {
         </svg>
         <span class="mixcap-text"><span id="l-mix" style=${on ? "" : "color:var(--ed-secondary)"}>Mísení vody</span>${note ? html`<span class="mixcap-note">${note}</span>` : nothing}</span>
         <ed-switch
-          guarded hintPlacement="below" label="Mísení vody" .checked=${on} ?disabled=${!known || !canSwitch}
+          guarded hintPlacement="below" label="Mísení vody" .checked=${on} ?disabled=${state === undefined || !canSwitch}
           .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
-          @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setMixing(event.detail.checked ? "on" : "off", state)}
+          @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setMixing(event.detail.checked ? "on" : "off")}
         ></ed-switch>
       </div>
       <div class="link ${on ? "on" : ""}" aria-hidden="true"></div>`;
@@ -951,6 +950,12 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   // --------------------------------------------------------------- controls
+
+  /** Battery reserve in %: 100 − the inverter's depth of discharge (on-grid); the configured number only when the inverter does not report it. */
+  private batteryReserve(s: Settings): number {
+    const depth = readNumber(this.hass, s.entities.battery.depth_of_discharge);
+    return depth !== undefined && depth >= 0 && depth <= 100 ? 100 - depth : s.num.battery.reserve;
+  }
 
   /** The state shown: a just chosen value, until Home Assistant reports it. */
   private shown(id: string | undefined): string | undefined {
@@ -1065,11 +1070,22 @@ export class HaEnergieDashboard extends LitElement {
     await this.setTemperature(id, temperature);
   }
 
-  /** The script toggles the valves, so it is called only when the wanted state differs from the real one. */
-  private async setMixing(wanted: "on" | "off", current: Mixing): Promise<void> {
-    const script = this._config!.entities.mixing.script;
-    if (!script || wanted === current) return;
+  /**
+   * Manual mixing switches both valves directly and at once (mixing = C1 off + C2 on, not mixing = C1 on + C2 off),
+   * so it works from any valve state, even an unclear one. Automations are not touched.
+   */
+  private async setMixing(wanted: "on" | "off"): Promise<void> {
+    const { valve_c1: c1, valve_c2: c2 } = this._config!.entities.mixing;
+    if (!c1 || !c2) return;
     this._feedback = "";
-    await this.call("script", "turn_on", { entity_id: script }, script, "Mísení vody");
+    const c1State = wanted === "on" ? "off" : "on";
+    const c2State = wanted === "on" ? "on" : "off";
+    this.choose(c1, c1State);
+    this.choose(c2, c2State);
+    const sent = await Promise.all([
+      this.call("switch", `turn_${c1State}`, { entity_id: c1 }, c1, "Mísení vody"),
+      this.call("switch", `turn_${c2State}`, { entity_id: c2 }, c2, "Mísení vody"),
+    ]);
+    if (!sent.every(Boolean)) this._feedback = this._feedback || "Mísení vody: příkaz se neodeslal.";
   }
 }

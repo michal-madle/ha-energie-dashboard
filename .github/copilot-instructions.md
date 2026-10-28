@@ -15,7 +15,7 @@
 - State matters more than numbers: at a glance the card shows where energy flows now and what needs attention. It describes state, it does not advise. Colour marks a deviation only; the normal state has no dominant green.
 - Missing, `unknown`, `unavailable`, invalid, and stale values are not alarms: keep the icon, show `––` in a neutral colour. Never report "everything is fine" from incomplete data.
 - Signs and units are part of the entity contract in `ENTITY_MAP.md` (for example battery power positive = discharging, grid meter power negative = import). Do not flip a sign, rescale a value, or trust a declared unit without a confirmed source; some entities declare a wrong unit.
-- Controls change real devices (boosts, water mixing valves). Tapping a value or a tile never switches anything (it opens the history); a control acts only through its own control, and the confirmation pattern is an open decision (TODO P1.6). The two mixing valves are never on together and are switched together. Never call a service an entity does not offer.
+- Controls change real devices (boosts, water mixing valves). Tapping a value or a tile never switches anything (it opens the history); a control acts only through its own control, and physical switches (blinds, water mixing, boosts) need hold or double tap, settings and the gas tank do not. The two mixing valves are never on together and are switched together. Never call a service an entity does not offer.
 - Preserve Czech user-facing labels and `cs-CZ` number formatting. Name systems by the naming rule in the spec. Do not change thresholds, colour semantics, entity mappings, or interactions based on guesswork; ask when the spec leaves a material decision open.
 
 ## Implementation conventions

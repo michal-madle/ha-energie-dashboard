@@ -31,7 +31,8 @@ Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/e
 | `titles.electricity`, `titles.car`, `titles.water` | `Elektřina`, `BMW i3`, `Teplá voda` | nadpisy tří panelů |
 | `pv.power` | – | výkon FVE |
 | `battery.power`, `battery.state_of_charge` | – | výkon a nabití baterie |
-| `battery.reserve` | `20` | % rezerva baterie (nabití pod ní je oranžové) |
+| `battery.depth_of_discharge` | – | hloubka vybití ze střídače (`number.…`), rezerva = 100 − hodnota |
+| `battery.reserve` | `20` | % rezerva baterie, jen když střídač hloubku vybití nehlásí (nabití pod ní je oranžové) |
 | `grid.power` | – | výkon na elektroměru |
 | `house.power` | – | spotřeba domu |
 | `car.state_of_charge`, `car.range` | – | nabití a dojezd auta |
@@ -53,7 +54,7 @@ Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/e
 | `colors.temp_scale` | `20 #0A84FF, 32 #5AC8FA, 44 #FFD60A, 58 #FF9F0A, 85 #FF453A` | °C a barva, přechod výplně obloukových měřičů |
 | `tank.water_heater` | – | zásobník (`water_heater.…`) |
 | `tank.temp_min`, `tank.temp_max`, `tank.temp_step` | `38`, `65`, `1` | °C, rozsah a krok teploty zásobníku (stupnice oblouku i posuvníku; rysky po 5 °C) |
-| `mixing.valve_c1`, `mixing.valve_c2`, `mixing.script` | – | ventily mísení (`switch.…`) a skript přepnutí (`script.…`) |
+| `mixing.valve_c1`, `mixing.valve_c2` | – | ventily mísení (`switch.…`), karta je přepíná přímo |
 | `daily.pv_generation`, `.battery_charge`, `.battery_discharge`, `.grid_import`, `.grid_export`, `.car`, `.boiler` | – (příklad: `sensor.energie_*_dnes`, `car` a `boiler` prázdné) | denní čítače v kWh (nebo Wh/MWh) pro popupy; vznikají přes `utility_meter` ([examples/denni_soucty.yaml](./examples/denni_soucty.yaml)); Dům = zbytek, počítá se jen ze všech sedmi |
 | `flows.idle_threshold` | `100` | W, pod tím je tok žádný (šum, „0,0 kW“); platí pro všechny toky i věty o stavu |
 | `flows.kw_from` | `1000` | W, od tohoto se všechny výkony ukazují v kW |
@@ -89,7 +90,7 @@ Po změně ve složce `src/` spusťte v kořeni repozitáře `npm install` a `np
 
 ## Testy
 
-`npm test` kartu sestaví a spustí 50 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml):
+`npm test` kartu sestaví a spustí 51 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml):
 
 - konfigurace: příklad obsahuje všechna nastavení a výchozí hodnoty jsou přesně ty v příkladu; chybné hodnoty (entity, čísla, pořadí mezí, barvy) zastaví kartu chybou s názvem klíče; klíč bez hodnoty je výchozí; čísla, nadpisy a barvy se projeví na kartě; `title: ""` vynechá nadpis;
 - karty: Elektřina (Sankey, hladiny v dlaždicích, skrývání Auta a Bojleru včetně přetrvání přes localStorage, popupy s denními součty, upozornění), BMW i3 (stav, odkud auto nabíjí, měřič a limit, stáří dat, Wallbox) a Teplá voda (oblouky, cílové teploty, zásobník, mísení);

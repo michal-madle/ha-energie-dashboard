@@ -176,9 +176,7 @@ export function sourceText(share: Record<Source, number>, flows: NumberSettings[
 /** State of the water mixing from its two valves (CURRENT_SPEC.md, Mísení vody). */
 export type Mixing = "on" | "off" | "unclear" | undefined;
 
-export function mixingState(hass: HomeAssistant | undefined, mixing: EntitySections["mixing"]): Mixing {
-  const c1 = readText(hass, mixing.valve_c1);
-  const c2 = readText(hass, mixing.valve_c2);
+export function mixingState(c1: string | undefined, c2: string | undefined): Mixing {
   if (c1 === undefined || c2 === undefined) return undefined;
   if (c1 === "off" && c2 === "on") return "on";
   if (c1 === "on" && c2 === "off") return "off";
