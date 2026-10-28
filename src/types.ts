@@ -1,32 +1,8 @@
-export type EntityId = string;
+import type { EntityId, Language, LanguageSetting } from "ha-dashboard-kit/types";
 
-export interface HassEntity {
-  state: string;
-  attributes: Record<string, unknown>;
-  /** ISO time; changes only when the state or an attribute changes. */
-  last_updated?: string;
-  last_changed?: string;
-}
-
-export interface HomeAssistant {
-  states: Record<EntityId, HassEntity>;
-  callService(
-    domain: string,
-    service: string,
-    serviceData?: Record<string, unknown>,
-  ): Promise<unknown>;
-  /** Home Assistant's theme: the card only follows its dark / light mode; surfaces and colours are its own. */
-  themes?: { darkMode?: boolean };
-  /** Language of the frontend (user profile), e.g. "cs", "sv", "en-GB"; `locale.language` is the current one. */
-  language?: string;
-  /** Profile of the user (Home Assistant): language and the formats of numbers, time and dates. */
-  locale?: { language?: string; number_format?: string; time_format?: string; date_format?: string };
-}
-
-/** Languages of the card (CURRENT_SPEC.md, Jazyky); `auto` follows Home Assistant. */
-export const LANGUAGES = ["cs", "en", "sv"] as const;
-export type Language = (typeof LANGUAGES)[number];
-export type LanguageSetting = "auto" | Language;
+/* Types shared with the other cards live in the kit (ha-dashboard-kit/types). */
+export type { EntityId, HassEntity, HomeAssistant, Language, LanguageSetting } from "ha-dashboard-kit/types";
+export { LANGUAGES } from "ha-dashboard-kit/types";
 
 // ------------------------------------------------------------ configuration (YAML)
 

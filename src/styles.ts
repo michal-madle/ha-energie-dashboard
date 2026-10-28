@@ -67,6 +67,19 @@ export const styles = css`
     display: grid;
     gap: 12px;
     min-width: 0;
+    /* Colours of the controls of the kit (ha-dashboard-kit, Ovládací prvky), mapped to this card's. */
+    --hdk-accent: var(--ed-accent);
+    --hdk-switch-off: var(--ed-switch-off);
+    --hdk-track: var(--ed-track);
+    --hdk-track-compact: var(--ed-track-compact);
+    --hdk-bar: var(--ed-bar);
+    --hdk-tick: var(--ed-tick);
+    --hdk-secondary: var(--ed-secondary);
+    --hdk-seg-thumb: var(--ed-seg-thumb);
+    --hdk-seg-text: var(--ed-seg-text);
+    --hdk-seg-selected: var(--ed-seg-selected);
+    --hdk-bubble: var(--ed-bubble);
+    --hdk-bubble-text: var(--ed-bubble-text);
   }
 
   h1,

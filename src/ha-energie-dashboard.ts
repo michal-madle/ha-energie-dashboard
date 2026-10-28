@@ -13,7 +13,8 @@ import { ago, entityState, formatKwh, formatNumber, formatPercent, formatPower, 
 import { cardLanguage, getI18n } from "./i18n";
 import type { I18n, Texts } from "./i18n";
 import type { PowerUnit } from "./utils";
-import type { SegmentOption } from "./ed-segmented";
+import type { SegmentOption } from "ha-dashboard-kit/controls";
+import { HoldOrDoubleTap } from "ha-dashboard-kit/gesture";
 import { ICON } from "./icons";
 
 /** Shown for every value without data (CURRENT_SPEC.md, Chybějící a zastaralá data). */
@@ -164,6 +165,7 @@ export class HaEnergieDashboard extends LitElement {
     super.disconnectedCallback();
     this._observer?.disconnect();
     this._observer = undefined;
+    this._carGesture.dispose();
     this._timers.forEach((timer) => window.clearTimeout(timer));
     this._timers.clear();
     window.clearInterval(this._clock);
@@ -247,44 +249,40 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   // ---- the car picture: double tap or long press opens the car dashboard (car.link)
-  private _carTimer?: number;
-  private _carHeld = false;
-  private _carLastTap = 0;
+  private readonly _carGesture = new HoldOrDoubleTap(() => ({
+    holdMs: this._config?.num.ui.hold_ms ?? 550,
+    doubleTapMs: this._config?.num.ui.double_tap_ms ?? 400,
+  }));
 
   private carDown = (): void => {
-    const s = this._config;
-    if (!s) return;
-    this._carHeld = false;
-    window.clearTimeout(this._carTimer);
-    this._carTimer = window.setTimeout(() => {
-      this._carHeld = true;
-      this.openCarLink();
-    }, s.num.ui.hold_ms);
+    this._carGesture.start(() => this.openCarLink());
+  };
+
+  private carRelease = (): void => {
+    this._carGesture.release();
   };
 
   private carCancel = (): void => {
-    window.clearTimeout(this._carTimer);
+    this._carGesture.cancel();
   };
 
   private carClick = (event: MouseEvent): void => {
     const s = this._config;
     if (!s) return;
-    window.clearTimeout(this._carTimer);
-    if (this._carHeld) {
-      this._carHeld = false;
-      return;
-    }
-    const now = Date.now();
     // The keyboard (click without a pointer, detail 0) opens at once, like the other protected controls.
-    if (event.detail === 0 || now - this._carLastTap <= s.num.ui.double_tap_ms) {
-      this._carLastTap = 0;
+    if (event.detail === 0) {
+      this._carGesture.cancel();
       this.openCarLink();
       return;
     }
-    this._carLastTap = now;
-    this._carHint = true;
-    window.clearTimeout(this._timers.get("carhint"));
-    this._timers.set("carhint", window.setTimeout(() => (this._carHint = false), s.num.ui.hint_seconds * 1000));
+    const tap = this._carGesture.tap("car", event.timeStamp);
+    if (tap === "double") {
+      this.openCarLink();
+    } else if (tap === "single") {
+      this._carHint = true;
+      window.clearTimeout(this._timers.get("carhint"));
+      this._timers.set("carhint", window.setTimeout(() => (this._carHint = false), s.num.ui.hint_seconds * 1000));
+    }
   };
 
   private openCarLink(): void {
@@ -699,7 +697,7 @@ export class HaEnergieDashboard extends LitElement {
         </div>
         ${s.carLink
           ? html`<div class="car-art car-hitbox" style="transform:scale(${s.num.car.image_scale})">
-              <button type="button" class="car-hit" aria-label=${t.car.openDashboard} @pointerdown=${this.carDown} @pointerup=${this.carCancel} @pointercancel=${this.carCancel} @pointerleave=${this.carCancel} @contextmenu=${(event: Event) => event.preventDefault()} @click=${this.carClick}></button>
+              <button type="button" class="car-hit" aria-label=${t.car.openDashboard} @pointerdown=${this.carDown} @pointerup=${this.carRelease} @pointercancel=${this.carCancel} @pointerleave=${this.carRelease} @contextmenu=${(event: Event) => event.preventDefault()} @click=${this.carClick}></button>
             </div>
             ${this._carHint ? html`<div class="car-hint" aria-hidden="true">${t.hint.holdOrDouble}</div>` : nothing}`
           : nothing}
@@ -724,7 +722,7 @@ export class HaEnergieDashboard extends LitElement {
             <ed-segmented
               guarded .options=${modeOptions} .value=${mode} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${boost === undefined}
               .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
-              @ed-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("wallbox", event.detail.value === "on")}
+              @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("wallbox", event.detail.value === "on")}
             ></ed-segmented>
             ${this.renderPowerFold(s, boost === "on")}
           </div>`
@@ -771,7 +769,7 @@ export class HaEnergieDashboard extends LitElement {
           label=${this.t.car.powerLabel} valueText=${total === undefined ? this.t.noData : `${formatNumber(total, 1)} kW`}
           minLabel="${formatNumber(min, 1)} kW" maxLabel="${formatNumber(max, 1)} kW"
           ?disabled=${total === undefined}
-          @ed-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases), this.t.car.power)}
+          @hdk-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases), this.t.car.power)}
         ></ed-slider>
       </div>
     </div></div>`;
@@ -883,7 +881,7 @@ export class HaEnergieDashboard extends LitElement {
             ? html`<ed-segmented
                 compact guarded .options=${this.boostOptions} .value=${boost ?? ""} label=${tt.water.boostMode} .hint=${tt.hint.holdDragOrDouble} ?disabled=${boost === undefined}
                 .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
-                @ed-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("boiler", event.detail.value === "on")}
+                @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("boiler", event.detail.value === "on")}
               ></ed-segmented>`
             : nothing}
         </div>
@@ -924,7 +922,7 @@ export class HaEnergieDashboard extends LitElement {
           label=${tt.water.targetSliderLabel(title)} valueText=${value === undefined ? tt.noData : tt.water.targetSliderSpoken(`${value} °C`, title)}
           minLabel="${formatNumber(min)} °C" maxLabel="${formatNumber(max)} °C"
           ?disabled=${value === undefined}
-          @ed-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, event.detail.value, tt.water.targetWhat(title))}
+          @hdk-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, event.detail.value, tt.water.targetWhat(title))}
         ></ed-slider>
       </div>`;
     };
@@ -954,7 +952,7 @@ export class HaEnergieDashboard extends LitElement {
         <ed-switch
           guarded hintPlacement="above" label=${this.t.water.mixing} .hint=${this.t.hint.holdOrDouble} .checked=${on} ?disabled=${state === undefined || !canSwitch}
           .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
-          @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setMixing(event.detail.checked ? "on" : "off")}
+          @hdk-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setMixing(event.detail.checked ? "on" : "off")}
         ></ed-switch>
       </div>
       <div class="link ${on ? "on" : ""}" aria-hidden="true"></div>`;
@@ -998,7 +996,7 @@ export class HaEnergieDashboard extends LitElement {
             <div class="source-line"><span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${modeName}</span>${mode === undefined ? nothing : html` <span class="dim">· ${plan}</span>`}</div>
           </div>
           ${id
-            ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @ed-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`
+            ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`
             : nothing}
         </div>
       </div>
@@ -1019,7 +1017,7 @@ export class HaEnergieDashboard extends LitElement {
                     label=${tt.tank.sliderLabel} valueText=${set === undefined ? tt.noData : tt.tank.sliderSpoken(`${set} °C`)}
                     minLabel="${formatNumber(min)} °C" maxLabel="${formatNumber(max)} °C"
                     ?disabled=${set === undefined || off}
-                    @ed-change=${(event: CustomEvent<{ value: number }>) => this.setTankTemperature(id, event.detail.value, mode)}
+                    @hdk-change=${(event: CustomEvent<{ value: number }>) => this.setTankTemperature(id, event.detail.value, mode)}
                   ></ed-slider>
                 </div>
               </div>
@@ -1053,7 +1051,7 @@ export class HaEnergieDashboard extends LitElement {
       <span class="switch-text"><span class="switch-title" id="l-${id.replace(/\W/g, "-")}">${title}</span><span class="hint ${warn ? "warn" : ""}">${value === undefined ? NO_DATA : hint}</span></span>
       <ed-switch
         label=${title} .checked=${value === "on"} ?disabled=${value === undefined}
-        @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setSwitch(id, event.detail.checked, title)}
+        @hdk-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setSwitch(id, event.detail.checked, title)}
       ></ed-switch>
     </div>`;
   }

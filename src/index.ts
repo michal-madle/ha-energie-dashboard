@@ -1,18 +1,9 @@
-import { EdSegmented } from "./ed-segmented";
-import { EdSlider } from "./ed-slider";
-import { EdSwitch } from "./ed-switch";
+import { defineControls } from "ha-dashboard-kit/controls";
 import { HaEnergieDashboard } from "./ha-energie-dashboard";
 import { getI18n, pageLanguage } from "./i18n";
 
-if (!customElements.get("ed-segmented")) {
-  customElements.define("ed-segmented", EdSegmented);
-}
-if (!customElements.get("ed-slider")) {
-  customElements.define("ed-slider", EdSlider);
-}
-if (!customElements.get("ed-switch")) {
-  customElements.define("ed-switch", EdSwitch);
-}
+// <ed-switch>, <ed-segmented>, <ed-slider> of the kit, named by the prefix of this card.
+defineControls("ed");
 if (!customElements.get("ha-energie-dashboard")) {
   customElements.define("ha-energie-dashboard", HaEnergieDashboard);
 }

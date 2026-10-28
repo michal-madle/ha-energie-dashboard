@@ -1,35 +1,20 @@
+import { entityState, readNumber as readPlainNumber, readText } from "ha-dashboard-kit/entities";
 import { getI18n } from "./i18n";
 import type { I18n, Texts } from "./i18n";
-import type { HassEntity, HomeAssistant } from "./types";
+import type { HomeAssistant } from "./types";
 
-/** An entity state that carries no value (CURRENT_SPEC.md, Chybějící a zastaralá data). */
-const NO_VALUE = new Set(["unavailable", "unknown", ""]);
-
-export function entityState(hass: HomeAssistant | undefined, id: string | undefined): HassEntity | undefined {
-  return id ? hass?.states?.[id] : undefined;
-}
-
-/** The text state of an entity, or undefined when it is missing, unavailable or unknown. */
-export function readText(hass: HomeAssistant | undefined, id: string | undefined): string | undefined {
-  const state = entityState(hass, id)?.state;
-  return state === undefined || NO_VALUE.has(state) ? undefined : state;
-}
+export { entityState, readText };
 
 /**
  * A number from an entity, or undefined when the entity is missing, unavailable, unknown or not
  * numeric. Power sensors in kW are converted to W; the card works in W.
  */
 export function readNumber(hass: HomeAssistant | undefined, id: string | undefined): number | undefined {
-  const entity = entityState(hass, id);
-  const text = readText(hass, id);
-  if (text === undefined) {
+  const value = readPlainNumber(hass, id);
+  if (value === undefined) {
     return undefined;
   }
-  const value = Number(text);
-  if (!Number.isFinite(value)) {
-    return undefined;
-  }
-  return entity?.attributes?.unit_of_measurement === "kW" ? value * 1000 : value;
+  return entityState(hass, id)?.attributes?.unit_of_measurement === "kW" ? value * 1000 : value;
 }
 
 /**

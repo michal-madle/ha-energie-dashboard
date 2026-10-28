@@ -1,16 +1,14 @@
 import { readFileSync } from "node:fs";
-import { createRequire } from "node:module";
 import { parse } from "yaml";
+import { axeViolations as kitAxeViolations } from "ha-dashboard-kit/testing/helpers.mjs";
 import { expect, test } from "./fixtures";
 import type { Page } from "./fixtures";
-import { CONFIG_KEYS } from "../src/config";
+import { CONFIG_KEYS } from "../src/config-schema";
 
 // Browser tests of the Energie Dashboard card against tests/harness.html (fake hass data).
 // Every case names the spec section it guards. `npm test` builds the card first;
 // `npm run coverage` shows which code of src/ the tests execute.
 
-const require = createRequire(import.meta.url);
-const AXE = require.resolve("axe-core/axe.min.js");
 const WIDTHS = [320, 360, 375, 393, 430, 768];
 const LANDSCAPE = [852, 393] as const;
 const TILES = ["sun", "bat", "grid", "house", "car", "boil", "batIn", "gridOut"];
@@ -61,19 +59,8 @@ async function settle(page: Page): Promise<void> {
 
 /** axe-core on the whole harness page; `skip` turns off rules that judge the page, not the card. */
 async function axeViolations(page: Page, skip: string[] = []): Promise<string[]> {
-  await page.addScriptTag({ path: AXE });
   await settle(page);
-  return page.evaluate(async (off) => {
-    const rules = Object.fromEntries(off.map((id) => [id, { enabled: false }]));
-    // @ts-expect-error axe is injected above
-    const result = await window.axe.run(document, { resultTypes: ["violations"], rules });
-    return result.violations.map(
-      (violation: { id: string; nodes: Array<{ target: string[]; any: Array<{ data?: unknown }> }> }) =>
-        `${violation.id}: ${violation.nodes
-          .map((node) => `${node.target.join(" > ")} ${JSON.stringify(node.any[0]?.data ?? {})}`)
-          .join(" | ")}`,
-    );
-  }, skip);
+  return kitAxeViolations(page, skip);
 }
 
 /** What every tile shows: key, visible value and the label a screen reader gets. */

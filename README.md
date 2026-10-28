@@ -78,6 +78,10 @@ ID entit v příkladu potvrdil export z 24. 10. 2026 ([ENTITY_MAP.md](./ENTITY_M
 
 Šablona [HA entities/export_entit.jinja](./HA%20entities/export_entit.jinja) vypíše entity všech systémů včetně jednotek a času posledního hlášení; vkládá se do **Nástroje → Šablona** a v Home Assistantu nic nemění. Postup krok za krokem je v [HA entities/README.md](./HA%20entities/README.md), poslední export v [HA entities/energie.json](./HA%20entities/energie.json). Repozitář je veřejný: poloha, sériová čísla a MAC adresy se v exportu skrývají.
 
+## Společný kit
+
+Co mají karty Energie a Klima společné, je v repozitáři [ha-dashboard-kit](https://github.com/michal-madle/ha-dashboard-kit) a tato karta to používá jako závislost: jazyky a formáty čísel a času, čtení entit, pravidla konfigurace, gesto podržení nebo dvojklep, ovládací prvky (přepínač, segmentový ovladač, posuvník), nastavení TypeScriptu, sestavení a testovací infrastruktura. **Společný kód a společná pravidla se zakládají v kitu, ne tady**; v téhle kartě zůstávají její entity, texty (`src/translations/`), model toků a vzhled. Kde co hledat a jak se kit mění, říká [README kitu](https://github.com/michal-madle/ha-dashboard-kit#readme) a jeho `CURRENT_SPEC.md` (oddíl Kam co patří); v téhle kartě [CURRENT_SPEC.md](./CURRENT_SPEC.md#společný-kit-ha-dashboard-kit).
+
 ## Dokumentace projektu
 
 - [CURRENT_SPEC.md](./CURRENT_SPEC.md) – aktuální specifikace a zdroj pravdy
@@ -88,7 +92,7 @@ ID entit v příkladu potvrdil export z 24. 10. 2026 ([ENTITY_MAP.md](./ENTITY_M
 
 ## Sestavení
 
-Po změně ve složce `src/` spusťte v kořeni repozitáře `npm install` a `npm run build`. Výsledek se zapíše do `dist/` a zkopíruje do kořenového `ha-energie-dashboard.js`, který používá HACS.
+Po změně ve složce `src/` spusťte v kořeni repozitáře `npm install` a `npm run build`. Výsledek se zapíše do `dist/` a zkopíruje do kořenového `ha-energie-dashboard.js`, který používá HACS. Kit se stahuje z GitHubu při `npm install` (verze je v `package.json`); aktualizace kitu je `npm install git+https://github.com/michal-madle/ha-dashboard-kit.git#<commit>` a nový běh testů.
 
 ## Testy
 
