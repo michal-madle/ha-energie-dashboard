@@ -75,7 +75,7 @@ Zastaralá data podle exportu 24. 10. (`ENTITY_MAP.md`, Jak často entity hlás�
 ### P1.6 Jak potvrzovat ovládání · Rozhodnutí
 
 Možnosti: (a) jako předvolby žaluzií v kartě Klima – dvojité klepnutí do 400 ms nebo podržení 550 ms, jednoduché klepnutí jen ukáže bublinu „Podržte nebo klepněte dvakrát“, haptika; (b) klepnutí otevře list s tlačítkem „Zapnout boost“; (c) jedno klepnutí jako v dnešním dashboardu.
-Rozhodnuto 27. 10. (uživatel): Přetoky | Boost přetažením nebo dvojklepnutím, mísení vody stejným ovladačem Vypnuto | Zapnuto (vlevo vypnuto, vpravo zapnuto); variantu (a) s podržením jsem nezvolil. Původní doporučení: (a) pro oba boosty i mísení. Důvod: stejný pohyb jako v kartě Klima, chrání před náhodným klepnutím při posouvání, nepřidává dialog; boost wallboxu umí odebírat asi 4 kW ze sítě nebo baterie, takže náhodné zapnutí něco stojí. Při chybě služby haptika a hláška u tlačítka; nedostupná entita nic neodešle.
+Rozhodnuto 27. 10. (uživatel): Přetoky | Boost přetažením nebo dvojklepnutím, mísení vody stejným ovladačem Vypnuto | Zapnuto (vlevo vypnuto, vpravo zapnuto); variantu (a) s podržením jsem nezvolil. Rozhodnuto 28. 10. (uživatel): mísení vody nemůže být na jedno klepnutí, platí podržení (550 ms) nebo dvojklepnutí s nápovědou, stejně u Boostu bojleru a Boostu wallboxu (u něj i přetažení). Ostatní přepínače (Přednost před bojlerem, Zablokovat nabíjení, Auto | Manual | Off) zůstávají na jedno klepnutí; čeká na potvrzení, zda je chránit také. Původní doporučení: (a) pro oba boosty i mísení. Důvod: stejný pohyb jako v kartě Klima, chrání před náhodným klepnutím při posouvání, nepřidává dialog; boost wallboxu umí odebírat asi 4 kW ze sítě nebo baterie, takže náhodné zapnutí něco stojí. Při chybě služby haptika a hláška u tlačítka; nedostupná entita nic neodešle.
 
 <a id="p1-7"></a>
 ### P1.7 Pravidlo pro názvy · Rozhodnutí
@@ -226,6 +226,7 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 ### P4.4 Návrh se v několika místech rozchází se specifikací · Chyba
 
 - Kód má ještě tři měřiče pod diagramem Elektřina, řádky Boost / Boost bojleru s rozklikem, hodnoty „0,0 kW“, větu s dnešními součty pod nadpisem a historii entity po klepnutí na dlaždici; spec je ruší nebo mění (viz Malé hodnoty, Nabití baterie a teplota bojleru, Režim Přetoky | Boost).
+- Kód přepíná Boost bojleru, Boost wallboxu a mísení jedním klepnutím; spec: podržení 550 ms nebo dvojklepnutí s nápovědou (viz Chráněný přepínač).
 - Měřič nabití auta v kartě BMW i3 má lesklou výplň a vnitřní stín; spec: ploché povrchy bez lesku.
 - Upozornění a část detailů používají oranžovou `#FF9F0A`; spec: odchylka je `#FF9230`.
 - Kód má v kartě auta malý obrázek, značku „limit“ i při 100 % (`car.charge_limit` výchozí `80`, spec `100`), nádrže místo obloukových měřičů, mísení s textem, Boost bojleru jako přepínač s rozbalovacími cílovými teplotami místo segmentového ovladače, dílky gauge bez poměrného plnění a upozornění uvnitř karty auta; spec to mění, kód zůstává, dokud se neřekne.
