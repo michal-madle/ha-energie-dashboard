@@ -37,6 +37,7 @@ Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/e
 | `house.power` | – | spotřeba domu |
 | `car.state_of_charge`, `car.range` | – | nabití a dojezd auta |
 | `car.image` | – | obrázek auta (`image.…`, adresa v atributu `entity_picture`) |
+| `car.link` | `/dashboard-bmw` | kam vede dvojklep nebo podržení obrázku auta (cesta nebo `https://…`; `""` = nikam) |
 | `car.image_scale` | `2` | × velikost obrázku auta (roste nahoru a do stran, spodek zůstává; 0,5–3) |
 | `car.charge_limit` | `100` | % limit nabití auta (značka na měřiči auta se kreslí jen pod 100 %) |
 | `wallbox.power`, `wallbox.status`, `wallbox.boost` | – | výkon, stav a boost wallboxu (`boost` je `switch.…`) |

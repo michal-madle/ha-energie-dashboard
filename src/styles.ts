@@ -604,6 +604,51 @@ export const styles = css`
     filter: drop-shadow(0 6px 10px rgb(0 0 0 / 45%));
   }
 
+  /* The hit area of the car picture: the same box and scaling as the picture, so it covers the car and nothing else. */
+  .car-art.car-hitbox {
+    z-index: 1;
+  }
+
+  .car-hit {
+    position: absolute;
+    right: 8px;
+    bottom: 10px;
+    width: 204px;
+    height: 101px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .car-hit:focus-visible {
+    outline: 2px solid var(--ed-accent, #0a84ff);
+    outline-offset: 2px;
+    border-radius: 12px;
+  }
+
+  /* Over the lower right of the picture; it lies on top and moves nothing. */
+  .car-hint {
+    position: absolute;
+    z-index: 6;
+    right: 8px;
+    bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background: var(--ed-bubble, #3a3a3c);
+    color: var(--ed-bubble-text, #ffffff);
+    box-shadow: 0 6px 20px rgb(0 0 0 / 55%);
+    font-size: 13px;
+    line-height: 18px;
+    pointer-events: none;
+  }
+
   .car-soc {
     position: absolute;
     left: 0;

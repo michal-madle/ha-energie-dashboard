@@ -202,6 +202,7 @@ Struktura klíčů (sekce podle systémů; uživatel 28. 10. potvrdil):
 | `house.power` | – | spotřeba domu |
 | `car.state_of_charge`, `car.range` | – | nabití a dojezd auta |
 | `car.image` | – | obrázek auta (`image.…`, adresa v atributu `entity_picture`) |
+| `car.link` | `/dashboard-bmw` | kam vede dvojklep nebo podržení obrázku auta: cesta v Home Assistantu (`/dashboard-bmw`) nebo adresa `https://…`; `""` = obrázek nic neotvírá (uživatel 28. 10.: „Na double nebo long na image auta přejde na Dashboard BMW (konfigurovatelně)“); jedno klepnutí jen ukáže nápovědu |
 | `car.image_scale` | `2` | × velikost obrázku auta (uživatel 28. 10.: „Zvětšit na 200 % směrem nahoru a do stran“); roste od spodku nahoru a do stran, přesah přes okraj karty se ořízne; výška horní části karty roste o 40 px na každý další násobek (0,5–3) |
 | `car.charge_limit` | `100` | % limit nabití auta (značka na měřiči auta se kreslí jen pod 100 %) |
 | `wallbox.power`, `wallbox.status`, `wallbox.boost` | – | výkon, stav a boost wallboxu (`boost` je `switch.…`) |

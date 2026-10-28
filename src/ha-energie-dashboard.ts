@@ -128,6 +128,7 @@ export class HaEnergieDashboard extends LitElement {
   @state() private _all = false;
   /** Room the Elektřina panel adds above and below the diagram so that an open popup is not cut off. */
   @state() private _now = Date.now();
+  @state() private _carHint = false;
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */
   @state() private _tankTemp?: { id: string; value: number };
 
@@ -227,6 +228,60 @@ export class HaEnergieDashboard extends LitElement {
       ${this.renderWater(s, model)}
       <p class="feedback" aria-live="polite">${this._feedback}</p>
     </div>`;
+  }
+
+  // ---- the car picture: double tap or long press opens the car dashboard (car.link)
+  private _carTimer?: number;
+  private _carHeld = false;
+  private _carLastTap = 0;
+
+  private carDown = (): void => {
+    const s = this._config;
+    if (!s) return;
+    this._carHeld = false;
+    window.clearTimeout(this._carTimer);
+    this._carTimer = window.setTimeout(() => {
+      this._carHeld = true;
+      this.openCarLink();
+    }, s.num.ui.hold_ms);
+  };
+
+  private carCancel = (): void => {
+    window.clearTimeout(this._carTimer);
+  };
+
+  private carClick = (event: MouseEvent): void => {
+    const s = this._config;
+    if (!s) return;
+    window.clearTimeout(this._carTimer);
+    if (this._carHeld) {
+      this._carHeld = false;
+      return;
+    }
+    const now = Date.now();
+    // The keyboard (click without a pointer, detail 0) opens at once, like the other protected controls.
+    if (event.detail === 0 || now - this._carLastTap <= s.num.ui.double_tap_ms) {
+      this._carLastTap = 0;
+      this.openCarLink();
+      return;
+    }
+    this._carLastTap = now;
+    this._carHint = true;
+    window.clearTimeout(this._timers.get("carhint"));
+    this._timers.set("carhint", window.setTimeout(() => (this._carHint = false), s.num.ui.hint_seconds * 1000));
+  };
+
+  private openCarLink(): void {
+    const link = this._config?.carLink;
+    if (!link) return;
+    this._carHint = false;
+    if (link.startsWith("/")) {
+      // The Home Assistant frontend listens for this event and changes its view without a reload.
+      window.history.pushState(null, "", link);
+      window.dispatchEvent(new CustomEvent("location-changed", { detail: { replace: false } }));
+    } else {
+      window.open(link, "_blank", "noopener");
+    }
   }
 
   private onKey(event: KeyboardEvent): void {
@@ -621,6 +676,12 @@ export class HaEnergieDashboard extends LitElement {
           <div class="glow" style="background:radial-gradient(closest-side, ${glow}, transparent)"></div><div class="shadow"></div>
           ${typeof picture === "string" && picture ? html`<img src=${picture} alt="" />` : nothing}
         </div>
+        ${s.carLink
+          ? html`<div class="car-art car-hitbox" style="transform:scale(${s.num.car.image_scale})">
+              <button type="button" class="car-hit" aria-label="Otevřít dashboard auta" @pointerdown=${this.carDown} @pointerup=${this.carCancel} @pointercancel=${this.carCancel} @pointerleave=${this.carCancel} @contextmenu=${(event: Event) => event.preventDefault()} @click=${this.carClick}></button>
+            </div>
+            ${this._carHint ? html`<div class="car-hint" aria-hidden="true">Podržte nebo klepněte dvakrát.</div>` : nothing}`
+          : nothing}
         <div class="head"><h2 id="h-car">${s.titles.car}</h2>${this.stateLine(stateText, stateColor)}</div>
         <div class="car-soc">
           <span class="soc">${soc === undefined ? NO_DATA : formatNumber(soc)}<small> %</small>${soc === undefined ? html`<span class="sr-only">bez dat</span>` : nothing}</span>

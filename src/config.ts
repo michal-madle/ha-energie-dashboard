@@ -29,7 +29,7 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
 };
 
 /** Non-numeric, non-entity keys inside sections that also hold numbers (boiler.show). */
-const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"] };
+const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"] };
 
 export const BOILER_SHOW = ["always", "heating"] as const;
 export const DEFAULT_BOILER_SHOW = "heating";
@@ -140,6 +140,7 @@ export const CONFIG_KEYS: string[] = [
   ...Object.keys(COLORS).map((key) => `colors.${key}`),
   "colors.temp_scale",
   "boiler.show",
+  "car.link",
 ];
 
 function fail(message: string): never {
@@ -286,6 +287,19 @@ function boilerShow(config: DashboardConfig): "always" | "heating" {
   return raw as "always" | "heating";
 }
 
+/** car.link: where a double tap or long press on the car picture goes ("/dashboard-bmw", a full address, or "" for nowhere). */
+export const DEFAULT_CAR_LINK = "/dashboard-bmw";
+function carLink(config: DashboardConfig): string {
+  const raw = section(config.car, "car").link;
+  if (raw === undefined || raw === null) {
+    return DEFAULT_CAR_LINK;
+  }
+  if (typeof raw !== "string" || (raw !== "" && !/^(\/(?!\/)\S*|https?:\/\/\S+)$/.test(raw))) {
+    fail(`car.link must be a path such as /dashboard-bmw, an address starting with http:// or https://, or an empty text, not ${JSON.stringify(raw)}.`);
+  }
+  return raw;
+}
+
 function titles(config: DashboardConfig): Titles {
   const input = section(config.titles, "titles");
   checkKeys(input, Object.keys(TITLES), "titles");
@@ -332,5 +346,5 @@ export function normalizeConfig(config: DashboardConfig): Settings {
   }
   const num = numbers(config);
   checkOrder(num);
-  return { title: config.title ?? DEFAULT_TITLE, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config) };
+  return { title: config.title ?? DEFAULT_TITLE, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), carLink: carLink(config) };
 }

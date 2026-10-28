@@ -37,6 +37,7 @@ car:
   image: image.bmw_i3_vin_image                         # obrázek auta (image.…); ID obsahuje VIN, doplňte své
   charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
   image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
+  link: /dashboard-bmw                                  # kam vede dvojklep nebo podržení obrázku auta (cesta nebo https://…); "" = nikam
 wallbox:
   power: sensor.wallbox_total_power                     # výkon wallboxu (W)
   status: sensor.wallbox_charge_status                  # Disconnected / Waiting / Charging

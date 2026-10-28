@@ -16,7 +16,7 @@ Pravidla:
 | [P1.9](#p1-9) | Rozhodnutí | Mísení vody: neplatná kombinace |
 | [P1.11](#p1-11) | Ověření | Bojler ve spotřebě domu |
 | [P2.1](#p2-1) | Rozhodnutí | Telefon na šířku: jeden, nebo dva sloupce |
-| [P2.2](#p2-2) | Rozhodnutí | Odkazy na nástěnky Baterie a BMW |
+| [P2.2](#p2-2) | Rozhodnutí | Odkaz na nástěnku Baterie |
 | [P2.3](#p2-3) | Ověření | Hodnoty stavu wallboxu mimo tři známé |
 | [P2.4](#p2-4) | Rozhodnutí | Barva nabití auta |
 | [P2.5](#p2-5) | Rozhodnutí | Starý commit s polohou na GitHubu |
@@ -67,9 +67,9 @@ Když bojler topí (`sensor.tuv_power_total` > 0), roste o totéž `sensor.goodw
 Karta má jeden sloupec na každé šířce; na 852 × 393 jsou karty široké a vysoké. Návrh: na šířku dva sloupce (toky vlevo, systémy vpravo), podle šířky karty jako v kartě Klima (od 620 px).
 
 <a id="p2-2"></a>
-### P2.2 Odkazy na nástěnky Baterie a BMW · Rozhodnutí
+### P2.2 Odkaz na nástěnku Baterie · Rozhodnutí
 
-Dnešní dashboard: podržení uzlu Baterie otevře `/dashboard-baterie`, podržení dlaždice BMW `/dashboard-bmw`. Podržení není na iPhonu poznat. Návrh: šipka „›“ za názvem řádku jako odkaz místnosti v kartě Klima (`link` v konfiguraci).
+Dnešní dashboard: podržení uzlu Baterie otevře `/dashboard-baterie`. Odkaz na BMW už je hotový (dvojklep nebo podržení obrázku auta, `car.link`). Podržení není na iPhonu poznat; návrh: stejný chráněný gest na dlaždici Baterie by kolidoval s klepnutím, které otevírá popup, takže spíš šipka „›“ v popupu Baterie s odkazem (nový klíč `battery.link`).
 
 <a id="p2-3"></a>
 ### P2.3 Hodnoty stavu wallboxu mimo tři známé · Ověření

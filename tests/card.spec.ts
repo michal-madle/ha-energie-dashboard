@@ -186,7 +186,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
       [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
       [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
-      [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, image, charge_limit, image_scale\)/],
+      [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, image, charge_limit, image_scale, link\)/],
       [{ car: { image_scale: 5 } }, /car\.image_scale must be a number from 0\.5 to 3/],
       [{ title: 5 }, /title must be a text/],
       [{ titles: { car: "" } }, /titles\.car must be a non-empty text/],
@@ -720,6 +720,31 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       }
     });
   }
+
+  test("obrázek auta: klepnutí jen poradí, dvojklep i podržení otevře dashboard auta (car.link)", async ({ page }) => {
+    await open(page, "full");
+    await page.evaluate(() => {
+      (window as any).__nav = [];
+      window.addEventListener("location-changed", () => (window as any).__nav.push(location.pathname));
+    });
+    const nav = () => page.evaluate(() => (window as any).__nav as string[]);
+    const car = page.getByRole("button", { name: "Otevřít dashboard auta" });
+    await car.click();
+    expect(await nav()).toEqual([]);
+    await expect(page.locator(".car-hint")).toContainText("Podržte nebo klepněte dvakrát.");
+    await car.dblclick();
+    expect(await nav()).toEqual(["/dashboard-bmw"]);
+    await expect(page.locator(".car-hint")).toHaveCount(0);
+    await hold(car);
+    expect(await nav()).toEqual(["/dashboard-bmw", "/dashboard-bmw"]);
+    await car.focus();
+    await page.keyboard.press("Enter");
+    expect((await nav()).length).toBe(3);
+    // car.link: "" obrázek ovladačem neudělá; špatný tvar se hlásí s názvem klíče
+    expect(await configError(page, { car: { link: "" } })).toBe("");
+    expect(await configError(page, { car: { link: "https://example.com/bmw" } })).toBe("");
+    expect(await configError(page, { car: { link: "dashboard-bmw" } })).toMatch(/car\.link must be a path/);
+  });
 
   test("Boost bojleru je Přetoky | Boost jako zásobník: klepnutí jen poradí, dvojklik a podržení přepne", async ({ page }) => {
     await open(page, "full");
