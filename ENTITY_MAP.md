@@ -96,7 +96,6 @@ Podle `last_reported` v okamžiku exportu (ve 22:53:34):
 
 | Co chybí | Poznámka |
 |---|---|
-| Znaménko elektroměru při přetoku | ověřit při větším přetoku (kladné = přetok?), TODO P1.11 |
-| Zda spotřeba domu zahrnuje bojler | ověřit, když bojler topí, TODO P1.11 |
-| Hodnoty `sensor.wallbox_charge_status` mimo tři známé | senzor není výčtový, export je neukáže (TODO P2.3) |
+| Zda spotřeba domu zahrnuje bojler | ověřit, když bojler topí, TODO E4 |
+| Hodnoty `sensor.wallbox_charge_status` mimo tři známé | senzor není výčtový, export je neukáže (TODO E7) |
 | Obsah `script.prepnout_miseni_vody` | přepíná oba ventily současně? (zadání to požaduje) |

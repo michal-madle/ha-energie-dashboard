@@ -80,7 +80,7 @@ mixing:
 # ------------------------------------------------ dnešní součty (jen v popupech, kWh)
 # Čítače, které se o půlnoci vynulují. Ze střídačových čítačů je udělá utility_meter,
 # viz examples/denni_soucty.yaml. Bez entity ukáže popup u příslušného řádku „––“.
-# Čítač energie auta (wallbox) a bojleru (AZ Router) zatím není ověřený (TODO P2.12).
+# Čítač energie auta (wallbox) a bojleru (AZ Router) zatím není ověřený (TODO E14).
 daily:
   pv_generation: sensor.energie_fve_dnes                # vyrobeno (kWh)
   battery_charge: sensor.energie_baterie_nabito_dnes    # nabito do baterie (kWh)

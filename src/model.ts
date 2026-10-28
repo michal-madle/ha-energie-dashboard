@@ -69,7 +69,7 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings, 
   const idle = settings.num.flows.idle_threshold;
   const sun = positive(readNumber(hass, e.pv.power));
   const battery = readNumber(hass, e.battery.power); // + discharging, − charging (measured 15. 10.)
-  const grid = readNumber(hass, e.grid.power); // − import (measured); + export (sign by definition, TODO P1.11)
+  const grid = readNumber(hass, e.grid.power); // − import (measured); + export (sign by definition, confirmed 28. 10.)
   const house = positive(readNumber(hass, e.house.power));
   const car = positive(readNumber(hass, e.wallbox.power));
   const boil = positive(readNumber(hass, e.boiler.power));
