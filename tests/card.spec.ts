@@ -583,30 +583,37 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
     });
   }
 
-  test("popover dlaždice i záhlaví zůstane celý v panelu (panel mu udělá místo) na nejužší i nejširší šířce", async ({ page }) => {
-    const inside = (width: number, what: string) =>
-      expect
-        .poll(async () =>
-          page.evaluate((tag) => {
-            const root = document.querySelector(tag)!.shadowRoot!;
-            const pop = root.querySelector(".pop")!.getBoundingClientRect();
-            const panel = root.querySelector(".pop")!.closest(".panel")!.getBoundingClientRect();
-            const flow = root.querySelector(".flow")!.getBoundingClientRect();
-            return [pop.left >= flow.left - 0.5 || pop.left >= panel.left, pop.right <= panel.right + 0.5, pop.top >= panel.top, pop.bottom <= panel.bottom + 0.5];
-          }, CARD),
-          what + " " + width,
-        )
-        .toEqual([true, true, true, true]);
+  test("popover i nápověda nic neposunou ani nezvětší: výška stránky, panelů a poloha prvků zůstane stejná", async ({ page }) => {
+    const layout = () =>
+      page.evaluate((tag) => {
+        const root = document.querySelector(tag)!.shadowRoot!;
+        const boxes = [...root.querySelectorAll(".panel, .flow, .tile, .row, ed-segmented, ed-switch, h1, h2")].map((el) => {
+          const r = el.getBoundingClientRect();
+          return [Math.round(r.x * 10), Math.round((r.y + window.scrollY) * 10), Math.round(r.width * 10), Math.round(r.height * 10)].join(",");
+        });
+        return { boxes, page: document.documentElement.scrollHeight, width: document.documentElement.scrollWidth };
+      }, CARD);
     for (const [scenario, width] of [["day", 320], ["day", 393], ["day", 768], ["full", 393], ["grid", 360]] as const) {
       await open(page, scenario, width);
+      const before = await layout();
       for (const key of await tileKeys(page)) {
         await page.locator(`.tile[data-tile="${key}"]`).click();
-        await inside(width, `${scenario} ${key}`);
+        await page.waitForTimeout(250);
+        expect(await layout(), `${scenario} ${width} ${key}`).toEqual(before);
         await page.keyboard.press("Escape");
       }
       await page.locator(".title-btn").click();
-      await inside(width, `${scenario} záhlaví`);
+      await page.waitForTimeout(250);
+      expect(await layout(), `${scenario} ${width} záhlaví`).toEqual(before);
       await page.keyboard.press("Escape");
+    }
+    await open(page, "full", 393);
+    const before = await layout();
+    for (const control of [page.getByRole("switch", { name: "Mísení vody" }), page.getByRole("radio", { name: "Boost" }).first()]) {
+      await control.click();
+      await expect(page.locator("div.hint").first()).toBeVisible();
+      expect(await layout(), "nápověda").toEqual(before);
+      await page.waitForTimeout(3300);
     }
   });
 });

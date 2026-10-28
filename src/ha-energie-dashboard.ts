@@ -127,7 +127,6 @@ export class HaEnergieDashboard extends LitElement {
   @state() private _pop?: TileKey;
   @state() private _all = false;
   /** Room the Elektřina panel adds above and below the diagram so that an open popup is not cut off. */
-  @state() private _room = { top: 0, bottom: 0 };
   @state() private _now = Date.now();
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */
   @state() private _tankTemp?: { id: string; value: number };
@@ -206,7 +205,6 @@ export class HaEnergieDashboard extends LitElement {
     if (changed.has("hass") && this._tankTemp && attribute(entityState(this.hass, this._tankTemp.id), "temperature") === this._tankTemp.value) {
       this._tankTemp = undefined;
     }
-    this.makeRoomForPopup();
     // The end of the hold after heating: draw again when the boiler tile has to go.
     const s = this._config;
     window.clearTimeout(this._timers.get("hold"));
@@ -214,19 +212,6 @@ export class HaEnergieDashboard extends LitElement {
       const left = this._lastHeating + s.num.boiler.hold_minutes * 60000 - Date.now();
       if (left > 0) this._timers.set("hold", window.setTimeout(() => this.requestUpdate(), left + 50));
     }
-  }
-
-  /** The popup lies over the panel, which clips what is outside: the panel grows by what is missing. */
-  private makeRoomForPopup(): void {
-    const pop = this.renderRoot.querySelector<HTMLElement>(".pop");
-    const panel = pop?.closest<HTMLElement>(".panel");
-    if (!pop || !panel) return;
-    const p = pop.getBoundingClientRect();
-    const q = panel.getBoundingClientRect();
-    // The popup grows in from 96 %: 12 px of reserve cover that.
-    const top = Math.max(0, Math.ceil(q.top + 4 - p.top));
-    const bottom = Math.max(0, Math.ceil(p.bottom + 12 - q.bottom));
-    if (top > 0 || bottom > 0) this._room = { top: this._room.top + top, bottom: this._room.bottom + bottom };
   }
 
   // ----------------------------------------------------------------- render
@@ -246,7 +231,6 @@ export class HaEnergieDashboard extends LitElement {
 
   private onKey(event: KeyboardEvent): void {
     if (event.key === "Escape" && (this._pop || this._all)) {
-      this._room = { top: 0, bottom: 0 };
       this._pop = undefined;
       this._all = false;
     }
@@ -332,13 +316,11 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   private openAll(): void {
-    this._room = { top: 0, bottom: 0 };
     this._all = !this._all;
     this._pop = undefined;
   }
 
   private closePop(): void {
-    this._room = { top: 0, bottom: 0 };
     this._pop = undefined;
     this._all = false;
   }
@@ -419,7 +401,7 @@ export class HaEnergieDashboard extends LitElement {
         <stop offset="1" style="stop-color:var(${SOURCE_VAR[source]});stop-opacity:0.2"></stop>
       </linearGradient>`;
     const popTile = this._pop ? tiles.find((tile) => tile.key === this._pop) : undefined;
-    return html`<div class="flow" role="group" aria-label="Toky energie" style="height:${lay.height}px;margin:${this._room.top}px 0 ${this._room.bottom}px">
+    return html`<div class="flow" role="group" aria-label="Toky energie" style="height:${lay.height}px">
       <svg width=${lay.width} height=${lay.height} viewBox="0 0 ${lay.width} ${lay.height}" aria-hidden="true">
         <defs>${SOURCES.map(stops)}</defs>
         ${band.map(
@@ -483,7 +465,6 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   private openTile(key: TileKey): void {
-    this._room = { top: 0, bottom: 0 };
     this._all = false;
     this._pop = this._pop === key ? undefined : key;
   }
@@ -634,7 +615,7 @@ export class HaEnergieDashboard extends LitElement {
     const modeOptions = BOOST_OPTIONS;
     const modeSub = boost === "on" ? "Boost · bere i ze sítě a z baterie" : boost === "off" ? "Přetoky · jen z přebytku" : NO_DATA;
 
-    return html`<section class="panel" aria-labelledby="h-car">
+    return html`<section class="panel car-panel" aria-labelledby="h-car">
       <div class="car-top" style="height:${Math.round(168 + 40 * Math.max(0, s.num.car.image_scale - 1))}px">
         <div class="car-art" aria-hidden="true" style="transform:scale(${s.num.car.image_scale})">
           <div class="glow" style="background:radial-gradient(closest-side, ${glow}, transparent)"></div><div class="shadow"></div>

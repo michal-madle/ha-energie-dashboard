@@ -104,7 +104,12 @@ export const styles = css`
     padding: 16px 16px 12px;
     border-radius: 12px;
     background: var(--ed-card);
-    /* The enlarged car picture may reach over the edges of the card. */
+    /* Popups and hints lie over the page and never move or resize anything. */
+    overflow: visible;
+  }
+
+  /* The enlarged car picture must not reach over the edges of its card. */
+  .panel.car-panel {
     overflow: hidden;
   }
 
