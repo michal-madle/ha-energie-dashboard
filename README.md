@@ -90,7 +90,7 @@ Po změně ve složce `src/` spusťte v kořeni repozitáře `npm install` a `np
 
 ## Testy
 
-`npm test` kartu sestaví a spustí 51 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml):
+`npm test` kartu sestaví a spustí 54 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml):
 
 - konfigurace: příklad obsahuje všechna nastavení a výchozí hodnoty jsou přesně ty v příkladu; chybné hodnoty (entity, čísla, pořadí mezí, barvy) zastaví kartu chybou s názvem klíče; klíč bez hodnoty je výchozí; čísla, nadpisy a barvy se projeví na kartě; `title: ""` vynechá nadpis;
 - karty: Elektřina (Sankey, hladiny v dlaždicích, skrývání Auta a Bojleru včetně přetrvání přes localStorage, popupy s denními součty, upozornění), BMW i3 (stav, odkud auto nabíjí, měřič a limit, stáří dat, Wallbox) a Teplá voda (oblouky, cílové teploty, zásobník, mísení);

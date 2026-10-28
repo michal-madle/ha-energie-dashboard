@@ -559,7 +559,8 @@ const $e = xt`
     box-shadow: 0 6px 20px rgb(0 0 0 / 55%);
     font-size: 13px;
     line-height: 18px;
-    white-space: nowrap;
+    width: max-content;
+    max-width: 240px;
     pointer-events: none;
     animation: hint-in 0.18s ease-out;
   }
@@ -664,7 +665,7 @@ const Vt = class Vt extends Q {
     )}
       </div>
       <span class="sr" aria-live="polite">${this.hints.hint ? this.hint : ""}</span>
-      ${this.hints.hint ? u`<div class="hint below ${this.compact ? "end" : "center"}" aria-hidden="true"><i></i><span style="position: relative">${this.hint}</span></div>` : null}`;
+      ${this.hints.hint ? u`<div class="hint above ${this.compact ? "end" : "center"}" aria-hidden="true"><i></i><span style="position: relative">${this.hint}</span></div>` : null}`;
   }
   select(t) {
     this.disabled || t === this.value || (window.clearTimeout(this.holdTimer), this.hints.hide(), this.dispatchEvent(new CustomEvent("ed-select", { detail: { value: t }, bubbles: !0, composed: !0 })));
@@ -1044,7 +1045,7 @@ var Ye = Object.defineProperty, G = (s, t, e, i) => {
 };
 const Zt = class Zt extends Q {
   constructor() {
-    super(...arguments), this.checked = !1, this.disabled = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hintPlacement = "below", this.hint = "Podržte nebo klepněte dvakrát.", this.hints = new xe(this), this.held = !1, this.lastTap = 0, this.cancelHold = () => {
+    super(...arguments), this.checked = !1, this.disabled = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hintPlacement = "above", this.hint = "Podržte nebo klepněte dvakrát.", this.hints = new xe(this), this.held = !1, this.lastTap = 0, this.cancelHold = () => {
       window.clearTimeout(this.holdTimer);
     };
   }
@@ -3306,7 +3307,7 @@ const Y = (s, t, e) => Math.max(t, Math.min(e, s)), it = (s, t) => `color-mix(in
         </svg>
         <span class="mixcap-text"><span id="l-mix" style=${o ? "" : "color:var(--ed-secondary)"}>Mísení vody</span>${a ? u`<span class="mixcap-note">${a}</span>` : x}</span>
         <ed-switch
-          guarded hintPlacement="below" label="Mísení vody" .checked=${o} ?disabled=${i === void 0 || !n}
+          guarded hintPlacement="above" label="Mísení vody" .checked=${o} ?disabled=${i === void 0 || !n}
           .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
           @ed-toggle=${(r) => this.setMixing(r.detail.checked ? "on" : "off")}
         ></ed-switch>

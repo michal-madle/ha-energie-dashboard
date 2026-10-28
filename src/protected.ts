@@ -60,7 +60,8 @@ export const hintStyles = css`
     box-shadow: 0 6px 20px rgb(0 0 0 / 55%);
     font-size: 13px;
     line-height: 18px;
-    white-space: nowrap;
+    width: max-content;
+    max-width: 240px;
     pointer-events: none;
     animation: hint-in 0.18s ease-out;
   }

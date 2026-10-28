@@ -878,7 +878,7 @@ export class HaEnergieDashboard extends LitElement {
         </svg>
         <span class="mixcap-text"><span id="l-mix" style=${on ? "" : "color:var(--ed-secondary)"}>Mísení vody</span>${note ? html`<span class="mixcap-note">${note}</span>` : nothing}</span>
         <ed-switch
-          guarded hintPlacement="below" label="Mísení vody" .checked=${on} ?disabled=${state === undefined || !canSwitch}
+          guarded hintPlacement="above" label="Mísení vody" .checked=${on} ?disabled=${state === undefined || !canSwitch}
           .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
           @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setMixing(event.detail.checked ? "on" : "off")}
         ></ed-switch>

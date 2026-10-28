@@ -688,6 +688,32 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     ]);
   });
 
+  for (const width of [320, 393, 768]) {
+    test(`nápověda chráněných ovladačů je nad ovladačem a celá v panelu (${width} px)`, async ({ page }) => {
+      await open(page, "full", width);
+      const controls = [
+        page.getByRole("switch", { name: "Mísení vody" }),
+        radio(page, "Režim ohřevu bojleru", "Boost"),
+        radio(page, "Režim nabíjení auta", "Boost"),
+      ];
+      for (const control of controls) {
+        await control.scrollIntoViewIfNeeded();
+        await control.click();
+        const hint = page.locator("div.hint").first();
+        await expect(hint).toBeVisible();
+        await page.waitForTimeout(250);
+        const box = (await hint.boundingBox())!;
+        const target = (await control.boundingBox())!;
+        expect(box.y + box.height, "nad ovladačem").toBeLessThanOrEqual(target.y + 1);
+        expect(box.x, "vlevo v okně").toBeGreaterThanOrEqual(0);
+        expect(box.x + box.width, "vpravo v okně").toBeLessThanOrEqual(width);
+        const panels = await page.locator(".panel").evaluateAll((items) => items.map((item) => item.getBoundingClientRect().toJSON()));
+        expect(panels.some((p) => box.x >= p.x - 1 && box.x + box.width <= p.x + p.width + 1 && box.y >= p.y - 1 && box.y + box.height <= p.y + p.height + 1), "celá v panelu").toBe(true);
+        await page.waitForTimeout(3300);
+      }
+    });
+  }
+
   test("Boost bojleru je Přetoky | Boost jako zásobník: klepnutí jen poradí, dvojklik a podržení přepne", async ({ page }) => {
     await open(page, "full");
     const boost = radio(page, "Režim ohřevu bojleru", "Boost");

@@ -228,7 +228,7 @@ Struktura klíčů (sekce podle systémů; uživatel 28. 10. potvrdil):
 | `scale.sun`, `scale.battery`, `scale.grid`, `scale.house`, `scale.car`, `scale.boiler` | `10000`, `5000`, `10000`, `10000`, `11100`, `4000` | W, výkon, při kterém má dlaždice plný odstín a záři |
 | `ui.revert_after` | `6` | s, po kterých se zvolená hodnota vrátí na skutečný stav, když ji Home Assistant nepotvrdí |
 | `ui.hold_ms`, `ui.double_tap_ms` | `550`, `400` | ms, podržení a okno dvojklepnutí chráněného ovladače (Mísení, Boost bojleru, Přetoky \| Boost) |
-| `ui.hint_seconds` | `3` | s, jak dlouho zůstane nápověda „Podržte nebo klepněte dvakrát.“ |
+| `ui.hint_seconds` | `3` | s, jak dlouho zůstane nápověda „Podržte nebo klepněte dvakrát.“ (bublina vždy nad ovladačem, uživatel 28. 10.: „Zobrazovat nad buttony“) |
 | `colors.sun`, `.battery`, `.grid`, `.house`, `.car`, `.boiler` | `#FFD60A`, `#30D158`, `#3D8BFF`, `#BF5AF2`, `#40D0E6`, `#FF6F59` | barvy zdrojů a spotřebičů (`#RRGGBB`) |
 | `colors.accent`, `.warning` | `#0A84FF`, `#FF9230` | akcent ovladačů; odchylka a upozornění |
 | `colors.cold`, `.hot` | `#64D2FF`, `#FF9F0A` | studená a teplá půlka kapky Mísení vody |

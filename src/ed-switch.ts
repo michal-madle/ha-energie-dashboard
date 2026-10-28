@@ -21,7 +21,7 @@ export class EdSwitch extends LitElement {
   @property({ type: Number }) holdMs = 550;
   @property({ type: Number }) doubleTapMs = 400;
   @property({ type: Number }) hintSeconds = 3;
-  @property() hintPlacement: "above" | "below" = "below";
+  @property() hintPlacement: "above" | "below" = "above";
   @property() hint = "Podržte nebo klepněte dvakrát.";
 
   private readonly hints = new HintState(this);
