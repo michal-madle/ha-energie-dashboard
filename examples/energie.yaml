@@ -59,7 +59,7 @@ boiler:
   target_min: 20                                        # °C nejnižší cíl ohřevu
   target_max: 85                                        # °C nejvyšší cíl ohřevu
   target_step: 5                                        # °C krok cíle ohřevu
-  show: always                                          # always = dlaždice Bojler v diagramu vždy; heating = jen při ohřevu a hold_minutes po něm
+  show: heating                                         # heating = dlaždice Bojler jen při ohřevu a hold_minutes po něm; always = v diagramu vždy
   hold_minutes: 15                                      # min, jak dlouho po konci ohřevu zůstane dlaždice vidět (jen při show: heating)
 water:
   gauge_min: 15                                         # °C začátek obou obloukových měřičů a výplně dlaždice Bojler

@@ -47,7 +47,7 @@ Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/e
 | `boiler.power`, `boiler.temperature`, `boiler.boost` | – | výkon, teplota a boost bojleru (`boost` je `switch.…`) |
 | `boiler.target_temperature`, `boiler.boost_target_temperature` | – | cíl ohřevu z přebytku a v boostu (`number.…`) |
 | `boiler.target_min`, `boiler.target_max`, `boiler.target_step` | `20`, `85`, `5` | °C, rozsah a krok cíle ohřevu |
-| `boiler.show` | `always` | `always` = dlaždice Bojler v diagramu Elektřina vždy; `heating` = jen při ohřevu a `boiler.hold_minutes` po něm |
+| `boiler.show` | `heating` | `heating` = dlaždice Bojler v diagramu Elektřina jen při ohřevu a `boiler.hold_minutes` po něm (po vypnutí zmizí); `always` = vždy |
 | `boiler.hold_minutes` | `15` | min, jak dlouho po konci ohřevu zůstane dlaždice Bojler vidět (jen při `boiler.show: heating`) |
 | `water.gauge_min`, `water.gauge_max` | `15`, `65` | °C, stupnice obou obloukových měřičů: od minima do vyšší z hodnot `gauge_max` a cíle Přetoky |
 | `colors.temp_scale` | `20 #0A84FF, 32 #5AC8FA, 44 #FFD60A, 58 #FF9F0A, 85 #FF453A` | °C a barva, přechod výplně obloukových měřičů |

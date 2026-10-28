@@ -10,6 +10,8 @@ const scenario = params.get("s") ?? "full";
 const now = new Date().toISOString();
 
 const config = parse(await (await fetch("/examples/energie.yaml")).text());
+// The example hides the Bojler tile while it does not heat (boiler.show: heating); most tests need the tile.
+config.boiler.show = "always";
 
 const state = (value, attributes = {}) => ({ state: value, attributes, last_changed: now, last_updated: now });
 

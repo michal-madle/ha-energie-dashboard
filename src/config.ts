@@ -32,7 +32,7 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
 const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"] };
 
 export const BOILER_SHOW = ["always", "heating"] as const;
-export const DEFAULT_BOILER_SHOW = "always";
+export const DEFAULT_BOILER_SHOW = "heating";
 
 export const SECTION_NAMES = Object.keys(SECTION_KEYS) as SectionName[];
 

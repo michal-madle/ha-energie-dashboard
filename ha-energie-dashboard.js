@@ -1220,7 +1220,7 @@ const Je = "Energie", Et = {
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch", script: "script" },
   daily: { pv_generation: void 0, battery_charge: void 0, battery_discharge: void 0, grid_import: void 0, grid_export: void 0, car: void 0, boiler: void 0 }
-}, we = { boiler: ["show"] }, re = ["always", "heating"], Qe = "always", ye = Object.keys(Et), w = (s, t, e, i, o = !1) => ({ value: s, min: t, max: e, what: i, integer: o }), Bt = {
+}, we = { boiler: ["show"] }, re = ["always", "heating"], Qe = "heating", ye = Object.keys(Et), w = (s, t, e, i, o = !1) => ({ value: s, min: t, max: e, what: i, integer: o }), Bt = {
   battery: { reserve: w(20, 0, 100, "% battery reserve") },
   car: {
     charge_limit: w(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),

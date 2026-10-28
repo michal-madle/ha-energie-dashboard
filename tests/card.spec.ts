@@ -167,7 +167,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(settings.num.flows.idle_threshold).toBe(100);
     expect(settings.num.ui).toEqual({ revert_after: 6, hold_ms: 550, double_tap_ms: 400, hint_seconds: 3 });
     expect(settings.tempScale).toHaveLength(5);
-    expect(settings.boilerShow).toBe("always");
+    expect(settings.boilerShow).toBe("heating");
   });
 
   test("chybná hodnota zastaví kartu srozumitelnou chybou s názvem klíče; prázdná hodnota = výchozí", async ({ page }) => {
@@ -328,6 +328,15 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
     // Disconnected, ale wallbox ještě dodává: dlaždice zůstane.
     await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
     expect(await tileKeys(page)).toContain("car");
+
+    // Výchozí nastavení z příkladu (boiler.show: heating): Bojler bez ohřevu a bez nedávného ohřevu zmizí.
+    await reconfigure(page, { boiler: example().boiler });
+    expect(await tileKeys(page)).not.toContain("boil");
+    await update(page, { "sensor.tuv_power_total": "1500" });
+    expect(await tileKeys(page)).toContain("boil");
+    await reconfigure(page, { boiler: { ...example().boiler, show: "always" } });
+    expect(await tileKeys(page)).toContain("boil");
+    await update(page, { "sensor.tuv_power_total": "0" });
 
     // Bojler: show heating, ohřev dávno skončil.
     await page.addInitScript(() => localStorage.setItem("ha-energie-dashboard:boiler-heating", String(Date.now() - 3_600_000)));
