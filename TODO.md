@@ -61,7 +61,7 @@ Doporučení:
 | Situace | Hlásit? | Jak |
 |---|---|---|
 | Auto připojené a nenabíjí (Waiting) | ano, jako stav | neutrálně „Připojeno, nenabíjí“ – je to běžné čekání na přebytek, ne chyba |
-| Baterie u rezervy (≤ 20 %) | ano | oranžově u baterie a v upozorněních |
+| Baterie u rezervy (≤ 20 %) | ano | oranžová výplň dlaždice Baterie a poznámka v popupu (ne upozornění, viz spec) |
 | Přetok do sítě | ano, jako stav | u řádku Síť „přetok“; až po ověření znaménka (P1.11) |
 | Staré údaje z auta | ano, neutrálně | „před 3 h“ šedě u auta, starší než 1 h; nikdy poplach (auto data posílá po událostech) |
 | Boost zapnutý | ano | oranžově (odebírá i ze sítě nebo baterie) |
