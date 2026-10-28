@@ -16,7 +16,7 @@
 - Missing, `unknown`, `unavailable`, invalid, and stale values are not alarms: keep the icon, show `––` in a neutral colour. Never report "everything is fine" from incomplete data.
 - Signs and units are part of the entity contract in `ENTITY_MAP.md` (for example battery power positive = discharging, grid meter power negative = import). Do not flip a sign, rescale a value, or trust a declared unit without a confirmed source; some entities declare a wrong unit.
 - Controls change real devices (boosts, water mixing valves). Tapping a value or a tile never switches anything (it opens the history); a control acts only through its own control, and physical switches (blinds, water mixing, boosts) need hold or double tap, settings and the gas tank do not. The two mixing valves are never on together and are switched together. Never call a service an entity does not offer.
-- Preserve Czech user-facing labels and `cs-CZ` number formatting. Name systems by the naming rule in the spec. Do not change thresholds, colour semantics, entity mappings, or interactions based on guesswork; ask when the spec leaves a material decision open.
+- The card speaks Czech, English and Swedish (`src/translations/cs.ts` is the source, `en.ts` and `sv.ts` have the same keys); every change that adds or edits a user-facing text updates all three languages in the same commit. Numbers, percent and time follow the Home Assistant profile and the card language, never a hard-coded locale. Name systems by the naming rule in the spec. Do not change thresholds, colour semantics, entity mappings, or interactions based on guesswork; ask when the spec leaves a material decision open.
 
 ## Implementation conventions
 

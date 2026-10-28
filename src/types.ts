@@ -17,7 +17,16 @@ export interface HomeAssistant {
   ): Promise<unknown>;
   /** Home Assistant's theme: the card only follows its dark / light mode; surfaces and colours are its own. */
   themes?: { darkMode?: boolean };
+  /** Language of the frontend (user profile), e.g. "cs", "sv", "en-GB"; `locale.language` is the current one. */
+  language?: string;
+  /** Profile of the user (Home Assistant): language and the formats of numbers, time and dates. */
+  locale?: { language?: string; number_format?: string; time_format?: string; date_format?: string };
 }
+
+/** Languages of the card (CURRENT_SPEC.md, Jazyky); `auto` follows Home Assistant. */
+export const LANGUAGES = ["cs", "en", "sv"] as const;
+export type Language = (typeof LANGUAGES)[number];
+export type LanguageSetting = "auto" | Language;
 
 // ------------------------------------------------------------ configuration (YAML)
 
@@ -102,7 +111,7 @@ export interface TempStop {
   color: string;
 }
 
-/** Headings of the three panels; every one has a default (config.ts, TITLES). */
+/** Headings of the three panels; one that is not set is named in the card language (i18n.ts). */
 export interface Titles {
   electricity: string;
   car: string;
@@ -113,13 +122,17 @@ export interface Titles {
 export type DashboardConfig = {
   type?: string;
   title?: string | null;
+  language?: LanguageSetting | null;
 } & { [Name in SectionName]?: Record<string, unknown> | null } & Record<string, unknown>;
 
 /** Normalized configuration used by the card. */
 export interface Settings {
-  title: string;
+  /** Undefined: the heading of the card language ("Energie", "Energy", "Energi"); "" leaves it out. */
+  title: string | undefined;
+  language: LanguageSetting;
   entities: EntitySections;
-  titles: Titles;
+  /** A heading that is not set is undefined and takes the card language. */
+  titles: Partial<Titles>;
   num: NumberSettings;
   colors: Colors;
   /** Colour scale of the temperature gauges, ordered by temperature. */

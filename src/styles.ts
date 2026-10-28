@@ -315,10 +315,13 @@ export const styles = css`
     white-space: nowrap;
   }
 
+  /* Idle texts ("ingen produktion") may wrap to a second line on a narrow card; the tile is tall enough. */
   .tile.idle .value {
     color: var(--ed-secondary);
     font-size: 13px;
     font-weight: 400;
+    line-height: 15px;
+    white-space: normal;
   }
 
   :host([data-light]) .tile.idle.battery .value {
@@ -896,9 +899,14 @@ export const styles = css`
     white-space: nowrap;
   }
 
+  /* The parts ("not heating", "· target 60 °C") wrap as wholes when a language is wordy. */
   .source-line {
     font-size: 13px;
     line-height: 18px;
+  }
+
+  .source-line .src,
+  .source-line .dim {
     white-space: nowrap;
   }
 

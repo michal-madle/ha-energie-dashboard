@@ -109,11 +109,18 @@ if (light) {
 const card = document.createElement("ha-energie-dashboard");
 card.setConfig(config);
 test.calls = [];
-let current = { states, themes: { darkMode: !light }, callService: async (domain, service, data) => { test.calls.push({ domain, service, data }); } };
+// ?lang=sv|en|cs: the language of the Home Assistant profile (Czech by default, so the tests read Czech texts).
+const lang = params.get("lang") ?? "cs";
+let current = { states, themes: { darkMode: !light }, language: lang, locale: { language: lang }, callService: async (domain, service, data) => { test.calls.push({ domain, service, data }); } };
 card.hass = current;
 test.card = card;
 document.querySelector("main").append(card);
 
+/** The user changing the language in the profile of Home Assistant. */
+test.setLanguage = (language) => {
+  current = { ...current, language, locale: { ...current.locale, language } };
+  card.hass = current;
+};
 /** Home Assistant switching between its dark and light mode (theme "Auto" follows the system). */
 test.setDarkMode = (dark) => {
   current = { ...current, themes: { darkMode: dark } };

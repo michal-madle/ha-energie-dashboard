@@ -9,7 +9,9 @@ import type { Layout } from "./sankey";
 import { arcSvg } from "./gauge";
 import { styles } from "./styles";
 import type { DashboardConfig, HassEntity, HomeAssistant, Settings } from "./types";
-import { ago, entityState, formatKwh, formatNumber, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
+import { ago, entityState, formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readEnergy, readNumber, readText, useFormat } from "./utils";
+import { cardLanguage, getI18n } from "./i18n";
+import type { I18n, Texts } from "./i18n";
 import type { PowerUnit } from "./utils";
 import type { SegmentOption } from "./ed-segmented";
 import { ICON } from "./icons";
@@ -22,8 +24,6 @@ const TILE_VAR: Record<TileKey, string> = {
   sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-grid",
   house: "--ed-house", car: "--ed-car", boil: "--ed-boiler", batIn: "--ed-battery", gridOut: "--ed-grid",
 };
-const TANK_MODES: Record<string, string> = { auto: "Auto", heat: "Manual", off: "Off" };
-const BOOST_OPTIONS: SegmentOption[] = [{ value: "off", label: "Přetoky" }, { value: "on", label: "Boost" }];
 
 /** Where the time the boiler last heated is kept, so the "boiler only while heating" tile survives a reload. */
 const HEATING_KEY = "ha-energie-dashboard:boiler-heating";
@@ -129,6 +129,8 @@ export class HaEnergieDashboard extends LitElement {
   /** Room the Elektřina panel adds above and below the diagram so that an open popup is not cut off. */
   @state() private _now = Date.now();
   @state() private _carHint = false;
+  /** Texts and number formats of the card language (CURRENT_SPEC.md, Jazyky); set in willUpdate. */
+  private _i18n: I18n = getI18n("cs");
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */
   @state() private _tankTemp?: { id: string; value: number };
 
@@ -167,7 +169,21 @@ export class HaEnergieDashboard extends LitElement {
     window.clearInterval(this._clock);
   }
 
+  /** The texts of the card language. */
+  private get t(): Texts {
+    return this._i18n.t;
+  }
+
+  private get boostOptions(): SegmentOption[] {
+    return [{ value: "off", label: this.t.boostOptions.off }, { value: "on", label: this.t.boostOptions.on }];
+  }
+
   protected willUpdate(): void {
+    // The card language; `lang` on the host tells screen readers which voice to use, also when
+    // the card falls back to English in a Home Assistant in another language.
+    this._i18n = getI18n(cardLanguage(this._config?.language ?? "auto", this.hass), this.hass);
+    useFormat(this._i18n);
+    if (this.lang !== this._i18n.language) this.lang = this._i18n.language;
     // Only the dark / light mode of Home Assistant is followed; the surfaces are the card's own.
     this.toggleAttribute("data-light", this.hass?.themes?.darkMode === false);
     const s = this._config;
@@ -220,11 +236,11 @@ export class HaEnergieDashboard extends LitElement {
   render(): TemplateResult | typeof nothing {
     const s = this._config;
     if (!s) return nothing;
-    const model = buildModel(this.hass, s);
+    const model = buildModel(this.hass, s, this.t);
     const c = s.colors;
     const vars = `--ed-sun:${c.sun};--ed-battery:${c.battery};--ed-grid:${c.grid};--ed-house:${c.house};--ed-car:${c.car};--ed-boiler:${c.boiler};--ed-accent:${c.accent};--ed-warning:${c.warning};--ed-off:${c.neutral}`;
     return html`<div class="page" style=${vars} @keydown=${this.onKey}>
-      ${s.title === "" ? nothing : html`<h1>${s.title}</h1>`} ${this.renderAlerts(s, model)} ${this.renderElectricity(s, model)} ${this.renderCar(s, model)}
+      ${s.title === "" ? nothing : html`<h1>${s.title ?? this.t.title}</h1>`} ${this.renderAlerts(s, model)} ${this.renderElectricity(s, model)} ${this.renderCar(s, model)}
       ${this.renderWater(s, model)}
       <p class="feedback" aria-live="polite">${this._feedback}</p>
     </div>`;
@@ -298,7 +314,7 @@ export class HaEnergieDashboard extends LitElement {
 
   private stateLine(text: string | undefined, color: string | undefined): TemplateResult {
     return html`<p class="state" style="--sc:${color ?? "var(--ed-secondary)"}">
-      <span class="dot" aria-hidden="true"></span>${text ?? html`${NO_DATA}<span class="sr-only">bez dat</span>`}
+      <span class="dot" aria-hidden="true"></span>${text ?? html`${NO_DATA}<span class="sr-only">${this.t.noData}</span>`}
     </p>`;
   }
 
@@ -306,21 +322,22 @@ export class HaEnergieDashboard extends LitElement {
 
   /** Deviations only (CURRENT_SPEC.md, Upozornění): a battery on its reserve and a house on the grid are not alerts. */
   private alerts(s: Settings, model: FlowModel): Alert[] {
+    const t = this.t;
     const w = s.entities.wallbox;
     const result: Alert[] = [];
     const connected = model.carLink === "connected" || model.carLink === "charging";
     const blocked = readText(this.hass, w.block_charging) === "on";
     const priorityWaiting = readText(this.hass, w.prioritize_connected) === "on" && model.carLink === "connected" && (model.sun ?? 0) > s.num.wallbox.priority_min_sun;
     if (blocked) {
-      result.push({ kind: "info", title: "Nabíjení auta je zablokované", text: "Auto nenabíjí, ani v Boostu. Přebytek ohřívá vodu." });
+      result.push({ kind: "info", ...t.alerts.blocked });
     } else if (priorityWaiting) {
-      result.push({ kind: "warn", title: "Auto je připojené, ale nenabíjí", text: "Přednost před bojlerem je zapnutá, ale slunce zřejmě nestačí na rozjezd wallboxu." });
+      result.push({ kind: "warn", ...t.alerts.priorityWaiting });
     }
     if (readText(this.hass, w.boost) === "on" && connected) {
-      result.push({ kind: "warn", title: "Boost wallboxu je zapnutý", text: "Auto smí nabíjet i ze sítě a z baterie." });
+      result.push({ kind: "warn", ...t.alerts.boostWallbox });
     }
     if (readText(this.hass, s.entities.boiler.boost) === "on") {
-      result.push({ kind: "warn", title: "Boost bojleru je zapnutý", text: "Bojler smí topit i ze sítě a z baterie." });
+      result.push({ kind: "warn", ...t.alerts.boostBoiler });
     }
     return result;
   }
@@ -329,7 +346,7 @@ export class HaEnergieDashboard extends LitElement {
     const items = this.alerts(s, model);
     if (!items.length) return nothing;
     return html`<section class="alerts" aria-labelledby="h-al">
-      <h2 id="h-al" class="group-label">Upozornění</h2>
+      <h2 id="h-al" class="group-label">${this.t.alerts.heading}</h2>
       <ul class="group">
         ${items.map(
           (item) => html`<li class="alert ${item.kind}">
@@ -360,13 +377,13 @@ export class HaEnergieDashboard extends LitElement {
       <div class="head click" @click=${() => this.openAll()}>
         <h2 id="h-el">
           <button type="button" class="title-btn" aria-haspopup="dialog" aria-expanded=${this._all ? "true" : "false"} @click=${(event: Event) => { event.stopPropagation(); this.openAll(); }}>
-            ${s.titles.electricity}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.chevron}></path></svg>
+            ${s.titles.electricity ?? this.t.titles.electricity}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.chevron}></path></svg>
           </button>
         </h2>
         ${this.stateLine(model.summary, color)}
       </div>
       ${this.renderFlow(s, model)} ${this._all ? this.renderDayPopup(s, model) : nothing}
-      ${this._pop || this._all ? html`<button type="button" class="scrim" aria-label="Zavřít" @click=${() => this.closePop()}></button>` : nothing}
+      ${this._pop || this._all ? html`<button type="button" class="scrim" aria-label=${this.t.close} @click=${() => this.closePop()}></button>` : nothing}
     </section>`;
   }
 
@@ -382,6 +399,7 @@ export class HaEnergieDashboard extends LitElement {
 
   /** The level of a tile (battery, car, boiler) as the fill of its background. */
   private tiles(s: Settings, model: FlowModel, unit: PowerUnit): Tile[] {
+    const t = this.t;
     const e = s.entities;
     const sc = s.num.scale;
     const idle = s.num.flows.idle_threshold;
@@ -390,14 +408,14 @@ export class HaEnergieDashboard extends LitElement {
     const low = soc !== undefined && soc <= this.batteryReserve(s);
     const batLevel = (active: boolean): Level | undefined =>
       soc === undefined ? undefined : { f: soc / 100, active, color: low ? "var(--ed-warning)" : "var(--ed-battery)", a1: low ? 0.5 : 0.58 };
-    const batText = (what: string) =>
-      `${what === "vybíjí" ? "vybíjení" : "nabíjení"}, ${soc === undefined ? "bez dat" : `nabití ${formatNumber(soc)} %`}${low ? ", pod rezervou" : ""}`;
+    const batText = (discharging: boolean) =>
+      `${t.tileSpoken.batteryState(discharging)}, ${soc === undefined ? t.noData : t.tileSpoken.chargeLevel(formatPercent(soc))}${low ? `, ${t.tileSpoken.belowReserve}` : ""}`;
     const carConnected = link === "connected" || link === "charging" || isOn(model.car, idle);
     const gMin = s.num.water.gauge_min;
     const gMax = Math.max(s.num.water.gauge_max, readNumber(this.hass, e.boiler.target_temperature) ?? 0);
     const bT = model.boilTemp;
     const on = (watts: number | undefined) => isOn(watts, idle);
-    const power = (watts: number | undefined) => (watts === undefined ? "bez dat" : formatPower(watts, unit));
+    const power = (watts: number | undefined) => (watts === undefined ? t.noData : formatPower(watts, unit));
     // The house tile is tinted by the shares of the sources.
     const parts = SOURCES.filter((source) => model.share[source] >= 0.02);
     const houseBg =
@@ -412,29 +430,29 @@ export class HaEnergieDashboard extends LitElement {
               .join(", ")}), var(--ed-tile)`
         : undefined;
     const tiles: Tile[] = [
-      { side: "L", key: "sun", name: "Slunce", watts: model.sun, k: (model.sun ?? 0) / sc.sun, icon: ICON.sun, idleIcon: ICON.moon, idleText: "bez výroby", aria: model.sun === undefined ? "bez dat" : "" },
-      { side: "L", key: "bat", name: "Baterie", watts: model.batDis, k: (model.batDis ?? 0) / sc.battery, icon: ICON.battery, icon2: ICON.batteryDown, idleIcon: ICON.pause, idleText: "nevybíjí", level: batLevel(on(model.batDis)), aria: batText("vybíjí") },
-      { side: "L", key: "grid", name: "Síť", watts: model.imp, k: (model.imp ?? 0) / sc.grid, icon: ICON.grid, idleIcon: ICON.minus, idleText: "neodebírá", aria: model.imp === undefined ? "bez dat" : on(model.imp) ? "odběr" : "" },
-      { side: "R", key: "house", name: "Dům", watts: model.other, k: (model.other ?? 0) / sc.house, icon: ICON.home, idleIcon: ICON.minus, idleText: "bez odběru", background: houseBg, aria: model.other === undefined ? "bez dat" : "ostatní spotřeba" },
+      { side: "L", key: "sun", name: t.tile.sun, watts: model.sun, k: (model.sun ?? 0) / sc.sun, icon: ICON.sun, idleIcon: ICON.moon, idleText: t.idle.sun, aria: model.sun === undefined ? t.noData : "" },
+      { side: "L", key: "bat", name: t.tile.bat, watts: model.batDis, k: (model.batDis ?? 0) / sc.battery, icon: ICON.battery, icon2: ICON.batteryDown, idleIcon: ICON.pause, idleText: t.idle.bat, level: batLevel(on(model.batDis)), aria: batText(true) },
+      { side: "L", key: "grid", name: t.tile.grid, watts: model.imp, k: (model.imp ?? 0) / sc.grid, icon: ICON.grid, idleIcon: ICON.minus, idleText: t.idle.grid, aria: model.imp === undefined ? t.noData : on(model.imp) ? t.tileSpoken.gridImport : "" },
+      { side: "R", key: "house", name: t.tile.house, watts: model.other, k: (model.other ?? 0) / sc.house, icon: ICON.home, idleIcon: ICON.minus, idleText: t.idle.house, background: houseBg, aria: model.other === undefined ? t.noData : t.tileSpoken.houseOther },
     ];
     if (this.carVisible(s, model)) {
       const level: Level | undefined = carConnected && model.carSoc !== undefined ? { f: model.carSoc / 100, active: on(model.car), color: "var(--ed-car)", a1: 0.5 } : undefined;
       tiles.push({
-        side: "R", key: "car", name: "Auto", watts: link === undefined && model.car === undefined ? undefined : model.car ?? 0, k: (model.car ?? 0) / sc.car, icon: ICON.car,
-        idleIcon: link === "disconnected" ? ICON.minus : ICON.plug, idleText: link === "disconnected" ? "odpojeno" : link === undefined ? "bez stavu" : "připojeno", level,
-        aria: `${link === undefined && model.car === undefined ? "bez dat, " : on(model.car) ? "nabíjí, " : ""}${carConnected && model.carSoc !== undefined ? `nabití ${formatNumber(model.carSoc)} %` : ""}`.replace(/, $/, ""),
+        side: "R", key: "car", name: t.tile.car, watts: link === undefined && model.car === undefined ? undefined : model.car ?? 0, k: (model.car ?? 0) / sc.car, icon: ICON.car,
+        idleIcon: link === "disconnected" ? ICON.minus : ICON.plug, idleText: link === "disconnected" ? t.idle.carDisconnected : link === undefined ? t.idle.carNoState : t.idle.carConnected, level,
+        aria: [link === undefined && model.car === undefined ? t.noData : on(model.car) ? t.tileSpoken.charging : "", carConnected && model.carSoc !== undefined ? t.tileSpoken.chargeLevel(formatPercent(model.carSoc)) : ""].filter(Boolean).join(", "),
       });
     }
     if (this.boilerVisible(s, model)) {
       const level: Level | undefined = bT === undefined ? undefined : { f: clamp((bT - gMin) / (gMax - gMin), 0, 1), active: on(model.boil), color: "var(--ed-boiler)", a1: 0.5 };
       tiles.push({
-        side: "R", key: "boil", name: "Bojler", watts: model.boil, k: (model.boil ?? 0) / sc.boiler, icon: ICON.therm, idleIcon: ICON.pause, idleText: "bez ohřevu", level,
-        aria: `${bT === undefined ? "bez dat" : `teplota ${formatNumber(bT)} °C`}${on(model.boil) ? ", ohřev" : ""}`,
+        side: "R", key: "boil", name: t.tile.boil, watts: model.boil, k: (model.boil ?? 0) / sc.boiler, icon: ICON.therm, idleIcon: ICON.pause, idleText: t.idle.boil, level,
+        aria: [bT === undefined ? t.noData : t.tileSpoken.temperature(`${formatNumber(bT)} °C`), on(model.boil) ? t.tileSpoken.heating : ""].filter(Boolean).join(", "),
       });
     }
     tiles.push(
-      { side: "R", key: "batIn", name: "Baterie", watts: model.batIn, k: (model.batIn ?? 0) / sc.battery, icon: ICON.battery, icon2: ICON.batteryBolt, idleIcon: ICON.pause, idleText: "nenabíjí", level: batLevel(on(model.batIn)), aria: batText("nabíjí") },
-      { side: "R", key: "gridOut", name: "Do sítě", watts: model.exp, k: (model.exp ?? 0) / sc.grid, icon: ICON.grid, idleIcon: ICON.minus, idleText: "nedodává", aria: model.exp === undefined ? "bez dat" : on(model.exp) ? "dodávka" : "" },
+      { side: "R", key: "batIn", name: t.tile.batIn, watts: model.batIn, k: (model.batIn ?? 0) / sc.battery, icon: ICON.battery, icon2: ICON.batteryBolt, idleIcon: ICON.pause, idleText: t.idle.batIn, level: batLevel(on(model.batIn)), aria: batText(false) },
+      { side: "R", key: "gridOut", name: t.tile.gridOut, watts: model.exp, k: (model.exp ?? 0) / sc.grid, icon: ICON.grid, idleIcon: ICON.minus, idleText: t.idle.gridOut, aria: model.exp === undefined ? t.noData : on(model.exp) ? t.tileSpoken.gridExport : "" },
     );
     return tiles;
   }
@@ -456,7 +474,7 @@ export class HaEnergieDashboard extends LitElement {
         <stop offset="1" style="stop-color:var(${SOURCE_VAR[source]});stop-opacity:0.2"></stop>
       </linearGradient>`;
     const popTile = this._pop ? tiles.find((tile) => tile.key === this._pop) : undefined;
-    return html`<div class="flow" role="group" aria-label="Toky energie" style="height:${lay.height}px">
+    return html`<div class="flow" role="group" aria-label=${this.t.flowLabel} style="height:${lay.height}px">
       <svg width=${lay.width} height=${lay.height} viewBox="0 0 ${lay.width} ${lay.height}" aria-hidden="true">
         <defs>${SOURCES.map(stops)}</defs>
         ${band.map(
@@ -539,6 +557,7 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   private renderTilePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
+    const t = this.t;
     const idle = s.num.flows.idle_threshold;
     const day = this.today(s);
     const kwh = (value: number | undefined) => (value === undefined ? NO_DATA : `${formatKwh(value)} kWh`);
@@ -546,36 +565,36 @@ export class HaEnergieDashboard extends LitElement {
     const on = (watts: number | undefined) => isOn(watts, idle);
     const soc = model.soc;
     const low = soc !== undefined && soc <= this.batteryReserve(s);
-    const batNow = on(model.batDis) ? `vybíjí ${p(model.batDis)}` : on(model.batIn) ? `nabíjí ${p(model.batIn)}` : soc === undefined ? NO_DATA : "nevybíjí";
+    const batNow = on(model.batDis) ? t.pop.discharging(p(model.batDis)) : on(model.batIn) ? t.pop.charging(p(model.batIn)) : soc === undefined ? NO_DATA : t.idle.bat;
     const battery: PopInfo = {
-      title: "Baterie", now: batNow,
-      level: soc === undefined ? undefined : { label: "Nabití", text: `${formatNumber(soc)} %`, percent: soc, color: low ? "var(--ed-warning)" : "var(--ed-battery)", note: low ? "pod rezervou" : "" },
-      rows: [{ label: "Dnes vybito", value: kwh(day.bdis) }, { label: "Dnes nabito", value: kwh(day.bchg) }],
+      title: t.tile.bat, now: batNow,
+      level: soc === undefined ? undefined : { label: t.pop.level, text: formatPercent(soc), percent: soc, color: low ? "var(--ed-warning)" : "var(--ed-battery)", note: low ? t.pop.belowReserve : "" },
+      rows: [{ label: t.pop.rows.discharged, value: kwh(day.bdis) }, { label: t.pop.rows.charged, value: kwh(day.bchg) }],
     };
     const gridInfo: PopInfo = {
-      title: "Síť", now: on(model.imp) ? `odebírá ${p(model.imp)}` : on(model.exp) ? `dodává ${p(model.exp)}` : model.imp === undefined && model.exp === undefined ? NO_DATA : "bez toku",
-      rows: [{ label: "Dnes odebráno", value: kwh(day.gin) }, { label: "Dnes dodáno", value: kwh(day.gout) }],
+      title: t.tile.grid, now: on(model.imp) ? t.pop.importing(p(model.imp)) : on(model.exp) ? t.pop.exporting(p(model.exp)) : model.imp === undefined && model.exp === undefined ? NO_DATA : t.pop.noFlow,
+      rows: [{ label: t.pop.rows.imported, value: kwh(day.gin) }, { label: t.pop.rows.exported, value: kwh(day.gout) }],
     };
     const link = model.carLink;
     const bT = model.boilTemp;
     const gMin = s.num.water.gauge_min;
     const gMax = Math.max(s.num.water.gauge_max, readNumber(this.hass, s.entities.boiler.target_temperature) ?? 0);
     const info: Record<TileKey, PopInfo> = {
-      sun: { title: "Slunce", now: on(model.sun) ? p(model.sun) : model.sun === undefined ? NO_DATA : "bez výroby", rows: [{ label: "Dnes vyrobeno", value: kwh(day.pv) }] },
+      sun: { title: t.tile.sun, now: on(model.sun) ? p(model.sun) : model.sun === undefined ? NO_DATA : t.idle.sun, rows: [{ label: t.pop.rows.produced, value: kwh(day.pv) }] },
       bat: battery,
       batIn: battery,
       grid: gridInfo,
       gridOut: gridInfo,
-      house: { title: "Dům", now: on(model.other) ? p(model.other) : model.other === undefined ? NO_DATA : "bez odběru", rows: [{ label: "Dnes spotřebováno", value: kwh(day.house) }] },
+      house: { title: t.tile.house, now: on(model.other) ? p(model.other) : model.other === undefined ? NO_DATA : t.idle.house, rows: [{ label: t.pop.rows.consumed, value: kwh(day.house) }] },
       car: {
-        title: "Auto", now: on(model.car) ? `nabíjí ${p(model.car)}` : link === "connected" || link === "charging" ? "připojeno, nenabíjí" : link === "disconnected" ? "odpojeno" : NO_DATA,
-        level: model.carSoc !== undefined && (link === "connected" || link === "charging") ? { label: "Nabití", text: `${formatNumber(model.carSoc)} %`, percent: model.carSoc, color: "var(--ed-car)", note: "" } : undefined,
-        rows: [{ label: "Dnes nabito", value: kwh(day.car) }],
+        title: t.tile.car, now: on(model.car) ? t.pop.charging(p(model.car)) : link === "connected" || link === "charging" ? t.pop.carConnectedIdle : link === "disconnected" ? t.idle.carDisconnected : NO_DATA,
+        level: model.carSoc !== undefined && (link === "connected" || link === "charging") ? { label: t.pop.level, text: formatPercent(model.carSoc), percent: model.carSoc, color: "var(--ed-car)", note: "" } : undefined,
+        rows: [{ label: t.pop.rows.carCharged, value: kwh(day.car) }],
       },
       boil: {
-        title: "Bojler", now: on(model.boil) ? `ohřev ${p(model.boil)}` : model.boil === undefined ? NO_DATA : "bez ohřevu",
-        level: bT === undefined ? undefined : { label: "Teplota", text: `${formatNumber(bT)} °C`, percent: clamp(((bT - gMin) / (gMax - gMin)) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
-        rows: [{ label: "Dnes ohřev", value: kwh(day.boil) }],
+        title: t.tile.boil, now: on(model.boil) ? t.pop.heating(p(model.boil)) : model.boil === undefined ? NO_DATA : t.idle.boil,
+        level: bT === undefined ? undefined : { label: t.pop.temperature, text: `${formatNumber(bT)} °C`, percent: clamp(((bT - gMin) / (gMax - gMin)) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
+        rows: [{ label: t.pop.rows.boilerHeated, value: kwh(day.boil) }],
       },
     };
     const pop = info[tile.key];
@@ -606,22 +625,23 @@ export class HaEnergieDashboard extends LitElement {
   /** The big popup of the heading: today's totals of everything (sources = consumption, the house is the rest). */
   private renderDayPopup(s: Settings, model: FlowModel): TemplateResult {
     void model;
+    const t = this.t;
     const day = this.today(s);
     const item = (value: number | undefined) => (value === undefined ? NO_DATA : formatKwh(value));
     const sources = [day.pv, day.bdis, day.gin];
     const srcTotal = sources.every((value) => value !== undefined) ? sources.reduce((sum, value) => sum! + value!, 0) : undefined;
     const useTotal = day.house === undefined ? undefined : day.house + day.car! + day.boil! + day.bchg! + day.gout!;
     const src = [
-      { label: "Slunce", color: "var(--ed-sun)", value: day.pv },
-      { label: "Z baterie", color: "var(--ed-battery)", value: day.bdis },
-      { label: "Ze sítě", color: "var(--ed-grid)", value: day.gin },
+      { label: t.tile.sun, color: "var(--ed-sun)", value: day.pv },
+      { label: t.pop.fromBattery, color: "var(--ed-battery)", value: day.bdis },
+      { label: t.pop.fromGrid, color: "var(--ed-grid)", value: day.gin },
     ];
     const use = [
-      { label: "Dům", color: "var(--ed-house)", value: day.house },
-      { label: "Auto", color: "var(--ed-car)", value: day.car },
-      { label: "Bojler", color: "var(--ed-boiler)", value: day.boil },
-      { label: "Do baterie", color: "var(--ed-battery)", value: day.bchg },
-      { label: "Do sítě", color: "var(--ed-grid)", value: day.gout },
+      { label: t.tile.house, color: "var(--ed-house)", value: day.house },
+      { label: t.tile.car, color: "var(--ed-car)", value: day.car },
+      { label: t.tile.boil, color: "var(--ed-boiler)", value: day.boil },
+      { label: t.pop.toBattery, color: "var(--ed-battery)", value: day.bchg },
+      { label: t.tile.gridOut, color: "var(--ed-grid)", value: day.gout },
     ];
     const column = (title: string, total: number | undefined, items: typeof src) => html`<div role="list" aria-label=${title} class="day-col">
       <div class="day-total"><span>${title}</span><b>${item(total)}</b></div>
@@ -629,20 +649,21 @@ export class HaEnergieDashboard extends LitElement {
     </div>`;
     return html`<div class="pop day" role="dialog" aria-labelledby="day-h" tabindex="-1">
       <i class="arrow up" aria-hidden="true" style="left:30px"></i>
-      <h3 id="day-h">Dnes <span>· kWh</span></h3>
-      <div class="day-cols">${column("Zdroje", srcTotal, src)} ${column("Spotřeba", useTotal, use)}</div>
+      <h3 id="day-h">${t.pop.day} <span>· kWh</span></h3>
+      <div class="day-cols">${column(t.pop.sources, srcTotal, src)} ${column(t.pop.consumption, useTotal, use)}</div>
     </div>`;
   }
 
   // ------------------------------------------------------------------- car
 
   private renderCar(s: Settings, model: FlowModel): TemplateResult {
+    const t = this.t;
     const e = s.entities;
     const flows = s.num.flows;
     const limit = s.num.car.charge_limit;
     const link = model.carLink;
     const charging = isOn(model.car, flows.idle_threshold) && link !== "disconnected";
-    const src = sourceText(model.share, flows);
+    const src = sourceText(model.share, flows, t);
     const srcColor = this.sourceColor(src);
     const blocked = readText(this.hass, e.wallbox.block_charging) === "on";
     const boost = this.shown(e.wallbox.boost);
@@ -651,24 +672,24 @@ export class HaEnergieDashboard extends LitElement {
     let stateText: string | undefined;
     let stateColor: string | undefined;
     if (charging) {
-      stateText = `Nabíjí ${src.text}${boost === "on" ? " · Boost" : ""}`;
+      stateText = `${t.car.charging(src.text)}${boost === "on" ? ` · ${t.boostOptions.on}` : ""}`;
       stateColor = srcColor;
     } else if (link === "connected" || link === "charging") {
-      stateText = "Připojeno, nenabíjí";
+      stateText = t.car.connectedIdle;
       stateColor = priorityWaiting ? "var(--ed-warning)" : undefined;
     } else if (link === "disconnected") {
-      stateText = "Odpojeno";
+      stateText = t.car.disconnected;
     }
     const glow = mix(stateColor ?? "#d8d8dc", stateColor ? 42 : 28);
     const picture = entityState(this.hass, e.car.image)?.attributes?.entity_picture;
     const soc = model.carSoc;
     const unit = powerUnit([isOn(model.car, flows.idle_threshold) ? model.car : undefined], flows.kw_from);
     const hasLimit = limit < 100;
-    const meterLabel = `Nabití auta ${soc === undefined ? "bez dat" : `${formatNumber(soc)} %`}${hasLimit ? `, limit ${formatNumber(limit)} %` : ""}`;
+    const meterLabel = t.car.chargeLevel(soc === undefined ? t.noData : formatPercent(soc), hasLimit ? formatPercent(limit) : undefined);
     const w = e.wallbox;
     const mode = boost === "on" ? "on" : boost === "off" ? "off" : "";
-    const modeOptions = BOOST_OPTIONS;
-    const modeSub = boost === "on" ? "Boost · bere i ze sítě a z baterie" : boost === "off" ? "Přetoky · jen z přebytku" : NO_DATA;
+    const modeOptions = this.boostOptions;
+    const modeSub = boost === "on" ? t.car.modeBoost : boost === "off" ? t.car.modeSurplus : NO_DATA;
 
     return html`<section class="panel car-panel" aria-labelledby="h-car">
       <div class="car-top" style="height:${Math.round(168 + 40 * Math.max(0, s.num.car.image_scale - 1))}px">
@@ -678,14 +699,14 @@ export class HaEnergieDashboard extends LitElement {
         </div>
         ${s.carLink
           ? html`<div class="car-art car-hitbox" style="transform:scale(${s.num.car.image_scale})">
-              <button type="button" class="car-hit" aria-label="Otevřít dashboard auta" @pointerdown=${this.carDown} @pointerup=${this.carCancel} @pointercancel=${this.carCancel} @pointerleave=${this.carCancel} @contextmenu=${(event: Event) => event.preventDefault()} @click=${this.carClick}></button>
+              <button type="button" class="car-hit" aria-label=${t.car.openDashboard} @pointerdown=${this.carDown} @pointerup=${this.carCancel} @pointercancel=${this.carCancel} @pointerleave=${this.carCancel} @contextmenu=${(event: Event) => event.preventDefault()} @click=${this.carClick}></button>
             </div>
-            ${this._carHint ? html`<div class="car-hint" aria-hidden="true">Podržte nebo klepněte dvakrát.</div>` : nothing}`
+            ${this._carHint ? html`<div class="car-hint" aria-hidden="true">${t.hint.holdOrDouble}</div>` : nothing}`
           : nothing}
-        <div class="head"><h2 id="h-car">${s.titles.car}</h2>${this.stateLine(stateText, stateColor)}</div>
+        <div class="head"><h2 id="h-car">${s.titles.car ?? t.titles.car}</h2>${this.stateLine(stateText, stateColor)}</div>
         <div class="car-soc">
-          <span class="soc">${soc === undefined ? NO_DATA : formatNumber(soc)}<small> %</small>${soc === undefined ? html`<span class="sr-only">bez dat</span>` : nothing}</span>
-          <span class="range">dojezd <b>${model.carRange === undefined ? NO_DATA : `${formatNumber(model.carRange)} km`}</b></span>
+          <span class="soc">${soc === undefined ? NO_DATA : formatNumber(soc)}<small>${this._i18n.percent("")}</small>${soc === undefined ? html`<span class="sr-only">${t.noData}</span>` : nothing}</span>
+          <span class="range">${t.car.range} <b>${model.carRange === undefined ? NO_DATA : `${formatNumber(model.carRange)} km`}</b></span>
         </div>
       </div>
       <div class="meter-wrap">
@@ -694,14 +715,14 @@ export class HaEnergieDashboard extends LitElement {
           <div class="ticks"></div>
           ${hasLimit ? html`<div class="limit" style="left:${limit}%"></div>` : nothing}
         </div>
-        ${hasLimit ? html`<div class="meter-label" aria-hidden="true"><span style="left:${limit}%">limit ${formatNumber(limit)} %</span></div>` : nothing}
+        ${hasLimit ? html`<div class="meter-label" aria-hidden="true"><span style="left:${limit}%">${t.car.limit(formatPercent(limit))}</span></div>` : nothing}
       </div>
       ${charging ? this.renderCarSources(model, flows, formatPower(model.car ?? 0, unit)) : nothing}
       ${w.boost
         ? html`<div class="mode">
-            <div class="mode-head"><span id="mode-l">Režim nabíjení</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${modeSub}</span></div>
+            <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${modeSub}</span></div>
             <ed-segmented
-              guarded .options=${modeOptions} .value=${mode} label="Režim nabíjení auta" ?disabled=${boost === undefined}
+              guarded .options=${modeOptions} .value=${mode} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${boost === undefined}
               .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
               @ed-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("wallbox", event.detail.value === "on")}
             ></ed-segmented>
@@ -713,16 +734,17 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   private renderCarSources(model: FlowModel, flows: Settings["num"]["flows"], total: string): TemplateResult {
-    const names: Record<Source, string> = { sun: "Slunce", bat: "Baterie", grid: "Síť" };
+    const t = this.t;
+    const names: Record<Source, string> = t.source;
     const parts = SOURCES.filter((source) => model.share[source] > 0.004);
     const pct = percentages(parts.map((source) => model.share[source]));
     // The grid beyond its share is a deviation: drawn in the warning colour, like in the texts.
     const colorOf = (source: Source) => (source === "grid" && model.share.grid > flows.grid_deviation_share / 100 ? "var(--ed-warning)" : `var(${SOURCE_VAR[source]})`);
     return html`<div class="mix">
-      <div class="mix-head"><span>Odkud auto nabíjí</span><span>${total}</span></div>
+      <div class="mix-head"><span>${t.car.sourcesTitle}</span><span>${total}</span></div>
       <div class="mix-bar" aria-hidden="true">${parts.map((source) => html`<div style="flex:${model.share[source]} 1 0;background:${colorOf(source)}"></div>`)}</div>
-      <p class="mix-legend" role="group" aria-label="Odkud auto nabíjí, průměr za 5 minut">
-        ${parts.map((source, i) => html`<span><i style="background:${colorOf(source)}"></i>${names[source]}<em>${pct[i]} %</em></span>`)}
+      <p class="mix-legend" role="group" aria-label=${t.car.sourcesLabel}>
+        ${parts.map((source, i) => html`<span><i style="background:${colorOf(source)}"></i>${names[source]}<em>${formatPercent(pct[i])}</em></span>`)}
       </p>
     </div>`;
   }
@@ -743,48 +765,49 @@ export class HaEnergieDashboard extends LitElement {
     if (entityMax !== undefined) max = Math.min(max, (entityMax * phases) / 1000);
     return html`<div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>
       <div class="field">
-        <span class="field-label">Nabíjecí výkon</span><span class="field-value">${total === undefined ? NO_DATA : formatNumber(total, 1)}<small> kW</small></span>
+        <span class="field-label">${this.t.car.power}</span><span class="field-value">${total === undefined ? NO_DATA : formatNumber(total, 1)}<small> kW</small></span>
         <ed-slider
           .min=${min} .max=${max} .step=${power_step / 1000} .value=${total ?? min}
-          label="Nabíjecí výkon wallboxu" valueText=${total === undefined ? "bez dat" : `${formatNumber(total, 1)} kW`}
+          label=${this.t.car.powerLabel} valueText=${total === undefined ? this.t.noData : `${formatNumber(total, 1)} kW`}
           minLabel="${formatNumber(min, 1)} kW" maxLabel="${formatNumber(max, 1)} kW"
           ?disabled=${total === undefined}
-          @ed-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases), "Nabíjecí výkon")}
+          @ed-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases), this.t.car.power)}
         ></ed-slider>
       </div>
     </div></div>`;
   }
 
   private renderWallboxGroup(s: Settings, model: FlowModel, charging: boolean, srcColor: string, unit: PowerUnit): TemplateResult {
+    const t = this.t;
     const w = s.entities.wallbox;
     const open = !!this._open.wallbox;
     const hasDetail = !!(w.block_charging || w.prioritize_connected);
     const link = model.carLink;
     const sub =
       charging
-        ? html`<span>nabíjí </span><b style="--c:${srcColor}">${formatPower(model.car ?? 0, unit)}</b>`
+        ? html`<span>${t.wallbox.charging} </span><b style="--c:${srcColor}">${formatPower(model.car ?? 0, unit)}</b>`
         : link === "connected" || link === "charging"
-          ? html`nenabíjí`
+          ? html`${t.wallbox.idle}`
           : link === "disconnected"
-            ? html`odpojeno`
+            ? html`${t.wallbox.disconnected}`
             : html`${NO_DATA}`;
     const socId = s.entities.car.state_of_charge;
     // The age of the reading; nothing for a car that reports no value.
-    const age = readNumber(this.hass, socId) === undefined ? undefined : ago(entityState(this.hass, socId)?.last_updated, this._now);
+    const age = readNumber(this.hass, socId) === undefined ? undefined : ago(entityState(this.hass, socId)?.last_updated, this._now, t);
     const block = this.shown(w.block_charging);
     const prio = this.shown(w.prioritize_connected);
     return html`<ul class="group">
       <li class=${open ? "open" : ""}>
         <button type="button" class="row row-btn" aria-expanded=${open ? "true" : "false"} ?disabled=${!hasDetail} @click=${() => this.toggle("wallbox")}>
           <span class="badge" aria-hidden="true" style=${charging ? `--bc:${srcColor}` : ""}><svg viewBox="0 0 24 24"><path d=${ICON.wallbox}></path></svg></span>
-          <span class="row-text"><span class="row-title">Wallbox</span><span class="row-sub">${sub}</span></span>
-          <span class="row-aside">${age ? `z auta ${age}` : ""}</span>
+          <span class="row-text"><span class="row-title">${t.wallbox.title}</span><span class="row-sub">${sub}</span></span>
+          <span class="row-aside">${age ? t.wallbox.fromCar(age) : ""}</span>
           ${hasDetail ? html`<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>` : html`<span></span>`}
         </button>
         ${hasDetail
           ? html`<div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>
-              ${w.block_charging ? this.switchRow("Zablokovat nabíjení", w.block_charging, block === "on" ? "Auto nenabíjí, přebytek ohřívá vodu" : "Auto smí nabíjet", block === "on") : nothing}
-              ${w.prioritize_connected ? this.switchRow("Přednost před bojlerem", w.prioritize_connected, prio === "on" ? "Auto nabíjí dřív než bojler" : "Auto nemá přednost", false) : nothing}
+              ${w.block_charging ? this.switchRow(t.wallbox.block, w.block_charging, block === "on" ? t.wallbox.blockOn : t.wallbox.blockOff, block === "on") : nothing}
+              ${w.prioritize_connected ? this.switchRow(t.wallbox.priority, w.prioritize_connected, prio === "on" ? t.wallbox.priorityOn : t.wallbox.priorityOff, false) : nothing}
             </div></div>`
           : nothing}
       </li>
@@ -794,21 +817,22 @@ export class HaEnergieDashboard extends LitElement {
   // ----------------------------------------------------------------- water
 
   private renderWater(s: Settings, model: FlowModel): TemplateResult {
+    const t = this.t;
     const e = s.entities;
     const flows = s.num.flows;
     const heating = isOn(model.boil, flows.idle_threshold);
-    const src = sourceText(model.share, flows);
+    const src = sourceText(model.share, flows, t);
     const srcColor = this.sourceColor(src);
     const boost = this.shown(e.boiler.boost);
     const boostOn = boost === "on";
     const unit = powerUnit([heating ? model.boil : undefined], flows.kw_from);
 
     let stateText: string | undefined;
-    if (heating) stateText = `Bojler ohřívá ${src.text}${boostOn ? " · Boost" : ""}`;
-    else if (model.boil !== undefined) stateText = "Bez ohřevu";
+    if (heating) stateText = `${t.water.boilerHeats(src.text)}${boostOn ? ` · ${t.boostOptions.on}` : ""}`;
+    else if (model.boil !== undefined) stateText = t.water.noHeating;
 
     return html`<section class="panel" aria-labelledby="h-water">
-      <div class="head"><h2 id="h-water">${s.titles.water}</h2>${this.stateLine(stateText, heating ? srcColor : undefined)}</div>
+      <div class="head"><h2 id="h-water">${s.titles.water ?? t.titles.water}</h2>${this.stateLine(stateText, heating ? srcColor : undefined)}</div>
       <div class="water">
         ${this.renderBoilerTile(s, model, heating, srcColor, unit)} ${this.renderMixing(s)} ${this.renderTankTile(s)}
       </div>
@@ -819,12 +843,13 @@ export class HaEnergieDashboard extends LitElement {
   private gauge(value: number | undefined, min: number, max: number, s: Settings, label: string): TemplateResult {
     return html`<div class="arc" role="img" aria-label=${label}>
       ${arcSvg(value, min, max, s.tempScale)}
-      <div class="arc-num"><b>${value === undefined ? NO_DATA : formatNumber(value)}</b>${value === undefined ? html`<span class="sr-only">bez dat</span>` : html`<span>°C</span>`}</div>
+      <div class="arc-num"><b>${value === undefined ? NO_DATA : formatNumber(value)}</b>${value === undefined ? html`<span class="sr-only">${this.t.noData}</span>` : html`<span>°C</span>`}</div>
       <span class="arc-min" aria-hidden="true">${formatNumber(min)}</span><span class="arc-max" aria-hidden="true">${formatNumber(max)}</span>
     </div>`;
   }
 
   private renderBoilerTile(s: Settings, model: FlowModel, heating: boolean, srcColor: string, unit: PowerUnit): TemplateResult {
+    const tt = this.t;
     const b = s.entities.boiler;
     const nb = s.num.boiler;
     const boost = this.shown(b.boost);
@@ -837,20 +862,26 @@ export class HaEnergieDashboard extends LitElement {
     const t = model.boilTemp;
     const open = !!this._open.targets;
     const hasTargets = !!(b.target_temperature || b.boost_target_temperature);
-    const label = `Bojler ${t === undefined ? "bez dat" : `${formatNumber(t)} °C`}, ${heating ? `ohřívá výkonem ${formatPower(model.boil!, unit)}` : "neohřívá"}${target === undefined ? "" : `, cíl ${formatNumber(target)} °C`}, stupnice ${formatNumber(gMin)} až ${formatNumber(gMax)} °C`;
+    const label = tt.water.boilerLabel(
+      t === undefined ? tt.noData : `${formatNumber(t)} °C`,
+      heating ? tt.water.heatingWith(formatPower(model.boil!, unit)) : tt.water.notHeating,
+      target === undefined ? undefined : `${formatNumber(target)} °C`,
+      formatNumber(gMin),
+      `${formatNumber(gMax)} °C`,
+    );
     return html`<div class="source">
       <div class="source-top">
         ${this.gauge(t, gMin, gMax, s, label)}
         <div class="source-body">
           <div>
-            <div class="source-title">Bojler (FVE)</div>
+            <div class="source-title">${tt.water.boilerTitle}</div>
             <div class="source-line">
-              <span class="src" style="--c:${heating ? srcColor : "var(--ed-secondary)"}">${heating ? formatPower(model.boil!, unit) : model.boil === undefined ? NO_DATA : "neohřívá"}</span>${target === undefined ? nothing : html`<span class="dim"> · cíl ${formatNumber(target)} °C</span>`}
+              <span class="src" style="--c:${heating ? srcColor : "var(--ed-secondary)"}">${heating ? formatPower(model.boil!, unit) : model.boil === undefined ? NO_DATA : tt.water.notHeating}</span>${target === undefined ? nothing : html` <span class="dim">· ${tt.water.target(`${formatNumber(target)} °C`)}</span>`}
             </div>
           </div>
           ${b.boost
             ? html`<ed-segmented
-                compact guarded .options=${BOOST_OPTIONS} .value=${boost ?? ""} label="Režim ohřevu bojleru" ?disabled=${boost === undefined}
+                compact guarded .options=${this.boostOptions} .value=${boost ?? ""} label=${tt.water.boostMode} .hint=${tt.hint.holdDragOrDouble} ?disabled=${boost === undefined}
                 .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
                 @ed-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("boiler", event.detail.value === "on")}
               ></ed-segmented>`
@@ -860,8 +891,8 @@ export class HaEnergieDashboard extends LitElement {
       ${hasTargets
         ? html`<div class="subrow">
             <button type="button" class="rowbtn" aria-expanded=${open ? "true" : "false"} @click=${() => this.toggle("targets")}>
-              <span class="rowbtn-title">Cílové teploty</span>
-              <span class="rowbtn-value">Přetoky <b>${flowTarget === undefined ? NO_DATA : formatNumber(flowTarget)}</b> · Boost <b>${boostTarget === undefined ? NO_DATA : `${formatNumber(boostTarget)} °C`}</b></span>
+              <span class="rowbtn-title">${tt.water.targets}</span>
+              <span class="rowbtn-value">${tt.water.targetFlow} <b>${flowTarget === undefined ? NO_DATA : formatNumber(flowTarget)}</b> · ${tt.water.targetBoost} <b>${boostTarget === undefined ? NO_DATA : `${formatNumber(boostTarget)} °C`}</b></span>
               <svg class="chevron ${open ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>
             </button>
             <div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>${this.renderTargets(s, flowTarget, boostTarget)}</div></div>
@@ -872,6 +903,7 @@ export class HaEnergieDashboard extends LitElement {
 
   /** The two targets of the boiler: Přetoky may not be below Boost (CURRENT_SPEC.md, Cíle ohřevu). */
   private renderTargets(s: Settings, flowTarget: number | undefined, boostTarget: number | undefined): TemplateResult {
+    const tt = this.t;
     const b = s.entities.boiler;
     const nb = s.num.boiler;
     const field = (id: string | undefined, value: number | undefined, title: string, sub: string, low: number | undefined, high: number | undefined) => {
@@ -889,17 +921,17 @@ export class HaEnergieDashboard extends LitElement {
         <span class="field-label">${title}<span class="hint">${sub}</span></span><span class="field-value">${value === undefined ? NO_DATA : formatNumber(value)}<small> °C</small></span>
         <ed-slider
           .min=${min} .max=${max} .step=${nb.target_step} .value=${value ?? min}
-          label="Cíl ohřevu bojleru, ${title}" valueText=${value === undefined ? "bez dat" : `${value} °C, ${title}`}
+          label=${tt.water.targetSliderLabel(title)} valueText=${value === undefined ? tt.noData : tt.water.targetSliderSpoken(`${value} °C`, title)}
           minLabel="${formatNumber(min)} °C" maxLabel="${formatNumber(max)} °C"
           ?disabled=${value === undefined}
-          @ed-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, event.detail.value, `Cíl ohřevu bojleru (${title})`)}
+          @ed-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, event.detail.value, tt.water.targetWhat(title))}
         ></ed-slider>
       </div>`;
     };
     return html`<div class="detail">
-      ${field(b.target_temperature, flowTarget, "Přetoky", "jen z přebytku", boostTarget, undefined)}
-      ${field(b.boost_target_temperature, boostTarget, "Boost", "i ze sítě a z baterie", undefined, flowTarget)}
-      <p class="hint">Přetoky nesmí být pod Boostem.</p>
+      ${field(b.target_temperature, flowTarget, tt.water.targetFlow, tt.water.targetFlowHint, boostTarget, undefined)}
+      ${field(b.boost_target_temperature, boostTarget, tt.water.targetBoost, tt.water.targetBoostHint, undefined, flowTarget)}
+      <p class="hint">${tt.water.targetsRule}</p>
     </div>`;
   }
 
@@ -910,7 +942,7 @@ export class HaEnergieDashboard extends LitElement {
     const state = mixingState(this.shown(m.valve_c1), this.shown(m.valve_c2));
     const on = state === "on";
     const canSwitch = !!(m.valve_c1 && m.valve_c2);
-    const note = state === "unclear" ? "nejasný stav ventilů" : state === undefined ? "bez dat" : "";
+    const note = state === "unclear" ? this.t.water.mixingUnclear : state === undefined ? this.t.noData : "";
     return html`
       <div class="link ${on ? "on" : ""}" aria-hidden="true"></div>
       <div class="mixcap" role="group" aria-labelledby="l-mix">
@@ -918,9 +950,9 @@ export class HaEnergieDashboard extends LitElement {
           <path d="M12 2.5 C12 2.5 5.5 10 5.5 15 A6.5 6.5 0 0 0 12 21.5 Z" fill=${on ? s.colors.cold : "var(--ed-off)"}></path>
           <path d="M12 2.5 C12 2.5 18.5 10 18.5 15 A6.5 6.5 0 0 1 12 21.5 Z" fill=${on ? s.colors.hot : "var(--ed-off)"}></path>
         </svg>
-        <span class="mixcap-text"><span id="l-mix" style=${on ? "" : "color:var(--ed-secondary)"}>Mísení vody</span>${note ? html`<span class="mixcap-note">${note}</span>` : nothing}</span>
+        <span class="mixcap-text"><span id="l-mix" style=${on ? "" : "color:var(--ed-secondary)"}>${this.t.water.mixing}</span>${note ? html`<span class="mixcap-note">${note}</span>` : nothing}</span>
         <ed-switch
-          guarded hintPlacement="above" label="Mísení vody" .checked=${on} ?disabled=${state === undefined || !canSwitch}
+          guarded hintPlacement="above" label=${this.t.water.mixing} .hint=${this.t.hint.holdOrDouble} .checked=${on} ?disabled=${state === undefined || !canSwitch}
           .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
           @ed-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setMixing(event.detail.checked ? "on" : "off")}
         ></ed-switch>
@@ -929,6 +961,7 @@ export class HaEnergieDashboard extends LitElement {
   }
 
   private renderTankTile(s: Settings): TemplateResult {
+    const tt = this.t;
     const t = s.entities.tank;
     const nt = s.num.tank;
     const id = t.water_heater;
@@ -943,42 +976,47 @@ export class HaEnergieDashboard extends LitElement {
     const gMax = Math.max(s.num.water.gauge_max, readNumber(this.hass, s.entities.boiler.target_temperature) ?? 0);
     // The tank has no measured temperature: the gauge shows the set value (Off: the minimum the boiler keeps).
     const shownTemp = off ? nt.temp_min : set;
-    const list = Array.isArray(entity?.attributes?.operation_list) ? (entity!.attributes.operation_list as string[]) : Object.keys(TANK_MODES);
-    const options: SegmentOption[] = Object.keys(TANK_MODES).filter((value) => list.includes(value)).map((value) => ({ value, label: TANK_MODES[value] }));
+    const list = Array.isArray(entity?.attributes?.operation_list) ? (entity!.attributes.operation_list as string[]) : Object.keys(tt.tank.modes);
+    const options: SegmentOption[] = Object.keys(tt.tank.modes).filter((value) => list.includes(value)).map((value) => ({ value, label: tt.tank.modes[value] }));
     const open = !!this._open.tank;
     const { min, max } = this.tankRange(s);
-    const modeName = mode === undefined ? NO_DATA : (TANK_MODES[mode] ?? mode);
-    const plan = off ? "kotel drží minimum" : manual ? "nastaveno ručně" : "podle plánu";
-    const summary = shownTemp === undefined ? NO_DATA : off ? `${formatNumber(nt.temp_min)} °C · vypnuto` : `${formatNumber(shownTemp)} °C · ${manual ? "ručně" : "podle plánu"}`;
-    const label = `Zásobník, ${shownTemp === undefined ? "nastavení bez dat" : off ? `vypnuto, kotel drží ${formatNumber(nt.temp_min)} °C` : `nastaveno ${formatNumber(shownTemp)} °C`}, režim ${modeName}, naměřená teplota není, stupnice ${formatNumber(gMin)} až ${formatNumber(gMax)} °C`;
+    const modeName = mode === undefined ? NO_DATA : (tt.tank.modes[mode] ?? mode);
+    const plan = off ? tt.tank.keepsMinimum : manual ? tt.tank.setManually : tt.tank.byPlan;
+    const summary = shownTemp === undefined ? NO_DATA : off ? tt.tank.summaryOff(`${formatNumber(nt.temp_min)} °C`) : (manual ? tt.tank.summaryManual : tt.tank.summaryPlan)(`${formatNumber(shownTemp)} °C`);
+    const label = tt.tank.label(
+      shownTemp === undefined ? tt.tank.settingNoData : off ? tt.tank.settingOff(`${formatNumber(nt.temp_min)} °C`) : tt.tank.settingSet(`${formatNumber(shownTemp)} °C`),
+      modeName,
+      formatNumber(gMin),
+      `${formatNumber(gMax)} °C`,
+    );
     return html`<div class="source">
       <div class="source-top">
         ${this.gauge(shownTemp, gMin, gMax, s, label)}
         <div class="source-body">
           <div>
-            <div class="source-title">Zásobník (plyn)</div>
-            <div class="source-line"><span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${modeName}</span>${mode === undefined ? nothing : html`<span class="dim"> · ${plan}</span>`}</div>
+            <div class="source-title">${tt.tank.title}</div>
+            <div class="source-line"><span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${modeName}</span>${mode === undefined ? nothing : html` <span class="dim">· ${plan}</span>`}</div>
           </div>
           ${id
-            ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label="Režim zásobníku" ?disabled=${mode === undefined} @ed-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`
+            ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @ed-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`
             : nothing}
         </div>
       </div>
       ${id
         ? html`<div class="subrow">
             <button type="button" class="rowbtn" aria-expanded=${open ? "true" : "false"} @click=${() => this.toggle("tank")}>
-              <span class="rowbtn-title">Teplota</span>
+              <span class="rowbtn-title">${tt.tank.temperature}</span>
               <span class="rowbtn-value">${summary}</span>
               <svg class="chevron ${open ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>
             </button>
             <div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>
               <div class="detail">
                 <div class="field ${off ? "off" : ""}">
-                  <span class="field-label">Teplota<span class="hint">${off ? "zásobník je vypnutý" : manual ? "nastavujete ručně" : "podle plánu; změna přepne na Manual"}</span></span>
+                  <span class="field-label">${tt.tank.temperature}<span class="hint">${off ? tt.tank.hintOff : manual ? tt.tank.hintManual : tt.tank.hintPlan}</span></span>
                   <span class="field-value">${shownTemp === undefined ? NO_DATA : formatNumber(shownTemp)}<small> °C</small></span>
                   <ed-slider
                     .min=${min} .max=${max} .step=${nt.temp_step} .tickStep=${5} .value=${shownTemp ?? min}
-                    label="Teplota zásobníku" valueText=${set === undefined ? "bez dat" : `${set} °C, nastavená teplota`}
+                    label=${tt.tank.sliderLabel} valueText=${set === undefined ? tt.noData : tt.tank.sliderSpoken(`${set} °C`)}
                     minLabel="${formatNumber(min)} °C" maxLabel="${formatNumber(max)} °C"
                     ?disabled=${set === undefined || off}
                     @ed-change=${(event: CustomEvent<{ value: number }>) => this.setTankTemperature(id, event.detail.value, mode)}
@@ -1036,14 +1074,14 @@ export class HaEnergieDashboard extends LitElement {
   /** Calls a service on an entity that is reported; never on a missing or unavailable one (CURRENT_SPEC.md, Pojistky). */
   private async call(domain: string, service: string, data: Record<string, unknown>, id: string, what: string): Promise<boolean> {
     if (!this.hass || readText(this.hass, id) === undefined) {
-      this._feedback = `${what}: entita nehlásí data, nic jsem neodeslal.`;
+      this._feedback = this.t.feedback.noData(what);
       return false;
     }
     try {
       await this.hass.callService(domain, service, data);
       return true;
     } catch {
-      this._feedback = `${what}: Home Assistant příkaz nepřijal.`;
+      this._feedback = this.t.feedback.rejected(what);
       return false;
     }
   }
@@ -1061,11 +1099,11 @@ export class HaEnergieDashboard extends LitElement {
     this._feedback = "";
     // Boost with blocked charging would switch itself off at once: unblock first and say so.
     if (kind === "wallbox" && on && e.wallbox.block_charging && readText(this.hass, e.wallbox.block_charging) === "on") {
-      await this.setSwitch(e.wallbox.block_charging, false, "Zablokovat nabíjení");
-      this._feedback = "Nabíjení bylo zablokované, blokování jsem vypnul, aby boost fungoval.";
+      await this.setSwitch(e.wallbox.block_charging, false, this.t.wallbox.block);
+      this._feedback = this.t.feedback.unblocked;
     }
     this.choose(id, on ? "on" : "off");
-    await this.call("switch", on ? "turn_on" : "turn_off", { entity_id: id }, id, kind === "wallbox" ? "Boost wallboxu" : "Boost bojleru");
+    await this.call("switch", on ? "turn_on" : "turn_off", { entity_id: id }, id, kind === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title);
   }
 
   private async setNumber(id: string, value: number, what: string): Promise<void> {
@@ -1076,7 +1114,7 @@ export class HaEnergieDashboard extends LitElement {
   private async setTank(id: string, mode: string): Promise<void> {
     this._feedback = "";
     this.choose(id, mode);
-    if (!(await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: mode }, id, "Režim zásobníku"))) return;
+    if (!(await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: mode }, id, this.t.tank.modeLabel))) return;
     // Manual must start inside the range of the card (the tank may report 30 °C, the lowest it knows): set the nearest allowed temperature.
     if (mode === "heat") {
       const { min, max } = this.tankRange(this._config!);
@@ -1099,7 +1137,7 @@ export class HaEnergieDashboard extends LitElement {
     this._tankTemp = { id, value: temperature };
     window.clearTimeout(this._timers.get("tank-temp"));
     this._timers.set("tank-temp", window.setTimeout(() => (this._tankTemp = undefined), (this._config?.num.ui.revert_after ?? 6) * 1000));
-    return this.call("water_heater", "set_temperature", { entity_id: id, temperature }, id, "Teplota zásobníku");
+    return this.call("water_heater", "set_temperature", { entity_id: id, temperature }, id, this.t.tank.sliderLabel);
   }
 
   /** Moving the temperature in Auto switches the tank to Manual first (CURRENT_SPEC.md, Zásobník). */
@@ -1107,7 +1145,7 @@ export class HaEnergieDashboard extends LitElement {
     this._feedback = "";
     if (mode !== "heat") {
       this.choose(id, "heat");
-      if (!(await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: "heat" }, id, "Režim zásobníku"))) return;
+      if (!(await this.call("water_heater", "set_operation_mode", { entity_id: id, operation_mode: "heat" }, id, this.t.tank.modeLabel))) return;
     }
     await this.setTemperature(id, temperature);
   }
@@ -1125,9 +1163,9 @@ export class HaEnergieDashboard extends LitElement {
     this.choose(c1, c1State);
     this.choose(c2, c2State);
     const sent = await Promise.all([
-      this.call("switch", `turn_${c1State}`, { entity_id: c1 }, c1, "Mísení vody"),
-      this.call("switch", `turn_${c2State}`, { entity_id: c2 }, c2, "Mísení vody"),
+      this.call("switch", `turn_${c1State}`, { entity_id: c1 }, c1, this.t.water.mixing),
+      this.call("switch", `turn_${c2State}`, { entity_id: c2 }, c2, this.t.water.mixing),
     ]);
-    if (!sent.every(Boolean)) this._feedback = this._feedback || "Mísení vody: příkaz se neodeslal.";
+    if (!sent.every(Boolean)) this._feedback = this._feedback || this.t.feedback.mixingNotSent;
   }
 }

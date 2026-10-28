@@ -27,8 +27,9 @@ Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/e
 
 | Klíč | Výchozí | Co nastavuje |
 |---|---|---|
-| `title` | `Energie` | nadpis nad kartami; `""` ho vynechá |
-| `titles.electricity`, `titles.car`, `titles.water` | `Elektřina`, `BMW i3`, `Teplá voda` | nadpisy tří panelů |
+| `language` | `auto` | jazyk karty: `auto` (podle Home Assistantu: čeština, švédština, jinak angličtina), `cs`, `en`, `sv` |
+| `title` | `Energie` (v jazyce karty) | nadpis nad kartami; `""` ho vynechá |
+| `titles.electricity`, `titles.car`, `titles.water` | `Elektřina`, `BMW i3`, `Teplá voda` (v jazyce karty) | nadpisy tří panelů; texty z YAML se nepřekládají |
 | `pv.power` | – | výkon FVE |
 | `battery.power`, `battery.state_of_charge` | – | výkon a nabití baterie |
 | `battery.depth_of_discharge` | – | hloubka vybití ze střídače (`number.…`), rezerva = 100 − hodnota |
@@ -91,9 +92,10 @@ Po změně ve složce `src/` spusťte v kořeni repozitáře `npm install` a `np
 
 ## Testy
 
-`npm test` kartu sestaví a spustí 54 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml):
+`npm test` kartu sestaví a spustí 63 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml):
 
 - konfigurace: příklad obsahuje všechna nastavení a výchozí hodnoty jsou přesně ty v příkladu; chybné hodnoty (entity, čísla, pořadí mezí, barvy) zastaví kartu chybou s názvem klíče; klíč bez hodnoty je výchozí; čísla, nadpisy a barvy se projeví na kartě; `title: ""` vynechá nadpis;
+- jazyky: čeština, angličtina a švédština (žádný český text v cizím jazyce, rozložení na 320 px, čísla a procenta podle jazyka, přepnutí jazyka za běhu, `language` v YAML, texty z YAML se nepřekládají);
 - karty: Elektřina (Sankey, hladiny v dlaždicích, skrývání Auta a Bojleru včetně přetrvání přes localStorage, popupy s denními součty, upozornění), BMW i3 (stav, odkud auto nabíjí, měřič a limit, stáří dat, Wallbox) a Teplá voda (oblouky, cílové teploty, zásobník, mísení);
 - ovládání: chráněné prvky (jedno klepnutí jen nápověda, podržení, dvojklik, tah jezdcem, klávesnice hned), nabíjecí výkon, Boost při zablokovaném nabíjení, vrácení nepotvrzené volby;
 - rozložení: bez vodorovného posouvání na 320, 360, 375, 393, 430 a 768 px a na telefonu na šířku 852 × 393, nic se neořízne, řádky aspoň 44 px;

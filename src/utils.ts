@@ -1,3 +1,5 @@
+import { getI18n } from "./i18n";
+import type { I18n, Texts } from "./i18n";
 import type { HassEntity, HomeAssistant } from "./types";
 
 /** An entity state that carries no value (CURRENT_SPEC.md, Chybějící a zastaralá data). */
@@ -30,8 +32,15 @@ export function readNumber(hass: HomeAssistant | undefined, id: string | undefin
   return entity?.attributes?.unit_of_measurement === "kW" ? value * 1000 : value;
 }
 
-const kw = new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const whole = new Intl.NumberFormat("cs-CZ", { maximumFractionDigits: 0 });
+/**
+ * Numbers follow the card language and the profile of Home Assistant (i18n.ts). The card sets the
+ * format at the start of every update, before it renders; until then Czech is used.
+ */
+let format: I18n = getI18n("cs");
+
+export function useFormat(i18n: I18n): void {
+  format = i18n;
+}
 
 export type PowerUnit = "W" | "kW";
 
@@ -41,11 +50,17 @@ export function powerUnit(values: Array<number | undefined>, from = 1000): Power
 }
 
 export function formatPower(watts: number, unit: PowerUnit): string {
-  return unit === "kW" ? `${kw.format(watts / 1000)} kW` : `${whole.format(Math.round(watts))} W`;
+  return unit === "kW" ? `${format.one(watts / 1000)} kW` : `${format.whole(Math.round(watts))} W`;
 }
 
+/** A number with no decimal place, or with one (the only two the card uses). */
 export function formatNumber(value: number, digits = 0): string {
-  return new Intl.NumberFormat("cs-CZ", { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+  return digits === 0 ? format.whole(value) : format.one(value);
+}
+
+/** "65 %" in Czech and Swedish, "65%" in English (the rule of Home Assistant). */
+export function formatPercent(value: number | string): string {
+  return format.percent(typeof value === "number" ? formatNumber(value) : value);
 }
 
 /**
@@ -67,13 +82,13 @@ export function formatKwh(value: number): string {
   return value < 0.05 ? "0" : formatNumber(value, 1);
 }
 
-/** "právě teď", "před 4 min", "před 2 h", "před 3 d" from an ISO time. */
-export function ago(iso: string | undefined, now: number): string | undefined {
+/** "právě teď", "před 4 min", "před 2 h", "před 3 d" (in the card language) from an ISO time. */
+export function ago(iso: string | undefined, now: number, t: Texts): string | undefined {
   const time = iso ? Date.parse(iso) : NaN;
   if (!Number.isFinite(time)) return undefined;
   const minutes = Math.max(0, Math.round((now - time) / 60000));
-  if (minutes < 1) return "právě teď";
-  if (minutes < 60) return `před ${minutes} min`;
-  if (minutes < 60 * 24) return `před ${Math.round(minutes / 60)} h`;
-  return `před ${Math.round(minutes / (60 * 24))} d`;
+  if (minutes < 1) return t.ago.now;
+  if (minutes < 60) return t.ago.minutes(minutes);
+  if (minutes < 60 * 24) return t.ago.hours(Math.round(minutes / 60));
+  return t.ago.days(Math.round(minutes / (60 * 24)));
 }

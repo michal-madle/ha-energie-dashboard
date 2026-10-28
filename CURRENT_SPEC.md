@@ -93,7 +93,7 @@ Zadání (stav k 17. 10. 2026) a YAML dnešního dashboardu, potvrzené exportem
 - Zdroje energie pro spotřebiče se dělí podle podílu naměřených toků (slunce bez nabíjení baterie a přetoku, vybíjení baterie, odběr ze sítě); nabíjení baterie a přetok do sítě jsou jen ze slunce.
 - **Malé hodnoty se nezobrazují** (uživatel 27. 10.: „Při výrobě FVE občas skáče pár W ± ze sítě. Pokud je to do ±99 W, tak to zobrazovat jako nic. Žádné 0.0 odebírá nebo posílá“ a „Hodnoty <0.1 kW nezobrazovat, nebo jen minimálně. Zobrazení 0.0 kW je divné (třeba u nabíjení baterie nebo přetoků)“): výkon s absolutní hodnotou pod `flows.idle_threshold` (výchozí 100 W, tedy do ±99 W) je žádný tok, u všech zdrojů a spotřebičů, u sítě kladný i záporný. Dlaždice je neaktivní se slovem místo hodnoty (neodebírá, nedodává, nenabíjí, vypnuto …), bez pásu a bez záře. Taková hodnota se nezapočítá do podílů zdrojů (věty a texty „ze sítě“ ji nejmenují) ani do volby jednotky W / kW; wallbox pod prahem „nenabíjí“, bojler „bez ohřevu“ a pruh „Odkud auto nabíjí“ se neukáže. Nikdy se tedy neukáže „0,0 kW“ ani „5 W“; od 100 W se hodnota ukáže normálně („0,1 kW“ v kW). Stejný práh platí pro věty o stavu (slunce pokrývá dům, baterie se nabíjí).
 - Hodnoty pocházejí z různých registrů a okamžiků, proto se součet zdrojů nemusí přesně rovnat spotřebě domu (`AUDIT.md` bod 1). Karta neodvozuje stav „vyrovnáno“ ani jinou hodnotu z rozdílu.
-- **Jednotky:** všechny hodnoty v jedné jednotce: kW (jedna desetina), když je některý výkon aspoň 1 kW, jinak W. Energie (kWh) s jednou desetinou. Čísla podle `cs-CZ`.
+- **Jednotky:** všechny hodnoty v jedné jednotce: kW (jedna desetina), když je některý výkon aspoň 1 kW, jinak W. Energie (kWh) s jednou desetinou. Čísla, procenta a čas podle profilu Home Assistantu a jazyka karty (oddíl Jazyky).
 
 ## Karta Elektřina (Sankey)
 
@@ -182,7 +182,16 @@ Zadání (stav k 17. 10. 2026) a YAML dnešního dashboardu, potvrzené exportem
 - Mobil napřed: iPhone 14 Pro 393 × 852 a na šířku 852 × 393; bez vodorovného posouvání od 320 px; každý klikací prvek má účinnou dotykovou plochu aspoň 44 × 44 px.
 - Tmavý a světlý režim: karta kreslí vlastní povrchy z oddílu Vzhled podle Apple HIG a přepíná se podle Home Assistantu (`hass.themes.darkMode`); klíč `theme` v konfiguraci není (starý klíč v YAML se toleruje jako neznámý klíč horní úrovně).
 - Přístupnost: bez porušení axe-core v obou režimech, ovládání klávesnicí, přístupný název = viditelný text, čtečka obrazovky řekne u „––“ „bez dat“.
-- Čeština v rozhraní, čísla podle `cs-CZ`.
+- Jazyky a formáty čísel viz oddíl Jazyky.
+
+## Jazyky
+
+- Karta mluví česky, anglicky a švédsky (uživatel 28. 10.: „Přidej angličtinu a švédštinu. Přidávej vždy. Uprav si zadání. Systém stejný jako u klima dashboardu“); systém je stejný jako v kartě Klima. Jazyk karty je jazyk Home Assistantu z profilu uživatele (`hass.locale.language`, jinak `hass.language`): čeština → česky, švédština → švédsky, jakýkoli jiný jazyk i žádný → anglicky. Změna jazyka v profilu se projeví hned, bez obnovení stránky. Klíč `language` (`auto`, `cs`, `sv`, `en`; výchozí `auto`) jazyk karty vynutí. Hostitelský prvek karty má atribut `lang` jazyka karty, aby čtečka obrazovky četla správným hlasem i tehdy, když je Home Assistant v jiném jazyce.
+- Přeloženo je všechno, co karta sama píše nebo říká čtečce obrazovky: dlaždice, souhrn, upozornění, popupy, texty u auta, wallboxu, bojleru, zásobníku a mísení, nápovědy k chráněným prvkům, hlášky pod kartou a popisy pro čtečku. Nepřekládají se texty z konfigurace (`title`, `titles.*`). Bez nich platí výchozí v jazyce karty: nadpis Energie / Energy / Energi, panely Elektřina / Electricity / El, BMW i3, Teplá voda / Hot water / Varmvatten. Totéž v kartě Klima: texty z YAML zůstávají, jak je uživatel napsal.
+- Čísla, čas a data podle profilu Home Assistantu (`hass.locale`, stejně jako vlastní karty): formát čísel `language` (výchozí, podle jazyka), `system`, `comma_decimal`, `decimal_comma`, `space_comma`, `quote_decimal`, `none`; čas `language`, `system`, `12`, `24`. Bez profilu platí jazyk karty: česky a švédsky „1,2 kW“ a „65 %“, anglicky „1.2 kW“ a „65%“ (mezeru před % určuje jazyk, jak ji píše Home Assistant). Značky jednotek (W, kW, kWh, °C, %, min, h, d) jsou ve všech jazycích stejné.
+- Dlaždice a řádky jsou dost vysoké a široké, aby se i delší anglické a švédské texty zalomily a neořízly na šířce od 320 px (neaktivní text dlaždice se smí zalomit na druhý řádek).
+- Hlavní pojmy (čeština / angličtina / švédština): Přetoky / Surplus / Överskott, Boost / Boost / Boost, Mísení vody / Water mixing / Vattenblandning, Zásobník (plyn) / Tank (gas) / Tank (gas), Bojler (FVE) / Boiler (PV) / Beredare (sol), Wallbox / Wallbox / Laddbox, Přednost před bojlerem / Priority over the boiler / Företräde före beredaren, Slunce / Sun / Sol, Baterie / Battery / Batteri, Síť / Grid / Nät, Dům / House / Hus, Bez dat / No data / Inga data. Úplné znění je v `src/translations/` (`cs.ts`, `en.ts`, `sv.ts`).
+- **Každá změna, která přidá nebo upraví text karty, upraví v téže změně všechny tři jazyky** (uživatel 28. 10.: „Přidávej vždy“). Zdrojem je čeština (`src/translations/cs.ts`); angličtina a švédština mají přesně stejné klíče, jinak se karta nesestaví. Testy hlídají, že v angličtině ani ve švédštině nezůstal žádný český text (včetně popupů, hlášek a popisů pro čtečku), že se texty vejdou na 320 px, že čísla a procenta odpovídají jazyku a že jazyk i klíč `language` fungují za běhu.
 
 ## Konfigurace
 
@@ -192,8 +201,9 @@ Struktura klíčů (sekce podle systémů; uživatel 28. 10. potvrdil):
 
 | Klíč | Výchozí | Význam |
 |---|---|---|
-| `title` | `Energie` | nadpis nad kartami; `""` ho vynechá |
-| `titles.electricity`, `titles.car`, `titles.water` | `Elektřina`, `BMW i3`, `Teplá voda` | nadpisy tří panelů |
+| `language` | `auto` | jazyk karty: `auto` (podle Home Assistantu: čeština, švédština, jinak angličtina), `cs`, `en`, `sv` (oddíl Jazyky) |
+| `title` | `Energie` (v jazyce karty) | nadpis nad kartami; `""` ho vynechá |
+| `titles.electricity`, `titles.car`, `titles.water` | `Elektřina`, `BMW i3`, `Teplá voda` (v jazyce karty) | nadpisy tří panelů |
 | `pv.power` | – | výkon FVE |
 | `battery.power`, `battery.state_of_charge` | – | výkon a nabití baterie |
 | `battery.depth_of_discharge` | – | hloubka vybití ze střídače (`number.…`), rezerva = 100 − hodnota |

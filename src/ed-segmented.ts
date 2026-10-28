@@ -31,7 +31,7 @@ export class EdSegmented extends LitElement {
   @property({ type: Number }) holdMs = 550;
   @property({ type: Number }) doubleTapMs = 400;
   @property({ type: Number }) hintSeconds = 3;
-  @property() hint = "Podržte, přetáhněte nebo klepněte dvakrát.";
+  @property() hint = "Press and hold, drag, or tap twice.";
 
   /** Drag offset of the thumb in px, and the option being nudged toward. */
   @state() private _dx = 0;

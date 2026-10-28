@@ -2,6 +2,7 @@ import { EdSegmented } from "./ed-segmented";
 import { EdSlider } from "./ed-slider";
 import { EdSwitch } from "./ed-switch";
 import { HaEnergieDashboard } from "./ha-energie-dashboard";
+import { getI18n, pageLanguage } from "./i18n";
 
 if (!customElements.get("ed-segmented")) {
   customElements.define("ed-segmented", EdSegmented);
@@ -21,7 +22,8 @@ if (!window.customCards.some((card) => card.type === "ha-energie-dashboard")) {
   window.customCards.push({
     type: "ha-energie-dashboard",
     name: "Energie Dashboard",
-    description: "Energie domu: toky jako Sankey diagram, auto s wallboxem a teplá voda (bojler, zásobník, mísení) s ovládáním.",
+    // The card picker has no `hass` yet: the language Home Assistant set on the page.
+    description: getI18n(pageLanguage()).t.cardDescription,
     preview: false,
   });
 }

@@ -1,3 +1,4 @@
+import type { Texts } from "./i18n";
 import type { EntitySections, HomeAssistant, NumberSettings, Settings } from "./types";
 import { readNumber, readText } from "./utils";
 
@@ -63,7 +64,7 @@ export function carLink(status: string | undefined): CarLink {
   return undefined;
 }
 
-export function buildModel(hass: HomeAssistant | undefined, settings: Settings): FlowModel {
+export function buildModel(hass: HomeAssistant | undefined, settings: Settings, t: Texts): FlowModel {
   const e = settings.entities;
   const idle = settings.num.flows.idle_threshold;
   const sun = positive(readNumber(hass, e.pv.power));
@@ -117,12 +118,12 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings):
     boilTemp: readNumber(hass, e.boiler.temperature),
     carLink: carLink(readText(hass, e.wallbox.status)),
   };
-  Object.assign(model, summarize(model, settings.num.flows));
+  Object.assign(model, summarize(model, settings.num.flows, t));
   return model;
 }
 
 /** The sentence under the title (what the sun does; otherwise where the house gets its energy). */
-export function summarize(m: FlowModel, flows: NumberSettings["flows"]): { summary?: string; summarySource?: Source } {
+export function summarize(m: FlowModel, flows: NumberSettings["flows"], t: Texts): { summary?: string; summarySource?: Source } {
   const idle = flows.idle_threshold;
   const on = (value: number | undefined) => isOn(value, idle);
   const noData = [m.sun, m.batDis, m.imp, m.other].every((value) => value === undefined);
@@ -131,24 +132,25 @@ export function summarize(m: FlowModel, flows: NumberSettings["flows"]): { summa
   const sunCovers = on(m.sun) && !on(m.imp) && !on(m.batDis);
   if (sunCovers) {
     let text: string;
-    if ((m.exp ?? 0) > flows.export_notice && !on(m.batIn)) text = "Přebytek jde do sítě";
-    else if (on(m.car)) text = `Slunce nabíjí ${on(m.batIn) ? "baterii i " : ""}auto`;
-    else if (on(m.batIn)) text = "Slunce nabíjí baterii";
-    else text = "Slunce pokrývá dům";
+    if ((m.exp ?? 0) > flows.export_notice && !on(m.batIn)) text = t.summary.exportSurplus;
+    else if (on(m.car)) text = t.summary.sunChargesCar(on(m.batIn));
+    else if (on(m.batIn)) text = t.summary.sunChargesBattery;
+    else text = t.summary.sunCoversHouse;
     return { summary: text, summarySource: "sun" };
   }
   const { sun, bat, grid } = m.share;
-  if (grid > flows.grid_deviation_share / 100) return { summary: "Dům jede ze sítě", summarySource: "grid" };
+  if (grid > flows.grid_deviation_share / 100) return { summary: t.summary.fromGrid, summarySource: "grid" };
   const min = flows.source_min_share / 100;
-  if (sun < min && grid < min && bat > 0) return { summary: "Dům jede z baterie", summarySource: "bat" };
+  if (sun < min && grid < min && bat > 0) return { summary: t.summary.fromBattery, summarySource: "bat" };
   const list = sourceList(m.share, min);
-  if (!list.length) return { summary: "Dům nic neodebírá" };
-  const names = { sun: "slunce", bat: "baterie", grid: "sítě" } as const;
-  const text = `Dům bere ${SOURCE_TEXT[list[0]]}${list.slice(1).map((source) => ` a ${names[source]}`).join("")}`;
-  return { summary: text, summarySource: list[0] };
+  if (!list.length) return { summary: t.summary.nothing };
+  return { summary: t.summary.houseTakes(sourcePhrase(list, t)), summarySource: list[0] };
 }
 
-const SOURCE_TEXT: Record<Source, string> = { sun: "ze slunce", bat: "z baterie", grid: "ze sítě" };
+/** "ze slunce a baterie", "from the sun and the battery": the first source in its own form, the rest after "a". */
+function sourcePhrase(list: Source[], t: Texts): string {
+  return t.from[list[0]] + list.slice(1).map((source) => ` ${t.and} ${t.alsoFrom[source]}`).join("");
+}
 
 /** Sources with a share of at least `min` (0–1), largest first; the sun first on a tie. */
 export function sourceList(share: Record<Source, number>, min: number): Source[] {
@@ -165,12 +167,11 @@ export interface SourceText {
 }
 
 /** Where a load gets its energy, as text (CURRENT_SPEC.md, Auto: smíšené nabíjení); the sun when nothing is measured. */
-export function sourceText(share: Record<Source, number>, flows: NumberSettings["flows"]): SourceText {
-  const names = { sun: "slunce", bat: "baterie", grid: "sítě" } as const;
+export function sourceText(share: Record<Source, number>, flows: NumberSettings["flows"], t: Texts): SourceText {
   let list = sourceList(share, flows.source_min_share / 100);
   if (!list.length) list = ["sun"];
   const deviation = share.grid > flows.grid_deviation_share / 100;
-  return { text: SOURCE_TEXT[list[0]] + list.slice(1).map((source) => ` a ${names[source]}`).join(""), main: deviation ? "grid" : list[0], deviation };
+  return { text: sourcePhrase(list, t), main: deviation ? "grid" : list[0], deviation };
 }
 
 /** State of the water mixing from its two valves (CURRENT_SPEC.md, Mísení vody). */

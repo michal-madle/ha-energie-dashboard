@@ -18,9 +18,9 @@ const CARD = "ha-energie-dashboard";
 
 // ------------------------------------------------------------------ helpers
 
-async function open(page: Page, scenario = "full", width = 393, height = 852, theme: "dark" | "light" = "dark"): Promise<void> {
+async function open(page: Page, scenario = "full", width = 393, height = 852, theme: "dark" | "light" = "dark", lang = "cs"): Promise<void> {
   await page.setViewportSize({ width, height });
-  await page.goto(`/tests/harness.html?s=${scenario}${theme === "light" ? "&theme=light" : ""}`);
+  await page.goto(`/tests/harness.html?s=${scenario}${theme === "light" ? "&theme=light" : ""}&lang=${lang}`);
   await page.locator(".tile").first().waitFor();
 }
 
@@ -183,6 +183,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       [{ car: { image: "sensor.obrazek" } }, /car\.image must be a image entity/],
       [{ mixing: { valve_c1: "switch.ventil", valve_c2: "switch.ventil" } }, /mixing\.valve_c1 and mixing\.valve_c2 must be two different valves/],
       [{ daily: { car: "Sensor Auto" } }, /daily\.car must be an entity ID/],
+      [{ language: "de" }, /language must be one of auto, cs, en, sv/],
       [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
       [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
       [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
@@ -1006,5 +1007,140 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
     await expect(page.getByRole("dialog", { name: "Slunce" })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(0);
+  });
+});
+
+// ------------------------------------------------------------------ languages
+
+test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
+  /** Every text of the card: visible text, spoken names and hints of all shadow roots. */
+  const allText = (page: Page) =>
+    page.evaluate((tag) => {
+      const out: string[] = [];
+      const walk = (root: ParentNode) => {
+        root.querySelectorAll("*").forEach((el) => {
+          for (const node of el.childNodes) if (node.nodeType === 3 && node.textContent?.trim()) out.push(node.textContent.trim());
+          for (const name of ["aria-label", "aria-valuetext", "title", "alt", "label", "valueText", "hint"]) {
+            const value = el.getAttribute(name) ?? (el as unknown as Record<string, unknown>)[name];
+            if (typeof value === "string" && value) out.push(value);
+          }
+          if (el.shadowRoot) walk(el.shadowRoot);
+        });
+      };
+      const host = document.querySelector(tag)!;
+      walk(host.shadowRoot!);
+      return out;
+    }, CARD);
+
+  const CZECH = /[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/;
+
+  const expandEverything = async (page: Page) => {
+    for (const row of await page.locator(".row-btn, .rowbtn").all()) {
+      if ((await row.getAttribute("aria-expanded")) === "false") await row.click();
+    }
+    await settle(page);
+  };
+
+  for (const lang of ["en", "sv"]) {
+    test(`${lang}: žádný český text v kartě, v popoverech ani ve hlášeních (všechny scénáře)`, async ({ page }) => {
+      for (const scenario of ["full", "day", "grid", "unavailable", "missing"]) {
+        await open(page, scenario, 393, 852, "dark", lang);
+        await expandEverything(page);
+        expect((await allText(page)).filter((text) => CZECH.test(text)), `${lang} ${scenario}`).toEqual([]);
+        for (const key of await tileKeys(page)) {
+          await page.locator(`.tile[data-tile="${key}"]`).click();
+          expect((await allText(page)).filter((text) => CZECH.test(text)), `${lang} ${scenario} ${key}`).toEqual([]);
+          await page.keyboard.press("Escape");
+        }
+        await page.locator(".title-btn").click();
+        expect((await allText(page)).filter((text) => CZECH.test(text)), `${lang} ${scenario} záhlaví`).toEqual([]);
+      }
+      // Feedback and hints
+      await open(page, "full", 393, 852, "dark", lang);
+      await page.getByRole("switch", { name: lang === "en" ? "Water mixing" : "Vattenblandning" }).click();
+      expect((await allText(page)).filter((text) => CZECH.test(text)), `${lang} nápověda`).toEqual([]);
+      await update(page, { "switch.technicka_mistnost_ventil_c1": "unavailable" });
+      expect((await allText(page)).filter((text) => CZECH.test(text)), `${lang} nedostupný ventil`).toEqual([]);
+    });
+
+    test(`${lang}: rozložení na 320 px (nic se neořízne a nepřetéká) a přístupnost`, async ({ page }) => {
+      for (const scenario of ["full", "day", "grid"]) {
+        await open(page, scenario, 320, 852, "dark", lang);
+        await expandEverything(page);
+        const layout = await page.evaluate((tag) => {
+          const root = document.querySelector(tag)!.shadowRoot!;
+          const tiles = [...root.querySelectorAll<HTMLElement>(".tile .text")].map((text) => text.scrollWidth > text.clientWidth + 0.5 || text.getBoundingClientRect().right > text.closest(".tile")!.getBoundingClientRect().right + 0.5);
+          const panels = [...root.querySelectorAll<HTMLElement>(".panel, .source")].map((panel) => {
+            const box = panel.getBoundingClientRect();
+            return [...panel.querySelectorAll<HTMLElement>("*")].some((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
+          });
+          return { scrollWidth: document.documentElement.scrollWidth, tiles, panels };
+        }, CARD);
+        expect(layout.scrollWidth, `${lang} ${scenario}`).toBeLessThanOrEqual(320);
+        expect(layout.tiles.some(Boolean), `${lang} ${scenario}: text dlaždice se ořízl`).toBe(false);
+        expect(layout.panels.some(Boolean), `${lang} ${scenario}: obsah přesahuje panel`).toBe(false);
+        expect(await axeViolations(page), `${lang} ${scenario} axe`).toEqual([]);
+      }
+    });
+  }
+
+  test("angličtina píše čísla a procenta jako Home Assistant: 65%, 1.2 kW; čeština a švédština s mezerou", async ({ page }) => {
+    await open(page, "full", 393, 852, "dark", "en");
+    await page.locator('.tile[data-tile="bat"]').click();
+    await expect(page.locator(".pop-big")).toHaveText("65%");
+    await update(page, { "sensor.goodwe_pv_power": "1200" });
+    await expect(page.locator('.tile[data-tile="sun"] .value')).toHaveText("1.2 kW");
+    await open(page, "full", 393, 852, "dark", "sv");
+    await page.locator('.tile[data-tile="bat"]').click();
+    await expect(page.locator(".pop-big")).toHaveText("65 %");
+    await open(page, "full", 393, 852, "dark", "cs");
+    await page.locator('.tile[data-tile="bat"]').click();
+    await expect(page.locator(".pop-big")).toHaveText("65 %");
+    await update(page, { "sensor.goodwe_pv_power": "1200" });
+    await expect(page.locator('.tile[data-tile="sun"] .value')).toHaveText("1,2 kW");
+  });
+
+  test("jazyk karty je jazyk profilu Home Assistantu a mění se hned; jiný jazyk než cs a sv = angličtina; klíč language jazyk vynutí; lang na hostiteli", async ({ page }) => {
+    await open(page, "full");
+    const host = page.locator(CARD);
+    const title = () => page.locator("h1");
+    await expect(title()).toHaveText("Energie");
+    await expect(host).toHaveAttribute("lang", "cs");
+    await page.evaluate(() => (window as any).__test.setLanguage("sv"));
+    await expect(title()).toHaveText("Energi");
+    await expect(host).toHaveAttribute("lang", "sv");
+    await expect(page.locator(".tile .name").first()).toHaveText("Sol");
+    await page.evaluate(() => (window as any).__test.setLanguage("de"));
+    await expect(title()).toHaveText("Energy");
+    await expect(host).toHaveAttribute("lang", "en");
+    await page.evaluate(() => (window as any).__test.setLanguage("en-GB"));
+    await expect(page.locator(".tile .name").first()).toHaveText("Sun");
+    // forced by the YAML, whatever Home Assistant shows
+    await page.evaluate(() => {
+      const test = (window as any).__test;
+      test.card.setConfig({ ...structuredClone(test.config), language: "cs" });
+    });
+    await expect(title()).toHaveText("Energie");
+    await expect(host).toHaveAttribute("lang", "cs");
+  });
+
+  test("texty z konfigurace (nadpis, nadpisy panelů) se nepřekládají, bez nich platí jazyk karty", async ({ page }) => {
+    await open(page, "full", 393, 852, "dark", "sv");
+    await expect(page.locator("h1")).toHaveText("Energi");
+    await expect(page.locator(".panel h2")).toHaveText(["El", "BMW i3", "Varmvatten"]);
+    await page.evaluate(() => {
+      const test = (window as any).__test;
+      test.card.setConfig({ ...structuredClone(test.config), title: "Domov Madle", titles: { electricity: "Elektřina doma", car: null, water: "Teplá voda" } });
+    });
+    await expect(page.locator("h1")).toHaveText("Domov Madle");
+    await expect(page.locator(".panel h2")).toHaveText(["Elektřina doma", "BMW i3", "Teplá voda"]);
+  });
+
+  test("odpojené auto a nápověda u obrázku auta mluví jazykem karty", async ({ page }) => {
+    await open(page, "full", 393, 852, "dark", "en");
+    await page.getByRole("button", { name: "Open the car dashboard" }).click();
+    await expect(page.locator(".car-hint")).toHaveText("Press and hold, or tap twice.");
+    await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
+    await expect(stateLine(page, 1)).toHaveText("Unplugged");
   });
 });

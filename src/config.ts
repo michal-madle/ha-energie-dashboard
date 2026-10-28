@@ -1,4 +1,5 @@
-import type { Colors, DashboardConfig, EntitySections, NumberSettings, SectionName, Settings, TempStop, Titles } from "./types";
+import { LANGUAGES } from "./types";
+import type { Colors, DashboardConfig, EntitySections, LanguageSetting, NumberSettings, SectionName, Settings, TempStop, Titles } from "./types";
 
 /*
  * Card configuration (CURRENT_SPEC.md, Konfigurace): every key is optional. A key without a
@@ -9,7 +10,6 @@ import type { Colors, DashboardConfig, EntitySections, NumberSettings, SectionNa
  * top-level keys, which Home Assistant adds itself (grid_options, view_layout).
  */
 
-export const DEFAULT_TITLE = "Energie";
 
 /**
  * Keys of every entity section and the domain an entity must have, where the card will call a
@@ -127,16 +127,20 @@ export const TEMP_SCALE: TempStop[] = [
   { temp: 85, color: "#FF453A" },
 ];
 
-/** Headings of the three panels with their defaults. */
-export const TITLES: Titles = { electricity: "Elektřina", car: "BMW i3", water: "Teplá voda" };
+/** Headings of the three panels; without a text the card names them in its language (i18n.ts). */
+export const TITLE_KEYS = ["electricity", "car", "water"] as const;
+
+/** Card language: `auto` follows Home Assistant (CURRENT_SPEC.md, Jazyky). */
+const LANGUAGE_SETTINGS: readonly LanguageSetting[] = ["auto", ...LANGUAGES];
 
 /** Every setting as a dotted key, for the example configuration and its test. */
 export const CONFIG_KEYS: string[] = [
   "type",
   "title",
+  "language",
   ...SECTION_NAMES.flatMap((name) => Object.keys(SECTION_KEYS[name]).map((key) => `${name}.${key}`)),
   ...Object.entries(NUMBERS).flatMap(([section, keys]) => Object.keys(keys).map((key) => `${section}.${key}`)),
-  ...Object.keys(TITLES).map((key) => `titles.${key}`),
+  ...TITLE_KEYS.map((key) => `titles.${key}`),
   ...Object.keys(COLORS).map((key) => `colors.${key}`),
   "colors.temp_scale",
   "boiler.show",
@@ -300,11 +304,11 @@ function carLink(config: DashboardConfig): string {
   return raw;
 }
 
-function titles(config: DashboardConfig): Titles {
+function titles(config: DashboardConfig): Partial<Titles> {
   const input = section(config.titles, "titles");
-  checkKeys(input, Object.keys(TITLES), "titles");
-  const result: Record<string, string> = { ...TITLES };
-  for (const key of Object.keys(TITLES)) {
+  checkKeys(input, [...TITLE_KEYS], "titles");
+  const result: Record<string, string> = {};
+  for (const key of TITLE_KEYS) {
     const raw = input[key];
     if (raw === undefined || raw === null) {
       continue;
@@ -314,7 +318,7 @@ function titles(config: DashboardConfig): Titles {
     }
     result[key] = raw.trim();
   }
-  return result as unknown as Titles;
+  return result as Partial<Titles>;
 }
 
 /** Pairs that must be ordered: a lower limit above its upper limit would give a broken scale. */
@@ -346,5 +350,9 @@ export function normalizeConfig(config: DashboardConfig): Settings {
   }
   const num = numbers(config);
   checkOrder(num);
-  return { title: config.title ?? DEFAULT_TITLE, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), carLink: carLink(config) };
+  const language = config.language ?? "auto";
+  if (!LANGUAGE_SETTINGS.includes(language)) {
+    fail(`language must be one of ${LANGUAGE_SETTINGS.join(", ")}.`);
+  }
+  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), carLink: carLink(config) };
 }
