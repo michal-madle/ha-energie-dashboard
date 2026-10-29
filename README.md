@@ -2,7 +2,7 @@
 
 Vlastní Lovelace karta `custom:ha-energie-dashboard` pro přehled energie domu: FVE, síť, baterie, dům, auto, wallbox, bojler, zásobník a mísení vody. Nahradí dashboard „Energie dům“ (`/energie-dum`) jednou kartou, jako to udělala [karta Klima](https://github.com/michal-madle/ha-klima-dashboard) pro místnosti. Je to **frontendová karta**, ne integrace ani automatizace. Není potřeba nic vkládat do `configuration.yaml` ani restartovat Home Assistant.
 
-**Stav: prototyp se třemi panely** v podobě podle Apple Human Interface Guidelines, bez Liquid Glass (`CURRENT_SPEC.md`, Vzhled podle Apple HIG). Elektřina: Sankey diagram toků, hladina baterie, auta a bojleru jako výplň dlaždic, popupy s dnešními součty (dlaždice i záhlaví), upozornění jen na odchylky; Auto a Bojler se skrývají, když nejsou potřeba. BMW i3: stav, nabití, dojezd, odkud auto nabíjí, chráněný přepínač Přetoky | Boost s nabíjecím výkonem, řádek Wallbox se stářím dat a přepínači Zablokovat nabíjení a Přednost před bojlerem. Teplá voda: dva obloukové měřiče (Bojler, Zásobník), Boost bojleru a Mísení chráněné podržením nebo dvojklepnutím, cílové teploty, Auto | Manual | Off a teplota zásobníku. Všechny limity, prahy, stupnice, barvy a nadpisy jsou v konfiguraci s výchozími hodnotami. Baterie má popup s 10dílným měřičem, odhadem času a mikrotrendem a po klepnutí „Detail baterie“ se záložkami Dnes, Historie (1 den, 7 dní, 30 dní) a Zdraví; historie se čte z dlouhodobých statistik Home Assistantu (entity potřebují `state_class`). Ještě chybí historie ostatních dlaždic, „Jak dlouho“, detailní obrazovky Voda a Wallbox a ovládání limitu nabití auta (`TODO.md`). Funkce v živém Home Assistantu je třeba ověřit (`TODO.md`, E4). Denní součty v popupech potřebují čítače z [examples/denni_soucty.yaml](./examples/denni_soucty.yaml); bez nich ukazují „––“.
+**Stav: prototyp se třemi panely** v podobě podle Apple Human Interface Guidelines, bez Liquid Glass (`CURRENT_SPEC.md`, Vzhled podle Apple HIG). Elektřina: Sankey diagram toků, hladina baterie, auta a bojleru jako výplň dlaždic, popupy s dnešními součty (dlaždice i záhlaví), upozornění jen na odchylky; Auto a Bojler se skrývají, když nejsou potřeba. BMW i3: stav, nabití, dojezd, odkud auto nabíjí, chráněný přepínač Přetoky | Boost s nabíjecím výkonem, řádek Wallbox se stářím dat a přepínači Zablokovat nabíjení a Přednost před bojlerem. Teplá voda: dva obloukové měřiče (Bojler, Zásobník), Boost bojleru a Mísení chráněné podržením nebo dvojklepnutím, cílové teploty, Auto | Manual | Off a teplota zásobníku. Všechny limity, prahy, stupnice, barvy a nadpisy jsou v konfiguraci s výchozími hodnotami. Baterie má popup s 10dílným měřičem, odhadem času a mikrotrendem a po klepnutí „Detail baterie“ se záložkami Dnes, Historie (1 den, 7 dní, 30 dní) a Zdraví; historie se čte z dlouhodobých statistik Home Assistantu (entity potřebují `state_class`). Ještě chybí historie ostatních dlaždic, „Jak dlouho“, detailní obrazovky Voda a Wallbox a ovládání limitu nabití auta (`IDEAS.md`, N1). Funkce v živém Home Assistantu je třeba ověřit (`TODO.md`, E4). Denní součty v popupech potřebují čítače z [examples/denni_soucty.yaml](./examples/denni_soucty.yaml); bez nich ukazují „––“.
 
 ## Který soubor je správný?
 
@@ -45,7 +45,9 @@ Co mají karty Energie a Klima společné, je v repozitáři [ha-dashboard-kit](
 
 - [CURRENT_SPEC.md](./CURRENT_SPEC.md) – aktuální specifikace a zdroj pravdy
 - [ENTITY_MAP.md](./ENTITY_MAP.md) – entity, jednotky, znaménka, zdroje a stav ověření
-- [TODO.md](./TODO.md) – otevřené otázky a návrhy (nejsou součástí zadání)
+- [TODO.md](./TODO.md) – rozpracované otázky a ověření (nejsou součástí zadání)
+- [IDEAS.md](./IDEAS.md) – nápady a „nice to have“, ze kterých se vybírá
+- [AI_MCP.md](./AI_MCP.md) – připojení Claude k Home Assistantu (MCP, AI Task)
 - [AUDIT.md](./AUDIT.md) – otevřené rozpory mezi zdroji
 - [MEMORY_SUMMARIZED.md](./MEMORY_SUMMARIZED.md) – stručná projektová paměť
 

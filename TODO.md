@@ -1,11 +1,13 @@
 # TODO – Energie Dashboard
 
-Jen to, co čeká na vaši odpověď nebo na ověření v živém Home Assistantu a na iPhonu 14 Pro (Apple Human Interface Guidelines). **Nejsou součástí zadání**: platí `CURRENT_SPEC.md`. Kde se v kitu dá sdílet kód, je to v `TODO.md` kitu (K1–K3).
+Jen to, co je rozpracované a čeká na vaši odpověď nebo na ověření v živém Home Assistantu a na iPhonu 14 Pro (Apple Human Interface Guidelines). **Nejsou součástí zadání**: platí `CURRENT_SPEC.md`. Nápady, ze kterých se teprve vybírá, jsou v `IDEAS.md`. Kde se v kitu dá sdílet kód, je to v `TODO.md` kitu (K1–K3).
 
 Pravidla:
-- Čísla E1–E19 jsou trvalá (odkazuje se na ně ze `CURRENT_SPEC.md`, `ENTITY_MAP.md` a `AUDIT.md`). Vyřízený bod se odsud smaže (platné chování je ve specifikaci) a jeho číslo se nepoužije znovu; nový bod dostane další volné číslo.
-- Do TODO patří jen jasná otázka nebo jasný úkol. Co jste potvrdil, je ve specifikaci; nápady bez vaší žádosti se nevedou.
-- Druh: **Rozhodnutí** (čeká na vás), **Ověření** (v živém Home Assistantu nebo na zařízení), **Návrh** (zlepšení, které jste chtěl nebo odsouhlasil směr).
+- Čísla E1–E21 jsou trvalá (odkazuje se na ně ze `CURRENT_SPEC.md`, `ENTITY_MAP.md` a `AUDIT.md`). Vyřízený bod se odsud smaže (platné chování je ve specifikaci) a jeho číslo se nepoužije znovu; nový bod dostane další volné číslo.
+- Do TODO patří jen jasná otázka nebo jasný úkol. Co jste potvrdil, je ve specifikaci; nápady a „nice to have“ jsou v `IDEAS.md` (čísla N1–N30).
+- Druh: **Rozhodnutí** (čeká na vás), **Ověření** (v živém Home Assistantu nebo na zařízení).
+
+Konsolidace 29. 10.: E10 (historie po klepnutí na dlaždici) a E18 (zvýšený kontrast, skleněný jezdec) jsou nápady, ne rozpracované body; přesunuty do `IDEAS.md` jako N1 a N2 (čísla E10 a E18 se nepoužijí znovu).
 
 Konsolidace 28. 10.: čísla přepsána od E1. Smazáno: popisné body bez otázky (co kód zatím nezahrnuje je ve `CURRENT_SPEC.md`, Stav implementace), budoucí řízení AZ Routeru (je ve specifikaci, Mimo rozsah, entity v `ENTITY_MAP.md`), nepotvrzené vlastní nápady (pomocný senzor pro čas posledního ohřevu bojleru) a statistiky testů (jsou v README). Starší znění je v historii gitu.
 
@@ -22,7 +24,6 @@ Konsolidace 28. 10.: čísla přepsána od E1. Smazáno: popisné body bez otáz
 | [E7](#e7) | Ověření | Hodnoty stavu wallboxu mimo tři známé |
 | [E8](#e8) | Rozhodnutí | Barva nabití auta |
 | [E9](#e9) | Rozhodnutí | Starý commit s polohou na GitHubu |
-| [E10](#e10) | Návrh | Obrazovka historie po klepnutí na dlaždici toku |
 | [E11](#e11) | Rozhodnutí | Nabíjení auta podle zdrojů: dopočet, průměr a hystereze |
 | [E12](#e12) | Rozhodnutí | Krok výkonu nabíjení wallboxu |
 | [E13](#e13) | Rozhodnutí | Sytost ohřevu v historii bojleru |
@@ -30,7 +31,6 @@ Konsolidace 28. 10.: čísla přepsána od E1. Smazáno: popisné body bez otáz
 | [E15](#e15) | Rozhodnutí | Licence repozitáře |
 | [E16](#e16) | Rozhodnutí | Modrá Síť × modrý akcent ovladačů |
 | [E17](#e17) | Rozhodnutí | Prototyp: co jsem rozhodl sám |
-| [E18](#e18) | Návrh | Zvýšený kontrast a skleněný jezdec při dotyku |
 | [E19](#e19) | Ověření | Přednost před bojlerem: spínač neodpovídá AZ Routeru |
 | [E20](#e20) | Rozhodnutí | Detail baterie: prahy rozbalancování a odhad času |
 | [E21](#e21) | Ověření | Detail baterie: znaménko proudu, hodnoty režimu, statistiky, vzhled na zařízení |
@@ -82,11 +82,6 @@ Dnešní dashboard: zelená od 50 %, oranžová od 20 %, jinak červená (ikona 
 
 První export (commit `092a870`) obsahoval polohu auta (tedy polohu domu), sériové číslo střídače a MAC adresu AZ Routeru; repozitář je veřejný. Historie `main` je sloučená do jednoho commitu bez těchto údajů a šablona exportu je napříště skrývá. GitHub ale podle své dokumentace starý commit ještě zobrazí tomu, kdo zná jeho SHA (cached views), dokud ho nesmaže podpora GitHubu. Návrh: požádat podporu GitHubu o odstranění cached views (formulář podpory, název repozitáře a commit `092a870`); poloha se na rozdíl od hesla změnit nedá.
 
-<a id="e10"></a>
-## E10 Obrazovka historie po klepnutí na dlaždici toku · Návrh
-
-Baterie už historii má (detail baterie, `CURRENT_SPEC.md`). Zbývá Slunce, Síť, Dům a spotřebiče: dlaždice budou klikací s historií (rozhodnuto 24. 10.). Návrh: list jako „Historie místnosti – 24 h“ v kartě Klima: křivka výkonu toho uzlu, pod ní pruh zdrojů v jejich barvách, prohlížení prstem, odkaz na standardní detail entity; křivky se doleva plynule ztrácejí. Rozhodnout obsah, pak navrhnu v canvasu.
-
 <a id="e11"></a>
 ## E11 Nabíjení auta podle zdrojů: dopočet, průměr a hystereze · Rozhodnutí
 
@@ -129,11 +124,6 @@ Potvrdit, nebo změnit:
 5. **Popisky pod přepínači** Zablokovat nabíjení a Přednost před bojlerem popisují důsledek („Auto nenabíjí, přebytek ohřívá vodu“, „Auto nabíjí dřív než bojler“); znění je moje, ověřit, že sedí na skutečné chování wallboxu a AZ Routeru.
 6. **Vzhled teplé vody:** jemný rámeček dlaždic Sankey (1 px, `rgba(255,255,255,.14)`), rozměry oblouku (124 × 112 px, silnice 9 px) a skupina Upozornění nahoře.
 7. **Entity k ověření v živém Home Assistantu:** `wallbox.charging_power` (v příkladu `number.wallbox_7_1_manual_charging_power`); ID obrázku auta obsahuje VIN, v příkladu je zástupné `image.bmw_i3_vin_image`.
-
-<a id="e18"></a>
-## E18 Zvýšený kontrast a skleněný jezdec při dotyku · Návrh
-
-HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vzhled při dotyku a vyžaduje podporu zvýšeného kontrastu (`prefers-contrast: more`). V kartě zatím není.
 
 <a id="e19"></a>
 ## E19 Přednost před bojlerem: spínač neodpovídá AZ Routeru · Ověření

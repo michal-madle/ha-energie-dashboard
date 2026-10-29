@@ -30,7 +30,7 @@ Zdroje: **E** = export 24. 10.; **Z** = zadání 24. 10. (stav k 17. 10.); **Y**
 | `sensor.goodwe_battery_charge_limit`, `sensor.goodwe_battery_discharge_limit` | limit nabíjení a vybíjení | A, `current`, `measurement` | E 30 A a 30 A | E | potvrzeno |
 | `sensor.goodwe_battery_error`, `sensor.goodwe_battery_warning` | chyba a varování baterie | text | E prázdné = žádná; význam kódů **k ověření** (karta ukazuje text) | E | potvrzeno (kódy k ověření) |
 
-Existuje, ale spec nepoužívá (E): `sensor.goodwe_today_energy_import` a `sensor.goodwe_today_energy_export` (**nejsou čítače sítě**, Z; E: 0,1 a 8,0 kWh), `sensor.goodwe_active_power` (W, záporné = odběr; registr 35140, ze kterého se počítá spotřeba domu), `sensor.goodwe_load` (W; E 382 W), `sensor.goodwe_total_power` (W), `number.goodwe_grid_export_limit` (5000 W), `select.goodwe_inverter_operation_mode` (`general`; možnosti `general`, `off_grid`, `backup`, `eco`, `peak_shaving`), `button.goodwe_synchronize_inverter_clock`. Integrace čte střídač každých 10 s (`SCAN_INTERVAL`, Home Assistant 2026.10.1, `homeassistant/components/goodwe/const.py`).
+Existuje, ale spec nepoužívá (E): `sensor.goodwe_today_energy_import` a `sensor.goodwe_today_energy_export` (**nejsou čítače sítě**, Z; E: 0,1 a 8,0 kWh), `sensor.goodwe_active_power` (W, záporné = odběr; registr 35140, ze kterého se počítá spotřeba domu), `sensor.goodwe_load` (W; E 382 W), `sensor.goodwe_total_power` (W), `number.goodwe_grid_export_limit` (5000 W), `select.goodwe_inverter_operation_mode` (`general`; možnosti `general`, `off_grid`, `backup`, `eco`, `peak_shaving`), `button.goodwe_synchronize_inverter_clock`. Integrace čte střídač každých 10 s (`SCAN_INTERVAL`, Home Assistant 2026.10.1 (uživatel má od 29. 10. 2026.10.4), `homeassistant/components/goodwe/const.py`).
 
 ## Wallbox (AZ Router, integrace z HACS)
 
@@ -79,7 +79,7 @@ Existuje, ale spec nepoužívá (E): `select.technicka_mistnost_ventil_c1_power_
 | `sensor.parkovani_bmw_i3_soc` | nabití auta (šablonový senzor: při `Charging` predikce integrace, jinak zobrazené nabití) | %, `battery`, `measurement` | 0–100 (E 49,6 = zobrazené nabití, auto nenabíjí) | E, Z, Y | potvrzeno |
 | `sensor.i3_120_range_ev_remaining_range` | dojezd | km, `distance`, `measurement` | E 95 km | E, Z, Y | potvrzeno |
 
-Obrázek auta (návrh, uživatel 24. 10.): entita `image.…` integrace BavarianData z exportu (E: 1 entita `image`, ID obsahuje VIN); adresa obrázku v atributu `entity_picture` (`/api/image_proxy/<entity_id>?token=…`, Home Assistant 2026.10.1). Stav: k ověření (export atributy obrázku nevypisuje).
+Obrázek auta (návrh, uživatel 24. 10.): entita `image.…` integrace BavarianData z exportu (E: 1 entita `image`, ID obsahuje VIN); adresa obrázku v atributu `entity_picture` (`/api/image_proxy/<entity_id>?token=…`, Home Assistant 2026.10.1 (uživatel má od 29. 10. 2026.10.4)). Stav: k ověření (export atributy obrázku nevypisuje).
 
 Nepoužívá se: `sensor.i3_120_charging_port_plug_state` (nespolehlivé, Měř. 15. 10.; „auto připojeno“ se bere ze stavu wallboxu). Existuje, ale spec nepoužívá (E): `sensor.i3_120_battery_ev_displayed_state_of_charge`, `sensor.wby8p210007k43709_stav_nabiti_predikce_integrace` (zdroje šablonového senzoru), `sensor.wby8p210007k43709_stav_nabijeni` (výčet `nocharging`, `chargingactive`, …), `sensor.garaz_bmw_i3_2` (čas poslední zprávy z auta), `device_tracker.i3_120`. Poloha auta je v exportu skrytá.
 
