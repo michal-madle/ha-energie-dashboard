@@ -2,6 +2,8 @@
 
 Smyčka, na které se dohodneme 29. 10.: jednou týdně napíšu, co z dat nechápu nebo co se liší od předpovědi, vy odpovíte několika větami a podle toho upravím předpověď výroby a pravidla. Čím dál míň otázek, protože se karta učí z dat sama.
 
+Automaticky: každou neděli v 19:40 (pražského času) běží plánovaný úkol, který si export přečte z vašeho počítače (musí být zapnutý a s aplikací Claude) a napíše otázky; export ale pořád spouštíte vy (token). Připomínka v kalendáři: neděle 19:30.
+
 ## Postup (asi 10 minut vašeho času)
 
 1. Spustíte export (`python tools\export_hodiny.py --url http://… --token … --days 14`). Wallbox a bojler se doplní z historie stavů, dokud nemají statistiky (`examples/statistiky_wallbox_bojler.yaml`).
