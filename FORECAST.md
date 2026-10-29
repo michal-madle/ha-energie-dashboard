@@ -44,11 +44,13 @@ Panely: 20 × 500 Wp = 10 kWp (10 na východ 82°, 10 na západ 262°, sklon 15�
 | Den | Výroba za jasný den | Špička |
 |---|---|---|
 | 21. 12. | asi 12 kWh | asi 2,6 kW |
-| 29. 10. | asi 27 kWh | asi 4,6 kW |
+| 29. 10. | teorie asi 27 kWh, **v datech nejlepší dny 17 až 17,5 kWh** | teorie 4,6 kW, **v datech 3,2 až 3,3 kW** (hodinový průměr) |
 | 21. 3. | asi 46 kWh | asi 7,1 kW |
 | 15. 5. a 21. 6. | asi 85 kWh | 10 kW (ořez střídačem) |
 
 Východ + západ dává široké ploché maximum.
+
+**Kalibrace na vašich datech (export 15. až 29. 10., 14 dní):** model nad říjnovým sluncem přestřeluje asi o třetinu až o 40 %. Nejlepší dny vyrobily 16,6 až 17,5 kWh (15., 16., 22., 26., 27. 10.), hodinový průměr výkonu nejvýš 3,2 až 3,3 kW (okamžitá špička vzorku 5,4 až 5,7 kW). Dny 18., 19. a 25. 10. byly zataženo (4 až 8 kWh). Dnešek (13,8 kWh do 19:00) je tedy **běžný dobrý říjnový den**, ne pošmourný. Ostatní řádky tabulky (prosinec, březen) jsou stejný teoretický horní odhad a opraví je učená korekce, orientačně násobkem 0,65 až 0,7. Červnovou špičku 10 kW udává uživatel. Pozor na ořez: 26. a 27. 10. dosáhla baterie 100 % a výroba 12 až 14 h zůstala pod možnostmi (dům bral jen 0,5 kW, vývoz nulový), do učení se tyto hodiny nepočítají.
 
 **Pozor na závěr z minima wallboxu.** Moje první verze z toho dělala pravidlo „od října do března auto nenabíjet“ (slunce samo nedosáhne 4,2 kW + dům). To je špatná otázka. Uživatel 29. 10.: „Aktuálně když svítí 2 kW tak nechám baterii nabít na nějakou hodnotu třeba 50 % a pak pustím wallbox. 2 kW jdou ze slunce a 2 z baterie. Po skončení se zase baterie vrátí a dobije.“ Baterie je zásobník a rozhoduje **energie za celý den**, ne okamžitý výkon. Správná otázka je: kolik z auta se po celém dni vyrovná sluncem a kolik se vrátí ze sítě večer a v noci. Karta proto neříká „nenabíjej“, ale ukáže důsledky a nechá rozhodnutí na vás; vaše metoda je v návrhu výchozí scénář (viz bod 3).
 
@@ -69,7 +71,26 @@ Příklad (simulace 29. 10. 11:30, auto 4,2 kW, baterie 46 %):
 | Vaše metoda (50 % → wallbox → stop při 30 %) | 20 % | 18:45 | 7,4 kWh (auto +5,2 kWh) |
 | Do 80 % (do 14:30) | 20 % | 13:00 | 14,5 kWh (auto +12,6, ze slunce 5,1) |
 
-Podobný výpočet pro jasný den 29. 10. (výroba × 1,9): vaše metoda dá do auta 13,7 kWh a večer ze sítě přibude 6,9 kWh proti nenabíjení (1,5 → 8,4 kWh), tedy čistě ze slunce asi 6,8 kWh. Dnes (pošmourno) jen 5,2 kWh do auta a čistě ze slunce asi 0,2 kWh; zbytek vrací síť v noci. Jestli se to vyplatí, záleží na ceně nočního proudu (HDO), proto má karta ukázat oba počty vedle sebe.
+Dnešek v tabulce je běžný dobrý říjnový den (výroba 14 až 15 kWh), nikoli pošmourný; dřívější popisek „pošmourno“ i scénář „jasný den ×1,9“ (13,7 kWh do auta) jsem opravil, protože nejlepší dny ve vašich datech jsou jen asi ×1,2.
+
+**Zpětné přehrání vaší metody na skutečných datech (15. až 28. 10.).** Skutečná hodinová výroba a spotřeba domu bez odhadnutého auta, baterie 11,2 kWh, rezerva 20 %, začátek dne na 20 %, wallbox 4,2 kW, start při baterii ≥ 50 % a slunci ≥ 2 kW před 17:00, stop při ≤ 30 %. Model je hodinový a zjednodušený, nezná vaše dobíjení ze sítě v noci ani ráno.
+
+| Den | Výroba | Auto | Ze sítě navíc | Čistě ze slunce |
+|---|---|---|---|---|
+| 15. 10. | 16,6 kWh | 4,2 | 0 | 4,2 |
+| 16. 10. | 17,0 | 5,2 | 1,4 | 3,9 |
+| 17. 10. | 15,3 | 4,2 | 1,3 | 2,9 |
+| 20. 10. | 14,0 | 4,2 | 0 | 4,2 |
+| 21. 10. | 14,5 | 4,2 | 1,8 | 2,4 |
+| 22. 10. | 17,5 | 10,5 | 3,3 | 7,2 |
+| 24. 10. | 13,9 | 3,2 | 0,1 | 3,0 |
+| 26. 10. | 16,8 | 8,4 | 2,0 | 6,4 |
+| 27. 10. | 16,6 | 9,5 | 7,4 | 2,1 |
+| 18., 19., 23., 25., 28. 10. | 4 až 11,5 | 0 | 0 | 0 (baterie nedosáhla 50 %) |
+
+Závěr z dat: za běžného dobrého dne v říjnu vaše metoda dá do auta 3 až 10 kWh a skoro celé ji pokryje slunce (síť navíc 0 až 3 kWh, jednou 7). Za zataženo se vůbec nespustí, což je správně. To odpovídá i skutečnosti: ve vašich datech jste při nabíjení 16., 21., 22. a 29. 10. brali ze sítě kolem 0,1 kW. Okamžitý práh 4,2 kW by tedy auto zakázal a ve skutečnosti se nabíjí, takže práh „kolik mi dá slunce teď“ se z návrhu definitivně ruší; karta počítá energii za celý den.
+
+Samostatná zjištění: 19. 10. v 5 a 6 h, 20. 10. v 8 h, 25. 10. v 12 a 13 h a 26. 10. v 7 h jste nabíjeli auto ze sítě o výkonu 6 až 10,5 kW (boost nebo HDO), 25. 10. dohromady asi 22 kWh. To je legitimní, jen se na kartě má ukázat jako „ze sítě“, ne jako chyba.
 
 **Kdy začít, kdy přestat:** *Začít* = první čas, od kterého předpověď přebytku (výroba − základ domu) přesáhne minimum wallboxu na 30 minut. *Přestat* = nejpozdější čas, při kterém baterie večer (ve 22:00, v pesimistickém scénáři P10) zůstane nad cílem, který nastavíte (např. 30 %). Najde se půlením intervalu v simulaci. Výsledek se řekne větou: „Nabíjejte nejdéle do 13:20, jinak baterie večer nevydrží.“
 
