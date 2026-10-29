@@ -5,7 +5,7 @@ Nápady a „nice to have“, ze kterých se vybírá. **Není to TODO** (to je 
 Vznik 29. 10. (zadání uživatele: „Chci mít jak přehled tak kontrolu. Chci využít a vyždímat ze senzorů a dat co mám co nejvíce.“). Vychází z vašeho exportu entit (`HA entities/energie.json`, 358 entit), z `ENTITY_MAP.md` a z toho, co dělají nejlepší energetické projekty: [Power Flow Card Plus](https://www.github.com/flixlix/power-flow-card-plus), [Predbat](https://springfall2008.github.io/batpred/what-does-predbat-do), [EMHASS](https://emhass.readthedocs.io/en/latest/), [evcc](https://docs.evcc.io/en/blog/2026/09/25/highlights-smart-battery-solar-share) a nová karta „Now“ v energetickém přehledu Home Assistantu 2026.3.
 
 Pravidla:
-- Čísla **N1–N34** jsou trvalá a nezávislá na E (karta Energie), C (Klima) a K (kit). N1 a N2 jsou bývalé E10 a E18.
+- Čísla **N1–N35** jsou trvalá a nezávislá na E (karta Energie), C (Klima) a K (kit). N1 a N2 jsou bývalé E10 a E18.
 - U každého nápadu: **Přínos** (co z toho mám), **Náročnost** (S = hodina, M = večer, L = víc večerů nebo cizí komponenta) a **Data** (co už máte a co by přibylo). Stav dat: ✔ v exportu, ＋ je potřeba doplnit.
 - Co nesedí na kartu, může být automace v Home Assistantu, samostatná karta nebo nástěnka; je to u každého napsané.
 - Údaje v exportu jsem nemohl ověřit na živém systému. Co je jen odvozené z názvu entity, je označeno „ověřit“.
@@ -48,6 +48,7 @@ Pravidla:
 | [N32](#n32) | Výhled | „Co když s autem“: baterie večer a ráno, kdy začít a přestat | ★★★ | L |
 | [N33](#n33) | AI | Popisky podle normy (bez pevných limitů) | ★★★ | M |
 | [N34](#n34) | AI | „Shrnutí od Claude“ jen při události | ★★ | M |
+| [N35](#n35) | Řízení | Pravidla „když – tak“ jako přepínače na kartě | ★★★ | M |
 
 Návod na připojení Claude: [AI_MCP.md](./AI_MCP.md).
 
@@ -255,7 +256,7 @@ Zadání 29. 10.: popisky bez pevných limitů („večer v zimě je to jiné ne
 
 <a id="n31"></a>
 ### N31 Výhled dne: předpověď výroby z vašich panelů
-Panely se zapíšou do konfigurace karty (roviny: kWp, azimut, sklon, ztráty). Výroba po hodinách = fyzika (poloha slunce, jasná obloha, oblačnost z předpovědi počasí v HA nebo hotová předpověď z Open-Meteo Solar Forecast / Forecast.Solar / Solcast) × oprava naučená z vašich posledních 14 dní. Graf ukáže dosavadní výrobu, zbytek dne s pásmem „pravděpodobný rozsah“, jasnou oblohu tečkovaně a vodorovnou čáru „minimum pro auto 4,2 kW“. Zbývá vyrobit X kWh. Odhad pro vaši střechu: jasný den 29. 10. 18,6 kWh se špičkou 3,2 kW, 21. 12. jen 9,8 kWh, 21. 6. 61,6 kWh se špičkou 6,8 kW; slunce samo (po odečtu domu) pokryje minimum wallboxu jen od března do září kolem poledne.
+Panely se zapíšou do konfigurace karty (roviny: kWp, azimut, sklon, ztráty). Výroba po hodinách = fyzika (poloha slunce, jasná obloha, oblačnost z předpovědi počasí v HA nebo hotová předpověď z Open-Meteo Solar Forecast / Forecast.Solar / Solcast) × oprava naučená z vašich posledních 14 dní. Graf ukáže dosavadní výrobu, zbytek dne s pásmem „pravděpodobný rozsah“, jasnou oblohu tečkovaně a vodorovnou čáru „minimum pro auto 4,2 kW“. Zbývá vyrobit X kWh. Panely 20 × 500 Wp = 10 kWp (východ 82° / západ 262°, 15°), špička v květnu a června 10 kW. Odhad za jasného dne: 21. 12. asi 12 kWh se špičkou 2,6 kW, 29. 10. asi 27 kWh a 4,6 kW, 21. 3. asi 46 kWh a 7 kW, v květnu a červnu asi 85 kWh a 10 kW; slunce samo pokryje minimum wallboxu (4,2 kW + dům) za jasného dne od března do září kolem poledne.
 **Přínos** ★★★ · **Náročnost** L · **Data** ＋ entita `weather` (v HA zdarma) nebo integrace předpovědi
 
 <a id="n32"></a>
@@ -272,6 +273,11 @@ Věta pod diagramem se nevyhodnocuje proti pevným prahům, ale proti vaší nor
 ### N34 „Shrnutí od Claude“ jen při události
 Při události (odchylka od normy, baterie krmí auto, ořez výroby) pošle HA Claude hotová fakta přes `ai_task.generate_data` a dostane nadpis a 1–2 věty vysvětlení. Čísla počítá model, ne Claude; v textu smí být jen čísla ze vstupu, jinak se použije šablona (N33); nejvýš jednou za 15 minut. Lze vypnout, karta funguje i bez toho.
 **Přínos** ★★ · **Náročnost** M · **Data** ✔ + API klíč Anthropic ＋
+
+<a id="n35"></a>
+### N35 Pravidla „když – tak“ jako přepínače na kartě
+Uživatel 29. 10.: „Více co-když-tak.“ Seznam pravidel v řeči, které nikdo nemusí překládat, každé s přepínačem: „Když baterie krmí auto déle než 5 min, tak zablokuj odběr z baterie a upozorni mě“, „Když slunce nedosáhne minima wallboxu, tak nenabíjej přes den, nabij v nízkém tarifu“, „Když zítra bude pod 10 kWh slunce, tak dobij baterii v noci aspoň na 60 %“, „Když je auto pod 30 % a zítra svítí, tak počkej na zítřejší slunce“. Pravidla běží jako automace v Home Assistantu (spínače routeru `switch.wallbox_4_…`, `switch.tuv_3_3_…`, `select.goodwe_inverter_operation_mode`); karta je jen zobrazí a přepne, takže při zavřené kartě fungují dál. Přepínače, které mění nastavení měniče, by měly mít ochranu (podržení). Návrh: artboard 4 v canvasu.
+**Přínos** ★★★ · **Náročnost** M · **Data** ✔ (N14, N31)
 
 ---
 

@@ -10,14 +10,14 @@ Vychází z toho, co jste napsal 29. 10.: popisky bez pevných limitů, výhled 
 forecast:
   planes:
     - name: Východ
-      kwp: 5.0            # 10 × 500 Wp, Aiko Neostar 2S
+      kwp: 5.0            # 10 × 500 Wp, Aiko Neostar 2S (celkem 20 panelů = 10 kWp)
       azimuth: 82         # kompas: 0 sever, 90 východ, 180 jih, 270 západ
       tilt: 15
     - name: Západ
       kwp: 5.0
       azimuth: 262
       tilt: 15
-  losses: 18              # % celkové ztráty (kabeláž, teplota, špína, střídač)
+  losses: 0               # % ztráty; kalibruje se z vašich dní (v květnu a červnu 10 kW z 10 kWp)
   inverter_kw: 10         # ořez výkonu (GW10KN-ET)
   weather: weather.forecast_domov   # entita počasí v Home Assistantu (hodinová předpověď); ověřit název
   forecast_entity:        # volitelné: hotová hodinová předpověď (viz úroveň 1)
@@ -37,18 +37,18 @@ Na všech úrovních karta přidá **vlastní korekci z vašich dní**: poměr s
 
 Úroveň 0 vzorec: výkon roviny = `kWp × GTI / 1000 × (1 − ztráty)`; GTI z jasné oblohy a polohy slunce na rovinu (sklon, azimut), oblačnost podle Kasten–Czeplak `GHI = GHI_jasno × (1 − 0,75 × oblačnost^3,4)`, oblačnost 0–1. Dvě roviny se sečtou a ořežou na výkon střídače.
 
-### Co z vašich panelů vychází (můj odhad, ne měření)
+### Co z vašich panelů vychází (odhad, bude se kalibrovat)
 
-Jasná obloha, Roztoky, 2 × 5 kWp, sklon 15°, azimuty 82° a 262°, ztráty 18 % (model pvlib, Ineichen; ověřit proti skutečným dnům):
+Panely: 20 × 500 Wp = 10 kWp (10 na východ 82°, 10 na západ 262°, sklon 15°), špička v květnu a červnu 10 kW (uživatel 29. 10.). Jasná obloha, Roztoky, dvě roviny po 5 kWp, model pvlib (Ineichen), **bez ztrát** a s čistým vzduchem (Linke 2,5); k tomu faktor 1,1, aby červnová špička seděla s vaší naměřenou (model sám dal 9,0 kW, střídač 10 kW pak špičku ořeže). Můj první pokus se ztrátami 18 % dával jen 6,8 kW a podhodnocoval o třetinu, proto karta nesmí věřit modelu naslepo a učí se z vašich dní (bod výše).
 
-| Den | Výroba za den | Špička |
+| Den | Výroba za jasný den | Špička |
 |---|---|---|
-| 21. 12. | 9,8 kWh | 2,1 kW |
-| 29. 10. | 18,6 kWh | 3,2 kW |
-| 21. 3. | 34,1 kWh | 4,9 kW |
-| 21. 6. | 61,6 kWh | 6,8 kW |
+| 21. 12. | asi 12 kWh | asi 2,6 kW |
+| 29. 10. | asi 27 kWh | asi 4,6 kW |
+| 21. 3. | asi 46 kWh | asi 7,1 kW |
+| 15. 5. a 21. 6. | asi 85 kWh | 10 kW (ořez střídačem) |
 
-Východ + západ s malým sklonem dává široké ploché maximum, ale nízkou špičku: i v červnu ne víc než asi 7 kW z 10 kWp. Z toho plyne důležitý poznatek: **minimální nabíjecí výkon wallboxu 4,2 kW slunce samo pokryje (po odečtu domu) až od března do září kolem poledne**. Od října do února se auto ze samotného přebytku nenabije; nabíjení probíhá z baterie a sítě. Výhled to ukáže čárou „minimum pro auto 4,2 kW“ v grafu.
+Východ + západ dává široké ploché maximum. Pro auto z toho plyne: minimum wallboxu 4,2 kW + dům (asi 0,5 kW) = asi 4,7 kW přebytku. **Za jasného dne to slunce splní od března do září kolem poledne a v říjnu jen těsně; od listopadu do února ne.** Za pošmourného dne (dnes špička 2,7 kW) ne. Výhled to ukáže čárou „auto potřebuje aspoň 4,2 kW“.
 
 ## 3. Předpověď baterie a „co když“
 
@@ -145,7 +145,19 @@ template:
 
 Pak v Nastavení → Pomocníci: dva **Integrály (Riemann)** z těchto senzorů do kWh a **měřič spotřeby** (měsíční cyklus). Km ze slunce za měsíc = `nabito ze slunce / nabito celkem × ujeto` (`sensor.wby8p210007k43709_nabita_energie_tento_mesic`, `sensor.i3_120_driving_distance_this_month`). Je to odhad (wallbox rozdělení neměří); stejný princip jako E11.
 
-## 6. Co z toho vybrat
+## 6. Export dat a šablona popisků
+
+Aby popisky seděly na vaši skutečnost, ne na moje odhady, potřebuju hodinová data za posledních 14 dní. `tools/export_hodiny.py` je přečte z dlouhodobých statistik Home Assistantu (ty se na rozdíl od stavů nemažou po 10 dnech) a vytvoří:
+
+- `energie_hodiny.csv`: jeden řádek na hodinu, průměr, minimum a maximum výkonu FVE, baterie, sítě, domu, wallboxu, bojleru a nabití baterie a auta;
+- `popisky_sablona.csv`: stejné hodiny a prázdné sloupce `hlavni_karta_veta`, `auto_veta`, `bojler_veta`, `poznamka`;
+- `export_report.txt`: které entity statistiky nemají.
+
+Postup je v záhlaví skriptu (token, `pip install websocket-client`, spuštění). Skript jen čte; protokol WebSocket jsem ověřil proti vlastnímu simulovanému serveru, ne proti vašemu Home Assistantu, takže první spuštění prosím zkontrolujte (`export_report.txt`). Kdo nechce skript, může v panelu Historie vybrat entity a použít „Stáhnout data“, ale stavy se drží jen 10 dní.
+
+Co pak: z CSV hodinu po hodině vypíšu, co by karta napsala a kde (hlavní karta, auto, bojler), a vy do šablony přepíšete věty, které se vám nelíbí. Z vašich oprav odvodím šablony vět a pásma „běžně“.
+
+## 7. Co z toho vybrat
 
 Doporučené pořadí: (1) popisky podle normy (N33) – nepotřebují žádná nová data; (2) úroveň 0 výhledu (N31) s kartou „co když“ (N32); (3) Open-Meteo Solar Forecast jako úroveň 1; (4) km ze slunce (N9); (5) Claude jen k vysvětlení (N34).
 
