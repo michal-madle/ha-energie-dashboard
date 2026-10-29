@@ -2708,16 +2708,16 @@ const Pi = St`
     position: relative;
     flex: 1 1 0;
     overflow: hidden;
-    border-radius: 3px;
+    border-radius: 0;
     background: var(--ed-tile);
   }
 
   .meter > span:first-child {
-    border-radius: 12px 3px 3px 12px;
+    border-radius: 12px 0 0 12px;
   }
 
   .meter > span:last-of-type {
-    border-radius: 3px 12px 12px 3px;
+    border-radius: 0 12px 12px 0;
   }
 
   .meter > span > i {
