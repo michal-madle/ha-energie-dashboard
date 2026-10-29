@@ -183,6 +183,10 @@ Postup je v záhlaví skriptu (token, `pip install websocket-client`, spuštěn�
 
 Co pak: z CSV hodinu po hodině vypíšu, co by karta napsala a kde (hlavní karta, auto, bojler), a vy do šablony přepíšete věty, které se vám nelíbí. Z vašich oprav odvodím šablony vět a pásma „běžně“.
 
+## 6b. Wallbox a bojler bez statistik
+
+`sensor.wallbox_total_power` a `sensor.tuv_power_total` nemají `state_class`, takže Home Assistant pro ně nedrží dlouhodobé statistiky, jen stavy za posledních asi 10 dní. Export proto u nich sáhne po historii stavů (hodinový časově vážený průměr). Od teď se statistiky naplní po přidání `examples/statistiky_wallbox_bojler.yaml` (`state_class: measurement`); pro hlavní kartu je to potřeba i kvůli normě pro hodinu a roční dobu.
+
 ## 7. Co z toho vybrat
 
 Doporučené pořadí: (1) popisky podle normy (N33) – nepotřebují žádná nová data; (2) úroveň 0 výhledu (N31) s kartou „co když“ (N32); (3) Open-Meteo Solar Forecast jako úroveň 1; (4) km ze slunce (N9); (5) Claude jen k vysvětlení (N34).
