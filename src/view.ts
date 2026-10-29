@@ -64,6 +64,21 @@ export interface Alert {
 
 export type Panel = "wallbox" | "targets" | "tank";
 
+/** Parts of the battery detail and its accordion rows (CURRENT_SPEC.md, Baterie). */
+export type BatTab = "now" | "hist" | "health";
+export type BatRow = "gap" | "temp" | "life";
+
+/** The history of one view of the battery detail: loading, ready or failed (then retried later). */
+export interface BatEntry {
+  status: "loading" | "ready" | "error";
+  /** When the request started (ms); an entry older than the refresh time is fetched again. */
+  at: number;
+  parts: Record<string, import("./battery-data").Stats>;
+}
+
+/** Where the last history range chosen in the battery detail is kept in the browser. */
+export const BATTERY_RANGE_KEY = "ha-energie-dashboard:battery-range";
+
 /** A number from an entity attribute, undefined when it is not one. */
 export function attribute(entity: HassEntity | undefined, key: string): number | undefined {
   const value = entity?.attributes?.[key];

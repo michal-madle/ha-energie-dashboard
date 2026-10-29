@@ -27,6 +27,29 @@ battery:
   state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
   depth_of_discharge: number.goodwe_depth_of_discharge_on_grid  # hloubka vybití ze střídače (%); rezerva = 100 − hodnota (80 % → rezerva 20 %)
   reserve: 20                                           # % rezerva baterie, jen když střídač hloubku vybití nehlásí (pod ní je výplň dlaždice Baterie oranžová)
+  # Detail baterie (klepnutí na dlaždici Baterie → Detail baterie); všechno je volitelné, bez entity je hodnota „––“
+  state_of_health: sensor.goodwe_battery_state_of_health  # zdraví baterie SOH (%)
+  voltage: sensor.goodwe_battery_voltage                # napětí baterie (V)
+  current: sensor.goodwe_battery_current                # proud baterie (A)
+  temperature: sensor.goodwe_battery_temperature        # teplota baterie (°C)
+  min_cell_voltage: sensor.goodwe_battery_min_cell_voltage  # nejnižší napětí článku (V)
+  max_cell_voltage: sensor.goodwe_battery_max_cell_voltage  # nejvyšší napětí článku (V)
+  min_cell_temperature: sensor.goodwe_battery_min_cell_temperature  # nejnižší teplota článku (°C)
+  max_cell_temperature: sensor.goodwe_battery_max_cell_temperature  # nejvyšší teplota článku (°C)
+  total_charge: sensor.goodwe_total_battery_charge      # čítač nabití za celou dobu (kWh, total_increasing)
+  total_discharge: sensor.goodwe_total_battery_discharge  # čítač vybití za celou dobu (kWh, total_increasing)
+  inverter_temperature_air: sensor.goodwe_inverter_temperature_air  # teplota střídače, vzduch (°C)
+  inverter_temperature_radiator: sensor.goodwe_inverter_temperature_radiator  # teplota střídače, chladič (°C)
+  mode: sensor.goodwe_battery_mode                      # režim baterie, text tak, jak ho hlásí střídač
+  charge_limit: sensor.goodwe_battery_charge_limit      # limit nabíjení (A)
+  discharge_limit: sensor.goodwe_battery_discharge_limit  # limit vybíjení (A)
+  error: sensor.goodwe_battery_error                    # chyba baterie, prázdné = žádná
+  warning: sensor.goodwe_battery_warning                # varování baterie, prázdné = žádné
+  capacity: 11.2                                        # kWh využitelná kapacita (odhady času, ekvivalentní cykly, zátěž v C)
+  imbalance_good: 15                                    # mV rozbalancování článků, do kterého je „výborné“ (návrh)
+  imbalance_warn: 30                                    # mV rozbalancování, do kterého je „dobré“ (nad tím „pozor“) (návrh)
+  imbalance_fault: 100                                  # mV rozbalancování, nad kterým je „chyba“ (návrh)
+  default_range: 1d                                     # s jakým obdobím se otevře historie v Detailu baterie: 1d, 7d nebo 30d (poslední volba se pamatuje)
 grid:
   power: sensor.goodwe_meter_active_power_total         # elektroměr (W), záporné = odběr ze sítě
 house:
@@ -123,6 +146,7 @@ colors:
   house: "#BF5AF2"                                      # dům
   car: "#40D0E6"                                        # auto
   boiler: "#FF6F59"                                     # bojler
+  discharge: "#64D2FF"                                  # vybíjení v grafech baterie (nabíjení má barvu baterie)
   accent: "#0A84FF"                                     # přepínače, slider, zvýraznění
   warning: "#FF9230"                                    # odchylka, upozornění, boost
   neutral: "#8E8E93"                                    # vypnuté ikony a šedé texty

@@ -52,6 +52,28 @@ export function formatNumber(value: number, digits = 0): string {
   return digits === 0 ? format.whole(value) : format.one(value);
 }
 
+/** A number with 0 to 3 decimal places in the format of the profile (the kit has formats for 0, 1 and 2; volts of a cell need three). */
+export function formatFixed(value: number, digits: number): string {
+  if (digits === 0) return format.whole(value);
+  if (digits === 1) return format.one(value);
+  if (digits === 2) return format.two(value);
+  const separator = format.one(1.5).charAt(1);
+  const scale = 10 ** digits;
+  const scaled = Math.round(Math.abs(value) * scale);
+  const sign = value < 0 && scaled > 0 ? "−" : "";
+  return `${sign}${format.whole(Math.floor(scaled / scale))}${separator}${String(scaled % scale).padStart(digits, "0")}`;
+}
+
+/** Short weekday and day of a time ("pá 23. 10."), in the language and date order of the profile. */
+export function formatWeekday(ms: number): string {
+  return `${new Intl.DateTimeFormat(format.locale, { weekday: "short" }).format(ms)} ${format.day(ms)}`;
+}
+
+/** The clock time of a moment ("14:00") in the time format of the profile. */
+export function formatClock(ms: number): string {
+  return format.time(ms);
+}
+
 /** "65 %" in Czech and Swedish, "65%" in English (the rule of Home Assistant). */
 export function formatPercent(value: number | string): string {
   return format.percent(typeof value === "number" ? formatNumber(value) : value);

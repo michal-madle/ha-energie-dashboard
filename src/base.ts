@@ -5,14 +5,15 @@ import { normalizeConfig } from "./config";
 import { isOn } from "./model";
 import type { FlowModel, SourceText } from "./model";
 import type { DashboardConfig, HomeAssistant, Settings } from "./types";
-import { entityState, readNumber, useFormat } from "./utils";
+import { entityState, readEnergy, readNumber, useFormat } from "./utils";
 import { cardLanguage, getI18n } from "./i18n";
 import type { I18n, Texts } from "./i18n";
 import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
 import { HEATING_KEY, NO_DATA, SOURCE_VAR, attribute } from "./view";
-import type { Panel, TileKey } from "./view";
+import type { BatEntry, BatRow, BatTab, Panel, TileKey } from "./view";
+import type { Range } from "./battery-data";
 
 export class CardBase extends LitElement {
   @state() _config?: Settings;
@@ -28,6 +29,17 @@ export class CardBase extends LitElement {
   /** Room the Elektřina panel adds above and below the diagram so that an open popup is not cut off. */
   @state() _now = Date.now();
   @state() _carHint = false;
+  /** The battery detail (a page of its own inside the card) and what is open in it. */
+  @state() _batDetail = false;
+  @state() _batTab: BatTab = "now";
+  @state() _batSpan: "6h" | "24h" = "24h";
+  /** The history range of the detail; undefined until the first use (then the saved choice or battery.default_range). */
+  @state() _batRange?: Range;
+  @state() _batOpen?: BatRow;
+  /** Position (0–100) of the finger on a chart, by chart. */
+  @state() _batScrub: Record<string, number> = {};
+  /** History by view ("trend", "day:24h", "hist:7d" …). */
+  @state() _batData: Record<string, BatEntry> = {};
   /** Texts and number formats of the card language (CURRENT_SPEC.md, Jazyky); set in willUpdate. */
   _i18n: I18n = getI18n("cs");
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */
@@ -99,8 +111,14 @@ export class CardBase extends LitElement {
     }
   }
 
+  /** Overridden by the battery part: loads the history of what is open, and moves the focus to the detail. */
+  loadBattery(): void {}
+  batteryToggled(): void {}
+
   updated(changed: PropertyValues): void {
     super.updated(changed);
+    this.loadBattery();
+    if (changed.has("_batDetail")) this.batteryToggled();
     const flow = this.renderRoot.querySelector<HTMLElement>(".flow");
     if (flow && !this._observer) {
       this._observer = new ResizeObserver(() => {
@@ -150,6 +168,20 @@ export class CardBase extends LitElement {
     if (s.boilerShow === "always" || model.boil === undefined) return true;
     if (isOn(model.boil, s.num.flows.idle_threshold)) return true;
     return this._lastHeating > 0 && Date.now() - this._lastHeating < s.num.boiler.hold_minutes * 60000;
+  }
+
+  /** Energy of today in kWh from the counters of the configuration; undefined = no data. */
+  today(s: Settings) {
+    const d = s.entities.daily;
+    const read = (id: string | undefined) => readEnergy(this.hass, id);
+    const v = {
+      pv: read(d.pv_generation), bchg: read(d.battery_charge), bdis: read(d.battery_discharge),
+      gin: read(d.grid_import), gout: read(d.grid_export), car: read(d.car), boil: read(d.boiler),
+    };
+    const all = [v.pv, v.gin, v.bdis, v.gout, v.bchg, v.car, v.boil];
+    // The house is what is left (produced + from the grid + from the battery − the rest), so it needs every counter.
+    const house = all.every((item) => item !== undefined) ? Math.max(0, v.pv! + v.gin! + v.bdis! - v.gout! - v.bchg! - v.car! - v.boil!) : undefined;
+    return { ...v, house };
   }
 
   /** Battery reserve in %: 100 − the inverter's depth of discharge (on-grid); the configured number only when the inverter does not report it. */

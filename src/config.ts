@@ -1,5 +1,5 @@
 import { checkKeys, entityId, fail, isRecord, languageSetting, section, withCardName } from "ha-dashboard-kit/config";
-import { BOILER_SHOW, COLORS, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
+import { BATTERY_RANGES, BOILER_SHOW, COLORS, DEFAULT_BATTERY_RANGE, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
 import type { Range } from "./config-schema";
 import type { Colors, DashboardConfig, EntitySections, NumberSettings, SectionName, Settings, TempStop, Titles } from "./types";
 
@@ -115,6 +115,18 @@ function boilerShow(config: DashboardConfig): "always" | "heating" {
   return raw as "always" | "heating";
 }
 
+/** battery.default_range: 1d, 7d or 30d. */
+function batteryRange(config: DashboardConfig): "1d" | "7d" | "30d" {
+  const raw = section(config.battery, "battery").default_range;
+  if (raw === undefined || raw === null) {
+    return DEFAULT_BATTERY_RANGE;
+  }
+  if (typeof raw !== "string" || !(BATTERY_RANGES as readonly string[]).includes(raw)) {
+    fail(`battery.default_range must be one of ${BATTERY_RANGES.join(", ")}, not ${JSON.stringify(raw)}.`);
+  }
+  return raw as "1d" | "7d" | "30d";
+}
+
 /** flows.decimals: "auto" (default, at least three digits), 1 or 2. */
 function powerDecimals(config: DashboardConfig): 1 | 2 | "auto" {
   const raw = section(config.flows, "flows").decimals;
@@ -164,6 +176,8 @@ function checkOrder(num: NumberSettings): void {
     [num.boiler.target_min, num.boiler.target_max, "boiler.target_min", "boiler.target_max", true],
     [num.water.gauge_min, num.water.gauge_max, "water.gauge_min", "water.gauge_max", true],
     [num.tank.temp_min, num.tank.temp_max, "tank.temp_min", "tank.temp_max", true],
+    [num.battery.imbalance_good, num.battery.imbalance_warn, "battery.imbalance_good", "battery.imbalance_warn", false],
+    [num.battery.imbalance_warn, num.battery.imbalance_fault, "battery.imbalance_warn", "battery.imbalance_fault", false],
   ];
   for (const [low, high, lowKey, highKey, strict] of pairs) {
     if (strict ? low >= high : low > high) {
@@ -191,5 +205,5 @@ function normalize(config: DashboardConfig): Settings {
   const num = numbers(config);
   checkOrder(num);
   const language = languageSetting(config.language);
-  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config) };
+  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config), batteryRange: batteryRange(config) };
 }

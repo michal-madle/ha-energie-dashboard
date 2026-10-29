@@ -4,6 +4,7 @@ import { buildModel } from "./model";
 import { styles } from "./styles";
 import { CardBase } from "./base";
 import { withControls } from "./controls";
+import { withBattery } from "./battery";
 import { withElectricity } from "./electricity";
 import { withCar } from "./car";
 import { withWater } from "./water";
@@ -14,7 +15,7 @@ import { withWater } from "./water";
  * the car with the wallbox, hot water (two arc gauges, mixing). Every limit, threshold, scale and
  * colour comes from the configuration (config.ts).
  */
-export class HaEnergieDashboard extends withWater(withCar(withElectricity(withControls(CardBase)))) {
+export class HaEnergieDashboard extends withWater(withCar(withElectricity(withBattery(withControls(CardBase))))) {
   static styles = styles;
 
   // ----------------------------------------------------------------- render
@@ -24,7 +25,9 @@ export class HaEnergieDashboard extends withWater(withCar(withElectricity(withCo
     if (!s) return nothing;
     const model = buildModel(this.hass, s, this.t);
     const c = s.colors;
-    const vars = `--ed-sun:${c.sun};--ed-battery:${c.battery};--ed-grid:${c.grid};--ed-house:${c.house};--ed-car:${c.car};--ed-boiler:${c.boiler};--ed-accent:${c.accent};--ed-warning:${c.warning};--ed-off:${c.neutral}`;
+    const vars = `--ed-sun:${c.sun};--ed-battery:${c.battery};--ed-grid:${c.grid};--ed-house:${c.house};--ed-car:${c.car};--ed-boiler:${c.boiler};--ed-discharge:${c.discharge};--ed-accent:${c.accent};--ed-warning:${c.warning};--ed-off:${c.neutral}`;
+    // The battery detail is a page of its own inside the card (CURRENT_SPEC.md, Baterie).
+    if (this._batDetail) return html`<div class="page" style=${vars} @keydown=${this.onKey}>${this.renderBatteryDetail(s, model)}</div>`;
     return html`<div class="page" style=${vars} @keydown=${this.onKey}>
       ${s.title === "" ? nothing : html`<h1>${s.title ?? this.t.title}</h1>`} ${this.renderAlerts(s, model)} ${this.renderElectricity(s, model)} ${this.renderCar(s, model)}
       ${this.renderWater(s, model)}

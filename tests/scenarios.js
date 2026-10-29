@@ -40,6 +40,24 @@ const EVENING = {
   "number.goodwe_depth_of_discharge_on_grid": state("80"),
   "image.bmw_i3_vin_image": state("2026-10-24T10:00:00", { entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='83'%3E%3Crect width='168' height='83' rx='20' fill='%23888'/%3E%3C/svg%3E" }),
   "number.wallbox_7_1_manual_charging_power": state("1400", { min: 1400, max: 3700, step: 100, unit_of_measurement: "W" }),
+  // The battery detail (examples/energie.yaml, battery.*): values of the export of 24. 10.
+  "sensor.goodwe_battery_state_of_health": state("98", { unit_of_measurement: "%" }),
+  "sensor.goodwe_battery_voltage": state("294.9", { unit_of_measurement: "V" }),
+  "sensor.goodwe_battery_current": state("0.9", { unit_of_measurement: "A" }),
+  "sensor.goodwe_battery_temperature": state("23.8", { unit_of_measurement: "°C" }),
+  "sensor.goodwe_battery_min_cell_voltage": state("3.274", { unit_of_measurement: "V" }),
+  "sensor.goodwe_battery_max_cell_voltage": state("3.279", { unit_of_measurement: "V" }),
+  "sensor.goodwe_battery_min_cell_temperature": state("22.3", { unit_of_measurement: "°C" }),
+  "sensor.goodwe_battery_max_cell_temperature": state("25.7", { unit_of_measurement: "°C" }),
+  "sensor.goodwe_total_battery_charge": state("2730.8", { unit_of_measurement: "kWh" }),
+  "sensor.goodwe_total_battery_discharge": state("2031.8", { unit_of_measurement: "kWh" }),
+  "sensor.goodwe_inverter_temperature_air": state("33.5", { unit_of_measurement: "°C" }),
+  "sensor.goodwe_inverter_temperature_radiator": state("27.8", { unit_of_measurement: "°C" }),
+  "sensor.goodwe_battery_mode": state("Discharge"),
+  "sensor.goodwe_battery_charge_limit": state("30", { unit_of_measurement: "A" }),
+  "sensor.goodwe_battery_discharge_limit": state("30", { unit_of_measurement: "A" }),
+  "sensor.goodwe_battery_error": state(""),
+  "sensor.goodwe_battery_warning": state(""),
   // Today's counters (examples/denni_soucty.yaml); the car and boiler ones are not in the example configuration.
   "sensor.energie_fve_dnes": state("18.4", { unit_of_measurement: "kWh" }),
   "sensor.energie_baterie_nabito_dnes": state("5.2", { unit_of_measurement: "kWh" }),
@@ -80,6 +98,45 @@ const GRID = {
   "switch.tuv_boost": state("on"),
 };
 
+/**
+ * The long-term statistics of Home Assistant (websocket `recorder/statistics_during_period`):
+ * smooth made-up curves for the battery entities. ?stats=none answers with nothing, ?stats=error refuses.
+ */
+const statsMode = params.get("stats") ?? "ok";
+function fakeStatistics(message) {
+  if (statsMode === "error") throw new Error("statistics are not available");
+  if (statsMode === "none") return {};
+  const step = { "5minute": 300000, hour: 3600000, day: 86400000 }[message.period];
+  const start = Date.parse(message.start_time);
+  const end = Date.parse(message.end_time);
+  const result = {};
+  for (const id of message.statistic_ids) {
+    const rows = [];
+    for (let time = Math.floor(start / step) * step; time < end; time += step) {
+      const hours = time / 3600000;
+      const wave = Math.sin((hours / 24) * 2 * Math.PI);
+      const mean = {
+        "sensor.goodwe_battery_power": 1500 * wave + 400,
+        "sensor.goodwe_battery_state_of_charge": 55 + 40 * wave,
+        "sensor.goodwe_battery_min_cell_voltage": 3.31 + 0.01 * wave,
+        "sensor.goodwe_battery_max_cell_voltage": 3.325 + 0.01 * wave,
+        "sensor.goodwe_battery_min_cell_temperature": 21 + 2 * wave,
+        "sensor.goodwe_battery_max_cell_temperature": 25 + 2 * wave,
+        "sensor.goodwe_battery_temperature": 23 + 2 * wave,
+      }[id];
+      const row = { start: time, end: time + step };
+      for (const type of message.types) {
+        if (type === "change") row.change = ((id.endsWith("_discharge") ? 0.3 : 0.35) * step) / 3600000;
+        else if (type === "state") row.state = 1980 + (time - start) / 3600000 / 24;
+        else if (mean !== undefined) row[type] = type === "min" ? mean - 100 : type === "max" ? mean + 100 : mean;
+      }
+      rows.push(row);
+    }
+    result[id] = rows;
+  }
+  return result;
+}
+
 /** full = evening; day, grid; unavailable: unavailable / unknown; missing: no entity at all. */
 const states = {};
 if (scenario === "full") {
@@ -109,9 +166,12 @@ if (light) {
 const card = document.createElement("ha-energie-dashboard");
 card.setConfig(config);
 test.calls = [];
+/** The websocket requests of the card (statistics). */
+test.requests = [];
 // ?lang=sv|en|cs: the language of the Home Assistant profile (Czech by default, so the tests read Czech texts).
 const lang = params.get("lang") ?? "cs";
-let current = { states, themes: { darkMode: !light }, language: lang, locale: { language: lang }, callService: async (domain, service, data) => { test.calls.push({ domain, service, data }); } };
+let current = { states, themes: { darkMode: !light }, language: lang, locale: { language: lang }, callService: async (domain, service, data) => { test.calls.push({ domain, service, data }); },
+  callWS: async (message) => { test.requests.push(message); return fakeStatistics(message); } };
 card.hass = current;
 test.card = card;
 document.querySelector("main").append(card);

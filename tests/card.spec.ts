@@ -1219,3 +1219,296 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
     });
   });
 });
+
+// ------------------------------------------------------------------- baterie
+
+test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
+  /** The websocket requests the card made on the fake hass (statistics of the history). */
+  const requests = (page: Page) =>
+    page.evaluate(() => {
+      // @ts-expect-error test hook
+      return window.__test.requests as Array<{ type: string; statistic_ids: string[]; period: string; types: string[]; start_time: string; end_time: string }>;
+    });
+
+  const openDetail = async (page: Page, key: "bat" | "batIn" = "bat") => {
+    await page.locator(`.tile[data-tile="${key}"]`).click();
+    await page.getByRole("button", { name: "Detail baterie" }).click();
+    await page.locator(".bat-detail").waitFor();
+  };
+
+  const tab = (page: Page, name: string) => page.getByRole("radio", { name, exact: true });
+
+  /** The label, value and sub text of every tile of the live values. */
+  const kpis = (page: Page) =>
+    page.locator(".bat-kpi").evaluateAll((items) => items.map((item) => [...item.querySelectorAll("span")].map((el) => el.textContent?.trim())));
+
+  test("popup baterie: nabití, gauge z deseti pilulek s rezervou, odhad času, mikrotrend a jen směr dlaždice", async ({ page }) => {
+    await open(page, "day");
+    await page.locator('.tile[data-tile="batIn"]').click();
+    const pop = page.getByRole("dialog", { name: "Baterie" });
+    await expect(pop).toContainText("nabíjí 0,80 kW");
+    await expect(pop.locator(".pop-big")).toHaveText("88 %");
+    await expect(pop.getByRole("img", { name: "Nabití 88 %, rezerva 20 %" })).toBeVisible();
+    // (100 − 88) % z 11,2 kWh při 0,8 kW = 1,68 h, zaokrouhleno na 5 minut.
+    await expect(pop).toContainText("Plná za asi 1 h 40 min");
+    await expect(pop).toContainText("Dnes nabito");
+    await expect(pop).not.toContainText("Dnes vybito");
+    await expect(pop.getByRole("button", { name: "Detail baterie" })).toBeVisible();
+    // Deset pilulek po 10 %: první dvě (rezerva 20 %) oranžové, osmá z 80 %, poslední prázdná.
+    const pills = await pop.locator(".pill").evaluateAll((items) =>
+      items.map((item) => {
+        const fill = item.querySelector<HTMLElement>("i")!;
+        const style = getComputedStyle(item);
+        return { width: fill.style.width, colour: fill.style.background, radius: style.borderRadius, motion: getComputedStyle(fill).transitionDuration };
+      }),
+    );
+    expect(pills).toHaveLength(10);
+    expect(pills.slice(0, 2).map((pill) => [pill.width, pill.colour])).toEqual([["100%", "var(--ed-warning)"], ["100%", "var(--ed-warning)"]]);
+    expect(pills[8].width).toBe("80%");
+    expect(pills[9].width).toBe("0%");
+    // Zaoblené jsou jen vnější rohy první a poslední pilulky, nic se neanimuje.
+    expect(pills[0].radius).toBe("8px 0px 0px 8px");
+    expect(pills[9].radius).toBe("0px 8px 8px 0px");
+    expect(pills.slice(1, 9).every((pill) => pill.radius === "0px")).toBe(true);
+    expect(pills.every((pill) => pill.motion === "0s")).toBe(true);
+    // Mikrotrend z dlouhodobých statistik: výkon od půlnoci po 5 minutách.
+    await expect(pop.getByRole("img", { name: "Výkon baterie dnes od půlnoci" })).toBeVisible();
+    const sent = (await requests(page)).filter((item) => item.statistic_ids.includes("sensor.goodwe_battery_power"));
+    expect(sent[0]).toMatchObject({ type: "recorder/statistics_during_period", period: "5minute", types: ["mean"], statistic_ids: ["sensor.goodwe_battery_power"] });
+    expect(await pop.locator(".bat-trend path").evaluateAll((items) => items.map((item) => item.getAttribute("d")?.length ?? 0))).not.toContain(0);
+    await page.keyboard.press("Escape");
+    // Vybíjení (Baterie vlevo): jiná věta a jen „Dnes vybito“.
+    await open(page, "full");
+    await page.locator('.tile[data-tile="bat"]').click();
+    const out = page.getByRole("dialog", { name: "Baterie" });
+    await expect(out).toContainText("vybíjí 351 W");
+    await expect(out).toContainText("Vydrží asi 14 h 20 min");
+    await expect(out).toContainText("Dnes vybito");
+    await expect(out).not.toContainText("Dnes nabito");
+    // Bez toku (pod prahem) věta s časem není; na rezervě je poznámka.
+    await open(page, "grid");
+    await page.locator('.tile[data-tile="bat"]').click();
+    const rest = page.getByRole("dialog", { name: "Baterie" });
+    await expect(rest).not.toContainText(/Plná za|Vydrží/);
+    await update(page, { "sensor.goodwe_battery_state_of_charge": "15" });
+    await expect(rest).toContainText("na rezervě");
+  });
+
+  test("detail baterie: Dnes (živé hodnoty, graf s osou, energie) a návrat Zpět / Hotovo / Escape", async ({ page }) => {
+    await open(page, "full");
+    await openDetail(page);
+    const detail = page.locator(".bat-detail");
+    await expect(detail).toHaveAttribute("role", "dialog");
+    await expect(page.locator(".tile")).toHaveCount(0);
+    await expect(tab(page, "Dnes")).toHaveAttribute("aria-checked", "true");
+    await expect(detail.locator(".bat-huge")).toHaveText("65 %");
+    await expect(detail.getByRole("img", { name: "Nabití 65 %, rezerva 20 %" })).toBeVisible();
+    expect(await kpis(page)).toEqual([
+      ["Výkon", "0,35 kW", "Vybíjí se"],
+      ["Proud", "0,9 A", "vybíjecí"],
+      ["Napětí", "294,9 V", "baterie"],
+      ["Zátěž", "0,03 C", "výkon ÷ kapacita"],
+    ]);
+    // Graf Nabití a výkon: svislá osa (tři hodnoty nabití a výkon), údaj o bodu, posun šipkami.
+    await expect(detail.locator(".bat-chart")).toBeVisible();
+    const labels = await detail.locator(".bat-ylabel").allTextContents();
+    expect(labels.slice(0, 3)).toEqual(["100 %", "50 %", "0 %"]);
+    expect(labels).toHaveLength(6);
+    await expect(detail.locator(".bat-read")).toContainText(/^teď · \d+ % · /);
+    await detail.locator(".bat-chart input").focus();
+    for (let i = 0; i < 20; i++) await page.keyboard.press("ArrowLeft");
+    await expect(detail.locator(".bat-read")).toContainText(/^−\d+ h/);
+    // 6 h: nová žádost jen na šest hodin.
+    await tab(page, "6 h").click();
+    await expect.poll(async () => (await requests(page)).some((item) => item.types.join() === "mean" && Date.parse(item.end_time) - Date.parse(item.start_time) === 6 * 3600000 && item.statistic_ids.includes("sensor.goodwe_battery_state_of_charge"))).toBe(true);
+    // Energie dnes z denních čítačů.
+    await expect(detail).toContainText("5,20 kWh");
+    await expect(detail).toContainText("3,10 kWh");
+    await expect(detail).toContainText("Čistě uloženo +2,10 kWh");
+    // Zpět = popup dlaždice, Hotovo a Escape zavřou vše.
+    await detail.getByRole("button", { name: /Zpět/ }).click();
+    await expect(page.locator(".bat-detail")).toHaveCount(0);
+    await expect(page.getByRole("dialog", { name: "Baterie" })).toBeVisible();
+    await page.getByRole("button", { name: "Detail baterie" }).click();
+    await page.getByRole("button", { name: "Hotovo" }).click();
+    await expect(page.locator(".bat-detail")).toHaveCount(0);
+    await expect(page.locator(".pop")).toHaveCount(0);
+    await openDetail(page);
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".bat-detail")).toHaveCount(0);
+    await expect(page.locator(".tile")).toHaveCount(8);
+  });
+
+  test("detail baterie: Historie (1 den, 7 dní, 30 dní se pamatuje), energie, účinnost a pásma", async ({ page }) => {
+    await open(page, "full");
+    await openDetail(page);
+    await tab(page, "Historie").click();
+    // Výchozí je 1 den (battery.default_range); hodiny: 24 × 0,35 nabito a 24 × 0,30 vybito.
+    await expect(tab(page, "1 den")).toHaveAttribute("aria-checked", "true");
+    await expect(page.locator(".bat-detail")).toContainText("Energie po hodinách");
+    await expect.poll(() => kpis(page).then((items) => items.map((item) => item[1]))).toEqual(["8,4 kWh", "7,2 kWh", "85,7 %", "0,6", expect.stringMatching(/ %$/), expect.stringMatching(/ kW$/)]);
+    const chart = page.locator(".bat-detail .bat-chart");
+    await expect(chart).toBeVisible();
+    await expect(page.locator(".bat-detail .bat-read")).toContainText(/čistě [+−]/);
+    expect(await page.locator(".bat-band").count()).toBe(5);
+    const shares = (await page.locator(".bat-band .pct").allTextContents()).map((text) => Number(text.replace(/\D/g, "")));
+    expect(shares.reduce((sum, value) => sum + value, 0)).toBeGreaterThanOrEqual(98);
+    expect(shares.reduce((sum, value) => sum + value, 0)).toBeLessThanOrEqual(102);
+    // 7 dní: po dnech.
+    await tab(page, "7 dní").click();
+    await expect(page.locator(".bat-detail")).toContainText("Denní energie");
+    await expect.poll(() => requests(page).then((items) => items.some((item) => item.period === "day" && item.types.join() === "change"))).toBe(true);
+    await expect.poll(() => kpis(page).then((items) => items.slice(0, 2).map((item) => item[1]))).toEqual(["59 kWh", "50 kWh"]);
+    expect(await page.evaluate(() => localStorage.getItem("ha-energie-dashboard:battery-range"))).toBe("7d");
+    // Pamatuje se i po znovunačtení stránky.
+    await open(page, "full");
+    await openDetail(page);
+    await tab(page, "Historie").click();
+    await expect(tab(page, "7 dní")).toHaveAttribute("aria-checked", "true");
+    // Bez uložené volby platí battery.default_range.
+    await page.evaluate(() => localStorage.clear());
+    await open(page, "full");
+    await reconfigure(page, { battery: { ...example().battery, default_range: "30d" } });
+    await openDetail(page);
+    await tab(page, "Historie").click();
+    await expect(tab(page, "30 dní")).toHaveAttribute("aria-checked", "true");
+  });
+
+  test("detail baterie: Zdraví (stav, kapacita, vyvážení článků v absolutním napětí, teplota, životnost, diagnostika)", async ({ page }) => {
+    await open(page, "full");
+    await openDetail(page);
+    await tab(page, "Zdraví").click();
+    const detail = page.locator(".bat-detail");
+    await expect(detail).toContainText("Baterie je v pořádku");
+    await expect(detail).toContainText("Bez chyb a varování");
+    const row = (name: string) => detail.locator(".bat-card.flush").filter({ hasText: name }).first();
+    await expect(row("Kapacita")).toContainText("98 %");
+    await expect(row("Kapacita")).toContainText("využitelná ≈ 11,0 kWh z 11,2 kWh");
+    await expect(row("Kapacita").locator(".bat-row")).toBeDisabled();
+    await expect(row("Vyvážení článků")).toContainText("5 mV");
+    await expect(row("Vyvážení článků")).toContainText("Výborné");
+    await expect(row("Teplota")).toContainText("26 °C");
+    await expect(row("Teplota")).toContainText("nejteplejší článek · rozptyl 3 °C");
+    await expect(row("Životnost")).toContainText("181 cyklů");
+    await expect(row("Životnost")).toContainText("účinnost celkem 74,4 %");
+    // Diagnostika tak, jak ji střídač hlásí.
+    await expect(detail).toContainText("Režim");
+    await expect(detail).toContainText("Discharge");
+    await expect(detail).toContainText("Limit nabíjení");
+    await expect(detail).toContainText("30 A");
+    await expect(detail).toContainText("žádné");
+    // Vyvážení: absolutní napětí nejnižšího a nejvyššího článku, pás mezi nimi, bez průměru.
+    await row("Vyvážení článků").locator(".bat-row").click();
+    await expect(row("Vyvážení článků").locator(".bat-row")).toHaveAttribute("aria-expanded", "true");
+    await expect(row("Vyvážení článků").locator(".bat-read")).toContainText(/min 3,3\d\d V · max 3,3\d\d V · rozdíl \d+ mV/);
+    const gapLabels = await row("Vyvážení článků").locator(".bat-ylabel").allTextContents();
+    expect(gapLabels).toHaveLength(3);
+    expect(gapLabels.every((text) => / V$/.test(text))).toBe(true);
+    await expect(row("Vyvážení článků")).toContainText("min–max");
+    await expect(row("Vyvážení článků")).not.toContainText("průměr");
+    expect(await row("Vyvážení článků").locator(".bat-chart g path").count()).toBe(1);
+    const asked = (await requests(page)).filter((item) => item.statistic_ids.includes("sensor.goodwe_battery_min_cell_voltage"));
+    expect(asked[0]).toMatchObject({ period: "5minute", types: ["mean", "state"] });
+    // Teplota: v každém okamžiku nejnižší, nejvyšší a teplota baterie.
+    await row("Teplota").locator(".bat-row").click();
+    await expect(row("Teplota").locator(".bat-read")).toContainText(/min \d+,\d · baterie \d+,\d · max \d+,\d °C/);
+    await expect(row("Teplota")).toContainText("23,8 °C");
+    await expect(row("Teplota")).toContainText("Střídač, vzduch");
+    await expect(row("Teplota")).toContainText("33,5 °C");
+    // Životnost: ekvivalentní cykly v čase a čítače.
+    await row("Životnost").locator(".bat-row").click();
+    await expect(row("Životnost")).toContainText(/Celkem nabito\s*2.731 kWh/);
+    await expect(row("Životnost").locator(".bat-read")).toContainText(/ · \d+,\d cyklů/);
+    // 7 dní: hodinové statistiky.
+    await tab(page, "7 dní").click();
+    await expect.poll(() => requests(page).then((items) => items.some((item) => item.period === "hour" && item.statistic_ids.includes("sensor.goodwe_battery_min_cell_voltage")))).toBe(true);
+    // Chyba střídače je odchylka.
+    await update(page, { "sensor.goodwe_battery_error": "E-102" });
+    await expect(detail).toContainText("Chyba E-102");
+    await expect(detail.locator(".bat-title")).toHaveClass(/warn/);
+  });
+
+  test("detail baterie: bez dat a bez statistik je „––“, nikdy vymyšlená křivka", async ({ page }) => {
+    for (const stats of ["none", "error"]) {
+      await page.setViewportSize({ width: 393, height: 852 });
+      await page.goto(`/tests/harness.html?s=full&stats=${stats}`);
+      await page.locator(".tile").first().waitFor();
+      await page.locator('.tile[data-tile="bat"]').click();
+      await expect(page.locator(".bat-trend")).toContainText("–– bez dat");
+      await page.getByRole("button", { name: "Detail baterie" }).click();
+      await expect(page.locator(".bat-detail .bat-nodata")).toContainText("–– bez dat");
+      await tab(page, "Historie").click();
+      await expect(page.locator(".bat-detail .bat-nodata").first()).toContainText("–– bez dat");
+      await expect.poll(() => kpis(page).then((items) => items.slice(0, 4).map((item) => item[1]))).toEqual(["––", "––", "––", "––"]);
+      await tab(page, "Zdraví").click();
+      await page.locator(".bat-detail .bat-card.flush").filter({ hasText: "Vyvážení článků" }).locator(".bat-row").click();
+      await expect(page.locator(".bat-detail .bat-nodata")).toContainText("–– bez dat");
+      // Živé hodnoty z entit zůstávají.
+      await expect(page.locator(".bat-detail")).toContainText("5 mV");
+    }
+    // Bez jediné entity baterie: Bez dat, žádné číslo.
+    await open(page, "missing");
+    await openDetail(page);
+    await expect(page.locator(".bat-huge")).toHaveText("––");
+    await tab(page, "Zdraví").click();
+    await expect(page.locator(".bat-detail")).toContainText("Bez dat");
+    await expect(page.locator(".bat-detail")).toContainText("Baterie neposílá data");
+  });
+
+  test("detail baterie: bez vodorovného posouvání od 320 px, cíle aspoň 44 px a přístupnost (tmavý i světlý režim)", async ({ page }) => {
+    test.setTimeout(240000);
+    for (const theme of ["dark", "light"] as const) {
+      for (const width of [320, 375, 430, 768]) {
+        await open(page, "full", width, 852, theme);
+        await openDetail(page);
+        for (const name of ["Dnes", "Historie", "Zdraví"]) {
+          await tab(page, name).click();
+          if (name === "Zdraví") {
+            for (const title of ["Vyvážení článků", "Teplota", "Životnost"]) {
+              await page.locator(".bat-detail .bat-card.flush").filter({ hasText: title }).locator(".bat-row").click();
+            }
+          }
+          await settle(page);
+          const at = `${theme} ${width} ${name}`;
+          const layout = await page.evaluate((tag) => {
+            const root = document.querySelector(tag)!.shadowRoot!;
+            const page = root.querySelector(".page")!.getBoundingClientRect();
+            const over = [...root.querySelectorAll<HTMLElement>(".bat-detail *")].filter((el) => !el.closest("svg") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > page.right + 0.5 || el.getBoundingClientRect().left < page.left - 0.5)).length;
+            const targets = [...root.querySelectorAll<HTMLElement>(".bat-link, .bat-row, .bat-open")].map((el) => el.getBoundingClientRect().height);
+            const segmented = [...root.querySelectorAll("ed-segmented:not([compact])")].flatMap((host) => [...(host.shadowRoot?.querySelectorAll<HTMLElement>("button") ?? [])].map((el) => el.getBoundingClientRect().height));
+            return { scrollWidth: document.documentElement.scrollWidth, over, targets, segmented };
+          }, CARD);
+          expect(layout.scrollWidth, at).toBeLessThanOrEqual(width);
+          expect(layout.over, at).toBe(0);
+          for (const height of [...layout.targets, ...layout.segmented]) expect(height, at).toBeGreaterThanOrEqual(44);
+          if (width === 393 || width === 375) expect(await axeViolations(page), at).toEqual([]);
+        }
+      }
+    }
+    // Popup baterie: také bez porušení.
+    for (const theme of ["dark", "light"] as const) {
+      await open(page, "day", 393, 852, theme);
+      await page.locator('.tile[data-tile="batIn"]').click();
+      await expect(page.locator(".bat-trend svg")).toBeVisible();
+      expect(await axeViolations(page), `popup ${theme}`).toEqual([]);
+    }
+  });
+
+  test("detail baterie: en a sv bez českého textu", async ({ page }) => {
+    test.setTimeout(120000);
+    for (const lang of ["en", "sv"]) {
+      await open(page, "full", 393, 852, "dark", lang);
+      await page.locator('.tile[data-tile="bat"]').click();
+      await page.locator(".bat-open").click();
+      for (const index of [0, 1, 2]) {
+        await page.locator("ed-segmented").first().getByRole("radio").nth(index).click();
+        if (index === 2) {
+          for (const row of await page.locator(".bat-detail .bat-row:not([disabled])").all()) await row.click();
+        }
+        await settle(page);
+        const text = await page.locator(".bat-detail").evaluate((el) => el.textContent ?? "");
+        expect(text, `${lang} ${index}`).not.toMatch(/[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/);
+      }
+    }
+  });
+});

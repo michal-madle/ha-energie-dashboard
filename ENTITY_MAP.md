@@ -19,6 +19,16 @@ Zdroje: **E** = export 24. 10.; **Z** = zadání 24. 10. (stav k 17. 10.); **Y**
 | `sensor.goodwe_meter_total_energy_import` | čítač odběru ze sítě | kWh, `energy`, `total_increasing` | SEMS+ 15. 10.: +1,04 kWh | E, Z, M | potvrzeno |
 | `sensor.goodwe_meter_total_energy_export` | čítač přetoku do sítě | kWh, `energy`, `total_increasing` | SEMS+ 15. 10.: +0,03 kWh | E, Z, M | potvrzeno |
 | `number.goodwe_depth_of_discharge_on_grid` | hloubka vybití baterie | %, rozsah 0–99 | E: 80 % = rezerva 20 % (knihovna počítá DoD = 100 − registr 45356, goodwe 0.4.10 `et.py`; Home Assistant `goodwe/number.py`)| E | potvrzeno |
+| `sensor.goodwe_battery_state_of_health` | zdraví baterie (SOH) | %, `measurement` | E 98 | E | potvrzeno |
+| `sensor.goodwe_battery_voltage` | napětí baterie | V, `voltage`, `measurement` | E 294,9 V | E | potvrzeno |
+| `sensor.goodwe_battery_current` | proud baterie | A, `current`, `measurement` | E 0,9 A; znaménko **k ověření** (karta ukazuje velikost) | E | potvrzeno (znaménko k ověření) |
+| `sensor.goodwe_battery_temperature` | teplota baterie | °C, `temperature`, `measurement` | E 23,8 | E | potvrzeno |
+| `sensor.goodwe_battery_min_cell_voltage`, `sensor.goodwe_battery_max_cell_voltage` | nejnižší a nejvyšší napětí článku | V, `voltage`, `measurement` | E 3,274 a 3,279 V (po jednotlivých článcích data nejsou, jen min a max) | E | potvrzeno |
+| `sensor.goodwe_battery_min_cell_temperature`, `sensor.goodwe_battery_max_cell_temperature` | nejnižší a nejvyšší teplota článku | °C, `temperature`, `measurement` | E 22,3 a 25,7 | E | potvrzeno |
+| `sensor.goodwe_inverter_temperature_air`, `sensor.goodwe_inverter_temperature_radiator` | teplota střídače, vzduch a chladič | °C, `temperature`, `measurement` | E 33,5 a 27,8 | E | potvrzeno |
+| `sensor.goodwe_battery_mode` | režim baterie | text, bez třídy | E `Discharge`; seznam hodnot **k ověření** (karta ukazuje text tak, jak ho střídač hlásí) | E | potvrzeno (hodnoty k ověření) |
+| `sensor.goodwe_battery_charge_limit`, `sensor.goodwe_battery_discharge_limit` | limit nabíjení a vybíjení | A, `current`, `measurement` | E 30 A a 30 A | E | potvrzeno |
+| `sensor.goodwe_battery_error`, `sensor.goodwe_battery_warning` | chyba a varování baterie | text | E prázdné = žádná; význam kódů **k ověření** (karta ukazuje text) | E | potvrzeno (kódy k ověření) |
 
 Existuje, ale spec nepoužívá (E): `sensor.goodwe_today_energy_import` a `sensor.goodwe_today_energy_export` (**nejsou čítače sítě**, Z; E: 0,1 a 8,0 kWh), `sensor.goodwe_active_power` (W, záporné = odběr; registr 35140, ze kterého se počítá spotřeba domu), `sensor.goodwe_load` (W; E 382 W), `sensor.goodwe_total_power` (W), `number.goodwe_grid_export_limit` (5000 W), `select.goodwe_inverter_operation_mode` (`general`; možnosti `general`, `off_grid`, `backup`, `eco`, `peak_shaving`), `button.goodwe_synchronize_inverter_clock`. Integrace čte střídač každých 10 s (`SCAN_INTERVAL`, Home Assistant 2026.10.1, `homeassistant/components/goodwe/const.py`).
 

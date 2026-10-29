@@ -12,7 +12,29 @@ export { LANGUAGES } from "ha-dashboard-kit/types";
  */
 export interface EntitySections {
   pv: { power?: EntityId };
-  battery: { power?: EntityId; state_of_charge?: EntityId; depth_of_discharge?: EntityId };
+  battery: {
+    power?: EntityId;
+    state_of_charge?: EntityId;
+    depth_of_discharge?: EntityId;
+    /** Detail baterie (CURRENT_SPEC.md, Baterie): state of health, live values, cells, counters, diagnostics. */
+    state_of_health?: EntityId;
+    voltage?: EntityId;
+    current?: EntityId;
+    temperature?: EntityId;
+    min_cell_voltage?: EntityId;
+    max_cell_voltage?: EntityId;
+    min_cell_temperature?: EntityId;
+    max_cell_temperature?: EntityId;
+    total_charge?: EntityId;
+    total_discharge?: EntityId;
+    inverter_temperature_air?: EntityId;
+    inverter_temperature_radiator?: EntityId;
+    mode?: EntityId;
+    charge_limit?: EntityId;
+    discharge_limit?: EntityId;
+    error?: EntityId;
+    warning?: EntityId;
+  };
   grid: { power?: EntityId };
   house: { power?: EntityId };
   car: { state_of_charge?: EntityId; range?: EntityId; image?: EntityId };
@@ -43,7 +65,7 @@ export type SectionName = keyof EntitySections;
 
 /** Numeric settings (limits, thresholds, scales); every one has a default (config.ts, NUMBERS). */
 export interface NumberSettings {
-  battery: { reserve: number };
+  battery: { reserve: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
   car: { charge_limit: number; image_scale: number };
   wallbox: { phases: number; power_min: number; power_max: number; power_step: number; priority_min_sun: number };
   boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
@@ -72,6 +94,8 @@ export interface Colors {
   house: string;
   car: string;
   boiler: string;
+  /** Discharging in the charts of the battery (charging is the colour of the battery). */
+  discharge: string;
   accent: string;
   warning: string;
   /** The neutral grey of idle icons and texts. */
@@ -119,6 +143,8 @@ export interface Settings {
   powerDecimals: 1 | 2 | "auto";
   /** Where a double tap or long press on the car picture goes; empty = nowhere. */
   carLink: string;
+  /** The history range the battery detail opens with (battery.default_range); the last choice of the user wins. */
+  batteryRange: "1d" | "7d" | "30d";
 }
 
 declare global {

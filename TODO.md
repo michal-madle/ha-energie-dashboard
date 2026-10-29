@@ -32,6 +32,8 @@ Konsolidace 28. 10.: čísla přepsána od E1. Smazáno: popisné body bez otáz
 | [E17](#e17) | Rozhodnutí | Prototyp: co jsem rozhodl sám |
 | [E18](#e18) | Návrh | Zvýšený kontrast a skleněný jezdec při dotyku |
 | [E19](#e19) | Ověření | Přednost před bojlerem: spínač neodpovídá AZ Routeru |
+| [E20](#e20) | Rozhodnutí | Detail baterie: prahy rozbalancování a odhad času |
+| [E21](#e21) | Ověření | Detail baterie: znaménko proudu, hodnoty režimu, statistiky, vzhled na zařízení |
 
 <a id="e1"></a>
 ## E1 Kdy jsou data zastaralá · Rozhodnutí
@@ -83,7 +85,7 @@ První export (commit `092a870`) obsahoval polohu auta (tedy polohu domu), séri
 <a id="e10"></a>
 ## E10 Obrazovka historie po klepnutí na dlaždici toku · Návrh
 
-Dlaždice Slunce, Síť, Dům, Baterie (a spotřebiče) budou klikací s historií (rozhodnuto 24. 10.). Návrh: list jako „Historie místnosti – 24 h“ v kartě Klima: křivka výkonu toho uzlu, pod ní pruh zdrojů v jejich barvách, prohlížení prstem, odkaz na standardní detail entity; křivky se doleva plynule ztrácejí. Pro baterii navíc křivka nabití za 24 h s čárou rezervy 20 %. Rozhodnout obsah, pak navrhnu v canvasu.
+Baterie už historii má (detail baterie, `CURRENT_SPEC.md`). Zbývá Slunce, Síť, Dům a spotřebiče: dlaždice budou klikací s historií (rozhodnuto 24. 10.). Návrh: list jako „Historie místnosti – 24 h“ v kartě Klima: křivka výkonu toho uzlu, pod ní pruh zdrojů v jejich barvách, prohlížení prstem, odkaz na standardní detail entity; křivky se doleva plynule ztrácejí. Rozhodnout obsah, pak navrhnu v canvasu.
 
 <a id="e11"></a>
 ## E11 Nabíjení auta podle zdrojů: dopočet, průměr a hystereze · Rozhodnutí
@@ -137,3 +139,13 @@ HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vz
 ## E19 Přednost před bojlerem: spínač neodpovídá AZ Routeru · Ověření
 
 Uživatel 29. 10.: „switch.wallbox_2_prioritize_when_connected neodpovídá tomu co je zobrazeno v AZ routeru.“ Karta jen čte a přepíná tuto entitu (`wallbox.prioritize_connected`), takže chyba je v mapování nebo v integraci, ne v kartě. Ověřit v živém Home Assistantu: (1) zda neexistuje i `switch.wallbox_1_prioritize_when_connected` nebo jiná podobná entita a která patří kterému wallboxu v routeru; (2) zda se stav entity mění, když se volba přepne v routeru (a naopak), a za jak dlouho; (3) zda není stav obrácený. Podle výsledku změnit entitu v `examples/energie.yaml` a v `ENTITY_MAP.md`, případně popsat zpoždění. Do vyřešení platí údaj v `ENTITY_MAP.md` jako neověřený.
+
+<a id="e20"></a>
+## E20 Detail baterie: prahy rozbalancování a odhad času · Rozhodnutí
+
+Moje návrhy, které uživatel nepotvrdil: slova u rozbalancování článků (Výborné do 15 mV, Dobré do 30 mV, Pozor do 100 mV, nad tím Chyba; klíče `battery.imbalance_*`) a odhad času do plné/prázdné baterie (z okamžitého výkonu, po 5 minutách, jen pod 48 h, jen při toku nad prahem). Potvrdit, nebo změnit podle praxe s GoodWe.
+
+<a id="e21"></a>
+## E21 Detail baterie: znaménko proudu, hodnoty režimu, statistiky, vzhled na zařízení · Ověření
+
+(1) Znaménko `battery_current` a hodnoty `battery_mode`/`battery_error` nejsou v exportu potvrzené (`ENTITY_MAP.md`, „k ověření“); karta ukazuje velikost proudu a směr podle výkonu. (2) Historie vyžaduje `state_class` u entit a statistiky po 5 minutách se v Home Assistantu ve výchozím nastavení drží asi 10 dní, hodinové bez omezení; 7denní a 30denní grafy zdraví proto používají hodinové. Ověřit u skutečné instalace. (3) Grafy a posouvání prstem v iPhonu (aplikace Home Assistant) nebyly ověřeny na zařízení, jen v Chromiu s testovacími daty.

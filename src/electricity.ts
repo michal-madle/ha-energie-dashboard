@@ -9,14 +9,16 @@ import type { Settings } from "./types";
 import { formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { ICON } from "./icons";
-import { CardBase } from "./base";
+import type { Batteried } from "./battery";
 import { NO_DATA, SOURCE_VAR, TILE_VAR, clamp, mix, segments } from "./view";
 import type { Alert, Constructor, Level, PopInfo, Tile, TileKey } from "./view";
 
-export const withElectricity = <T extends Constructor<CardBase>>(Base: T) =>
+export const withElectricity = <T extends Constructor<Batteried>>(Base: T) =>
   class extends Base {
     onKey(event: KeyboardEvent): void {
-      if (event.key === "Escape" && (this._pop || this._all)) {
+      if (event.key === "Escape" && this._batDetail) {
+        this.closeBatteryDetail(true);
+      } else if (event.key === "Escape" && (this._pop || this._all)) {
         this._pop = undefined;
         this._all = false;
       }
@@ -234,21 +236,9 @@ export const withElectricity = <T extends Constructor<CardBase>>(Base: T) =>
       this._pop = this._pop === key ? undefined : key;
     }
 
-    /** Energy of today in kWh from the counters of the configuration; undefined = no data. */
-    today(s: Settings) {
-      const d = s.entities.daily;
-      const read = (id: string | undefined) => readEnergy(this.hass, id);
-      const v = {
-        pv: read(d.pv_generation), bchg: read(d.battery_charge), bdis: read(d.battery_discharge),
-        gin: read(d.grid_import), gout: read(d.grid_export), car: read(d.car), boil: read(d.boiler),
-      };
-      const all = [v.pv, v.gin, v.bdis, v.gout, v.bchg, v.car, v.boil];
-      // The house is what is left (produced + from the grid + from the battery − the rest), so it needs every counter.
-      const house = all.every((item) => item !== undefined) ? Math.max(0, v.pv! + v.gin! + v.bdis! - v.gout! - v.bchg! - v.car! - v.boil!) : undefined;
-      return { ...v, house };
-    }
-
     renderTilePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
+      // The battery has a popup of its own with the gauge, the estimate and the trend (CURRENT_SPEC.md, Baterie).
+      if (tile.key === "bat" || tile.key === "batIn") return this.renderBatteryPopup(tile, lay, s, model, unit);
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const day = this.today(s);

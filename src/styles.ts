@@ -1270,4 +1270,557 @@ export const styles = css`
     clip-path: inset(50%);
     white-space: nowrap;
   }
+
+  /* Popup of the battery: gauge of ten pills, estimate, trend (CURRENT_SPEC.md, Baterie). */
+  .bat-pop {
+    --pill: var(--ed-pop-line);
+    gap: 12px;
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .bat-gauge {
+    display: flex;
+    gap: 2px;
+  }
+
+  .pill {
+    position: relative;
+    flex: 1 1 0;
+    overflow: hidden;
+    background: var(--pill);
+  }
+
+  .pill i {
+    position: absolute;
+    inset: 0 auto 0 0;
+  }
+
+  .bat-estimate {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ed-pop-sec);
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .bat-estimate svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .bat-estimate.plain {
+    color: var(--ed-secondary);
+  }
+
+  .bat-trend {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .bat-trend svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .bat-trend .axis,
+  .bat-chart .axis {
+    stroke: var(--ed-tick);
+    stroke-width: 1.5;
+  }
+
+  .bat-legend {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--ed-pop-sec);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .bat-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .bat-legend.wrap {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 6px 16px;
+  }
+
+  .bat-legend .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .bat-legend .bar {
+    width: 16px;
+    height: 3px;
+    border-radius: 2px;
+  }
+
+  .bat-legend .swatch {
+    width: 16px;
+    height: 8px;
+    border-radius: 2px;
+    opacity: 0.45;
+  }
+
+  .bat-open {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 50px;
+    padding: 0 16px;
+    border-radius: 14px;
+    background: var(--ed-pop-line);
+    color: var(--ed-text);
+    font-size: 17px;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .bat-open svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--ed-pop-sec);
+  }
+
+  /* Detail of the battery: a page of its own inside the card. */
+  .bat-detail {
+    --pill: var(--ed-tile);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    outline: none;
+  }
+
+  .bat-nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .bat-nav h2 {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 22px;
+  }
+
+  .bat-link {
+    background: none;
+    border: 0;
+    min-width: 64px;
+    min-height: 44px;
+    padding: 0 6px;
+    /* The accent alone is 3.3:1 on the light page; mixed with the text colour it passes 4.5:1 in both themes. */
+    color: color-mix(in srgb, var(--ed-accent) 60%, var(--ed-text));
+    font-size: 17px;
+    text-align: left;
+  }
+
+  .bat-link.end {
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .bat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    box-sizing: border-box;
+    padding: 16px;
+    border-radius: 16px;
+    background: var(--ed-card);
+  }
+
+  .bat-card.row {
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .bat-card.flush {
+    gap: 0;
+    padding: 0;
+  }
+
+  .bat-card-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .bat-card-head > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .bat-card-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .bat-card-bar ed-segmented {
+    width: 132px;
+  }
+
+  .bat-cap {
+    color: var(--ed-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    line-height: 18px;
+    text-transform: uppercase;
+  }
+
+  .bat-cap.pad {
+    padding: 14px 16px 4px;
+  }
+
+  .bat-sub {
+    color: var(--ed-secondary);
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .bat-huge {
+    font-size: 56px;
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 56px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bat-kpis {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .bat-kpi {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding: 12px 14px;
+    border-radius: 16px;
+    background: var(--ed-card);
+  }
+
+  .bat-kpi .sub,
+  .bat-two .sub {
+    color: var(--ed-secondary);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .bat-kpi .val,
+  .bat-two .val {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 30px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bat-two {
+    display: flex;
+    gap: 10px;
+  }
+
+  .bat-two > div {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .bat-split {
+    display: flex;
+    overflow: hidden;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--ed-tile);
+  }
+
+  .bat-read {
+    min-height: 20px;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 500;
+    line-height: 20px;
+  }
+
+  .bat-chart {
+    position: relative;
+    width: 100%;
+  }
+
+  .bat-chart svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .bat-chart .grid {
+    stroke: var(--ed-tile);
+    stroke-width: 1;
+  }
+
+  .bat-chart .cursor {
+    stroke: var(--ed-text);
+    stroke-width: 2;
+    opacity: 0.5;
+  }
+
+  .bat-ylabel {
+    position: absolute;
+    left: 0;
+    color: var(--ed-secondary);
+    font-size: 12px;
+    line-height: 14px;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bat-chart input[type="range"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    touch-action: pan-y;
+  }
+
+  .bat-chart:focus-within {
+    outline: 2px solid var(--ed-accent);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  .bat-axis {
+    display: flex;
+    justify-content: space-between;
+    color: var(--ed-secondary);
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .bat-nodata {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 96px;
+    color: var(--ed-secondary);
+    font-size: 24px;
+  }
+
+  .bat-nodata.small {
+    min-height: 56px;
+    font-size: 17px;
+  }
+
+  .bat-band {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bat-band .name {
+    width: 72px;
+    color: var(--ed-secondary);
+  }
+
+  .bat-band .track {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--ed-tile);
+  }
+
+  .bat-band .track i {
+    position: absolute;
+    inset: 0 auto 0 0;
+  }
+
+  .bat-band .pct {
+    width: 44px;
+    text-align: right;
+  }
+
+  .bat-badge {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--ed-tile);
+  }
+
+  .bat-badge svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: var(--ed-off);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .bat-badge.ok {
+    background: color-mix(in srgb, var(--ed-battery) 20%, transparent);
+  }
+
+  .bat-badge.ok svg {
+    stroke: var(--ed-battery);
+  }
+
+  .bat-badge.warn {
+    background: color-mix(in srgb, var(--ed-warning) 20%, transparent);
+  }
+
+  .bat-badge.warn svg {
+    stroke: var(--ed-warning);
+  }
+
+  .bat-col {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .bat-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 26px;
+  }
+
+  .bat-title.warn {
+    color: var(--ed-warning);
+  }
+
+  .bat-title.off {
+    color: var(--ed-off);
+  }
+
+  .bat-row {
+    background: none;
+    border: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 68px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    color: var(--ed-text);
+    text-align: left;
+  }
+
+  .bat-row:disabled {
+    color: var(--ed-text);
+  }
+
+  .bat-label {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 22px;
+  }
+
+  .bat-value {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 34px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .bat-word {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .bat-row .chev {
+    width: 20px;
+    height: 20px;
+    flex: none;
+    fill: var(--ed-off);
+    transition: transform 0.25s ease;
+  }
+
+  .bat-row .chev.open {
+    transform: rotate(90deg);
+  }
+
+  .bat-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 16px 16px;
+  }
+
+  .bat-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bat-list.pad {
+    padding: 0 16px 8px;
+  }
+
+  .bat-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    box-sizing: border-box;
+    min-height: 44px;
+    border-top: 1px solid var(--ed-sep);
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .bat-line:first-child {
+    border-top: 0;
+  }
+
+  .bat-line b {
+    color: var(--ed-secondary);
+    font-weight: 400;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bat-row .chev {
+      transition: none;
+    }
+  }
 `;

@@ -13,7 +13,13 @@ import type { Colors, EntitySections, NumberSettings, SectionName, TempStop } fr
  */
 export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[Name], string | undefined> } = {
   pv: { power: undefined },
-  battery: { power: undefined, state_of_charge: undefined, depth_of_discharge: "number" },
+  battery: {
+    power: undefined, state_of_charge: undefined, depth_of_discharge: "number",
+    state_of_health: undefined, voltage: undefined, current: undefined, temperature: undefined,
+    min_cell_voltage: undefined, max_cell_voltage: undefined, min_cell_temperature: undefined, max_cell_temperature: undefined,
+    total_charge: undefined, total_discharge: undefined, inverter_temperature_air: undefined, inverter_temperature_radiator: undefined,
+    mode: undefined, charge_limit: undefined, discharge_limit: undefined, error: undefined, warning: undefined,
+  },
   grid: { power: undefined },
   house: { power: undefined },
   car: { state_of_charge: undefined, range: undefined, image: "image" },
@@ -25,7 +31,11 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
 };
 
 /** Non-numeric, non-entity keys inside sections that also hold numbers (boiler.show). */
-export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"], flows: ["decimals"] };
+export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"], flows: ["decimals"], battery: ["default_range"] };
+
+/** battery.default_range: the history range the battery detail opens with. */
+export const BATTERY_RANGES = ["1d", "7d", "30d"] as const;
+export const DEFAULT_BATTERY_RANGE = "1d";
 
 export const BOILER_SHOW = ["always", "heating"] as const;
 export const DEFAULT_BOILER_SHOW = "heating";
@@ -51,7 +61,13 @@ const range = (value: number, min: number, max: number, what: string, integer = 
 
 /** Every number of the card with its default (the units are in the example configuration). */
 export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof NumberSettings[Section]]: Range } } = {
-  battery: { reserve: range(20, 0, 100, "% battery reserve") },
+  battery: {
+    reserve: range(20, 0, 100, "% battery reserve"),
+    capacity: range(11.2, 0.1, 1000, "kWh usable capacity (time estimates, equivalent cycles, load in C)"),
+    imbalance_good: range(15, 0, 1000, "mV cell imbalance up to which it is called excellent"),
+    imbalance_warn: range(30, 0, 1000, "mV cell imbalance up to which it is called good (above it needs attention)"),
+    imbalance_fault: range(100, 0, 1000, "mV cell imbalance above which it is called a fault"),
+  },
   car: {
     charge_limit: range(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
     image_scale: range(2, 0.5, 3, "× size of the car picture (grows up and to the sides, the bottom stays)"),
@@ -111,6 +127,7 @@ export const COLORS: Colors = {
   house: "#BF5AF2",
   car: "#40D0E6",
   boiler: "#FF6F59",
+  discharge: "#64D2FF",
   accent: "#0A84FF",
   warning: "#FF9230",
   neutral: "#8E8E93",
@@ -143,4 +160,5 @@ export const CONFIG_KEYS: string[] = [
   "boiler.show",
   "flows.decimals",
   "car.link",
+  "battery.default_range",
 ];
