@@ -93,8 +93,8 @@ export const mix = (color: string, percent: number) => `color-mix(in srgb, ${col
 /** Ten segments of a level meter, each filled 0–100 %. */
 export const segments = (percent: number) => Array.from({ length: 10 }, (_, q) => clamp((percent - q * 10) / 10, 0, 1) * 100);
 
-/** Where a level (0–100 %) lies on a meter of ten blocks with a 5 px gap: the end of its block (so a limit of 80 % sits at the end of block eight). */
-export const meterPosition = (percent: number): string => `calc((100% - 45px) * ${clamp(percent, 0, 100) / 100} + ${Math.max(0, Math.ceil(clamp(percent, 0, 100) / 10) - 1) * 5}px)`;
+/** Where a level (0–100 %) lies on a meter of ten blocks with a 3 px gap (the same as the bar of the sources below it): the end of its block (so a limit of 80 % sits at the end of block eight). */
+export const meterPosition = (percent: number): string => `calc((100% - 27px) * ${clamp(percent, 0, 100) / 100} + ${Math.max(0, Math.ceil(clamp(percent, 0, 100) / 10) - 1) * 3}px)`;
 
 /** A class constructor, for the mixins that build the card (base.ts, controls.ts, electricity.ts, car.ts, water.ts). */
 export type Constructor<T = object> = new (...args: any[]) => T;

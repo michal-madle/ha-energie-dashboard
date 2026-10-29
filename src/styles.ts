@@ -706,7 +706,7 @@ export const styles = css`
   .meter {
     position: relative;
     display: flex;
-    gap: 5px;
+    gap: 3px;
     height: 34px;
   }
 
