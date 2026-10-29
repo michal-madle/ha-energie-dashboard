@@ -2700,7 +2700,7 @@ const Pi = St`
   .meter {
     position: relative;
     display: flex;
-    gap: 3px;
+    gap: 2px;
     height: 34px;
   }
 
@@ -2765,7 +2765,7 @@ const Pi = St`
 
   .mix-bar {
     display: flex;
-    gap: 3px;
+    gap: 2px;
     height: 20px;
     border-radius: 7px;
     overflow: hidden;
@@ -3500,7 +3500,7 @@ function ao(i) {
     o-- > 0 && a[s]++;
   }), a;
 }
-const Q = (i, t, e) => Math.max(t, Math.min(e, i)), lt = (i, t) => `color-mix(in srgb, ${i} ${t}%, transparent)`, Fe = (i) => Array.from({ length: 10 }, (t, e) => Q((i - e * 10) / 10, 0, 1) * 100), _e = (i) => `calc((100% - 27px) * ${Q(i, 0, 100) / 100} + ${Math.max(0, Math.ceil(Q(i, 0, 100) / 10) - 1) * 3}px)`;
+const Q = (i, t, e) => Math.max(t, Math.min(e, i)), lt = (i, t) => `color-mix(in srgb, ${i} ${t}%, transparent)`, Fe = (i) => Array.from({ length: 10 }, (t, e) => Q((i - e * 10) / 10, 0, 1) * 100), _e = (i) => `calc((100% - 18px) * ${Q(i, 0, 100) / 100} + ${Math.max(0, Math.ceil(Q(i, 0, 100) / 10) - 1) * 2}px)`;
 var no = Object.defineProperty, X = (i, t, e, a) => {
   for (var o = void 0, s = i.length - 1, n; s >= 0; s--)
     (n = i[s]) && (o = n(t, e, o) || o);

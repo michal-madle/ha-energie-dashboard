@@ -706,7 +706,7 @@ export const styles = css`
   .meter {
     position: relative;
     display: flex;
-    gap: 3px;
+    gap: 2px;
     height: 34px;
   }
 
@@ -771,7 +771,7 @@ export const styles = css`
 
   .mix-bar {
     display: flex;
-    gap: 3px;
+    gap: 2px;
     height: 20px;
     border-radius: 7px;
     overflow: hidden;
