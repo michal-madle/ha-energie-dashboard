@@ -28,9 +28,9 @@ Důsledek pro kartu: místo okamžitého prahu „kolik dá slunce“ se počít
 - **Nízký tarif (HDO)** se mění každý den a spíná ho distributor: 20 h denně 3,21587 Kč/kWh, 4 h denně 3,87691 Kč/kWh. Rozdíl je 0,66 Kč/kWh (asi 17 %), pro 10 kWh do auta 6,6 Kč. **Čas nabíjení se tedy podle tarifu neladí**, rozhoduje cíl a slunce. Plán z API distributora zatím není potřeba.
 - **Jak nabíjíte:** vždy pustíte jen wallbox. V létě z přebytku při nabité baterii. Když baterie doma nabitá není a auto je potřeba, **boost 4 kW**; víc výkonu jen když potřebujete jet a auto má málo. Rychlé nabíjení 6 až 10,5 kW je tedy výjimka pro naléhavý případ, ne běžné pravidlo.
 
-- **Ověření z nového exportu (wallbox a bojler ze stavů, 15. až 29. 10.):** skutečný výkon wallboxu sedí s mým odhadem z domu (25. 10. 23,3 kWh skutečně proti odhadnutým 21,7; základ domu při nabíjení medián 0,54 kW). Bojler jede hlavně z přebytku (nejvíc 27. 10., 4,3 kWh), ale 19., 21. a 29. 10. kolem 18:00 odebíral 0,12 až 0,27 kW při vybíjení baterie 1,3 až 2 kW. Je to nejspíš udržování teploty (`tuv_3_1_keep_heated`); chcete-li pravidlo „bojler z baterie nikdy“ vynutit, zapněte `switch.tuv_3_3_block_heating_from_battery` (dnes `off`).
+- **Ověření z nového exportu (wallbox a bojler ze stavů, 15. až 29. 10.):** skutečný výkon wallboxu sedí s mým odhadem z domu (25. 10. 23,3 kWh skutečně proti odhadnutým 21,7; základ domu při nabíjení medián 0,54 kW). Bojler jede hlavně z přebytku (nejvíc 27. 10., 4,3 kWh). Drobné odběry 0,12 až 0,27 kW kolem 18:00 při vybíjení baterie jsou **šum, ne chyba**: bojler je podle uživatele (29. 10., 21:20) hlavní tlumič výkyvů, AZ Router do něj přesměruje energii na sekundy při přepnutí baterie z nabíjení na vybíjení a obráceně (a vždy, když jde o víc než jednotky W). Karta ani pravidla to nehlásí jako problém a `switch.tuv_3_3_block_heating_from_battery` se **nemá zapínat**. Bojler jako tlumič se do popisků nezapočítává.
 
-Zbývá otázka k ověření: 28. 10. odběr ze sítě 9,8 kWh při baterii na rezervě (pračka, sušička, myčka a trouba najednou?).
+28. 10. odběr ze sítě 9,8 kWh při baterii na rezervě: vysvětleno (dlouho jela pračka se sušičkou a 2 h se vařil oběd, tedy všechno dohromady). Žádná otevřená otázka z prvního týdne.
 
 ## Jak se měří, že to funguje
 

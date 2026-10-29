@@ -160,8 +160,8 @@ Dům je „zbytek“. Skokové změny výkonu domu (trouba, pračka, indukce) se
 ## Detekce problémů
 
 <a id="n14"></a>
-### N14 Baterie krmí auto nebo bojler bez vašeho záměru
-Dřívější znění („baterie krmí auto je problém, zablokuj“) bylo špatně: uživatel 29. 10. nabíjí auto záměrně ze slunce i z baterie (start při baterii kolem 50 %, potom se baterie dobije). Upozornění má proto jen hlídat, aby se to nestalo **mimo vaše pravidlo**: baterie vybíjí do auta nebo bojleru pod dolní mezí (např. pod 30 %), nebo wallbox běží i po dosažení rezervy. Reakce: oranžová zpráva na kartě s tlačítkem „Zastavit wallbox“ (a možností `switch.wallbox_4_block_charging_from_battery`, `switch.tuv_3_3_block_heating_from_battery`, obě dnes `off`). Pravidlo „start při 50 %, stop při 30 %“ je v N35.
+### N14 Baterie krmí auto nebo bojler dlouhodobě mimo plán
+Dřívější znění („baterie krmí auto je problém, zablokuj“) bylo špatně: uživatel 29. 10. nabíjí auto záměrně ze slunce i z baterie (start při baterii kolem 50 %, potom se baterie dobije). Upozornění má proto jen hlídat, aby se to nestalo **mimo vaše pravidlo**: baterie vybíjí do auta pod dolní mezí (např. pod 30 %), wallbox běží i po dosažení rezervy, nebo bojler odebírá z baterie trvale (stovky W po minuty). Krátké sekundové odběry bojleru jsou normální: je to tlumič výkyvů AZ Routeru při přepnutí baterie mezi nabíjením a vybíjením (uživatel 29. 10.), takže se ignorují. Reakce: oranžová zpráva na kartě s tlačítkem „Zastavit wallbox“ (a možností `switch.wallbox_4_block_charging_from_battery`, `switch.tuv_3_3_block_heating_from_battery`, obě dnes `off`). Pravidlo „start při 50 %, stop při 30 %“ je v N35.
 **Přínos** ★★ · **Náročnost** S · **Data** ✔
 
 <a id="n15"></a>
