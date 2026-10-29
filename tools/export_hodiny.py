@@ -10,7 +10,7 @@ Nic v Home Assistantu nemění, jen čte.
 
 Použití:
   pip install websocket-client
-  python3 export_hodiny.py --url ws://homeassistant.local:8123/api/websocket --token <dlouhodobý přístupový token> --days 14
+  python3 export_hodiny.py --url http://homeassistant.local:8123 --token <dlouhodobý přístupový token> --days 14
 
 Token: profil uživatele v Home Assistantu → Zabezpečení → Dlouhodobé přístupové tokeny → Vytvořit token.
 Výstup (v aktuální složce): energie_hodiny.csv, popisky_sablona.csv, export_report.txt.
@@ -52,13 +52,29 @@ def call(ws, counter, payload):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--url", required=True, help="např. ws://homeassistant.local:8123/api/websocket")
+    ap.add_argument("--url", required=True, help="adresa, kterou otevíráte v prohlížeči, např. http://192.168.1.50:8123 "
+                    "(nebo https://vase.domena); převede se na WebSocket adresu automaticky")
     ap.add_argument("--token", required=True)
     ap.add_argument("--days", type=int, default=14)
     ap.add_argument("--outdir", default=".")
     a = ap.parse_args()
 
-    ws = websocket.create_connection(a.url, timeout=60)
+    url = a.url.strip().rstrip("/")
+    if url.startswith("http://"):
+        url = "ws://" + url[7:]
+    elif url.startswith("https://"):
+        url = "wss://" + url[8:]
+    elif "://" not in url:
+        url = "ws://" + url
+    if not url.endswith("/api/websocket"):
+        url += "/api/websocket"
+    try:
+        ws = websocket.create_connection(url, timeout=60)
+    except OSError as e:
+        sys.exit(f"Nelze se připojit na {url}\n  {e}\n"
+                 "Použijte přesně adresu (včetně portu), kterou otevíráte Home Assistant v prohlížeči na tomto počítači. "
+                 "Odmítnuté spojení znamená, že na té adrese/portu nic neposlouchá (špatná IP nebo port, "
+                 "u VirtualBoxu NAT bez přesměrování portu 8123, nebo má HA HTTPS a je potřeba https://...).")
     first = json.loads(ws.recv())
     if first.get("type") != "auth_required":
         sys.exit(f"Neočekávaná odpověď: {first}")
