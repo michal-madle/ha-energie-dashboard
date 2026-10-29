@@ -48,6 +48,7 @@ Co mají karty Energie a Klima společné, je v repozitáři [ha-dashboard-kit](
 - [TODO.md](./TODO.md) – rozpracované otázky a ověření (nejsou součástí zadání)
 - [IDEAS.md](./IDEAS.md) – nápady a „nice to have“, ze kterých se vybírá
 - [FORECAST.md](./FORECAST.md) – koncept výhledu dne, „co když“ a popisků podle normy
+- [TYDEN.md](./TYDEN.md) – týdenní ladění předpovědi a pravidel: vaše pravidla nabíjení, cíl auta, otázky tohoto týdne
 - [AI_MCP.md](./AI_MCP.md) – připojení Claude k Home Assistantu (MCP, AI Task)
 - [AUDIT.md](./AUDIT.md) – otevřené rozpory mezi zdroji
 - [MEMORY_SUMMARIZED.md](./MEMORY_SUMMARIZED.md) – stručná projektová paměť
