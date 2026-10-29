@@ -105,6 +105,9 @@ export const clamp = (value: number, low: number, high: number) => Math.max(low,
 
 export const mix = (color: string, percent: number) => `color-mix(in srgb, ${color} ${percent}%, transparent)`;
 
+/** A deep, saturated tint of a colour for a tile: the colour over black (dark mode) or white (light mode), not see-through grey. */
+export const tint = (color: string, percent: number) => `color-mix(in srgb, ${color} ${percent}%, var(--ed-tint-base))`;
+
 /** Ten segments of a level meter, each filled 0–100 %. */
 export const segments = (percent: number) => Array.from({ length: 10 }, (_, q) => clamp((percent - q * 10) / 10, 0, 1) * 100);
 

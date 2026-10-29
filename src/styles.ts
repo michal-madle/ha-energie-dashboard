@@ -11,6 +11,7 @@ export const styles = css`
     display: block;
     --ed-card: #1c1c1e;
     --ed-tile: #2c2c2e;
+    --ed-tint-base: #000000;
     --ed-track: #2c2c2e;
     --ed-text: #ffffff;
     --ed-secondary: #98989f;
@@ -42,6 +43,7 @@ export const styles = css`
   :host([data-light]) {
     --ed-card: #ffffff;
     --ed-tile: #f2f2f7;
+    --ed-tint-base: #ffffff;
     --ed-track: #f2f2f7;
     --ed-text: #000000;
     --ed-secondary: #5f5f66;

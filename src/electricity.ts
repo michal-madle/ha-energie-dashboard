@@ -10,8 +10,12 @@ import { formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readEne
 import type { PowerUnit } from "./utils";
 import { ICON } from "./icons";
 import type { Batteried } from "./battery";
-import { NO_DATA, SOURCE_VAR, TILE_VAR, clamp, mix, segments } from "./view";
+import { NO_DATA, SOURCE_VAR, TILE_VAR, clamp, mix, segments, tint } from "./view";
 import type { Alert, Constructor, Level, PopInfo, Tile, TileKey } from "./view";
+
+/** The strength of the colour of an active tile (percent of the source colour over black or white): the stronger the flow, the stronger the colour. */
+const TINT_MIN = 42;
+const TINT_RANGE = 10;
 
 export const withElectricity = <T extends Constructor<Batteried>>(Base: T) =>
   class extends Base {
@@ -109,20 +113,11 @@ export const withElectricity = <T extends Constructor<Batteried>>(Base: T) =>
       const bT = model.boilTemp;
       const on = (watts: number | undefined) => isOn(watts, idle);
       const power = (watts: number | undefined) => (watts === undefined ? t.noData : formatPower(watts, unit));
-      // The house tile is tinted by the shares of the sources.
+      // The house tile has the colour of the largest source that feeds it; when it is fed by more, a thin bar
+      // along its bottom edge shows the shares of the sources in the order of the diagram (CURRENT_SPEC.md, Dlaždice).
       const houseShare = model.loadShare.house;
       const parts = SOURCES.filter((source) => houseShare[source] >= 0.02);
-      const houseBg =
-        on(model.other) && parts.length
-          ? parts.length === 1
-            ? `linear-gradient(135deg, ${mix(`var(${SOURCE_VAR[parts[0]]})`, 40)}, ${mix(`var(${SOURCE_VAR[parts[0]]})`, 12)}), var(--ed-tile)`
-            : `linear-gradient(135deg, ${parts
-                .map((source, i) => {
-                  const before = parts.slice(0, i).reduce((sum, item) => sum + houseShare[item], 0);
-                  return `${mix(`var(${SOURCE_VAR[source]})`, 40)} ${((before + houseShare[source] / 2) * 100).toFixed(0)}%`;
-                })
-                .join(", ")}), var(--ed-tile)`
-          : undefined;
+      const houseBg = on(model.other) && parts.length ? this.houseBackground(parts, houseShare, clamp((model.other ?? 0) / sc.house, 0, 1)) : undefined;
       const tiles: Tile[] = [
         { side: "L", key: "sun", name: t.tile.sun, watts: model.sun, k: (model.sun ?? 0) / sc.sun, icon: ICON.sun, idleIcon: ICON.moon, idleText: t.idle.sun, aria: model.sun === undefined ? t.noData : "" },
         { side: "L", key: "bat", name: t.tile.bat, watts: model.batDis, k: (model.batDis ?? 0) / sc.battery, icon: ICON.battery, icon2: ICON.batteryDown, idleIcon: ICON.pause, idleText: t.idle.bat, level: batLevel(on(model.batDis)), aria: batText(true) },
@@ -182,21 +177,42 @@ export const withElectricity = <T extends Constructor<Batteried>>(Base: T) =>
       </div>`;
     }
 
+    houseBackground(parts: Source[], share: Record<Source, number>, k: number): string {
+      const main = parts.reduce((best, source) => (share[source] > share[best] ? source : best));
+      const base = `linear-gradient(${tint(`var(${SOURCE_VAR[main]})`, Math.round(TINT_MIN + TINT_RANGE * k))}, ${tint(`var(${SOURCE_VAR[main]})`, Math.round(TINT_MIN + TINT_RANGE * k))}), var(--ed-tile)`;
+      if (parts.length === 1) return base;
+      const total = parts.reduce((sum, source) => sum + share[source], 0);
+      let before = 0;
+      const stops: string[] = [];
+      parts.forEach((source, i) => {
+        const from = (before / total) * 100;
+        before += share[source];
+        const to = (before / total) * 100;
+        const color = `var(${SOURCE_VAR[source]})`;
+        // A 2 px gap between the shares, like in the bars of the sources.
+        const start = i === 0 ? `${from}%` : `calc(${from}% + 1px)`;
+        const end = i === parts.length - 1 ? `${to}%` : `calc(${to}% - 1px)`;
+        if (i > 0) stops.push(`transparent calc(${from}% - 1px) calc(${from}% + 1px)`);
+        stops.push(`${color} ${start} ${end}`);
+      });
+      return `linear-gradient(90deg, ${stops.join(", ")}) bottom / 100% 4px no-repeat, ${base}`;
+    }
+
     tileBackground(tile: Tile, on: boolean, k: number): string | undefined {
       const color = `var(${TILE_VAR[tile.key]})`;
       const level = tile.level;
       if (level) {
         const f = clamp(level.f, 0, 1);
         const at = `${(f * 100).toFixed(1)}%`;
-        const filled = level.active ? mix(level.color, level.a1 * 100) : "var(--ed-fill-idle)";
-        const rest = level.active ? mix(level.color, 10) : "var(--ed-tile)";
+        const filled = level.active ? tint(level.color, Math.round(level.a1 * 100)) : "var(--ed-fill-idle)";
+        const rest = level.active ? mix(level.color, 14) : "var(--ed-tile)";
         if (f < 0.005) return level.active ? `linear-gradient(${rest}, ${rest}), var(--ed-tile)` : undefined;
         return `linear-gradient(90deg, ${filled} 0%, ${filled} ${at}, ${rest} ${at}, ${rest} 100%), var(--ed-tile)`;
       }
       if (tile.background) return tile.background;
       if (on) {
-        const tint = mix(color, Math.round(21 + 7 * k));
-        return `linear-gradient(${tint}, ${tint}), var(--ed-tile)`;
+        const deep = tint(color, Math.round(TINT_MIN + TINT_RANGE * k));
+        return `linear-gradient(${deep}, ${deep}), var(--ed-tile)`;
       }
       return undefined;
     }

@@ -293,6 +293,12 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       const shown = Object.fromEntries((await readTiles(page)).map((item) => [item.key, item.value]));
       expect(shown).toMatchObject({ sun: "bez výroby", bat: "351 W", grid: "148 W", house: "459 W", car: "připojeno", boil: "bez ohřevu", batIn: "nenabíjí", gridOut: "nedodává" });
       await expect(stateLine(page, 0)).toContainText("Dům bere z baterie a sítě");
+      // Dům: barva největšího zdroje a pruh s podíly zdrojů dole (žádný duhový přechod).
+      const house = (await tile(page, "house")).style;
+      expect(house).toContain("bottom / 100% 4px");
+      expect(house).toContain("--ed-battery");
+      expect(house).toContain("--ed-grid");
+      expect(house).not.toContain("135deg");
       const fills = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
       expect(new Set(fills)).toEqual(new Set(["url(#rg-bat)", "url(#rg-grid)"]));
     });
