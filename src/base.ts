@@ -81,7 +81,7 @@ export class CardBase extends LitElement {
     // The card language; `lang` on the host tells screen readers which voice to use, also when
     // the card falls back to English in a Home Assistant in another language.
     this._i18n = getI18n(cardLanguage(this._config?.language ?? "auto", this.hass), this.hass);
-    useFormat(this._i18n);
+    useFormat(this._i18n, this._config?.powerDecimals);
     if (this.lang !== this._i18n.language) this.lang = this._i18n.language;
     // Only the dark / light mode of Home Assistant is followed; the surfaces are the card's own.
     this.toggleAttribute("data-light", this.hass?.themes?.darkMode === false);

@@ -229,6 +229,34 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       await expect(page.locator(".page")).toHaveAttribute("style", /--ed-sun:#FF0000/);
       expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
     });
+    await test.step("flows.decimals: 2 a auto: kW na dvě desetinná místa, nebo aspoň tři číslice (11,3 · 6,43 · 1,36), v diagramu, autu i bojleru; W zůstanou celé; vejde se na 320 px", async () => {
+      await open(page, "day");
+      const config = example();
+      await reconfigure(page, { flows: { ...config.flows, decimals: 1 } });
+      expect((await tile(page, "sun")).value).toBe("6,8 kW");
+      await reconfigure(page, { flows: { ...config.flows, decimals: 2 } });
+      const values = await Promise.all(["sun", "grid", "house", "car", "boil"].map(async (key) => (await tile(page, key)).value));
+      for (const value of values.filter((text) => text.includes("kW"))) expect(value).toMatch(/^\d+[,.]\d{2} kW$/);
+      expect((await tile(page, "sun")).value).toBe("6,80 kW");
+      expect((await tile(page, "car")).aria).toMatch(/\d,\d{2} kW/);
+      await page.setViewportSize({ width: 320, height: 852 });
+      await settle(page);
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+      const cut = await page.evaluate((tag) => {
+        const root = document.querySelector(tag)!.shadowRoot!;
+        return [...root.querySelectorAll<HTMLElement>(".tile .text")].map((text) => text.scrollWidth > text.clientWidth + 0.5 || text.getBoundingClientRect().right > text.closest(".tile")!.getBoundingClientRect().right + 0.5);
+      }, CARD);
+      expect(cut).not.toContain(true);
+      await reconfigure(page, { flows: { ...config.flows, decimals: "auto" } });
+      for (const [watts, shown] of [["11340", "11,3 kW"], ["6430", "6,43 kW"], ["1360", "1,36 kW"], ["9996", "10,0 kW"]]) {
+        await update(page, { "sensor.goodwe_pv_power": watts });
+        expect((await tile(page, "sun")).value, `auto ${watts} W`).toBe(shown);
+      }
+      await update(page, { "sensor.goodwe_pv_power": "6800" });
+      await reconfigure(page, { flows: { ...config.flows, decimals: 2, kw_from: 100000 } });
+      expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
+      await expect(reconfigure(page, { flows: { ...config.flows, decimals: 3 } })).rejects.toThrow();
+    });
     await test.step("limit nabíjení 100 % se v měřiči nekreslí; práh toku z konfigurace rozhoduje, co je tok", async () => {
       await open(page, "day");
       await expect(page.locator(".meter .limit")).toHaveCount(0);
@@ -251,8 +279,8 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       const tiles = await readTiles(page);
       expect(tiles.map((item) => item.key)).toEqual(TILES);
       const shown = Object.fromEntries(tiles.map((item) => [item.key, item.value]));
-      // Dům = spotřeba bez auta (4,1 kW) a bojleru (1,2 kW): 5,8 − 5,3 = 0,5 kW; všude kW s jednou desetinou.
-      expect(shown).toMatchObject({ sun: "6,8 kW", car: "4,1 kW", boil: "1,2 kW", house: "0,5 kW", batIn: "0,8 kW", gridOut: "0,2 kW" });
+      // Dům = spotřeba bez auta (4,1 kW) a bojleru (1,2 kW): 5,8 − 5,3 = 0,5 kW; všude kW s aspoň třemi číslicemi (flows.decimals: auto).
+      expect(shown).toMatchObject({ sun: "6,80 kW", car: "4,10 kW", boil: "1,20 kW", house: "0,50 kW", batIn: "0,80 kW", gridOut: "0,20 kW" });
       expect(shown.bat).toBe("nevybíjí");
       expect(shown.grid).toBe("neodebírá");
       await expect(stateLine(page, 0)).toContainText("Slunce nabíjí baterii i auto");
@@ -272,7 +300,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await open(page, "grid");
       await expect(stateLine(page, 0)).toContainText("Dům jede ze sítě");
       expect((await tile(page, "grid")).value).toBe("10,3 kW");
-      expect((await tile(page, "car")).aria).toBe("Auto 5,3 kW, nabíjí, nabití 50 %");
+      expect((await tile(page, "car")).aria).toBe("Auto 5,30 kW, nabíjí, nabití 50 %");
       const fills = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
       expect(fills.filter((fill) => fill === "url(#rg-grid)").length).toBe(3);
     });
@@ -447,7 +475,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(page.locator(".range")).toContainText("95 km");
       await expect(page.locator(".mix-head")).toContainText("Odkud auto nabíjí");
       await expect(page.locator(".mix-legend")).toContainText("Slunce100 %");
-      await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí 4,1 kW");
+      await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí 4,10 kW");
       await expect(page.locator(".row-aside")).toHaveText("z auta právě teď");
       await expect(page.locator(".car-art img")).toHaveAttribute("src", /^data:image\/svg/);
       await expect(page.locator(".mode-sub")).toHaveText("Přetoky · jen z přebytku");
@@ -487,7 +515,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       const arcs = page.locator(".arc");
       await expect(arcs).toHaveCount(2);
       await expect(arcs.nth(0).locator(".arc-num b")).toHaveText("52");
-      await expect(arcs.nth(0)).toHaveAttribute("aria-label", /Bojler 52 °C, ohřívá výkonem 1,2 kW, cíl 60 °C, stupnice 15 až 65 °C/);
+      await expect(arcs.nth(0)).toHaveAttribute("aria-label", /Bojler 52 °C, ohřívá výkonem 1,20 kW, cíl 60 °C, stupnice 15 až 65 °C/);
       await expect(arcs.nth(0).locator(".arc-min")).toHaveText("15");
       await expect(arcs.nth(0).locator(".arc-max")).toHaveText("65");
       await expect(page.locator(".source-line").nth(0)).toContainText("cíl 60 °C");
@@ -648,8 +676,8 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
       }
       await open(page, "missing");
       await update(page, { "sensor.goodwe_pv_power": "2400", "sensor.goodwe_house_consumption": "1000", "sensor.goodwe_meter_active_power_total": "1400" });
-      expect((await tile(page, "sun")).value).toBe("2,4 kW");
-      expect((await tile(page, "gridOut")).value).toBe("1,4 kW");
+      expect((await tile(page, "sun")).value).toBe("2,40 kW");
+      expect((await tile(page, "gridOut")).value).toBe("1,40 kW");
     });
     await test.step("denní součty bez čítačů: „––“ v popoveru i v záhlaví, žádné odhady", async () => {
       await open(page, "unavailable");
@@ -1096,7 +1124,7 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
       await page.locator('.tile[data-tile="bat"]').click();
       await expect(page.locator(".pop-big")).toHaveText("65%");
       await update(page, { "sensor.goodwe_pv_power": "1200" });
-      await expect(page.locator('.tile[data-tile="sun"] .value')).toHaveText("1.2 kW");
+      await expect(page.locator('.tile[data-tile="sun"] .value')).toHaveText("1.20 kW");
       await open(page, "full", 393, 852, "dark", "sv");
       await page.locator('.tile[data-tile="bat"]').click();
       await expect(page.locator(".pop-big")).toHaveText("65 %");
@@ -1104,7 +1132,7 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
       await page.locator('.tile[data-tile="bat"]').click();
       await expect(page.locator(".pop-big")).toHaveText("65 %");
       await update(page, { "sensor.goodwe_pv_power": "1200" });
-      await expect(page.locator('.tile[data-tile="sun"] .value')).toHaveText("1,2 kW");
+      await expect(page.locator('.tile[data-tile="sun"] .value')).toHaveText("1,20 kW");
     });
     await test.step("jazyk karty je jazyk profilu Home Assistantu a mění se hned; jiný jazyk než cs a sv = angličtina; klíč language jazyk vynutí; lang na hostiteli", async () => {
       await open(page, "full");

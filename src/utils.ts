@@ -22,9 +22,12 @@ export function readNumber(hass: HomeAssistant | undefined, id: string | undefin
  * format at the start of every update, before it renders; until then Czech is used.
  */
 let format: I18n = getI18n("cs");
+/** Decimal places of the kW values (flows.decimals). */
+let powerDigits: 1 | 2 | "auto" = "auto";
 
-export function useFormat(i18n: I18n): void {
+export function useFormat(i18n: I18n, decimals: 1 | 2 | "auto" = "auto"): void {
   format = i18n;
+  powerDigits = decimals;
 }
 
 export type PowerUnit = "W" | "kW";
@@ -34,8 +37,14 @@ export function powerUnit(values: Array<number | undefined>, from = 1000): Power
   return values.some((value) => value !== undefined && Math.abs(value) >= from) ? "kW" : "W";
 }
 
+/** kW with the decimals of flows.decimals; "auto" keeps at least three digits: 0,13 · 1,36 · 6,43 · 11,3 · 123. */
+function kilowatts(value: number): string {
+  const digits = powerDigits === "auto" ? (Math.abs(Math.round(value * 100) / 100) < 10 ? 2 : Math.abs(Math.round(value * 10) / 10) < 100 ? 1 : 0) : powerDigits;
+  return digits === 2 ? format.two(value) : digits === 1 ? format.one(value) : format.whole(value);
+}
+
 export function formatPower(watts: number, unit: PowerUnit): string {
-  return unit === "kW" ? `${format.one(watts / 1000)} kW` : `${format.whole(Math.round(watts))} W`;
+  return unit === "kW" ? `${kilowatts(watts / 1000)} kW` : `${format.whole(Math.round(watts))} W`;
 }
 
 /** A number with no decimal place, or with one (the only two the card uses). */

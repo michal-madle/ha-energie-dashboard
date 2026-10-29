@@ -115,6 +115,8 @@ export interface Settings {
   tempScale: TempStop[];
   /** Whether the boiler tile is always in the diagram or only while it heats (and `boiler.hold_minutes` after). */
   boilerShow: "always" | "heating";
+  /** Decimal places of the kW values: 1, 2 or "auto" (at least three digits). */
+  powerDecimals: 1 | 2 | "auto";
   /** Where a double tap or long press on the car picture goes; empty = nowhere. */
   carLink: string;
 }

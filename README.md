@@ -25,7 +25,7 @@ Dokud karta nemá všechny funkce dnešního dashboardu, nechte „Energie dům�
 
 Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/energie.yaml) obsahuje úplně všechna nastavení. Klíč bez hodnoty (např. `power:`) nebo smazaný klíč znamená výchozí hodnotu; entity výchozí hodnotu nemají, nenastavená entita se ukáže jako „––“. Každá proměnná karty (limity, prahy, stupnice, krok posuvníků, barvy, nadpisy) je v konfiguraci s výchozí hodnotou; v kódu žádná skrytá konstanta není. Chybnou hodnotu karta neignoruje: místo karty ukáže chybu s názvem klíče (např. `wallbox.boost must be a switch entity (switch.…), not sensor.wallbox_boost`). Přesná pravidla jsou v [CURRENT_SPEC.md](./CURRENT_SPEC.md#konfigurace).
 
-Klíče jsou po systémech: `language`, `title`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (prahy a pásy toků), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení nepotvrzené volby) a `colors`. Výchozí hodnoty a význam každého klíče jsou v tabulce v [CURRENT_SPEC.md](./CURRENT_SPEC.md#konfigurace).
+Klíče jsou po systémech: `language`, `title`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (prahy a pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení nepotvrzené volby) a `colors`. Výchozí hodnoty a význam každého klíče jsou v tabulce v [CURRENT_SPEC.md](./CURRENT_SPEC.md#konfigurace).
 
 ID entit v příkladu potvrdil export z 24. 10. 2026 ([ENTITY_MAP.md](./ENTITY_MAP.md)). Odhadnutá ID nepoužívejte.
 

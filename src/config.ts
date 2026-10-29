@@ -1,5 +1,5 @@
 import { checkKeys, entityId, fail, isRecord, languageSetting, section, withCardName } from "ha-dashboard-kit/config";
-import { BOILER_SHOW, COLORS, DEFAULT_BOILER_SHOW, EXTRA_KEYS, NUMBERS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
+import { BOILER_SHOW, COLORS, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
 import type { Range } from "./config-schema";
 import type { Colors, DashboardConfig, EntitySections, NumberSettings, SectionName, Settings, TempStop, Titles } from "./types";
 
@@ -115,6 +115,18 @@ function boilerShow(config: DashboardConfig): "always" | "heating" {
   return raw as "always" | "heating";
 }
 
+/** flows.decimals: "auto" (default, at least three digits), 1 or 2. */
+function powerDecimals(config: DashboardConfig): 1 | 2 | "auto" {
+  const raw = section(config.flows, "flows").decimals;
+  if (raw === undefined || raw === null) {
+    return DEFAULT_POWER_DECIMALS;
+  }
+  if (!(POWER_DECIMALS as readonly unknown[]).includes(raw)) {
+    fail(`flows.decimals must be one of ${POWER_DECIMALS.join(", ")}, not ${JSON.stringify(raw)}.`);
+  }
+  return raw as 1 | 2 | "auto";
+}
+
 /** car.link: where a double tap or long press on the car picture goes ("/dashboard-bmw", a full address, or "" for nowhere). */
 export const DEFAULT_CAR_LINK = "/dashboard-bmw";
 function carLink(config: DashboardConfig): string {
@@ -179,5 +191,5 @@ function normalize(config: DashboardConfig): Settings {
   const num = numbers(config);
   checkOrder(num);
   const language = languageSetting(config.language);
-  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), carLink: carLink(config) };
+  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config) };
 }

@@ -25,10 +25,14 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
 };
 
 /** Non-numeric, non-entity keys inside sections that also hold numbers (boiler.show). */
-export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"] };
+export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"], flows: ["decimals"] };
 
 export const BOILER_SHOW = ["always", "heating"] as const;
 export const DEFAULT_BOILER_SHOW = "heating";
+
+/** flows.decimals: decimal places of the kW values; "auto" shows at least three digits (0,13 · 1,36 · 6,43 · 11,3). */
+export const POWER_DECIMALS = ["auto", 1, 2] as const;
+export const DEFAULT_POWER_DECIMALS = "auto";
 
 export const SECTION_NAMES = Object.keys(SECTION_KEYS) as SectionName[];
 
@@ -137,5 +141,6 @@ export const CONFIG_KEYS: string[] = [
   ...Object.keys(COLORS).map((key) => `colors.${key}`),
   "colors.temp_scale",
   "boiler.show",
+  "flows.decimals",
   "car.link",
 ];

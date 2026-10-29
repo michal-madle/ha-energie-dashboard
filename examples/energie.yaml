@@ -94,6 +94,7 @@ daily:
 flows:
   idle_threshold: 100                                   # W pod tím se tok bere jako žádný (platí i pro věty o stavu)
   kw_from: 1000                                         # W od tohoto se všechny výkony ukazují v kW
+  decimals: auto                                        # desetinná místa kW: auto = aspoň 3 číslice (0,13 · 1,36 · 6,43 · 11,3 kW), 1 (6,8 kW) nebo 2 (6,81 kW)
   export_notice: 300                                    # W přetoků do sítě, od kterých je to „přebytek“
   source_min_share: 15                                  # % podíl zdroje, od kterého se ve větě jmenuje
   grid_deviation_share: 50                              # % podíl sítě, nad kterým je to odchylka (oranžová)
