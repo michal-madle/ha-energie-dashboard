@@ -269,6 +269,7 @@ export const sv: Texts = {
       max: "max",
       difference: "skillnad",
       rangeLegend: "min–max",
+      excellentZone: (limit: string) => `utmärkt upp till ${limit}`,
       expand: (name: string) => `${name}, visa historik`,
     },
   },

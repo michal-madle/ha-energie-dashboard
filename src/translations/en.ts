@@ -269,6 +269,7 @@ export const en: Texts = {
       max: "max",
       difference: "difference",
       rangeLegend: "min–max",
+      excellentZone: (limit: string) => `excellent up to ${limit}`,
       expand: (name: string) => `${name}, show history`,
     },
   },

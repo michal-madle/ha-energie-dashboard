@@ -414,8 +414,64 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       };
     }
 
-    /** A line (and band) chart of the health rows with an auto-scaled vertical axis. */
+    /**
+     * The balance of the cells: one line, the difference between the highest and the lowest cell in mV, from zero,
+     * over a green zone of the excellent range; above the "attention" limit the line turns orange. The absolute
+     * voltages are in the readout under the finger (CURRENT_SPEC.md, Zdraví).
+     */
+    balanceChart(s: Settings, range: Range): Chart | undefined {
+      const b = s.entities.battery;
+      const key = `health:${range}`;
+      const entry = this._batData[key];
+      if (!entry) return undefined;
+      const days = RANGE_DAYS[range];
+      const end = entry.at;
+      const start = end - days * DAY;
+      const n = HEALTH_BINS;
+      const mean = (entity: string | undefined) => bin(this.batRows(key, "health", entity), "mean", start, end, n);
+      const low = mean(b.min_cell_voltage);
+      const high = mean(b.max_cell_voltage);
+      const spread = low.map((v, i) => (v === undefined || high[i] === undefined ? undefined : Math.max(0, (high[i]! - v) * 1000)));
+      const known = spread.filter((v): v is number => v !== undefined);
+      if (!known.length) return undefined;
+      const { imbalance_good: good, imbalance_warn: warn } = s.num.battery;
+      const top = Math.max(good > 0 ? good * 1.5 : 10, Math.max(...known) * 1.2);
+      const y = (v: number) => round1(130 - (clamp(v, 0, top) / top) * 120);
+      const x = (i: number) => round1((i / (n - 1)) * W);
+      const clock = (i: number) => this.back((1 - i / (n - 1)) * days * 24 * 60);
+      const h = this.t.bat.health;
+      const green = "var(--ed-battery)";
+      const orange = "var(--ed-warning)";
+      const colourAt = (v: number) => (v > warn ? orange : green);
+      const gid = `bg-${range}`;
+      // The line takes the colour of its level: green up to the "attention" limit, orange above it.
+      const limitOffset = clamp(1 - (130 - y(warn)) / (130 - 10), 0, 1);
+      return {
+        id: "health-gap", h: 140, n, x,
+        grid: [{ y: 10 }, { y: y(good) }, { y: 130, strong: true }],
+        labels: [{ y: 10, text: `${formatNumber(top)} mV` }, { y: y(good), text: `${formatNumber(good)} mV` }, { y: 130, text: "0" }],
+        body: svg`<defs>
+            <linearGradient id=${gid} gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="0" y2="130">
+              <stop offset=${limitOffset} stop-color="#FF9230"></stop><stop offset=${limitOffset} stop-color="#30D158"></stop>
+            </linearGradient>
+            <linearGradient id=${gid}-area x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.18"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></linearGradient>
+          </defs>
+          <rect x="0" y=${y(good)} width=${W} height=${round1(130 - y(good))} style="fill:${green};fill-opacity:0.12"></rect>
+          <path d=${areaPath(spread, x, y, 130)} fill="url(#${gid}-area)"></path>
+          <path d=${linePath(spread, x, y)} fill="none" stroke="url(#${gid})" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+        dot: (i) => (spread[i] === undefined ? undefined : { y: y(spread[i]!), color: colourAt(spread[i]!) }),
+        read: (i) =>
+          spread[i] === undefined
+            ? `${clock(i)} · ${NO_DATA}`
+            : `${clock(i)} · ${h.difference} ${formatNumber(spread[i]!)} mV · ${h.min} ${formatFixed(low[i]!, 3)} V · ${h.max} ${formatFixed(high[i]!, 3)} V`,
+        from: days === 1 ? "−24 h" : `−${days} d`, to: this.t.bat.today,
+        legend: html`<div class="bat-legend"><span><i class="swatch" style="background:${green};opacity:0.35"></i>${h.excellentZone(`${formatNumber(good)} mV`)}</span></div>`,
+      };
+    }
+
+    /** A line (and band) chart of the health rows (temperature, life) with an auto-scaled vertical axis. */
     healthChart(id: string, s: Settings, range: Range): Chart | undefined {
+      if (id === "gap") return this.balanceChart(s, range);
       const b = s.entities.battery;
       const key = `health:${range}`;
       const entry = this._batData[key];
@@ -430,16 +486,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const clock = (i: number) => this.back((1 - i / (n - 1)) * days * 24 * 60);
       const from = days === 1 ? "−24 h" : `−${days} d`;
       let spec: { low: Array<number | undefined>; high: Array<number | undefined>; line?: Array<number | undefined>; minSpan: number; text: (v: number) => string; mid: (v: number) => string; read: (i: number) => string; colour: string; legend?: TemplateResult };
-      if (id === "gap") {
-        const low = mean(b.min_cell_voltage);
-        const high = mean(b.max_cell_voltage);
-        spec = {
-          low, high, minSpan: 0.04, colour: "var(--ed-discharge)",
-          text: (v) => `${formatFixed(v, 2)} V`, mid: (v) => `${formatFixed(v, 2)} V`,
-          read: (i) => (low[i] === undefined || high[i] === undefined ? `${clock(i)} · ${NO_DATA}` : `${clock(i)} · ${this.t.bat.health.min} ${formatFixed(low[i]!, 3)} V · ${this.t.bat.health.max} ${formatFixed(high[i]!, 3)} V · ${this.t.bat.health.difference} ${formatNumber((high[i]! - low[i]!) * 1000)} mV`),
-          legend: html`<div class="bat-legend"><span><i class="swatch" style="background:var(--ed-discharge)"></i>${this.t.bat.health.rangeLegend}</span></div>`,
-        };
-      } else if (id === "temp") {
+      if (id === "temp") {
         const low = mean(b.min_cell_temperature);
         const high = mean(b.max_cell_temperature);
         const line = mean(b.temperature);
@@ -470,10 +517,8 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         id: `health-${id}`, h: 140, n, x,
         grid: [{ y: 10 }, { y: 70 }, { y: 130 }],
         labels: [{ y: 10, text: spec.text(dom.hi) }, { y: 70, text: spec.mid((dom.hi + dom.lo) / 2) }, { y: 130, text: spec.text(dom.lo) }],
-        body: id === "gap"
-          ? svg`<path d=${band} style="fill:${colour};fill-opacity:0.22;stroke:${colour}" stroke-width="2" stroke-linejoin="round"></path>`
-          : svg`<path d=${band} style="fill:${colour};fill-opacity:0.22"></path><path d=${line} fill="none" style="stroke:${colour}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
-        dot: id === "gap" ? undefined : (i) => (spec.line?.[i] === undefined ? undefined : { y: y(spec.line[i]!), color: colour }),
+        body: svg`<path d=${band} style="fill:${colour};fill-opacity:0.22"></path><path d=${line} fill="none" style="stroke:${colour}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+        dot: (i) => (spec.line?.[i] === undefined ? undefined : { y: y(spec.line[i]!), color: colour }),
         read: spec.read, from, to: this.t.bat.today, legend: spec.legend,
       };
     }

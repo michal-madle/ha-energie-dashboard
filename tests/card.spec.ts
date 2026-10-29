@@ -1378,7 +1378,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     await expect(tab(page, "30 dní")).toHaveAttribute("aria-checked", "true");
   });
 
-  test("detail baterie: Zdraví (stav, kapacita, vyvážení článků v absolutním napětí, teplota, životnost, diagnostika)", async ({ page }) => {
+  test("detail baterie: Zdraví (stav, kapacita, vyvážení článků jako rozdíl v mV, teplota, životnost, diagnostika)", async ({ page }) => {
     await open(page, "full");
     await openDetail(page);
     await tab(page, "Zdraví").click();
@@ -1401,16 +1401,19 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     await expect(detail).toContainText("Limit nabíjení");
     await expect(detail).toContainText("30 A");
     await expect(detail).toContainText("žádné");
-    // Vyvážení: absolutní napětí nejnižšího a nejvyššího článku, pás mezi nimi, bez průměru.
+    // Vyvážení: jedna čára rozdílu v mV od nuly nad zeleným pásem „výborné do 15 mV“; napětí článků jsou v údaji pod prstem.
     await row("Vyvážení článků").locator(".bat-row").click();
     await expect(row("Vyvážení článků").locator(".bat-row")).toHaveAttribute("aria-expanded", "true");
-    await expect(row("Vyvážení článků").locator(".bat-read")).toContainText(/min 3,3\d\d V · max 3,3\d\d V · rozdíl \d+ mV/);
+    await expect(row("Vyvážení článků").locator(".bat-read")).toContainText(/rozdíl \d+ mV · min 3,3\d\d V · max 3,3\d\d V/);
     const gapLabels = await row("Vyvážení článků").locator(".bat-ylabel").allTextContents();
     expect(gapLabels).toHaveLength(3);
-    expect(gapLabels.every((text) => / V$/.test(text))).toBe(true);
-    await expect(row("Vyvážení článků")).toContainText("min–max");
+    expect(gapLabels[0]).toMatch(/ mV$/);
+    expect(gapLabels[1]).toBe("15 mV");
+    expect(gapLabels[2]).toBe("0");
+    await expect(row("Vyvážení článků")).toContainText("výborné do 15 mV");
+    await expect(row("Vyvážení článků")).not.toContainText("min–max");
     await expect(row("Vyvážení článků")).not.toContainText("průměr");
-    expect(await row("Vyvážení článků").locator(".bat-chart g path").count()).toBe(1);
+    expect(await row("Vyvážení článků").locator(".bat-chart g path").count()).toBe(2); // plocha a čára
     const asked = (await requests(page)).filter((item) => item.statistic_ids.includes("sensor.goodwe_battery_min_cell_voltage"));
     expect(asked[0]).toMatchObject({ period: "5minute", types: ["mean", "state"] });
     // Teplota: v každém okamžiku nejnižší, nejvyšší a teplota baterie.

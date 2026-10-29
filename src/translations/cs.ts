@@ -293,6 +293,7 @@ export const cs = {
       max: "max",
       difference: "rozdíl",
       rangeLegend: "min–max",
+      excellentZone: (limit: string) => `výborné do ${limit}`,
       expand: (name: string) => `${name}, zobrazit historii`,
     },
   },
