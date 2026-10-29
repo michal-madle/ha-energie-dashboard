@@ -160,9 +160,9 @@ Dům je „zbytek“. Skokové změny výkonu domu (trouba, pračka, indukce) se
 ## Detekce problémů
 
 <a id="n14"></a>
-### N14 Baterie krmí auto nebo bojler
-Vaše zkušenost z 29. 10.: „Baterie → auto 2,49 kW“ při pochmurném dni. Detekce: baterie vybíjí a auto nebo bojler odebírá více než práh po dobu delší než N minut. Reakce: upozornění nahoře na kartě (oranžově, jediná barva odchylky) s jedním klepnutím „Zablokovat“, které zapne `switch.wallbox_4_block_charging_from_battery`, nebo `switch.tuv_3_3_block_heating_from_battery` (obě jsou dnes `off`). Obě jsou ovládání AZ Routeru, takže bez nového hardwaru.
-**Přínos** ★★★ · **Náročnost** S · **Data** ✔
+### N14 Baterie krmí auto nebo bojler bez vašeho záměru
+Dřívější znění („baterie krmí auto je problém, zablokuj“) bylo špatně: uživatel 29. 10. nabíjí auto záměrně ze slunce i z baterie (start při baterii kolem 50 %, potom se baterie dobije). Upozornění má proto jen hlídat, aby se to nestalo **mimo vaše pravidlo**: baterie vybíjí do auta nebo bojleru pod dolní mezí (např. pod 30 %), nebo wallbox běží i po dosažení rezervy. Reakce: oranžová zpráva na kartě s tlačítkem „Zastavit wallbox“ (a možností `switch.wallbox_4_block_charging_from_battery`, `switch.tuv_3_3_block_heating_from_battery`, obě dnes `off`). Pravidlo „start při 50 %, stop při 30 %“ je v N35.
+**Přínos** ★★ · **Náročnost** S · **Data** ✔
 
 <a id="n15"></a>
 ### N15 Ořez výroby exportním limitem
@@ -261,7 +261,7 @@ Panely se zapíšou do konfigurace karty (roviny: kWp, azimut, sklon, ztráty). 
 
 <a id="n32"></a>
 ### N32 „Co když s autem“: baterie večer a ráno, kdy začít a přestat
-Přepínač pod grafem: „Přestat teď“ / „Do 80 %“ / „Jen ze slunce“. Pod ním křivka baterie do půlnoci (zvolený scénář, horší počasí, rezerva) a tři čísla: baterie ve 22:00, ráno v 6:00, kWh ze sítě. Navíc „nabíjejte nejdéle do 13:20“ (najde se v simulaci tak, aby baterie večer zůstala nad vaším cílem i při horším počasí). V říjnu ukáže, že auto z přebytku nepojede (špička pod 4,2 kW) a že nabíjení do 80 % vybije baterii na rezervu před polednem a dotáhne se ze sítě. Model je zjednodušený a nezná váš jev prudkého poklesu SOC pod ~30 % při velkém odběru, takže pod 30 % předpověď označí jako nejistou.
+Přepínač pod grafem: „Přestat teď“ / „Do 80 %“ / „Jen ze slunce“. Pod ním křivka baterie do půlnoci (zvolený scénář, horší počasí, rezerva) a tři čísla: baterie ve 22:00, ráno v 6:00, kWh ze sítě. Navíc „nabíjejte nejdéle do 13:20“ (najde se v simulaci tak, aby baterie večer zůstala nad vaším cílem i při horším počasí). Ukáže důsledky bez verdiktu: vaše metoda (baterie 50 % → wallbox → stop při 30 %) dnes dá do auta 5,2 kWh, ale baterie dojde v 18:45 a ze sítě bude v noci o 5 kWh víc; nabíjení do 80 % vybije baterii na rezervu kolem 13:00. Model je zjednodušený a nezná váš jev prudkého poklesu SOC pod ~30 % při velkém odběru, takže pod 30 % předpověď označí jako nejistou.
 **Přínos** ★★★ · **Náročnost** L · **Data** ✔ + N31
 
 <a id="n33"></a>
@@ -276,8 +276,8 @@ Při události (odchylka od normy, baterie krmí auto, ořez výroby) pošle HA 
 
 <a id="n35"></a>
 ### N35 Pravidla „když – tak“ jako přepínače na kartě
-Uživatel 29. 10.: „Více co-když-tak.“ Seznam pravidel v řeči, které nikdo nemusí překládat, každé s přepínačem: „Když baterie krmí auto déle než 5 min, tak zablokuj odběr z baterie a upozorni mě“, „Když slunce nedosáhne minima wallboxu, tak nenabíjej přes den, nabij v nízkém tarifu“, „Když zítra bude pod 10 kWh slunce, tak dobij baterii v noci aspoň na 60 %“, „Když je auto pod 30 % a zítra svítí, tak počkej na zítřejší slunce“. Pravidla běží jako automace v Home Assistantu (spínače routeru `switch.wallbox_4_…`, `switch.tuv_3_3_…`, `select.goodwe_inverter_operation_mode`); karta je jen zobrazí a přepne, takže při zavřené kartě fungují dál. Přepínače, které mění nastavení měniče, by měly mít ochranu (podržení). Návrh: artboard 4 v canvasu.
-**Přínos** ★★★ · **Náročnost** M · **Data** ✔ (N14, N31)
+Uživatel 29. 10.: „Více co-když-tak.“ Seznam pravidel v řeči, které nikdo nemusí překládat, každé s přepínačem: „Když baterie ≥ 50 % a slunce ≥ 2 kW, tak pusť wallbox; při baterii ≤ 30 % ho zastav“, „Když baterie dosáhne rezervy a auto nabíjí, tak zastav wallbox a upozorni mě“, „Když zítra bude pod 10 kWh slunce, tak dobij baterii v noci aspoň na 60 %“, „Když je auto pod 30 % a zítra svítí, tak počkej na zítřejší slunce“. Pravidla běží jako automace v Home Assistantu (spínače routeru `switch.wallbox_4_…`, `switch.tuv_3_3_…`, `select.goodwe_inverter_operation_mode`); karta je jen zobrazí a přepne, takže při zavřené kartě fungují dál. Přepínače, které mění nastavení měniče, by měly mít ochranu (podržení). Návrh: artboard 4 v canvasu.
+**Přínos** ★★★ · **Náročnost** M · **Data** ✔ (N14, N31). Hlavní pravidlo je vaše metoda: „Když baterie ≥ 50 % a slunce ≥ 2 kW, tak pusť wallbox; při baterii ≤ 30 % ho zastav“ (prahy nastavitelné).
 
 ---
 

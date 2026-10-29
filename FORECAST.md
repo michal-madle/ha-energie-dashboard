@@ -48,7 +48,9 @@ Panely: 20 × 500 Wp = 10 kWp (10 na východ 82°, 10 na západ 262°, sklon 15�
 | 21. 3. | asi 46 kWh | asi 7,1 kW |
 | 15. 5. a 21. 6. | asi 85 kWh | 10 kW (ořez střídačem) |
 
-Východ + západ dává široké ploché maximum. Pro auto z toho plyne: minimum wallboxu 4,2 kW + dům (asi 0,5 kW) = asi 4,7 kW přebytku. **Za jasného dne to slunce splní od března do září kolem poledne a v říjnu jen těsně; od listopadu do února ne.** Za pošmourného dne (dnes špička 2,7 kW) ne. Výhled to ukáže čárou „auto potřebuje aspoň 4,2 kW“.
+Východ + západ dává široké ploché maximum.
+
+**Pozor na závěr z minima wallboxu.** Moje první verze z toho dělala pravidlo „od října do března auto nenabíjet“ (slunce samo nedosáhne 4,2 kW + dům). To je špatná otázka. Uživatel 29. 10.: „Aktuálně když svítí 2 kW tak nechám baterii nabít na nějakou hodnotu třeba 50 % a pak pustím wallbox. 2 kW jdou ze slunce a 2 z baterie. Po skončení se zase baterie vrátí a dobije.“ Baterie je zásobník a rozhoduje **energie za celý den**, ne okamžitý výkon. Správná otázka je: kolik z auta se po celém dni vyrovná sluncem a kolik se vrátí ze sítě večer a v noci. Karta proto neříká „nenabíjej“, ale ukáže důsledky a nechá rozhodnutí na vás; vaše metoda je v návrhu výchozí scénář (viz bod 3).
 
 ## 3. Předpověď baterie a „co když“
 
@@ -56,15 +58,18 @@ Simulace po 15 minutách od teď do půlnoci a do rána:
 
 - vstupy: korigovaná předpověď výroby, základní spotřeba domu (medián stejné hodiny za 28 dní, zvlášť pracovní den a víkend, bez auta a bojleru), kapacita baterie (`battery.capacity` 11,2 kWh), rezerva (ze střídače, dnes 20 %), limity nabíjení a vybíjení, účinnost asi 95 % v každém směru;
 - tok: výroba → dům → baterie → (přebytek) auto / bojler / síť podle pravidel routeru; deficit: baterie do rezervy, pak síť;
-- scénáře auta: **přestat teď**, **nabíjet do cíle** (kdy skončí, spočítá se z nabití auta, kapacity 36,7 kWh a výkonu), **jen z přebytku** (auto jede, jen když přebytek dosáhne minima wallboxu; v říjnu tedy nejede);
+- scénáře auta: **vaše metoda** (wallbox start při baterii ≥ 50 % a slunci ≥ 2 kW, stop při baterii ≤ 30 %, parametry nastavitelné), **nenabíjet**, **nabíjet do cíle** (kdy skončí, spočítá se z nabití auta, kapacity 36,7 kWh a výkonu), **jen z přebytku** (volitelně: auto jede, jen když přebytek dosáhne minima wallboxu);
 - výstup: nabití baterie ve zvolený čas (22:00, 6:00), čas dosažení rezervy, kWh ze sítě, kWh do auta (a z toho ze slunce), scénář P10 („když bude horší počasí“).
 
 Příklad (simulace 29. 10. 11:30, auto 4,2 kW, baterie 46 %):
 
 | Scénář | Baterie 22:00 | Rezerva od | Ze sítě dnes |
 |---|---|---|---|
-| Přestat teď | 27 % | 23:15 | 2,4 kWh |
+| Nenabíjet | 27 % | 23:15 | 2,4 kWh |
+| Vaše metoda (50 % → wallbox → stop při 30 %) | 20 % | 18:45 | 7,4 kWh (auto +5,2 kWh) |
 | Do 80 % (do 14:30) | 20 % | 13:00 | 14,5 kWh (auto +12,6, ze slunce 5,1) |
+
+Podobný výpočet pro jasný den 29. 10. (výroba × 1,9): vaše metoda dá do auta 13,7 kWh a večer ze sítě přibude 6,9 kWh proti nenabíjení (1,5 → 8,4 kWh), tedy čistě ze slunce asi 6,8 kWh. Dnes (pošmourno) jen 5,2 kWh do auta a čistě ze slunce asi 0,2 kWh; zbytek vrací síť v noci. Jestli se to vyplatí, záleží na ceně nočního proudu (HDO), proto má karta ukázat oba počty vedle sebe.
 
 **Kdy začít, kdy přestat:** *Začít* = první čas, od kterého předpověď přebytku (výroba − základ domu) přesáhne minimum wallboxu na 30 minut. *Přestat* = nejpozdější čas, při kterém baterie večer (ve 22:00, v pesimistickém scénáři P10) zůstane nad cílem, který nastavíte (např. 30 %). Najde se půlením intervalu v simulaci. Výsledek se řekne větou: „Nabíjejte nejdéle do 13:20, jinak baterie večer nevydrží.“
 
