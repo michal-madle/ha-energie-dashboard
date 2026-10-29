@@ -91,7 +91,6 @@ export const cs = {
     charging: (power: string) => `nabíjí ${power}`,
     importing: (power: string) => `odebírá ${power}`,
     exporting: (power: string) => `dodává ${power}`,
-    noFlow: "bez toku",
     carConnectedIdle: "připojeno, nenabíjí",
     heating: (power: string) => `ohřev ${power}`,
     level: "Nabití",

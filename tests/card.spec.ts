@@ -412,9 +412,26 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       const battery = page.getByRole("dialog", { name: "Baterie" });
       await expect(battery).toContainText("88 %");
       await expect(battery).toContainText("Dnes nabito");
-      await expect(battery).toContainText("5,2 kWh");
+      await expect(battery).toContainText("5,20 kWh");
+      // Jen směr dlaždice: Do baterie ukáže nabito, ne vybito (a obráceně u Baterie).
+      await expect(battery).not.toContainText("Dnes vybito");
       await page.locator(".scrim").click({ position: { x: 5, y: 5 } });
-      await expect(battery).toHaveCount(0);
+      await page.locator('.tile[data-tile="bat"]').click();
+      const discharge = page.getByRole("dialog", { name: "Baterie" });
+      await expect(discharge).toContainText("Dnes vybito");
+      await expect(discharge).not.toContainText("Dnes nabito");
+      await page.locator(".scrim").click({ position: { x: 5, y: 5 } });
+      await expect(discharge).toHaveCount(0);
+      await page.locator('.tile[data-tile="grid"]').click();
+      const grid = page.getByRole("dialog", { name: "Síť" });
+      await expect(grid).toContainText("Dnes odebráno");
+      await expect(grid).not.toContainText("Dnes dodáno");
+      await page.keyboard.press("Escape");
+      await page.locator('.tile[data-tile="gridOut"]').click();
+      const feedIn = page.getByRole("dialog", { name: "Do sítě" });
+      await expect(feedIn).toContainText("Dnes dodáno");
+      await expect(feedIn).not.toContainText("Dnes odebráno");
+      await page.keyboard.press("Escape");
       // Auto bez čítače: „––“, ne vymyšlené číslo.
       await page.locator('.tile[data-tile="car"]').click();
       await expect(page.getByRole("dialog", { name: "Auto" })).toContainText("––");
@@ -433,7 +450,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       // 18,4 + 2,6 + 3,1 − 4,9 − 5,2 − 6,0 − 2,5 = 5,5 kWh; zdroje i spotřeba dají 24,1.
       const use = day.getByRole("list", { name: "Spotřeba" });
       await expect(use).toContainText("24,1");
-      await expect(use.getByRole("listitem").first()).toContainText("5,5");
+      await expect(use.getByRole("listitem").first()).toContainText("5,50");
       await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("24,1");
     });
   });

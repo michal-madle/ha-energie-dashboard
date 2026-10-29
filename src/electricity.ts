@@ -256,26 +256,32 @@ export const withElectricity = <T extends Constructor<CardBase>>(Base: T) =>
       const on = (watts: number | undefined) => isOn(watts, idle);
       const soc = model.soc;
       const low = soc !== undefined && soc <= this.batteryReserve(s);
-      const batNow = on(model.batDis) ? t.pop.discharging(p(model.batDis)) : on(model.batIn) ? t.pop.charging(p(model.batIn)) : soc === undefined ? NO_DATA : t.idle.bat;
-      const battery: PopInfo = {
-        title: t.tile.bat, now: batNow,
+      // Each tile of the battery and of the grid opens only its own direction (uživatel 29. 10.).
+      const battery = (out: boolean): PopInfo => ({
+        title: out ? t.tile.bat : t.tile.batIn,
+        now: out
+          ? on(model.batDis) ? t.pop.discharging(p(model.batDis)) : model.batDis === undefined && soc === undefined ? NO_DATA : t.idle.bat
+          : on(model.batIn) ? t.pop.charging(p(model.batIn)) : model.batIn === undefined && soc === undefined ? NO_DATA : t.idle.batIn,
         level: soc === undefined ? undefined : { label: t.pop.level, text: formatPercent(soc), percent: soc, color: low ? "var(--ed-warning)" : "var(--ed-battery)", note: low ? t.pop.belowReserve : "" },
-        rows: [{ label: t.pop.rows.discharged, value: kwh(day.bdis) }, { label: t.pop.rows.charged, value: kwh(day.bchg) }],
-      };
-      const gridInfo: PopInfo = {
-        title: t.tile.grid, now: on(model.imp) ? t.pop.importing(p(model.imp)) : on(model.exp) ? t.pop.exporting(p(model.exp)) : model.imp === undefined && model.exp === undefined ? NO_DATA : t.pop.noFlow,
-        rows: [{ label: t.pop.rows.imported, value: kwh(day.gin) }, { label: t.pop.rows.exported, value: kwh(day.gout) }],
-      };
+        rows: out ? [{ label: t.pop.rows.discharged, value: kwh(day.bdis) }] : [{ label: t.pop.rows.charged, value: kwh(day.bchg) }],
+      });
+      const gridInfo = (out: boolean): PopInfo => ({
+        title: out ? t.tile.gridOut : t.tile.grid,
+        now: out
+          ? on(model.exp) ? t.pop.exporting(p(model.exp)) : model.exp === undefined ? NO_DATA : t.idle.gridOut
+          : on(model.imp) ? t.pop.importing(p(model.imp)) : model.imp === undefined ? NO_DATA : t.idle.grid,
+        rows: out ? [{ label: t.pop.rows.exported, value: kwh(day.gout) }] : [{ label: t.pop.rows.imported, value: kwh(day.gin) }],
+      });
       const link = model.carLink;
       const bT = model.boilTemp;
       const gMin = s.num.water.gauge_min;
       const gMax = Math.max(s.num.water.gauge_max, readNumber(this.hass, s.entities.boiler.target_temperature) ?? 0);
       const info: Record<TileKey, PopInfo> = {
         sun: { title: t.tile.sun, now: on(model.sun) ? p(model.sun) : model.sun === undefined ? NO_DATA : t.idle.sun, rows: [{ label: t.pop.rows.produced, value: kwh(day.pv) }] },
-        bat: battery,
-        batIn: battery,
-        grid: gridInfo,
-        gridOut: gridInfo,
+        bat: battery(true),
+        batIn: battery(false),
+        grid: gridInfo(false),
+        gridOut: gridInfo(true),
         house: { title: t.tile.house, now: on(model.other) ? p(model.other) : model.other === undefined ? NO_DATA : t.idle.house, rows: [{ label: t.pop.rows.consumed, value: kwh(day.house) }] },
         car: {
           title: t.tile.car, now: on(model.car) ? t.pop.charging(p(model.car)) : link === "connected" || link === "charging" ? t.pop.carConnectedIdle : link === "disconnected" ? t.idle.carDisconnected : NO_DATA,

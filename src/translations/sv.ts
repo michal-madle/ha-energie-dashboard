@@ -74,7 +74,6 @@ export const sv: Texts = {
     charging: (power: string) => `laddar ${power}`,
     importing: (power: string) => `köper ${power}`,
     exporting: (power: string) => `säljer ${power}`,
-    noFlow: "inget flöde",
     carConnectedIdle: "ansluten, laddar inte",
     heating: (power: string) => `värmer ${power}`,
     level: "Laddning",

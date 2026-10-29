@@ -74,7 +74,6 @@ export const en: Texts = {
     charging: (power: string) => `charging ${power}`,
     importing: (power: string) => `importing ${power}`,
     exporting: (power: string) => `exporting ${power}`,
-    noFlow: "no flow",
     carConnectedIdle: "plugged in, not charging",
     heating: (power: string) => `heating ${power}`,
     level: "Charge",

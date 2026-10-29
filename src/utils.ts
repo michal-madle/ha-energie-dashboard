@@ -37,7 +37,7 @@ export function powerUnit(values: Array<number | undefined>, from = 1000): Power
   return values.some((value) => value !== undefined && Math.abs(value) >= from) ? "kW" : "W";
 }
 
-/** kW with the decimals of flows.decimals; "auto" keeps at least three digits: 0,13 · 1,36 · 6,43 · 11,3 · 123. */
+/** A number of kW or kWh with the decimals of flows.decimals; "auto" keeps at least three digits: 0,13 · 1,36 · 6,43 · 11,3 · 123. */
 function kilowatts(value: number): string {
   const digits = powerDigits === "auto" ? (Math.abs(Math.round(value * 100) / 100) < 10 ? 2 : Math.abs(Math.round(value * 10) / 10) < 100 ? 1 : 0) : powerDigits;
   return digits === 2 ? format.two(value) : digits === 1 ? format.one(value) : format.whole(value);
@@ -71,9 +71,9 @@ export function readEnergy(hass: HomeAssistant | undefined, id: string | undefin
   return unit === "Wh" ? value / 1000 : unit === "MWh" ? value * 1000 : value;
 }
 
-/** kWh with one decimal, "0" for nothing (CURRENT_SPEC.md, Popup záhlaví). */
+/** kWh with the digits of flows.decimals (at least three by default), "0" for nothing (CURRENT_SPEC.md, Popup záhlaví). */
 export function formatKwh(value: number): string {
-  return value < 0.05 ? "0" : formatNumber(value, 1);
+  return value < (powerDigits === 1 ? 0.05 : 0.005) ? "0" : kilowatts(value);
 }
 
 /** "právě teď", "před 4 min", "před 2 h", "před 3 d" (in the card language) from an ISO time. */
