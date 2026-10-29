@@ -9,7 +9,7 @@ import type { PowerUnit } from "./utils";
 import { HoldOrDoubleTap } from "ha-dashboard-kit/gesture";
 import { ICON } from "./icons";
 import type { Controlled } from "./controls";
-import { NO_DATA, SOURCE_VAR, attribute, clamp, mix, percentages } from "./view";
+import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages, segments } from "./view";
 import type { Constructor } from "./view";
 
 export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
@@ -124,11 +124,10 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         </div>
         <div class="meter-wrap">
           <div class="meter" role="img" aria-label=${meterLabel}>
-            <div class="fill" style="width:${clamp(soc ?? 0, 0, 100)}%"></div>
-            <div class="ticks"></div>
-            ${hasLimit ? html`<div class="limit" style="left:${limit}%"></div>` : nothing}
+            ${segments(clamp(soc ?? 0, 0, 100)).map((fill) => html`<span><i style="width:${fill.toFixed(1)}%"></i></span>`)}
+            ${hasLimit ? html`<div class="limit" style="left:${meterPosition(limit)}"></div>` : nothing}
           </div>
-          ${hasLimit ? html`<div class="meter-label" aria-hidden="true"><span style="left:${limit}%">${t.car.limit(formatPercent(limit))}</span></div>` : nothing}
+          ${hasLimit ? html`<div class="meter-label" aria-hidden="true"><span style="left:${meterPosition(limit)}">${t.car.limit(formatPercent(limit))}</span></div>` : nothing}
         </div>
         ${charging ? this.renderCarSources(model, flows, formatPower(model.car ?? 0, unit)) : nothing}
         ${w.boost

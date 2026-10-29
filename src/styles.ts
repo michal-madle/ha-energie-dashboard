@@ -705,23 +705,23 @@ export const styles = css`
 
   .meter {
     position: relative;
-    height: 34px;
-    border-radius: 12px;
-    background: var(--ed-tile);
-    overflow: hidden;
+    display: flex;
+    gap: 3px;
+    height: 16px;
   }
 
-  .meter .fill {
+  .meter > span {
+    position: relative;
+    flex: 1 1 0;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--ed-gauge-track);
+  }
+
+  .meter > span > i {
     position: absolute;
     inset: 0 auto 0 0;
-    border-radius: 12px;
     background: var(--ed-car);
-  }
-
-  .meter .ticks {
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(90deg, transparent 0, transparent calc(10% - 1px), rgb(0 0 0 / 28%) calc(10% - 1px), rgb(0 0 0 / 28%) 10%);
   }
 
   .meter .limit {
