@@ -5,7 +5,7 @@ Nápady a „nice to have“, ze kterých se vybírá. **Není to TODO** (to je 
 Vznik 29. 10. (zadání uživatele: „Chci mít jak přehled tak kontrolu. Chci využít a vyždímat ze senzorů a dat co mám co nejvíce.“). Vychází z vašeho exportu entit (`HA entities/energie.json`, 358 entit), z `ENTITY_MAP.md` a z toho, co dělají nejlepší energetické projekty: [Power Flow Card Plus](https://www.github.com/flixlix/power-flow-card-plus), [Predbat](https://springfall2008.github.io/batpred/what-does-predbat-do), [EMHASS](https://emhass.readthedocs.io/en/latest/), [evcc](https://docs.evcc.io/en/blog/2026/09/25/highlights-smart-battery-solar-share) a nová karta „Now“ v energetickém přehledu Home Assistantu 2026.3.
 
 Pravidla:
-- Čísla **N1–N30** jsou trvalá a nezávislá na E (karta Energie), C (Klima) a K (kit). N1 a N2 jsou bývalé E10 a E18.
+- Čísla **N1–N34** jsou trvalá a nezávislá na E (karta Energie), C (Klima) a K (kit). N1 a N2 jsou bývalé E10 a E18.
 - U každého nápadu: **Přínos** (co z toho mám), **Náročnost** (S = hodina, M = večer, L = víc večerů nebo cizí komponenta) a **Data** (co už máte a co by přibylo). Stav dat: ✔ v exportu, ＋ je potřeba doplnit.
 - Co nesedí na kartu, může být automace v Home Assistantu, samostatná karta nebo nástěnka; je to u každého napsané.
 - Údaje v exportu jsem nemohl ověřit na živém systému. Co je jen odvozené z názvu entity, je označeno „ověřit“.
@@ -22,7 +22,7 @@ Pravidla:
 | [N6](#n6) | Přehled | Pás sazeb (HDO a spot) pod grafem dne | ★★★ | M |
 | [N7](#n7) | Přehled | Nejlevnější okno pro auto, bojler a baterii | ★★★ | M |
 | [N8](#n8) | Přehled | Fáze: zátěž L1–L3 proti jističi | ★★ | M |
-| [N9](#n9) | Přehled | Auto: kolik km ujelo ze slunce | ★★★ | M |
+| [N9](#n9) | Přehled | Auto: kolik km ujelo ze slunce (v historii 1 / 7 / 30 dní) | ★★★ | M |
 | [N10](#n10) | Přehled | Cena a výdělek dnes | ★★ | M |
 | [N11](#n11) | Přehled | Účinnost a cykly baterie | ★★ | S |
 | [N12](#n12) | Přehled | Porovnání stringů PV1 a PV2 | ★★ | S |
@@ -44,6 +44,10 @@ Pravidla:
 | [N28](#n28) | AI | Claude Code upravuje dashboard a automace | ★★ | S |
 | [N29](#n29) | Telefon | Live Activity a widget: nabíjení auta na zamčené obrazovce | ★★ | M |
 | [N30](#n30) | Telefon | Siri a zkratky: „kolik mám přebytku“ | ★ | S |
+| [N31](#n31) | Výhled | Výhled dne: předpověď výroby z vašich panelů | ★★★ | L |
+| [N32](#n32) | Výhled | „Co když s autem“: baterie večer a ráno, kdy začít a přestat | ★★★ | L |
+| [N33](#n33) | AI | Popisky podle normy (bez pevných limitů) | ★★★ | M |
+| [N34](#n34) | AI | „Shrnutí od Claude“ jen při události | ★★ | M |
 
 Návod na připojení Claude: [AI_MCP.md](./AI_MCP.md).
 
@@ -128,7 +132,8 @@ Tři tenké pruhy fází v popupu Síť a Wallbox: proud na fázi proti jističi
 
 <a id="n9"></a>
 ### N9 Auto: kolik km ujelo ze slunce
-Nápad, který jinde nenajdete: kolik kWh z měsíčního nabíjení auta bylo ze slunce (integrál přidělení „Odkud auto nabíjí“, které karta už dopočítává), vynásobené spotřebou na km (`nabita_energie_tento_mesic` 58,6 kWh / `driving_distance_this_month` 169,7 km). Výsledek: „Tento měsíc vás slunce svezlo 118 km z 170“ a Kč za km. Počítá se mimo kartu (šablona + Riemann), karta jen zobrazí.
+Nápad, který jinde nenajdete: kolik kWh z nabíjení auta bylo ze slunce (integrál přidělení „Odkud auto nabíjí“, které karta už dopočítává), vynásobené spotřebou na km (`nabita_energie_tento_mesic` 58,6 kWh / `driving_distance_this_month` 169,7 km). Výsledek: „Za 30 dní vás slunce svezlo 116 km ze 170“.
+**Rozhodnuto 29. 10. (uživatel: „Na hlavní kartě nechci mít měsíční souhrny. Tam bude poměr zdrojů z aktuální seance. Na rozklik možná zahrnout do historie na 1 7 30 dní“):** na hlavní kartě zůstává jen pruh „Odkud auto nabíjí“ pro aktuální seanci; km ze slunce jsou v historii po klepnutí na něj, s přepínačem 1 den / 7 dní / 30 dní (stejný vzor jako Detail baterie), sloupce po dnech podle zdrojů. Návrh je v canvasu (artboardy 1 a 2), výpočet v `FORECAST.md`, bod 5. Počítá se mimo kartu (šablona + Riemann), karta jen zobrazí.
 **Přínos** ★★★ · **Náročnost** M · **Data** ✔ + integrál podílu slunce ＋
 
 <a id="n10"></a>
@@ -244,6 +249,30 @@ Aplikace Home Assistant pro iOS umí Live Activity (stav na zamčené obrazovce 
 Zkratky v iPhonu volající Home Assistant: odpověď nahlas z jednoho templatu (přebytek, soběstačnost, stav baterie). Jen pro pohodlí.
 **Přínos** ★ · **Náročnost** S · **Data** ✔
 
+## Výhled a popisky (koncept v `FORECAST.md`)
+
+Zadání 29. 10.: popisky bez pevných limitů („večer v zimě je to jiné než na jaře nebo v poledne v létě“), výhled na dnešek z panelů (Aiko Neostar 2S 500 Wp: 10× východ 82°, 10× západ 262°, sklon 15°), z něj kdy začít a kdy přestat nabíjet a „když přestanu teď, baterie bude večer mít tolik %“. Vizuální návrh: canvas „Energie – Výhled dne, km ze slunce, popisky“.
+
+<a id="n31"></a>
+### N31 Výhled dne: předpověď výroby z vašich panelů
+Panely se zapíšou do konfigurace karty (roviny: kWp, azimut, sklon, ztráty). Výroba po hodinách = fyzika (poloha slunce, jasná obloha, oblačnost z předpovědi počasí v HA nebo hotová předpověď z Open-Meteo Solar Forecast / Forecast.Solar / Solcast) × oprava naučená z vašich posledních 14 dní. Graf ukáže dosavadní výrobu, zbytek dne s pásmem „pravděpodobný rozsah“, jasnou oblohu tečkovaně a vodorovnou čáru „minimum pro auto 4,2 kW“. Zbývá vyrobit X kWh. Odhad pro vaši střechu: jasný den 29. 10. 18,6 kWh se špičkou 3,2 kW, 21. 12. jen 9,8 kWh, 21. 6. 61,6 kWh se špičkou 6,8 kW; slunce samo (po odečtu domu) pokryje minimum wallboxu jen od března do září kolem poledne.
+**Přínos** ★★★ · **Náročnost** L · **Data** ＋ entita `weather` (v HA zdarma) nebo integrace předpovědi
+
+<a id="n32"></a>
+### N32 „Co když s autem“: baterie večer a ráno, kdy začít a přestat
+Přepínač pod grafem: „Přestat teď“ / „Do 80 %“ / „Jen ze slunce“. Pod ním křivka baterie do půlnoci (zvolený scénář, horší počasí, rezerva) a tři čísla: baterie ve 22:00, ráno v 6:00, kWh ze sítě. Navíc „nabíjejte nejdéle do 13:20“ (najde se v simulaci tak, aby baterie večer zůstala nad vaším cílem i při horším počasí). V říjnu ukáže, že auto z přebytku nepojede (špička pod 4,2 kW) a že nabíjení do 80 % vybije baterii na rezervu před polednem a dotáhne se ze sítě. Model je zjednodušený a nezná váš jev prudkého poklesu SOC pod ~30 % při velkém odběru, takže pod 30 % předpověď označí jako nejistou.
+**Přínos** ★★★ · **Náročnost** L · **Data** ✔ + N31
+
+<a id="n33"></a>
+### N33 Popisky podle normy (bez pevných limitů)
+Věta pod diagramem se nevyhodnocuje proti pevným prahům, ale proti vaší normě pro tuto hodinu, typ dne a roční dobu (prostřední polovina hodnot za 28 dní) a proti „indexu jasné oblohy“ (výroba / možná výroba). „Slunce dává 92 % možného“, „odběr je v tuto hodinu běžný“, „baterie → auto 2,5 kW, běžně 0“. Barva (oranžová) jen při odchylce. Věty jsou šablony cs/en/sv, bez internetu a bez AI.
+**Přínos** ★★★ · **Náročnost** M · **Data** ✔ (dlouhodobé statistiky; karta je čte pro baterii)
+
+<a id="n34"></a>
+### N34 „Shrnutí od Claude“ jen při události
+Při události (odchylka od normy, baterie krmí auto, ořez výroby) pošle HA Claude hotová fakta přes `ai_task.generate_data` a dostane nadpis a 1–2 věty vysvětlení. Čísla počítá model, ne Claude; v textu smí být jen čísla ze vstupu, jinak se použije šablona (N33); nejvýš jednou za 15 minut. Lze vypnout, karta funguje i bez toho.
+**Přínos** ★★ · **Náročnost** M · **Data** ✔ + API klíč Anthropic ＋
+
 ---
 
 ## Co bych vybral jako první
@@ -252,7 +281,8 @@ Zkratky v iPhonu volající Home Assistant: odpověď nahlas z jednoho templatu 
 2. **N3 + N4**: soběstačnost a „router ušetřil“. Hodiny práce, data máte.
 3. **N25**: Claude přes MCP. Za večer se můžete ptát na všechno, a naučíte se, co vám v datech chybí.
 4. **Spotové ceny + předpověď** (doplnit data): odemkne N6, N7, N10, N22–N24.
-5. **N9**: „kolik km ze slunce“, protože to jinde nemá nikdo.
+5. **N33 + N31 + N32**: popisky podle normy, výhled dne a „co když s autem“ (`FORECAST.md`); nejdřív N33, nepotřebuje žádná nová data.
+6. **N9**: „kolik km ze slunce“ v historii auta, protože to jinde nemá nikdo.
 
 ## Zdroje
 
@@ -264,3 +294,4 @@ Zkratky v iPhonu volající Home Assistant: odpověď nahlas z jednoho templatu 
 - [GoodWe fork s režimy EMS](https://www.github.com/mletenay/home-assistant-goodwe-inverter)
 - [Solis + spot + Solcast](https://mkuthan.github.io/blog/2025/04/12/home-assistant-solar) – příklad řízení střídače
 - [AI Task](https://www.home-assistant.io/integrations/ai_task/) a [Anthropic](https://home-assistant.io/integrations/anthropic) – Claude uvnitř Home Assistantu
+- [Helios Forecast](https://github.com/ReikanYsora/Helios-Forecast), [Open-Meteo Solar Forecast](https://github.153394839.workers.dev/rany2/ha-open-meteo-solar-forecast), [Forecast.Solar v HA](https://www.home-assistant.io/components/forecast_solar) – předpověď výroby
