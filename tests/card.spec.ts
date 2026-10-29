@@ -304,6 +304,22 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       const fills = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
       expect(fills.filter((fill) => fill === "url(#rg-grid)").length).toBe(3);
     });
+    await test.step("zdroje plní spotřebiče popořadě, pásy se nekříží: Slunce → Dům a Auto, Baterie → Auto, Síť → Auto; totéž v Odkud auto nabíjí", async () => {
+      await open(page, "day");
+      await update(page, { "sensor.goodwe_pv_power": "1870", "sensor.goodwe_battery_power": "2490", "sensor.goodwe_meter_active_power_total": "-230", "sensor.goodwe_house_consumption": "4650", "sensor.tuv_power_total": "0" });
+      await expect(stateLine(page, 0)).toContainText("Dům bere ze slunce");
+      const bands = await page.locator(".flow svg > g > path:first-child").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")));
+      expect(bands.sort()).toEqual(["url(#rg-bat)", "url(#rg-grid)", "url(#rg-sun)", "url(#rg-sun)"]);
+      // Barva dlaždice Dům = zdroje toku do Domu (jen slunce), ne celkový mix.
+      const house = (await tile(page, "house")).style;
+      expect(house).toContain("--ed-sun");
+      expect(house).not.toContain("--ed-battery");
+      expect(house).not.toContain("--ed-grid");
+      const mix = page.locator(".mix-legend");
+      await expect(mix).toContainText("Slunce");
+      await expect(mix).toContainText("Baterie");
+      await expect(mix).toContainText("Síť");
+    });
     await test.step("šum pod prahem 100 W není tok: žádný pás, dlaždice nesvítí", async () => {
       await open(page, "full");
       await update(page, { "sensor.goodwe_battery_power": "60", "sensor.goodwe_meter_active_power_total": "-40", "sensor.goodwe_house_consumption": "99" });
@@ -520,7 +536,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(stateLine(page, 1)).toHaveText("Nabíjí ze sítě · Boost");
       await expect(stateLine(page, 2)).toHaveText("Bojler ohřívá ze sítě · Boost");
       expect(await stateLine(page, 1).evaluate((el) => (el as HTMLElement).style.getPropertyValue("--sc"))).toBe("var(--ed-warning)");
-      await expect(page.locator(".mix-legend")).toContainText("Síť96 %");
+      await expect(page.locator(".mix-legend")).toContainText("Síť100 %");
       await expect(page.locator(".mode-sub")).toHaveText("Boost · bere i ze sítě a z baterie");
     });
     await test.step("měřič nabití auta: limit jen pod 100 %, popisek čtečky", async () => {

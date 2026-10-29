@@ -21,7 +21,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
       const e = s.entities;
       const flows = s.num.flows;
       const heating = isOn(model.boil, flows.idle_threshold);
-      const src = sourceText(model.share, flows, t);
+      const src = sourceText(model.loadShare.boil, flows, t);
       const srcColor = this.sourceColor(src);
       const boost = this.shown(e.boiler.boost);
       const boostOn = boost === "on";

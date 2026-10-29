@@ -108,15 +108,16 @@ export const withElectricity = <T extends Constructor<CardBase>>(Base: T) =>
       const on = (watts: number | undefined) => isOn(watts, idle);
       const power = (watts: number | undefined) => (watts === undefined ? t.noData : formatPower(watts, unit));
       // The house tile is tinted by the shares of the sources.
-      const parts = SOURCES.filter((source) => model.share[source] >= 0.02);
+      const houseShare = model.loadShare.house;
+      const parts = SOURCES.filter((source) => houseShare[source] >= 0.02);
       const houseBg =
         on(model.other) && parts.length
           ? parts.length === 1
             ? `linear-gradient(135deg, ${mix(`var(${SOURCE_VAR[parts[0]]})`, 40)}, ${mix(`var(${SOURCE_VAR[parts[0]]})`, 12)}), var(--ed-tile)`
             : `linear-gradient(135deg, ${parts
                 .map((source, i) => {
-                  const before = parts.slice(0, i).reduce((sum, item) => sum + model.share[item], 0);
-                  return `${mix(`var(${SOURCE_VAR[source]})`, 40)} ${((before + model.share[source] / 2) * 100).toFixed(0)}%`;
+                  const before = parts.slice(0, i).reduce((sum, item) => sum + houseShare[item], 0);
+                  return `${mix(`var(${SOURCE_VAR[source]})`, 40)} ${((before + houseShare[source] / 2) * 100).toFixed(0)}%`;
                 })
                 .join(", ")}), var(--ed-tile)`
           : undefined;

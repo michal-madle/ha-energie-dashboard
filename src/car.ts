@@ -76,7 +76,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const limit = s.num.car.charge_limit;
       const link = model.carLink;
       const charging = isOn(model.car, flows.idle_threshold) && link !== "disconnected";
-      const src = sourceText(model.share, flows, t);
+      const src = sourceText(model.loadShare.car, flows, t);
       const srcColor = this.sourceColor(src);
       const blocked = readText(this.hass, e.wallbox.block_charging) === "on";
       const boost = this.shown(e.wallbox.boost);
@@ -149,13 +149,14 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
     renderCarSources(model: FlowModel, flows: Settings["num"]["flows"], total: string): TemplateResult {
       const t = this.t;
       const names: Record<Source, string> = t.source;
-      const parts = SOURCES.filter((source) => model.share[source] > 0.004);
-      const pct = percentages(parts.map((source) => model.share[source]));
+      const share = model.loadShare.car;
+      const parts = SOURCES.filter((source) => share[source] > 0.004);
+      const pct = percentages(parts.map((source) => share[source]));
       // The grid beyond its share is a deviation: drawn in the warning colour, like in the texts.
-      const colorOf = (source: Source) => (source === "grid" && model.share.grid > flows.grid_deviation_share / 100 ? "var(--ed-warning)" : `var(${SOURCE_VAR[source]})`);
+      const colorOf = (source: Source) => (source === "grid" && share.grid > flows.grid_deviation_share / 100 ? "var(--ed-warning)" : `var(${SOURCE_VAR[source]})`);
       return html`<div class="mix">
         <div class="mix-head"><span>${t.car.sourcesTitle}</span><span>${total}</span></div>
-        <div class="mix-bar" aria-hidden="true">${parts.map((source) => html`<div style="flex:${model.share[source]} 1 0;background:${colorOf(source)}"></div>`)}</div>
+        <div class="mix-bar" aria-hidden="true">${parts.map((source) => html`<div style="flex:${share[source]} 1 0;background:${colorOf(source)}"></div>`)}</div>
         <p class="mix-legend" role="group" aria-label=${t.car.sourcesLabel}>
           ${parts.map((source, i) => html`<span><i style="background:${colorOf(source)}"></i>${names[source]}<em>${formatPercent(pct[i])}</em></span>`)}
         </p>

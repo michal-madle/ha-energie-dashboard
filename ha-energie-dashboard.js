@@ -1,15 +1,15 @@
-const Tt = globalThis, Wt = Tt.ShadowRoot && (Tt.ShadyCSS === void 0 || Tt.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Ut = /* @__PURE__ */ Symbol(), ae = /* @__PURE__ */ new WeakMap();
-let ye = class {
+const Ot = globalThis, Vt = Ot.ShadowRoot && (Ot.ShadyCSS === void 0 || Ot.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, Gt = /* @__PURE__ */ Symbol(), se = /* @__PURE__ */ new WeakMap();
+let _e = class {
   constructor(t, e, a) {
-    if (this._$cssResult$ = !0, a !== Ut) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
+    if (this._$cssResult$ = !0, a !== Gt) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = t, this.t = e;
   }
   get styleSheet() {
     let t = this.o;
     const e = this.t;
-    if (Wt && t === void 0) {
+    if (Vt && t === void 0) {
       const a = e !== void 0 && e.length === 1;
-      a && (t = ae.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), a && ae.set(e, t));
+      a && (t = se.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), a && se.set(e, t));
     }
     return t;
   }
@@ -17,28 +17,28 @@ let ye = class {
     return this.cssText;
   }
 };
-const Pe = (i) => new ye(typeof i == "string" ? i : i + "", void 0, Ut), _t = (i, ...t) => {
+const Ne = (i) => new _e(typeof i == "string" ? i : i + "", void 0, Gt), St = (i, ...t) => {
   const e = i.length === 1 ? i[0] : t.reduce((a, o, s) => a + ((n) => {
     if (n._$cssResult$ === !0) return n.cssText;
     if (typeof n == "number") return n;
     throw Error("Value passed to 'css' function must be a 'css' function result: " + n + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
   })(o) + i[s + 1], i[0]);
-  return new ye(e, i, Ut);
-}, Ie = (i, t) => {
-  if (Wt) i.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
+  return new _e(e, i, Gt);
+}, Fe = (i, t) => {
+  if (Vt) i.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
   else for (const e of t) {
-    const a = document.createElement("style"), o = Tt.litNonce;
+    const a = document.createElement("style"), o = Ot.litNonce;
     o !== void 0 && a.setAttribute("nonce", o), a.textContent = e.cssText, i.appendChild(a);
   }
-}, ne = Wt ? (i) => i : (i) => i instanceof CSSStyleSheet ? ((t) => {
+}, re = Vt ? (i) => i : (i) => i instanceof CSSStyleSheet ? ((t) => {
   let e = "";
   for (const a of t.cssRules) e += a.cssText;
-  return Pe(e);
+  return Ne(e);
 })(i) : i;
-const { is: Ne, defineProperty: Fe, getOwnPropertyDescriptor: Re, getOwnPropertyNames: We, getOwnPropertySymbols: Ue, getPrototypeOf: Ve } = Object, zt = globalThis, se = zt.trustedTypes, Ge = se ? se.emptyScript : "", Ze = zt.reactiveElementPolyfillSupport, xt = (i, t) => i, Ot = { toAttribute(i, t) {
+const { is: Re, defineProperty: We, getOwnPropertyDescriptor: Ue, getOwnPropertyNames: Ve, getOwnPropertySymbols: Ge, getPrototypeOf: Ze } = Object, jt = globalThis, le = jt.trustedTypes, Ke = le ? le.emptyScript : "", qe = jt.reactiveElementPolyfillSupport, $t = (i, t) => i, Dt = { toAttribute(i, t) {
   switch (t) {
     case Boolean:
-      i = i ? Ge : null;
+      i = i ? Ke : null;
       break;
     case Object:
     case Array:
@@ -63,23 +63,23 @@ const { is: Ne, defineProperty: Fe, getOwnPropertyDescriptor: Re, getOwnProperty
       }
   }
   return e;
-} }, Vt = (i, t) => !Ne(i, t), re = { attribute: !0, type: String, converter: Ot, reflect: !1, useDefault: !1, hasChanged: Vt };
-Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), zt.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
-let ht = class extends HTMLElement {
+} }, Zt = (i, t) => !Re(i, t), de = { attribute: !0, type: String, converter: Dt, reflect: !1, useDefault: !1, hasChanged: Zt };
+Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), jt.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
+let pt = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ??= []).push(t);
   }
   static get observedAttributes() {
     return this.finalize(), this._$Eh && [...this._$Eh.keys()];
   }
-  static createProperty(t, e = re) {
+  static createProperty(t, e = de) {
     if (e.state && (e.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((e = Object.create(e)).wrapped = !0), this.elementProperties.set(t, e), !e.noAccessor) {
       const a = /* @__PURE__ */ Symbol(), o = this.getPropertyDescriptor(t, a, e);
-      o !== void 0 && Fe(this.prototype, t, o);
+      o !== void 0 && We(this.prototype, t, o);
     }
   }
   static getPropertyDescriptor(t, e, a) {
-    const { get: o, set: s } = Re(this.prototype, t) ?? { get() {
+    const { get: o, set: s } = Ue(this.prototype, t) ?? { get() {
       return this[e];
     }, set(n) {
       this[e] = n;
@@ -90,17 +90,17 @@ let ht = class extends HTMLElement {
     }, configurable: !0, enumerable: !0 };
   }
   static getPropertyOptions(t) {
-    return this.elementProperties.get(t) ?? re;
+    return this.elementProperties.get(t) ?? de;
   }
   static _$Ei() {
-    if (this.hasOwnProperty(xt("elementProperties"))) return;
-    const t = Ve(this);
+    if (this.hasOwnProperty($t("elementProperties"))) return;
+    const t = Ze(this);
     t.finalize(), t.l !== void 0 && (this.l = [...t.l]), this.elementProperties = new Map(t.elementProperties);
   }
   static finalize() {
-    if (this.hasOwnProperty(xt("finalized"))) return;
-    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty(xt("properties"))) {
-      const e = this.properties, a = [...We(e), ...Ue(e)];
+    if (this.hasOwnProperty($t("finalized"))) return;
+    if (this.finalized = !0, this._$Ei(), this.hasOwnProperty($t("properties"))) {
+      const e = this.properties, a = [...Ve(e), ...Ge(e)];
       for (const o of a) this.createProperty(o, e[o]);
     }
     const t = this[Symbol.metadata];
@@ -119,8 +119,8 @@ let ht = class extends HTMLElement {
     const e = [];
     if (Array.isArray(t)) {
       const a = new Set(t.flat(1 / 0).reverse());
-      for (const o of a) e.unshift(ne(o));
-    } else t !== void 0 && e.push(ne(t));
+      for (const o of a) e.unshift(re(o));
+    } else t !== void 0 && e.push(re(t));
     return e;
   }
   static _$Eu(t, e) {
@@ -146,7 +146,7 @@ let ht = class extends HTMLElement {
   }
   createRenderRoot() {
     const t = this.shadowRoot ?? this.attachShadow(this.constructor.shadowRootOptions);
-    return Ie(t, this.constructor.elementStyles), t;
+    return Fe(t, this.constructor.elementStyles), t;
   }
   connectedCallback() {
     this.renderRoot ??= this.createRenderRoot(), this.enableUpdating(!0), this._$EO?.forEach((t) => t.hostConnected?.());
@@ -162,14 +162,14 @@ let ht = class extends HTMLElement {
   _$ET(t, e) {
     const a = this.constructor.elementProperties.get(t), o = this.constructor._$Eu(t, a);
     if (o !== void 0 && a.reflect === !0) {
-      const s = (a.converter?.toAttribute !== void 0 ? a.converter : Ot).toAttribute(e, a.type);
+      const s = (a.converter?.toAttribute !== void 0 ? a.converter : Dt).toAttribute(e, a.type);
       this._$Em = t, s == null ? this.removeAttribute(o) : this.setAttribute(o, s), this._$Em = null;
     }
   }
   _$AK(t, e) {
     const a = this.constructor, o = a._$Eh.get(t);
     if (o !== void 0 && this._$Em !== o) {
-      const s = a.getPropertyOptions(o), n = typeof s.converter == "function" ? { fromAttribute: s.converter } : s.converter?.fromAttribute !== void 0 ? s.converter : Ot;
+      const s = a.getPropertyOptions(o), n = typeof s.converter == "function" ? { fromAttribute: s.converter } : s.converter?.fromAttribute !== void 0 ? s.converter : Dt;
       this._$Em = o;
       const r = n.fromAttribute(e, s.type);
       this[o] = r ?? this._$Ej?.get(o) ?? r, this._$Em = null;
@@ -178,7 +178,7 @@ let ht = class extends HTMLElement {
   requestUpdate(t, e, a, o = !1, s) {
     if (t !== void 0) {
       const n = this.constructor;
-      if (o === !1 && (s = this[t]), a ??= n.getPropertyOptions(t), !((a.hasChanged ?? Vt)(s, e) || a.useDefault && a.reflect && s === this._$Ej?.get(t) && !this.hasAttribute(n._$Eu(t, a)))) return;
+      if (o === !1 && (s = this[t]), a ??= n.getPropertyOptions(t), !((a.hasChanged ?? Zt)(s, e) || a.useDefault && a.reflect && s === this._$Ej?.get(t) && !this.hasAttribute(n._$Eu(t, a)))) return;
       this.C(t, e, a);
     }
     this.isUpdatePending === !1 && (this._$ES = this._$EP());
@@ -246,70 +246,70 @@ let ht = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-ht.elementStyles = [], ht.shadowRootOptions = { mode: "open" }, ht[xt("elementProperties")] = /* @__PURE__ */ new Map(), ht[xt("finalized")] = /* @__PURE__ */ new Map(), Ze?.({ ReactiveElement: ht }), (zt.reactiveElementVersions ??= []).push("2.1.2");
-const Gt = globalThis, le = (i) => i, Et = Gt.trustedTypes, de = Et ? Et.createPolicy("lit-html", { createHTML: (i) => i }) : void 0, ke = "$lit$", Q = `lit$${Math.random().toFixed(9).slice(2)}$`, _e = "?" + Q, Ke = `<${_e}>`, ct = document, wt = () => ct.createComment(""), yt = (i) => i === null || typeof i != "object" && typeof i != "function", Zt = Array.isArray, qe = (i) => Zt(i) || typeof i?.[Symbol.iterator] == "function", Pt = `[ 	
-\f\r]`, ft = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ce = /-->/g, he = />/g, st = RegExp(`>|${Pt}(?:([^\\s"'>=/]+)(${Pt}*=${Pt}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), pe = /'/g, ue = /"/g, Ce = /^(?:script|style|textarea|title)$/i, Se = (i) => (t, ...e) => ({ _$litType$: i, strings: t, values: e }), g = Se(1), pt = Se(2), ut = /* @__PURE__ */ Symbol.for("lit-noChange"), x = /* @__PURE__ */ Symbol.for("lit-nothing"), ge = /* @__PURE__ */ new WeakMap(), lt = ct.createTreeWalker(ct, 129);
-function Me(i, t) {
-  if (!Zt(i) || !i.hasOwnProperty("raw")) throw Error("invalid template strings array");
-  return de !== void 0 ? de.createHTML(t) : t;
+pt.elementStyles = [], pt.shadowRootOptions = { mode: "open" }, pt[$t("elementProperties")] = /* @__PURE__ */ new Map(), pt[$t("finalized")] = /* @__PURE__ */ new Map(), qe?.({ ReactiveElement: pt }), (jt.reactiveElementVersions ??= []).push("2.1.2");
+const Kt = globalThis, ce = (i) => i, Bt = Kt.trustedTypes, he = Bt ? Bt.createPolicy("lit-html", { createHTML: (i) => i }) : void 0, Se = "$lit$", et = `lit$${Math.random().toFixed(9).slice(2)}$`, Ce = "?" + et, Xe = `<${Ce}>`, ht = document, yt = () => ht.createComment(""), kt = (i) => i === null || typeof i != "object" && typeof i != "function", qt = Array.isArray, Ye = (i) => qt(i) || typeof i?.[Symbol.iterator] == "function", Nt = `[ 	
+\f\r]`, vt = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, pe = /-->/g, ue = />/g, rt = RegExp(`>|${Nt}(?:([^\\s"'>=/]+)(${Nt}*=${Nt}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), ge = /'/g, be = /"/g, Me = /^(?:script|style|textarea|title)$/i, Ae = (i) => (t, ...e) => ({ _$litType$: i, strings: t, values: e }), g = Ae(1), ut = Ae(2), gt = /* @__PURE__ */ Symbol.for("lit-noChange"), v = /* @__PURE__ */ Symbol.for("lit-nothing"), me = /* @__PURE__ */ new WeakMap(), dt = ht.createTreeWalker(ht, 129);
+function Te(i, t) {
+  if (!qt(i) || !i.hasOwnProperty("raw")) throw Error("invalid template strings array");
+  return he !== void 0 ? he.createHTML(t) : t;
 }
-const Xe = (i, t) => {
+const Je = (i, t) => {
   const e = i.length - 1, a = [];
-  let o, s = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", n = ft;
+  let o, s = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", n = vt;
   for (let r = 0; r < e; r++) {
     const l = i[r];
-    let d, c, p = -1, h = 0;
-    for (; h < l.length && (n.lastIndex = h, c = n.exec(l), c !== null); ) h = n.lastIndex, n === ft ? c[1] === "!--" ? n = ce : c[1] !== void 0 ? n = he : c[2] !== void 0 ? (Ce.test(c[2]) && (o = RegExp("</" + c[2], "g")), n = st) : c[3] !== void 0 && (n = st) : n === st ? c[0] === ">" ? (n = o ?? ft, p = -1) : c[1] === void 0 ? p = -2 : (p = n.lastIndex - c[2].length, d = c[1], n = c[3] === void 0 ? st : c[3] === '"' ? ue : pe) : n === ue || n === pe ? n = st : n === ce || n === he ? n = ft : (n = st, o = void 0);
-    const $ = n === st && i[r + 1].startsWith("/>") ? " " : "";
-    s += n === ft ? l + Ke : p >= 0 ? (a.push(d), l.slice(0, p) + ke + l.slice(p) + Q + $) : l + Q + (p === -2 ? r : $);
+    let c, d, p = -1, h = 0;
+    for (; h < l.length && (n.lastIndex = h, d = n.exec(l), d !== null); ) h = n.lastIndex, n === vt ? d[1] === "!--" ? n = pe : d[1] !== void 0 ? n = ue : d[2] !== void 0 ? (Me.test(d[2]) && (o = RegExp("</" + d[2], "g")), n = rt) : d[3] !== void 0 && (n = rt) : n === rt ? d[0] === ">" ? (n = o ?? vt, p = -1) : d[1] === void 0 ? p = -2 : (p = n.lastIndex - d[2].length, c = d[1], n = d[3] === void 0 ? rt : d[3] === '"' ? be : ge) : n === be || n === ge ? n = rt : n === pe || n === ue ? n = vt : (n = rt, o = void 0);
+    const x = n === rt && i[r + 1].startsWith("/>") ? " " : "";
+    s += n === vt ? l + Xe : p >= 0 ? (a.push(c), l.slice(0, p) + Se + l.slice(p) + et + x) : l + et + (p === -2 ? r : x);
   }
-  return [Me(i, s + (i[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), a];
+  return [Te(i, s + (i[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), a];
 };
-class kt {
+class _t {
   constructor({ strings: t, _$litType$: e }, a) {
     let o;
     this.parts = [];
     let s = 0, n = 0;
-    const r = t.length - 1, l = this.parts, [d, c] = Xe(t, e);
-    if (this.el = kt.createElement(d, a), lt.currentNode = this.el.content, e === 2 || e === 3) {
+    const r = t.length - 1, l = this.parts, [c, d] = Je(t, e);
+    if (this.el = _t.createElement(c, a), dt.currentNode = this.el.content, e === 2 || e === 3) {
       const p = this.el.content.firstChild;
       p.replaceWith(...p.childNodes);
     }
-    for (; (o = lt.nextNode()) !== null && l.length < r; ) {
+    for (; (o = dt.nextNode()) !== null && l.length < r; ) {
       if (o.nodeType === 1) {
-        if (o.hasAttributes()) for (const p of o.getAttributeNames()) if (p.endsWith(ke)) {
-          const h = c[n++], $ = o.getAttribute(p).split(Q), v = /([.?@])?(.*)/.exec(h);
-          l.push({ type: 1, index: s, name: v[2], strings: $, ctor: v[1] === "." ? Je : v[1] === "?" ? Qe : v[1] === "@" ? ti : Ht }), o.removeAttribute(p);
-        } else p.startsWith(Q) && (l.push({ type: 6, index: s }), o.removeAttribute(p));
-        if (Ce.test(o.tagName)) {
-          const p = o.textContent.split(Q), h = p.length - 1;
+        if (o.hasAttributes()) for (const p of o.getAttributeNames()) if (p.endsWith(Se)) {
+          const h = d[n++], x = o.getAttribute(p).split(et), f = /([.?@])?(.*)/.exec(h);
+          l.push({ type: 1, index: s, name: f[2], strings: x, ctor: f[1] === "." ? ti : f[1] === "?" ? ei : f[1] === "@" ? ii : Pt }), o.removeAttribute(p);
+        } else p.startsWith(et) && (l.push({ type: 6, index: s }), o.removeAttribute(p));
+        if (Me.test(o.tagName)) {
+          const p = o.textContent.split(et), h = p.length - 1;
           if (h > 0) {
-            o.textContent = Et ? Et.emptyScript : "";
-            for (let $ = 0; $ < h; $++) o.append(p[$], wt()), lt.nextNode(), l.push({ type: 2, index: ++s });
-            o.append(p[h], wt());
+            o.textContent = Bt ? Bt.emptyScript : "";
+            for (let x = 0; x < h; x++) o.append(p[x], yt()), dt.nextNode(), l.push({ type: 2, index: ++s });
+            o.append(p[h], yt());
           }
         }
-      } else if (o.nodeType === 8) if (o.data === _e) l.push({ type: 2, index: s });
+      } else if (o.nodeType === 8) if (o.data === Ce) l.push({ type: 2, index: s });
       else {
         let p = -1;
-        for (; (p = o.data.indexOf(Q, p + 1)) !== -1; ) l.push({ type: 7, index: s }), p += Q.length - 1;
+        for (; (p = o.data.indexOf(et, p + 1)) !== -1; ) l.push({ type: 7, index: s }), p += et.length - 1;
       }
       s++;
     }
   }
   static createElement(t, e) {
-    const a = ct.createElement("template");
+    const a = ht.createElement("template");
     return a.innerHTML = t, a;
   }
 }
-function gt(i, t, e = i, a) {
-  if (t === ut) return t;
+function bt(i, t, e = i, a) {
+  if (t === gt) return t;
   let o = a !== void 0 ? e._$Co?.[a] : e._$Cl;
-  const s = yt(t) ? void 0 : t._$litDirective$;
-  return o?.constructor !== s && (o?._$AO?.(!1), s === void 0 ? o = void 0 : (o = new s(i), o._$AT(i, e, a)), a !== void 0 ? (e._$Co ??= [])[a] = o : e._$Cl = o), o !== void 0 && (t = gt(i, o._$AS(i, t.values), o, a)), t;
+  const s = kt(t) ? void 0 : t._$litDirective$;
+  return o?.constructor !== s && (o?._$AO?.(!1), s === void 0 ? o = void 0 : (o = new s(i), o._$AT(i, e, a)), a !== void 0 ? (e._$Co ??= [])[a] = o : e._$Cl = o), o !== void 0 && (t = bt(i, o._$AS(i, t.values), o, a)), t;
 }
-class Ye {
+class Qe {
   constructor(t, e) {
     this._$AV = [], this._$AN = void 0, this._$AD = t, this._$AM = e;
   }
@@ -320,17 +320,17 @@ class Ye {
     return this._$AM._$AU;
   }
   u(t) {
-    const { el: { content: e }, parts: a } = this._$AD, o = (t?.creationScope ?? ct).importNode(e, !0);
-    lt.currentNode = o;
-    let s = lt.nextNode(), n = 0, r = 0, l = a[0];
+    const { el: { content: e }, parts: a } = this._$AD, o = (t?.creationScope ?? ht).importNode(e, !0);
+    dt.currentNode = o;
+    let s = dt.nextNode(), n = 0, r = 0, l = a[0];
     for (; l !== void 0; ) {
       if (n === l.index) {
-        let d;
-        l.type === 2 ? d = new Ct(s, s.nextSibling, this, t) : l.type === 1 ? d = new l.ctor(s, l.name, l.strings, this, t) : l.type === 6 && (d = new ei(s, this, t)), this._$AV.push(d), l = a[++r];
+        let c;
+        l.type === 2 ? c = new Ct(s, s.nextSibling, this, t) : l.type === 1 ? c = new l.ctor(s, l.name, l.strings, this, t) : l.type === 6 && (c = new oi(s, this, t)), this._$AV.push(c), l = a[++r];
       }
-      n !== l?.index && (s = lt.nextNode(), n++);
+      n !== l?.index && (s = dt.nextNode(), n++);
     }
-    return lt.currentNode = ct, o;
+    return dt.currentNode = ht, o;
   }
   p(t) {
     let e = 0;
@@ -342,7 +342,7 @@ class Ct {
     return this._$AM?._$AU ?? this._$Cv;
   }
   constructor(t, e, a, o) {
-    this.type = 2, this._$AH = x, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = a, this.options = o, this._$Cv = o?.isConnected ?? !0;
+    this.type = 2, this._$AH = v, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = a, this.options = o, this._$Cv = o?.isConnected ?? !0;
   }
   get parentNode() {
     let t = this._$AA.parentNode;
@@ -356,7 +356,7 @@ class Ct {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = gt(this, t, e), yt(t) ? t === x || t == null || t === "" ? (this._$AH !== x && this._$AR(), this._$AH = x) : t !== this._$AH && t !== ut && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : qe(t) ? this.k(t) : this._(t);
+    t = bt(this, t, e), kt(t) ? t === v || t == null || t === "" ? (this._$AH !== v && this._$AR(), this._$AH = v) : t !== this._$AH && t !== gt && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Ye(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -365,38 +365,38 @@ class Ct {
     this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
   }
   _(t) {
-    this._$AH !== x && yt(this._$AH) ? this._$AA.nextSibling.data = t : this.T(ct.createTextNode(t)), this._$AH = t;
+    this._$AH !== v && kt(this._$AH) ? this._$AA.nextSibling.data = t : this.T(ht.createTextNode(t)), this._$AH = t;
   }
   $(t) {
-    const { values: e, _$litType$: a } = t, o = typeof a == "number" ? this._$AC(t) : (a.el === void 0 && (a.el = kt.createElement(Me(a.h, a.h[0]), this.options)), a);
+    const { values: e, _$litType$: a } = t, o = typeof a == "number" ? this._$AC(t) : (a.el === void 0 && (a.el = _t.createElement(Te(a.h, a.h[0]), this.options)), a);
     if (this._$AH?._$AD === o) this._$AH.p(e);
     else {
-      const s = new Ye(o, this), n = s.u(this.options);
+      const s = new Qe(o, this), n = s.u(this.options);
       s.p(e), this.T(n), this._$AH = s;
     }
   }
   _$AC(t) {
-    let e = ge.get(t.strings);
-    return e === void 0 && ge.set(t.strings, e = new kt(t)), e;
+    let e = me.get(t.strings);
+    return e === void 0 && me.set(t.strings, e = new _t(t)), e;
   }
   k(t) {
-    Zt(this._$AH) || (this._$AH = [], this._$AR());
+    qt(this._$AH) || (this._$AH = [], this._$AR());
     const e = this._$AH;
     let a, o = 0;
-    for (const s of t) o === e.length ? e.push(a = new Ct(this.O(wt()), this.O(wt()), this, this.options)) : a = e[o], a._$AI(s), o++;
+    for (const s of t) o === e.length ? e.push(a = new Ct(this.O(yt()), this.O(yt()), this, this.options)) : a = e[o], a._$AI(s), o++;
     o < e.length && (this._$AR(a && a._$AB.nextSibling, o), e.length = o);
   }
   _$AR(t = this._$AA.nextSibling, e) {
     for (this._$AP?.(!1, !0, e); t !== this._$AB; ) {
-      const a = le(t).nextSibling;
-      le(t).remove(), t = a;
+      const a = ce(t).nextSibling;
+      ce(t).remove(), t = a;
     }
   }
   setConnected(t) {
     this._$AM === void 0 && (this._$Cv = t, this._$AP?.(t));
   }
 }
-class Ht {
+class Pt {
   get tagName() {
     return this.element.tagName;
   }
@@ -404,53 +404,53 @@ class Ht {
     return this._$AM._$AU;
   }
   constructor(t, e, a, o, s) {
-    this.type = 1, this._$AH = x, this._$AN = void 0, this.element = t, this.name = e, this._$AM = o, this.options = s, a.length > 2 || a[0] !== "" || a[1] !== "" ? (this._$AH = Array(a.length - 1).fill(new String()), this.strings = a) : this._$AH = x;
+    this.type = 1, this._$AH = v, this._$AN = void 0, this.element = t, this.name = e, this._$AM = o, this.options = s, a.length > 2 || a[0] !== "" || a[1] !== "" ? (this._$AH = Array(a.length - 1).fill(new String()), this.strings = a) : this._$AH = v;
   }
   _$AI(t, e = this, a, o) {
     const s = this.strings;
     let n = !1;
-    if (s === void 0) t = gt(this, t, e, 0), n = !yt(t) || t !== this._$AH && t !== ut, n && (this._$AH = t);
+    if (s === void 0) t = bt(this, t, e, 0), n = !kt(t) || t !== this._$AH && t !== gt, n && (this._$AH = t);
     else {
       const r = t;
-      let l, d;
-      for (t = s[0], l = 0; l < s.length - 1; l++) d = gt(this, r[a + l], e, l), d === ut && (d = this._$AH[l]), n ||= !yt(d) || d !== this._$AH[l], d === x ? t = x : t !== x && (t += (d ?? "") + s[l + 1]), this._$AH[l] = d;
+      let l, c;
+      for (t = s[0], l = 0; l < s.length - 1; l++) c = bt(this, r[a + l], e, l), c === gt && (c = this._$AH[l]), n ||= !kt(c) || c !== this._$AH[l], c === v ? t = v : t !== v && (t += (c ?? "") + s[l + 1]), this._$AH[l] = c;
     }
     n && !o && this.j(t);
   }
   j(t) {
-    t === x ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
+    t === v ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
   }
 }
-class Je extends Ht {
+class ti extends Pt {
   constructor() {
     super(...arguments), this.type = 3;
   }
   j(t) {
-    this.element[this.name] = t === x ? void 0 : t;
+    this.element[this.name] = t === v ? void 0 : t;
   }
 }
-class Qe extends Ht {
+class ei extends Pt {
   constructor() {
     super(...arguments), this.type = 4;
   }
   j(t) {
-    this.element.toggleAttribute(this.name, !!t && t !== x);
+    this.element.toggleAttribute(this.name, !!t && t !== v);
   }
 }
-class ti extends Ht {
+class ii extends Pt {
   constructor(t, e, a, o, s) {
     super(t, e, a, o, s), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = gt(this, t, e, 0) ?? x) === ut) return;
-    const a = this._$AH, o = t === x && a !== x || t.capture !== a.capture || t.once !== a.once || t.passive !== a.passive, s = t !== x && (a === x || o);
+    if ((t = bt(this, t, e, 0) ?? v) === gt) return;
+    const a = this._$AH, o = t === v && a !== v || t.capture !== a.capture || t.once !== a.once || t.passive !== a.passive, s = t !== v && (a === v || o);
     o && this.element.removeEventListener(this.name, this, a), s && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
   handleEvent(t) {
     typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, t) : this._$AH.handleEvent(t);
   }
 }
-class ei {
+class oi {
   constructor(t, e, a) {
     this.element = t, this.type = 6, this._$AN = void 0, this._$AM = e, this.options = a;
   }
@@ -458,22 +458,22 @@ class ei {
     return this._$AM._$AU;
   }
   _$AI(t) {
-    gt(this, t);
+    bt(this, t);
   }
 }
-const ii = Gt.litHtmlPolyfillSupport;
-ii?.(kt, Ct), (Gt.litHtmlVersions ??= []).push("3.3.3");
-const oi = (i, t, e) => {
+const ai = Kt.litHtmlPolyfillSupport;
+ai?.(_t, Ct), (Kt.litHtmlVersions ??= []).push("3.3.3");
+const ni = (i, t, e) => {
   const a = e?.renderBefore ?? t;
   let o = a._$litPart$;
   if (o === void 0) {
     const s = e?.renderBefore ?? null;
-    a._$litPart$ = o = new Ct(t.insertBefore(wt(), s), s, void 0, e ?? {});
+    a._$litPart$ = o = new Ct(t.insertBefore(yt(), s), s, void 0, e ?? {});
   }
   return o._$AI(i), o;
 };
-const Kt = globalThis;
-class it extends ht {
+const Xt = globalThis;
+class at extends pt {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -483,7 +483,7 @@ class it extends ht {
   }
   update(t) {
     const e = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = oi(e, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = ni(e, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -492,14 +492,14 @@ class it extends ht {
     super.disconnectedCallback(), this._$Do?.setConnected(!1);
   }
   render() {
-    return ut;
+    return gt;
   }
 }
-it._$litElement$ = !0, it.finalized = !0, Kt.litElementHydrateSupport?.({ LitElement: it });
-const ai = Kt.litElementPolyfillSupport;
-ai?.({ LitElement: it });
-(Kt.litElementVersions ??= []).push("4.2.2");
-const ni = { attribute: !0, type: String, converter: Ot, reflect: !1, hasChanged: Vt }, si = (i = ni, t, e) => {
+at._$litElement$ = !0, at.finalized = !0, Xt.litElementHydrateSupport?.({ LitElement: at });
+const si = Xt.litElementPolyfillSupport;
+si?.({ LitElement: at });
+(Xt.litElementVersions ??= []).push("4.2.2");
+const ri = { attribute: !0, type: String, converter: Dt, reflect: !1, hasChanged: Zt }, li = (i = ri, t, e) => {
   const { kind: a, metadata: o } = e;
   let s = globalThis.litPropertyMetadata.get(o);
   if (s === void 0 && globalThis.litPropertyMetadata.set(o, s = /* @__PURE__ */ new Map()), a === "setter" && ((i = Object.create(i)).wrapped = !0), s.set(e.name, i), a === "accessor") {
@@ -520,16 +520,16 @@ const ni = { attribute: !0, type: String, converter: Ot, reflect: !1, hasChanged
   }
   throw Error("Unsupported decorator location: " + a);
 };
-function _(i) {
-  return (t, e) => typeof e == "object" ? si(i, t, e) : ((a, o, s) => {
+function C(i) {
+  return (t, e) => typeof e == "object" ? li(i, t, e) : ((a, o, s) => {
     const n = o.hasOwnProperty(s);
     return o.constructor.createProperty(s, a), n ? Object.getOwnPropertyDescriptor(o, s) : void 0;
   })(i, t, e);
 }
-function N(i) {
-  return _({ ...i, state: !0, attribute: !1 });
+function R(i) {
+  return C({ ...i, state: !0, attribute: !1 });
 }
-class qt {
+class Yt {
   /** `times` is read at every press, so changed properties apply at once. */
   constructor(t) {
     this.times = t, this.pressing = !1, this.fired = !1;
@@ -570,7 +570,7 @@ class qt {
     window.clearTimeout(this.timer), this.pressing = !1, this.fired = !1, this.last = void 0;
   }
 }
-class Ae {
+class Le {
   constructor(t) {
     this.host = t, this.nudge = !1, this.hint = !1;
   }
@@ -588,7 +588,7 @@ class Ae {
     window.clearTimeout(this.nudgeTimer), window.clearTimeout(this.hintTimer);
   }
 }
-const Te = _t`
+const Oe = St`
   .hint {
     position: absolute;
     z-index: 6;
@@ -663,14 +663,14 @@ const Te = _t`
     }
   }
 `;
-var ri = Object.defineProperty, V = (i, t, e, a) => {
+var di = Object.defineProperty, G = (i, t, e, a) => {
   for (var o = void 0, s = i.length - 1, n; s >= 0; s--)
     (n = i[s]) && (o = n(t, e, o) || o);
-  return o && ri(t, e, o), o;
+  return o && di(t, e, o), o;
 };
-const te = class te extends it {
+const ie = class ie extends at {
   constructor() {
-    super(...arguments), this.options = [], this.value = "", this.label = "", this.disabled = !1, this.compact = !1, this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hint = "Press and hold, drag, or tap twice.", this._dx = 0, this._dragging = !1, this.hints = new Ae(this), this.nudgeIndex = 0, this.gesture = new qt(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.swallowClick = !1;
+    super(...arguments), this.options = [], this.value = "", this.label = "", this.disabled = !1, this.compact = !1, this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hint = "Press and hold, drag, or tap twice.", this._dx = 0, this._dragging = !1, this.hints = new Le(this), this.nudgeIndex = 0, this.gesture = new Yt(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.swallowClick = !1;
   }
   disconnectedCallback() {
     super.disconnectedCallback(), this.gesture.dispose(), this.hints.dispose();
@@ -699,7 +699,7 @@ const te = class te extends it {
             ?disabled=${this.disabled || r.disabled}
             data-value=${r.value}
             data-index=${l}
-            @click=${(d) => this.onClick(d, r.value, l)}
+            @click=${(c) => this.onClick(c, r.value, l)}
           >
             <span>${r.label}</span>${r.detail ? g`<span class="detail">${r.detail}</span>` : null}
           </button>`
@@ -766,9 +766,9 @@ const te = class te extends it {
     t.preventDefault(), this.select(n.value), this.updateComplete.then(() => this.renderRoot.querySelector(`[data-value="${n.value}"]`)?.focus());
   }
 };
-te.styles = [
-  Te,
-  _t`
+ie.styles = [
+  Oe,
+  St`
       :host {
         position: relative;
         display: block;
@@ -878,54 +878,54 @@ te.styles = [
       }
     `
 ];
-let j = te;
-V([
-  _({ attribute: !1 })
-], j.prototype, "options");
-V([
-  _()
-], j.prototype, "value");
-V([
-  _()
-], j.prototype, "label");
-V([
-  _({ type: Boolean })
-], j.prototype, "disabled");
-V([
-  _({ type: Boolean })
-], j.prototype, "compact");
-V([
-  _({ type: Boolean })
-], j.prototype, "guarded");
-V([
-  _({ type: Number })
-], j.prototype, "holdMs");
-V([
-  _({ type: Number })
-], j.prototype, "doubleTapMs");
-V([
-  _({ type: Number })
-], j.prototype, "hintSeconds");
-V([
-  _()
-], j.prototype, "hint");
-V([
-  N()
-], j.prototype, "_dx");
-V([
-  N()
-], j.prototype, "_dragging");
-var li = Object.defineProperty, K = (i, t, e, a) => {
+let P = ie;
+G([
+  C({ attribute: !1 })
+], P.prototype, "options");
+G([
+  C()
+], P.prototype, "value");
+G([
+  C()
+], P.prototype, "label");
+G([
+  C({ type: Boolean })
+], P.prototype, "disabled");
+G([
+  C({ type: Boolean })
+], P.prototype, "compact");
+G([
+  C({ type: Boolean })
+], P.prototype, "guarded");
+G([
+  C({ type: Number })
+], P.prototype, "holdMs");
+G([
+  C({ type: Number })
+], P.prototype, "doubleTapMs");
+G([
+  C({ type: Number })
+], P.prototype, "hintSeconds");
+G([
+  C()
+], P.prototype, "hint");
+G([
+  R()
+], P.prototype, "_dx");
+G([
+  R()
+], P.prototype, "_dragging");
+var ci = Object.defineProperty, q = (i, t, e, a) => {
   for (var o = void 0, s = i.length - 1, n; s >= 0; s--)
     (n = i[s]) && (o = n(t, e, o) || o);
-  return o && li(t, e, o), o;
+  return o && ci(t, e, o), o;
 };
-const ee = class ee extends it {
+const oe = class oe extends at {
   constructor() {
     super(...arguments), this.min = 0, this.max = 100, this.step = 1, this.tickStep = 0, this.value = 0, this.label = "", this.valueText = "", this.minLabel = "", this.maxLabel = "", this.disabled = !1;
   }
   render() {
-    const t = this._drag ?? this.value, e = this.max - this.min || 1, o = `calc(19px + (100% - 38px) * ${Math.max(0, Math.min(1, (t - this.min) / e))})`, s = this.tickStep || this.step || 1, n = Math.floor(e / s + 1e-9) + 1, r = n >= 2 && n <= 40 ? Array.from({ length: n }, (l, d) => g`<i style="left:${(d * s / e * 100).toFixed(2)}%"></i>`) : [];
+    const t = this._drag ?? this.value, e = this.max - this.min || 1, o = `calc(19px + (100% - 38px) * ${Math.max(0, Math.min(1, (t - this.min) / e))})`, s = this.tickStep || this.step || 1, n = Math.floor(e / s + 1e-9) + 1, r = n >= 2 && n <= 40 ? Array.from({ length: n }, (l, c) => g`<i style="left:${(c * s / e * 100).toFixed(2)}%"></i>`) : [];
     return g`<div class="wrap">
         <input
           type="range"
@@ -952,7 +952,7 @@ const ee = class ee extends it {
     this._drag = void 0, this.dispatchEvent(new CustomEvent("hdk-change", { detail: { value: e }, bubbles: !0, composed: !0 }));
   }
 };
-ee.styles = _t`
+oe.styles = St`
     :host {
       display: block;
     }
@@ -1045,48 +1045,48 @@ ee.styles = _t`
       line-height: 18px;
     }
   `;
-let I = ee;
-K([
-  _({ type: Number })
+let I = oe;
+q([
+  C({ type: Number })
 ], I.prototype, "min");
-K([
-  _({ type: Number })
+q([
+  C({ type: Number })
 ], I.prototype, "max");
-K([
-  _({ type: Number })
+q([
+  C({ type: Number })
 ], I.prototype, "step");
-K([
-  _({ type: Number })
+q([
+  C({ type: Number })
 ], I.prototype, "tickStep");
-K([
-  _({ type: Number })
+q([
+  C({ type: Number })
 ], I.prototype, "value");
-K([
-  _()
+q([
+  C()
 ], I.prototype, "label");
-K([
-  _()
+q([
+  C()
 ], I.prototype, "valueText");
-K([
-  _()
+q([
+  C()
 ], I.prototype, "minLabel");
-K([
-  _()
+q([
+  C()
 ], I.prototype, "maxLabel");
-K([
-  _({ type: Boolean })
+q([
+  C({ type: Boolean })
 ], I.prototype, "disabled");
-K([
-  N()
+q([
+  R()
 ], I.prototype, "_drag");
-var di = Object.defineProperty, J = (i, t, e, a) => {
+var hi = Object.defineProperty, tt = (i, t, e, a) => {
   for (var o = void 0, s = i.length - 1, n; s >= 0; s--)
     (n = i[s]) && (o = n(t, e, o) || o);
-  return o && di(t, e, o), o;
+  return o && hi(t, e, o), o;
 };
-const ie = class ie extends it {
+const ae = class ae extends at {
   constructor() {
-    super(...arguments), this.checked = !1, this.disabled = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hintPlacement = "above", this.hint = "Press and hold, or tap twice.", this.hints = new Ae(this), this.gesture = new qt(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.release = () => {
+    super(...arguments), this.checked = !1, this.disabled = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hintPlacement = "above", this.hint = "Press and hold, or tap twice.", this.hints = new Le(this), this.gesture = new Yt(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.release = () => {
       this.gesture.release();
     };
   }
@@ -1131,9 +1131,9 @@ const ie = class ie extends it {
     e === "double" ? this.emit() : e === "single" && this.hints.show(this.hintSeconds);
   }
 };
-ie.styles = [
-  Te,
-  _t`
+ae.styles = [
+  Oe,
+  St`
       :host {
         position: relative;
         display: inline-block;
@@ -1217,99 +1217,99 @@ ie.styles = [
       }
     `
 ];
-let U = ie;
-J([
-  _({ type: Boolean })
-], U.prototype, "checked");
-J([
-  _({ type: Boolean })
-], U.prototype, "disabled");
-J([
-  _()
-], U.prototype, "label");
-J([
-  _({ type: Boolean })
-], U.prototype, "guarded");
-J([
-  _({ type: Number })
-], U.prototype, "holdMs");
-J([
-  _({ type: Number })
-], U.prototype, "doubleTapMs");
-J([
-  _({ type: Number })
-], U.prototype, "hintSeconds");
-J([
-  _()
-], U.prototype, "hintPlacement");
-J([
-  _()
-], U.prototype, "hint");
-function ci(i) {
+let V = ae;
+tt([
+  C({ type: Boolean })
+], V.prototype, "checked");
+tt([
+  C({ type: Boolean })
+], V.prototype, "disabled");
+tt([
+  C()
+], V.prototype, "label");
+tt([
+  C({ type: Boolean })
+], V.prototype, "guarded");
+tt([
+  C({ type: Number })
+], V.prototype, "holdMs");
+tt([
+  C({ type: Number })
+], V.prototype, "doubleTapMs");
+tt([
+  C({ type: Number })
+], V.prototype, "hintSeconds");
+tt([
+  C()
+], V.prototype, "hintPlacement");
+tt([
+  C()
+], V.prototype, "hint");
+function pi(i) {
   const t = [
-    [`${i}-switch`, U],
-    [`${i}-segmented`, j],
+    [`${i}-switch`, V],
+    [`${i}-segmented`, P],
     [`${i}-slider`, I]
   ];
   for (const [e, a] of t)
     customElements.get(e) || customElements.define(e, a);
 }
-const hi = /* @__PURE__ */ new Set(["unavailable", "unknown", ""]);
-function pi(i) {
-  return hi.has(i);
+const ui = /* @__PURE__ */ new Set(["unavailable", "unknown", ""]);
+function gi(i) {
+  return ui.has(i);
 }
-function Z(i, t) {
+function K(i, t) {
   return t ? i?.states?.[t] : void 0;
 }
-function R(i, t) {
-  const e = Z(i, t)?.state;
-  return e === void 0 || pi(e) ? void 0 : e;
+function U(i, t) {
+  const e = K(i, t)?.state;
+  return e === void 0 || gi(e) ? void 0 : e;
 }
-function ui(i, t) {
-  const e = R(i, t);
+function bi(i, t) {
+  const e = U(i, t);
   if (e === void 0)
     return;
   const a = Number(e);
   return Number.isFinite(a) ? a : void 0;
 }
-function Le(i) {
+function Ee(i) {
   return (i?.locale?.language || i?.language || "").trim();
 }
-function Xt(i) {
+function Jt(i) {
   const t = i.toLowerCase().split(/[-_]/)[0];
   return t === "cs" ? "cs" : t === "sv" ? "sv" : "en";
 }
-function gi(i, t) {
-  return i === "auto" ? Xt(Le(t)) : i;
+function mi(i, t) {
+  return i === "auto" ? Jt(Ee(t)) : i;
 }
-function bi() {
-  return Xt(document.documentElement.lang || navigator.language || "");
+function fi() {
+  return Jt(document.documentElement.lang || navigator.language || "");
 }
-const be = /* @__PURE__ */ new WeakMap(), mi = { cs: "cs-CZ", sv: "sv-SE", en: "en" }, fi = /* @__PURE__ */ new Set(["cs", "de", "fi", "fr", "sk", "sv"]), vi = {
+const fe = /* @__PURE__ */ new WeakMap(), vi = { cs: "cs-CZ", sv: "sv-SE", en: "en" }, xi = /* @__PURE__ */ new Set(["cs", "de", "fi", "fr", "sk", "sv"]), $i = {
   comma_decimal: ["en-US", "en"],
   decimal_comma: ["de", "es", "it"],
   space_comma: ["fr", "sv", "cs"],
   quote_decimal: ["de-CH"]
 };
-function It(i, t) {
+function Ft(i, t) {
   const e = i?.locale?.[t];
   return typeof e == "string" && e !== "" ? e : "language";
 }
-function xi(i, t, e) {
-  const a = Le(e).replace("_", "-"), o = a !== "" && Xt(a) === t ? a : mi[t], s = It(e, "number_format"), n = It(e, "time_format"), r = It(e, "date_format"), l = [t, o, s, n, r].join("|");
-  let d = be.get(i);
-  d || (d = /* @__PURE__ */ new Map(), be.set(i, d));
-  let c = d.get(l);
-  return c || (c = yi(i[t], t, o, s, n, r), d.set(l, c)), c;
+function wi(i, t, e) {
+  const a = Ee(e).replace("_", "-"), o = a !== "" && Jt(a) === t ? a : vi[t], s = Ft(e, "number_format"), n = Ft(e, "time_format"), r = Ft(e, "date_format"), l = [t, o, s, n, r].join("|");
+  let c = fe.get(i);
+  c || (c = /* @__PURE__ */ new Map(), fe.set(i, c));
+  let d = c.get(l);
+  return d || (d = _i(i[t], t, o, s, n, r), c.set(l, d)), d;
 }
-function $i(i) {
+function yi(i) {
   try {
     return new Intl.NumberFormat(i), i;
   } catch {
     return "en";
   }
 }
-function wi(i, t) {
+function ki(i, t) {
   if (i === "12")
     return !0;
   if (i === "24")
@@ -1317,29 +1317,29 @@ function wi(i, t) {
   const e = i === "system" ? void 0 : t;
   return (/* @__PURE__ */ new Date("January 1, 2023 22:00:00")).toLocaleString(e).includes("10");
 }
-function yi(i, t, e, a, o, s) {
-  const n = $i(e), r = a === "system" ? void 0 : a === "none" ? "en-US" : vi[a] ?? n, l = a === "none" ? { useGrouping: !1 } : {}, d = new Intl.NumberFormat(r, { minimumFractionDigits: 1, maximumFractionDigits: 1, ...l }), c = new Intl.NumberFormat(r, { minimumFractionDigits: 2, maximumFractionDigits: 2, ...l }), p = new Intl.NumberFormat(r, { maximumFractionDigits: 1, ...l }), h = new Intl.NumberFormat(r, { maximumFractionDigits: 0, ...l }), $ = wi(o, n), v = $ ? "h12" : "h23", u = new Intl.DateTimeFormat(n, { hour: $ ? "numeric" : "2-digit", minute: "2-digit", hourCycle: v }), b = new Intl.DateTimeFormat(n, $ ? { hour: "numeric", hourCycle: v } : { hour: "2-digit", minute: "2-digit", hourCycle: v }), m = s === "system" ? void 0 : n, w = new Intl.DateTimeFormat(m, { day: "numeric", month: "numeric" }), S = (f) => {
+function _i(i, t, e, a, o, s) {
+  const n = yi(e), r = a === "system" ? void 0 : a === "none" ? "en-US" : $i[a] ?? n, l = a === "none" ? { useGrouping: !1 } : {}, c = new Intl.NumberFormat(r, { minimumFractionDigits: 1, maximumFractionDigits: 1, ...l }), d = new Intl.NumberFormat(r, { minimumFractionDigits: 2, maximumFractionDigits: 2, ...l }), p = new Intl.NumberFormat(r, { maximumFractionDigits: 1, ...l }), h = new Intl.NumberFormat(r, { maximumFractionDigits: 0, ...l }), x = ki(o, n), f = x ? "h12" : "h23", u = new Intl.DateTimeFormat(n, { hour: x ? "numeric" : "2-digit", minute: "2-digit", hourCycle: f }), b = new Intl.DateTimeFormat(n, x ? { hour: "numeric", hourCycle: f } : { hour: "2-digit", minute: "2-digit", hourCycle: f }), m = s === "system" ? void 0 : n, w = new Intl.DateTimeFormat(m, { day: "numeric", month: "numeric" }), k = ($) => {
     if (!["DMY", "MDY", "YMD"].includes(s))
-      return w.format(f);
-    const E = w.formatToParts(f), D = E.find((nt) => nt.type === "literal")?.value ?? "/", P = E[E.length - 1], T = P?.type === "literal" ? P.value : "", F = E.find((nt) => nt.type === "day")?.value ?? "", mt = E.find((nt) => nt.type === "month")?.value ?? "";
-    return s === "DMY" ? `${F}${D}${mt}${T}` : `${mt}${D}${F}${T}`;
-  }, A = fi.has(n.toLowerCase().split("-")[0]) ? " " : "";
+      return w.format($);
+    const _ = w.formatToParts($), N = _.find((Y) => Y.type === "literal")?.value ?? "/", j = _[_.length - 1], O = j?.type === "literal" ? j.value : "", L = _.find((Y) => Y.type === "day")?.value ?? "", W = _.find((Y) => Y.type === "month")?.value ?? "";
+    return s === "DMY" ? `${L}${N}${W}${O}` : `${W}${N}${L}${O}`;
+  }, D = xi.has(n.toLowerCase().split("-")[0]) ? " " : "";
   return {
     language: t,
     locale: n,
     t: i,
-    one: (f) => d.format(f),
-    two: (f) => c.format(f),
-    half: (f) => p.format(Math.round(f * 2) / 2),
-    tick: (f) => p.format(f),
-    whole: (f) => h.format(f),
-    percent: (f) => `${f}${A}%`,
-    time: (f) => u.format(f),
-    hour: (f) => b.format(f),
-    day: S
+    one: ($) => c.format($),
+    two: ($) => d.format($),
+    half: ($) => p.format(Math.round($ * 2) / 2),
+    tick: ($) => p.format($),
+    whole: ($) => h.format($),
+    percent: ($) => `${$}${D}%`,
+    time: ($) => u.format($),
+    hour: ($) => b.format($),
+    day: k
   };
 }
-const ki = {
+const Si = {
   /** Heading without `title` in the YAML. */
   title: "Energie",
   /** Card picker of Home Assistant. */
@@ -1531,7 +1531,7 @@ const ki = {
     unblocked: "Nabíjení bylo zablokované, blokování jsem vypnul, aby boost fungoval.",
     mixingNotSent: "Mísení vody: příkaz se neodeslal."
   }
-}, _i = {
+}, Ci = {
   title: "Energy",
   cardDescription: "Home energy: flows as a Sankey diagram, the car with its wallbox and hot water (boiler, tank, mixing) with controls.",
   titles: { electricity: "Electricity", car: "BMW i3", water: "Hot water" },
@@ -1702,7 +1702,7 @@ const ki = {
     unblocked: "Charging was blocked; I turned the block off so that Boost works.",
     mixingNotSent: "Water mixing: the command was not sent."
   }
-}, Ci = {
+}, Mi = {
   title: "Energi",
   cardDescription: "Hemmets energi: flöden som Sankey-diagram, bilen med laddbox och varmvatten (beredare, tank, blandning) med styrning.",
   titles: { electricity: "El", car: "BMW i3", water: "Varmvatten" },
@@ -1873,128 +1873,134 @@ const ki = {
     unblocked: "Laddningen var blockerad; jag tog bort blockeringen så att Boost fungerar.",
     mixingNotSent: "Vattenblandning: kommandot skickades inte."
   }
-}, Si = { cs: ki, en: _i, sv: Ci };
-function Dt(i, t) {
-  return xi(Si, i, t);
+}, Ai = { cs: Si, en: Ci, sv: Mi };
+function zt(i, t) {
+  return wi(Ai, i, t);
 }
 function B(i, t) {
-  const e = ui(i, t);
+  const e = bi(i, t);
   if (e !== void 0)
-    return Z(i, t)?.attributes?.unit_of_measurement === "kW" ? e * 1e3 : e;
+    return K(i, t)?.attributes?.unit_of_measurement === "kW" ? e * 1e3 : e;
 }
-let ot = Dt("cs"), Bt = "auto";
-function Mi(i, t = "auto") {
-  ot = i, Bt = t;
+let nt = zt("cs"), Ht = "auto";
+function Ti(i, t = "auto") {
+  nt = i, Ht = t;
 }
-function Yt(i, t = 1e3) {
+function Qt(i, t = 1e3) {
   return i.some((e) => e !== void 0 && Math.abs(e) >= t) ? "kW" : "W";
 }
-function Oe(i) {
-  const t = Bt === "auto" ? Math.abs(Math.round(i * 100) / 100) < 10 ? 2 : Math.abs(Math.round(i * 10) / 10) < 100 ? 1 : 0 : Bt;
-  return t === 2 ? ot.two(i) : t === 1 ? ot.one(i) : ot.whole(i);
+function De(i) {
+  const t = Ht === "auto" ? Math.abs(Math.round(i * 100) / 100) < 10 ? 2 : Math.abs(Math.round(i * 10) / 10) < 100 ? 1 : 0 : Ht;
+  return t === 2 ? nt.two(i) : t === 1 ? nt.one(i) : nt.whole(i);
 }
-function bt(i, t) {
-  return t === "kW" ? `${Oe(i / 1e3)} kW` : `${ot.whole(Math.round(i))} W`;
+function mt(i, t) {
+  return t === "kW" ? `${De(i / 1e3)} kW` : `${nt.whole(Math.round(i))} W`;
 }
-function k(i, t = 0) {
-  return t === 0 ? ot.whole(i) : ot.one(i);
+function S(i, t = 0) {
+  return t === 0 ? nt.whole(i) : nt.one(i);
 }
-function et(i) {
-  return ot.percent(typeof i == "number" ? k(i) : i);
+function ot(i) {
+  return nt.percent(typeof i == "number" ? S(i) : i);
 }
-function Ai(i, t) {
-  const e = Z(i, t), a = R(i, t);
+function Li(i, t) {
+  const e = K(i, t), a = U(i, t);
   if (a === void 0) return;
   const o = Number(a);
   if (!Number.isFinite(o)) return;
   const s = e?.attributes?.unit_of_measurement;
   return s === "Wh" ? o / 1e3 : s === "MWh" ? o * 1e3 : o;
 }
-function me(i) {
-  return i < (Bt === 1 ? 0.05 : 5e-3) ? "0" : Oe(i);
+function ve(i) {
+  return i < (Ht === 1 ? 0.05 : 5e-3) ? "0" : De(i);
 }
-function Ti(i, t, e) {
+function Oi(i, t, e) {
   const a = i ? Date.parse(i) : NaN;
   if (!Number.isFinite(a)) return;
   const o = Math.max(0, Math.round((t - a) / 6e4));
   return o < 1 ? e.ago.now : o < 60 ? e.ago.minutes(o) : o < 1440 ? e.ago.hours(Math.round(o / 60)) : e.ago.days(Math.round(o / 1440));
 }
-const W = ["sun", "bat", "grid"], vt = ["house", "car", "boil", "batIn", "gridOut"], Mt = (i) => i === void 0 ? void 0 : Math.max(0, i), H = (i, t) => i !== void 0 && i >= t;
-function Li(i) {
+const F = ["sun", "bat", "grid"], xt = ["house", "car", "boil", "batIn", "gridOut"], Tt = (i) => i === void 0 ? void 0 : Math.max(0, i), H = (i, t) => i !== void 0 && i >= t;
+function Ei(i) {
   if (i === "Disconnected") return "disconnected";
   if (i === "Waiting") return "connected";
   if (i === "Charging") return "charging";
 }
-function Oi(i, t, e) {
-  const a = t.entities, o = t.num.flows.idle_threshold, s = Mt(B(i, a.pv.power)), n = B(i, a.battery.power), r = B(i, a.grid.power), l = Mt(B(i, a.house.power)), d = Mt(B(i, a.wallbox.power)), c = Mt(B(i, a.boiler.power)), p = n === void 0 ? void 0 : Math.max(0, n), h = n === void 0 ? void 0 : Math.max(0, -n), $ = r === void 0 ? void 0 : Math.max(0, -r), v = r === void 0 ? void 0 : Math.max(0, r), u = l === void 0 ? void 0 : Math.max(0, l - (d ?? 0) - (c ?? 0)), b = (D) => H(D, o) ? D : 0, m = {
-    sun: Math.max(0, b(s) - b(h) - b(v)),
+function Di(i, t, e) {
+  const a = t.entities, o = t.num.flows.idle_threshold, s = Tt(B(i, a.pv.power)), n = B(i, a.battery.power), r = B(i, a.grid.power), l = Tt(B(i, a.house.power)), c = Tt(B(i, a.wallbox.power)), d = Tt(B(i, a.boiler.power)), p = n === void 0 ? void 0 : Math.max(0, n), h = n === void 0 ? void 0 : Math.max(0, -n), x = r === void 0 ? void 0 : Math.max(0, -r), f = r === void 0 ? void 0 : Math.max(0, r), u = l === void 0 ? void 0 : Math.max(0, l - (c ?? 0) - (d ?? 0)), b = (L) => H(L, o) ? L : 0, m = {
+    sun: Math.max(0, b(s) - b(h) - b(f)),
     bat: b(p),
-    grid: b($)
-  }, w = m.sun + m.bat + m.grid, S = { sun: 0, bat: 0, grid: 0 };
+    grid: b(x)
+  }, w = m.sun + m.bat + m.grid, k = { sun: 0, bat: 0, grid: 0 };
   if (w > 0)
-    for (const D of W) S[D] = m[D] / w;
-  const A = [], f = [
+    for (const L of F) k[L] = m[L] / w;
+  const D = [], $ = { house: { ...k }, car: { ...k }, boil: { ...k } }, _ = [
     ["house", u],
-    ["car", d],
-    ["boil", c]
-  ];
-  for (const [D, P] of f)
-    if (H(P, o))
-      for (const T of W) {
-        const F = P * S[T];
-        F > 0.5 && A.push({ from: T, to: D, watts: F });
-      }
-  H(h, o) && A.push({ from: "sun", to: "batIn", watts: h }), H(v, o) && A.push({ from: "sun", to: "gridOut", watts: v });
-  const E = {
+    ["car", c],
+    ["boil", d]
+  ], N = _.reduce((L, [, W]) => L + (H(W, o) ? W : 0), 0), j = { sun: 0, bat: 0, grid: 0 };
+  for (const L of F) j[L] = w > 0 ? m[L] * N / w : 0;
+  for (const [L, W] of _) {
+    if (!H(W, o)) continue;
+    let Y = W;
+    const A = { sun: 0, bat: 0, grid: 0 };
+    for (const At of F) {
+      const ft = Math.min(j[At], Y);
+      j[At] -= ft, Y -= ft, A[At] = ft / W, ft > 0.5 && D.push({ from: At, to: L, watts: ft });
+    }
+    A.sun + A.bat + A.grid > 0 && ($[L] = A);
+  }
+  H(h, o) && D.push({ from: "sun", to: "batIn", watts: h }), H(f, o) && D.push({ from: "sun", to: "gridOut", watts: f });
+  const O = {
     sun: s,
     batDis: p,
     batIn: h,
-    imp: $,
-    exp: v,
+    imp: x,
+    exp: f,
     other: u,
-    car: d,
-    boil: c,
-    share: S,
-    flows: A,
+    car: c,
+    boil: d,
+    share: k,
+    loadShare: $,
+    flows: D,
     soc: B(i, a.battery.state_of_charge),
     carSoc: B(i, a.car.state_of_charge),
     carRange: B(i, a.car.range),
     boilTemp: B(i, a.boiler.temperature),
-    carLink: Li(R(i, a.wallbox.status))
+    carLink: Ei(U(i, a.wallbox.status))
   };
-  return Object.assign(E, Ei(E, t.num.flows, e)), E;
+  return Object.assign(O, Bi(O, t.num.flows, e)), O;
 }
-function Ei(i, t, e) {
+function Bi(i, t, e) {
   const a = t.idle_threshold, o = (h) => H(h, a);
   if ([i.sun, i.batDis, i.imp, i.other].every((h) => h === void 0)) return {};
   if (o(i.sun) && !o(i.imp) && !o(i.batDis)) {
     let h;
     return (i.exp ?? 0) > t.export_notice && !o(i.batIn) ? h = e.summary.exportSurplus : o(i.car) ? h = e.summary.sunChargesCar(o(i.batIn)) : o(i.batIn) ? h = e.summary.sunChargesBattery : h = e.summary.sunCoversHouse, { summary: h, summarySource: "sun" };
   }
-  const { sun: r, bat: l, grid: d } = i.share;
-  if (d > t.grid_deviation_share / 100) return { summary: e.summary.fromGrid, summarySource: "grid" };
-  const c = t.source_min_share / 100;
-  if (r < c && d < c && l > 0) return { summary: e.summary.fromBattery, summarySource: "bat" };
-  const p = De(i.share, c);
-  return p.length ? { summary: e.summary.houseTakes(Ee(p, e)), summarySource: p[0] } : { summary: e.summary.nothing };
+  const { sun: r, bat: l, grid: c } = i.loadShare.house;
+  if (c > t.grid_deviation_share / 100) return { summary: e.summary.fromGrid, summarySource: "grid" };
+  const d = t.source_min_share / 100;
+  if (r < d && c < d && l > 0) return { summary: e.summary.fromBattery, summarySource: "bat" };
+  const p = ze(i.loadShare.house, d);
+  return p.length ? { summary: e.summary.houseTakes(Be(p, e)), summarySource: p[0] } : { summary: e.summary.nothing };
 }
-function Ee(i, t) {
+function Be(i, t) {
   return t.from[i[0]] + i.slice(1).map((e) => ` ${t.and} ${t.alsoFrom[e]}`).join("");
 }
-function De(i, t) {
-  return W.filter((e) => i[e] >= t).sort((e, a) => i[a] - i[e]);
+function ze(i, t) {
+  return F.filter((e) => i[e] >= t).sort((e, a) => i[a] - i[e]);
 }
-function Be(i, t, e) {
-  let a = De(i, t.source_min_share / 100);
+function He(i, t, e) {
+  let a = ze(i, t.source_min_share / 100);
   a.length || (a = ["sun"]);
   const o = i.grid > t.grid_deviation_share / 100;
-  return { text: Ee(a, e), main: o ? "grid" : a[0], deviation: o };
+  return { text: Be(a, e), main: o ? "grid" : a[0], deviation: o };
 }
-function Di(i, t) {
+function zi(i, t) {
   if (!(i === void 0 || t === void 0))
     return i === "off" && t === "on" ? "on" : i === "on" && t === "off" ? "off" : "unclear";
 }
-const Bi = _t`
+const Hi = St`
   :host {
     display: block;
     --ed-card: #1c1c1e;
@@ -3250,41 +3256,41 @@ const Bi = _t`
     clip-path: inset(50%);
     white-space: nowrap;
   }
-`, zi = ["cs", "en", "sv"];
-class ze extends Error {
+`, ji = ["cs", "en", "sv"];
+class je extends Error {
 }
-function L(i) {
-  throw new ze(i);
+function E(i) {
+  throw new je(i);
 }
-function Hi(i, t) {
+function Pi(i, t) {
   try {
     return t();
   } catch (e) {
-    throw e instanceof ze ? new Error(`${i}: ${e.message}`) : e;
+    throw e instanceof je ? new Error(`${i}: ${e.message}`) : e;
   }
 }
-function Jt(i) {
+function te(i) {
   return typeof i == "object" && i !== null && !Array.isArray(i);
 }
-function at(i, t) {
-  return i == null ? {} : (Jt(i) || L(`"${t}" must be a mapping of keys.`), i);
+function st(i, t) {
+  return i == null ? {} : (te(i) || E(`"${t}" must be a mapping of keys.`), i);
 }
-function St(i, t, e) {
+function Mt(i, t, e) {
   for (const a of Object.keys(i))
-    t.includes(a) || L(`${e}: unknown key "${a}" (allowed: ${t.join(", ")}).`);
+    t.includes(a) || E(`${e}: unknown key "${a}" (allowed: ${t.join(", ")}).`);
 }
-function ji(i, t, e = {}) {
+function Ii(i, t, e = {}) {
   if (i == null)
     return;
   const a = typeof i == "string" ? i.trim() : "";
-  return /^[a-z0-9_]+\.[a-z0-9_]+$/.test(a) || L(`${t} must be an entity ID such as ${e.example ?? `${e.domain ?? "sensor"}.example`}.`), e.domain && !a.startsWith(`${e.domain}.`) && L(`${t} must be a ${e.domain} entity (${e.domain}.…), not ${a}.`), a;
+  return /^[a-z0-9_]+\.[a-z0-9_]+$/.test(a) || E(`${t} must be an entity ID such as ${e.example ?? `${e.domain ?? "sensor"}.example`}.`), e.domain && !a.startsWith(`${e.domain}.`) && E(`${t} must be a ${e.domain} entity (${e.domain}.…), not ${a}.`), a;
 }
-const fe = ["auto", ...zi];
-function Pi(i) {
+const xe = ["auto", ...ji];
+function Ni(i) {
   const t = i ?? "auto";
-  return fe.includes(t) || L(`language must be one of ${fe.join(", ")}.`), t;
+  return xe.includes(t) || E(`language must be one of ${xe.join(", ")}.`), t;
 }
-const jt = {
+const It = {
   pv: { power: void 0 },
   battery: { power: void 0, state_of_charge: void 0, depth_of_discharge: "number" },
   grid: { power: void 0 },
@@ -3295,7 +3301,7 @@ const jt = {
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch" },
   daily: { pv_generation: void 0, battery_charge: void 0, battery_discharge: void 0, grid_import: void 0, grid_export: void 0, car: void 0, boiler: void 0 }
-}, He = { boiler: ["show"], car: ["link"], flows: ["decimals"] }, ve = ["always", "heating"], Ii = "heating", xe = ["auto", 1, 2], Ni = "auto", je = Object.keys(jt), y = (i, t, e, a, o = !1) => ({ value: i, min: t, max: e, what: a, integer: o }), Qt = {
+}, Pe = { boiler: ["show"], car: ["link"], flows: ["decimals"] }, $e = ["always", "heating"], Fi = "heating", we = ["auto", 1, 2], Ri = "auto", Ie = Object.keys(It), y = (i, t, e, a, o = !1) => ({ value: i, min: t, max: e, what: a, integer: o }), ee = {
   battery: { reserve: y(20, 0, 100, "% battery reserve") },
   car: {
     charge_limit: y(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
@@ -3346,7 +3352,7 @@ const jt = {
     double_tap_ms: y(400, 150, 1e3, "ms between the two taps of a double tap", !0),
     hint_seconds: y(3, 1, 10, "s the hint of a protected control stays")
   }
-}, Lt = {
+}, Et = {
   sun: "#FFD60A",
   battery: "#30D158",
   grid: "#3D8BFF",
@@ -3358,90 +3364,90 @@ const jt = {
   neutral: "#8E8E93",
   cold: "#64D2FF",
   hot: "#FF9F0A"
-}, Fi = [
+}, Wi = [
   { temp: 20, color: "#0A84FF" },
   { temp: 32, color: "#5AC8FA" },
   { temp: 44, color: "#FFD60A" },
   { temp: 58, color: "#FF9F0A" },
   { temp: 85, color: "#FF453A" }
-], Ft = ["electricity", "car", "water"];
+], Wt = ["electricity", "car", "water"];
 [
-  ...je.flatMap((i) => Object.keys(jt[i]).map((t) => `${i}.${t}`)),
-  ...Object.entries(Qt).flatMap(([i, t]) => Object.keys(t).map((e) => `${i}.${e}`)),
-  ...Ft.map((i) => `titles.${i}`),
-  ...Object.keys(Lt).map((i) => `colors.${i}`)
+  ...Ie.flatMap((i) => Object.keys(It[i]).map((t) => `${i}.${t}`)),
+  ...Object.entries(ee).flatMap(([i, t]) => Object.keys(t).map((e) => `${i}.${e}`)),
+  ...Wt.map((i) => `titles.${i}`),
+  ...Object.keys(Et).map((i) => `colors.${i}`)
 ];
-function Ri(i, t) {
-  const e = at(i[t], t), a = jt[t], o = [...Object.keys(Qt[t] ?? {}), ...He[t] ?? []];
-  St(e, [...Object.keys(a), ...o], t);
+function Ui(i, t) {
+  const e = st(i[t], t), a = It[t], o = [...Object.keys(ee[t] ?? {}), ...Pe[t] ?? []];
+  Mt(e, [...Object.keys(a), ...o], t);
   const s = {};
   for (const [n, r] of Object.entries(a)) {
-    const l = ji(e[n], `${t}.${n}`, { domain: r });
+    const l = Ii(e[n], `${t}.${n}`, { domain: r });
     l && (s[n] = l);
   }
   return s;
 }
-function Wi(i) {
+function Vi(i) {
   const t = {};
-  for (const [e, a] of Object.entries(Qt)) {
-    const o = at(i[e], e), s = Object.keys(jt[e] ?? {});
-    St(o, [...s, ...Object.keys(a), ...He[e] ?? []], e), t[e] = {};
+  for (const [e, a] of Object.entries(ee)) {
+    const o = st(i[e], e), s = Object.keys(It[e] ?? {});
+    Mt(o, [...s, ...Object.keys(a), ...Pe[e] ?? []], e), t[e] = {};
     for (const [n, r] of Object.entries(a)) {
-      const l = o[n], d = `${e}.${n}`;
+      const l = o[n], c = `${e}.${n}`;
       if (l == null) {
         t[e][n] = r.value;
         continue;
       }
-      (typeof l != "number" || !Number.isFinite(l)) && L(`${d} must be a number (${r.what}).`), (l < r.min || l > r.max || r.integer && !Number.isInteger(l)) && L(`${d} must be ${r.integer ? "a whole number " : "a number "}from ${r.min} to ${r.max} (${r.what}), not ${l}.`), t[e][n] = l;
+      (typeof l != "number" || !Number.isFinite(l)) && E(`${c} must be a number (${r.what}).`), (l < r.min || l > r.max || r.integer && !Number.isInteger(l)) && E(`${c} must be ${r.integer ? "a whole number " : "a number "}from ${r.min} to ${r.max} (${r.what}), not ${l}.`), t[e][n] = l;
     }
   }
   return t;
 }
-function Ui(i) {
-  const t = at(i.colors, "colors");
-  St(t, [...Object.keys(Lt), "temp_scale"], "colors");
-  const e = { ...Lt };
-  for (const a of Object.keys(Lt)) {
+function Gi(i) {
+  const t = st(i.colors, "colors");
+  Mt(t, [...Object.keys(Et), "temp_scale"], "colors");
+  const e = { ...Et };
+  for (const a of Object.keys(Et)) {
     const o = t[a];
-    o != null && ((typeof o != "string" || !/^#[0-9a-fA-F]{6}$/.test(o.trim())) && L(`colors.${a} must be a colour like #FFD60A (six hex digits).`), e[a] = o.trim().toUpperCase());
+    o != null && ((typeof o != "string" || !/^#[0-9a-fA-F]{6}$/.test(o.trim())) && E(`colors.${a} must be a colour like #FFD60A (six hex digits).`), e[a] = o.trim().toUpperCase());
   }
   return e;
-}
-function Vi(i) {
-  const t = at(i.colors, "colors").temp_scale;
-  if (t == null)
-    return Fi.map((o) => ({ ...o }));
-  const e = "colors.temp_scale";
-  (!Array.isArray(t) || t.length < 2) && L(`${e} must be a list of at least two points like {temp: 20, color: "#0A84FF"}.`);
-  const a = t.map((o, s) => (Jt(o) || L(`${e}[${s}] must be a mapping like {temp: 20, color: "#0A84FF"}.`), St(o, ["temp", "color"], `${e}[${s}]`), (typeof o.temp != "number" || !Number.isFinite(o.temp)) && L(`${e}[${s}].temp must be a number (°C).`), (typeof o.color != "string" || !/^#[0-9a-fA-F]{6}$/.test(o.color.trim())) && L(`${e}[${s}].color must be a colour like #0A84FF (six hex digits).`), { temp: o.temp, color: o.color.trim().toUpperCase() }));
-  return a.forEach((o, s) => {
-    s > 0 && o.temp <= a[s - 1].temp && L(`${e}: temperatures must rise (${a[s - 1].temp} is followed by ${o.temp}).`);
-  }), a;
-}
-function Gi(i) {
-  const t = at(i.boiler, "boiler").show;
-  return t == null ? Ii : ((typeof t != "string" || !ve.includes(t)) && L(`boiler.show must be one of ${ve.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
 function Zi(i) {
-  const t = at(i.flows, "flows").decimals;
-  return t == null ? Ni : (xe.includes(t) || L(`flows.decimals must be one of ${xe.join(", ")}, not ${JSON.stringify(t)}.`), t);
+  const t = st(i.colors, "colors").temp_scale;
+  if (t == null)
+    return Wi.map((o) => ({ ...o }));
+  const e = "colors.temp_scale";
+  (!Array.isArray(t) || t.length < 2) && E(`${e} must be a list of at least two points like {temp: 20, color: "#0A84FF"}.`);
+  const a = t.map((o, s) => (te(o) || E(`${e}[${s}] must be a mapping like {temp: 20, color: "#0A84FF"}.`), Mt(o, ["temp", "color"], `${e}[${s}]`), (typeof o.temp != "number" || !Number.isFinite(o.temp)) && E(`${e}[${s}].temp must be a number (°C).`), (typeof o.color != "string" || !/^#[0-9a-fA-F]{6}$/.test(o.color.trim())) && E(`${e}[${s}].color must be a colour like #0A84FF (six hex digits).`), { temp: o.temp, color: o.color.trim().toUpperCase() }));
+  return a.forEach((o, s) => {
+    s > 0 && o.temp <= a[s - 1].temp && E(`${e}: temperatures must rise (${a[s - 1].temp} is followed by ${o.temp}).`);
+  }), a;
 }
-const Ki = "/dashboard-bmw";
+function Ki(i) {
+  const t = st(i.boiler, "boiler").show;
+  return t == null ? Fi : ((typeof t != "string" || !$e.includes(t)) && E(`boiler.show must be one of ${$e.join(", ")}, not ${JSON.stringify(t)}.`), t);
+}
 function qi(i) {
-  const t = at(i.car, "car").link;
-  return t == null ? Ki : ((typeof t != "string" || t !== "" && !/^(\/(?!\/)\S*|https?:\/\/\S+)$/.test(t)) && L(`car.link must be a path such as /dashboard-bmw, an address starting with http:// or https://, or an empty text, not ${JSON.stringify(t)}.`), t);
+  const t = st(i.flows, "flows").decimals;
+  return t == null ? Ri : (we.includes(t) || E(`flows.decimals must be one of ${we.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
-function Xi(i) {
-  const t = at(i.titles, "titles");
-  St(t, [...Ft], "titles");
+const Xi = "/dashboard-bmw";
+function Yi(i) {
+  const t = st(i.car, "car").link;
+  return t == null ? Xi : ((typeof t != "string" || t !== "" && !/^(\/(?!\/)\S*|https?:\/\/\S+)$/.test(t)) && E(`car.link must be a path such as /dashboard-bmw, an address starting with http:// or https://, or an empty text, not ${JSON.stringify(t)}.`), t);
+}
+function Ji(i) {
+  const t = st(i.titles, "titles");
+  Mt(t, [...Wt], "titles");
   const e = {};
-  for (const a of Ft) {
+  for (const a of Wt) {
     const o = t[a];
-    o != null && ((typeof o != "string" || o.trim() === "") && L(`titles.${a} must be a non-empty text.`), e[a] = o.trim());
+    o != null && ((typeof o != "string" || o.trim() === "") && E(`titles.${a} must be a non-empty text.`), e[a] = o.trim());
   }
   return e;
 }
-function Yi(i) {
+function Qi(i) {
   const t = [
     [i.wallbox.power_min, i.wallbox.power_max, "wallbox.power_min", "wallbox.power_max", !0],
     [i.boiler.target_min, i.boiler.target_max, "boiler.target_min", "boiler.target_max", !0],
@@ -3449,21 +3455,21 @@ function Yi(i) {
     [i.tank.temp_min, i.tank.temp_max, "tank.temp_min", "tank.temp_max", !0]
   ];
   for (const [e, a, o, s, n] of t)
-    (n ? e >= a : e > a) && L(`${o} (${e}) must be ${n ? "below" : "at most"} ${s} (${a}).`);
+    (n ? e >= a : e > a) && E(`${o} (${e}) must be ${n ? "below" : "at most"} ${s} (${a}).`);
 }
-function Ji(i) {
-  return Hi("Energie Dashboard", () => Qi(i));
+function to(i) {
+  return Pi("Energie Dashboard", () => eo(i));
 }
-function Qi(i) {
-  Jt(i) || L("the configuration must be a mapping of keys."), i.title != null && typeof i.title != "string" && L("title must be a text (an empty text leaves the heading out).");
-  const t = Object.fromEntries(je.map((o) => [o, Ri(i, o)]));
-  t.mixing.valve_c1 && t.mixing.valve_c1 === t.mixing.valve_c2 && L("mixing.valve_c1 and mixing.valve_c2 must be two different valves.");
-  const e = Wi(i);
-  Yi(e);
-  const a = Pi(i.language);
-  return { title: i.title ?? void 0, language: a, entities: t, titles: Xi(i), num: e, colors: Ui(i), tempScale: Vi(i), boilerShow: Gi(i), powerDecimals: Zi(i), carLink: qi(i) };
+function eo(i) {
+  te(i) || E("the configuration must be a mapping of keys."), i.title != null && typeof i.title != "string" && E("title must be a text (an empty text leaves the heading out).");
+  const t = Object.fromEntries(Ie.map((o) => [o, Ui(i, o)]));
+  t.mixing.valve_c1 && t.mixing.valve_c1 === t.mixing.valve_c2 && E("mixing.valve_c1 and mixing.valve_c2 must be two different valves.");
+  const e = Vi(i);
+  Qi(e);
+  const a = Ni(i.language);
+  return { title: i.title ?? void 0, language: a, entities: t, titles: Ji(i), num: e, colors: Gi(i), tempScale: Zi(i), boilerShow: Ki(i), powerDecimals: qi(i), carLink: Yi(i) };
 }
-const C = "––", X = { sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-grid" }, $e = {
+const M = "––", J = { sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-grid" }, ye = {
   sun: "--ed-sun",
   bat: "--ed-battery",
   grid: "--ed-grid",
@@ -3472,12 +3478,12 @@ const C = "––", X = { sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-grid
   boil: "--ed-boiler",
   batIn: "--ed-battery",
   gridOut: "--ed-grid"
-}, we = "ha-energie-dashboard:boiler-heating";
-function Y(i, t) {
+}, ke = "ha-energie-dashboard:boiler-heating";
+function Q(i, t) {
   const e = i?.attributes?.[t];
   return typeof e == "number" && Number.isFinite(e) ? e : void 0;
 }
-function to(i) {
+function io(i) {
   const t = i.reduce((s, n) => s + n, 0);
   if (t <= 0) return i.map(() => 0);
   const e = i.map((s) => s / t * 100), a = e.map(Math.floor);
@@ -3486,18 +3492,18 @@ function to(i) {
     o-- > 0 && a[s]++;
   }), a;
 }
-const tt = (i, t, e) => Math.max(t, Math.min(e, i)), rt = (i, t) => `color-mix(in srgb, ${i} ${t}%, transparent)`, eo = (i) => Array.from({ length: 10 }, (t, e) => tt((i - e * 10) / 10, 0, 1) * 100);
-var io = Object.defineProperty, q = (i, t, e, a) => {
+const it = (i, t, e) => Math.max(t, Math.min(e, i)), lt = (i, t) => `color-mix(in srgb, ${i} ${t}%, transparent)`, oo = (i) => Array.from({ length: 10 }, (t, e) => it((i - e * 10) / 10, 0, 1) * 100);
+var ao = Object.defineProperty, X = (i, t, e, a) => {
   for (var o = void 0, s = i.length - 1, n; s >= 0; s--)
     (n = i[s]) && (o = n(t, e, o) || o);
-  return o && io(t, e, o), o;
+  return o && ao(t, e, o), o;
 };
-class G extends it {
+class Z extends at {
   constructor() {
-    super(...arguments), this._width = 329, this._optimistic = {}, this._feedback = "", this._open = {}, this._all = !1, this._now = Date.now(), this._carHint = !1, this._i18n = Dt("cs"), this._timers = /* @__PURE__ */ new Map(), this._lastHeating = 0, this._storedHeating = 0;
+    super(...arguments), this._width = 329, this._optimistic = {}, this._feedback = "", this._open = {}, this._all = !1, this._now = Date.now(), this._carHint = !1, this._i18n = zt("cs"), this._timers = /* @__PURE__ */ new Map(), this._lastHeating = 0, this._storedHeating = 0;
   }
   setConfig(t) {
-    this._config = Ji(t);
+    this._config = to(t);
   }
   getCardSize() {
     return 14;
@@ -3505,7 +3511,7 @@ class G extends it {
   connectedCallback() {
     super.connectedCallback();
     try {
-      this._lastHeating = Math.max(this._lastHeating, Number(localStorage.getItem(we)) || 0);
+      this._lastHeating = Math.max(this._lastHeating, Number(localStorage.getItem(ke)) || 0);
     } catch {
     }
     this._clock = window.setInterval(() => this._now = Date.now(), 3e4);
@@ -3521,12 +3527,12 @@ class G extends it {
     return [{ value: "off", label: this.t.boostOptions.off }, { value: "on", label: this.t.boostOptions.on }];
   }
   willUpdate() {
-    this._i18n = Dt(gi(this._config?.language ?? "auto", this.hass), this.hass), Mi(this._i18n, this._config?.powerDecimals), this.lang !== this._i18n.language && (this.lang = this._i18n.language), this.toggleAttribute("data-light", this.hass?.themes?.darkMode === !1);
+    this._i18n = zt(mi(this._config?.language ?? "auto", this.hass), this.hass), Ti(this._i18n, this._config?.powerDecimals), this.lang !== this._i18n.language && (this.lang = this._i18n.language), this.toggleAttribute("data-light", this.hass?.themes?.darkMode === !1);
     const t = this._config;
     if (t && H(B(this.hass, t.entities.boiler.power), t.num.flows.idle_threshold) && (this._lastHeating = Date.now(), this._lastHeating - this._storedHeating > 6e4)) {
       this._storedHeating = this._lastHeating;
       try {
-        localStorage.setItem(we, String(this._lastHeating));
+        localStorage.setItem(ke, String(this._lastHeating));
       } catch {
       }
     }
@@ -3544,7 +3550,7 @@ class G extends it {
         o.forEach(([n]) => delete s[n]), this._optimistic = s;
       }
     }
-    t.has("hass") && this._tankTemp && Y(Z(this.hass, this._tankTemp.id), "temperature") === this._tankTemp.value && (this._tankTemp = void 0);
+    t.has("hass") && this._tankTemp && Q(K(this.hass, this._tankTemp.id), "temperature") === this._tankTemp.value && (this._tankTemp = void 0);
     const a = this._config;
     if (window.clearTimeout(this._timers.get("hold")), a && a.boilerShow === "heating" && this._lastHeating) {
       const o = this._lastHeating + a.num.boiler.hold_minutes * 6e4 - Date.now();
@@ -3553,11 +3559,11 @@ class G extends it {
   }
   /** The colour of a source text: the grid beyond its share is a deviation (orange). */
   sourceColor(t) {
-    return t.deviation ? "var(--ed-warning)" : `var(${X[t.main]})`;
+    return t.deviation ? "var(--ed-warning)" : `var(${J[t.main]})`;
   }
   stateLine(t, e) {
     return g`<p class="state" style="--sc:${e ?? "var(--ed-secondary)"}">
-      <span class="dot" aria-hidden="true"></span>${t ?? g`${C}<span class="sr-only">${this.t.noData}</span>`}
+      <span class="dot" aria-hidden="true"></span>${t ?? g`${M}<span class="sr-only">${this.t.noData}</span>`}
     </p>`;
   }
   carVisible(t, e) {
@@ -3572,44 +3578,44 @@ class G extends it {
     return e !== void 0 && e >= 0 && e <= 100 ? 100 - e : t.num.battery.reserve;
   }
 }
-q([
-  N()
-], G.prototype, "_config");
-q([
-  _({ attribute: !1 })
-], G.prototype, "hass");
-q([
-  N()
-], G.prototype, "_width");
-q([
-  N()
-], G.prototype, "_optimistic");
-q([
-  N()
-], G.prototype, "_feedback");
-q([
-  N()
-], G.prototype, "_open");
-q([
-  N()
-], G.prototype, "_pop");
-q([
-  N()
-], G.prototype, "_all");
-q([
-  N()
-], G.prototype, "_now");
-q([
-  N()
-], G.prototype, "_carHint");
-q([
-  N()
-], G.prototype, "_tankTemp");
-const oo = (i) => class extends i {
+X([
+  R()
+], Z.prototype, "_config");
+X([
+  C({ attribute: !1 })
+], Z.prototype, "hass");
+X([
+  R()
+], Z.prototype, "_width");
+X([
+  R()
+], Z.prototype, "_optimistic");
+X([
+  R()
+], Z.prototype, "_feedback");
+X([
+  R()
+], Z.prototype, "_open");
+X([
+  R()
+], Z.prototype, "_pop");
+X([
+  R()
+], Z.prototype, "_all");
+X([
+  R()
+], Z.prototype, "_now");
+X([
+  R()
+], Z.prototype, "_carHint");
+X([
+  R()
+], Z.prototype, "_tankTemp");
+const no = (i) => class extends i {
   /** The state shown: a just chosen value, until Home Assistant reports it. */
   shown(t) {
     if (t)
-      return this._optimistic[t] ?? R(this.hass, t);
+      return this._optimistic[t] ?? U(this.hass, t);
   }
   toggle(t) {
     this._open = { ...this._open, [t]: !this._open[t] };
@@ -3617,7 +3623,7 @@ const oo = (i) => class extends i {
   switchRow(t, e, a, o) {
     const s = this.shown(e);
     return g`<div class="switch-row">
-        <span class="switch-text"><span class="switch-title" id="l-${e.replace(/\W/g, "-")}">${t}</span><span class="hint ${o ? "warn" : ""}">${s === void 0 ? C : a}</span></span>
+        <span class="switch-text"><span class="switch-title" id="l-${e.replace(/\W/g, "-")}">${t}</span><span class="hint ${o ? "warn" : ""}">${s === void 0 ? M : a}</span></span>
         <ed-switch
           label=${t} .checked=${s === "on"} ?disabled=${s === void 0}
           @hdk-toggle=${(n) => this.setSwitch(e, n.detail.checked, t)}
@@ -3633,7 +3639,7 @@ const oo = (i) => class extends i {
   }
   /** Calls a service on an entity that is reported; never on a missing or unavailable one (CURRENT_SPEC.md, Pojistky). */
   async call(t, e, a, o, s) {
-    if (!this.hass || R(this.hass, o) === void 0)
+    if (!this.hass || U(this.hass, o) === void 0)
       return this._feedback = this.t.feedback.noData(s), !1;
     try {
       return await this.hass.callService(t, e, a), !0;
@@ -3646,23 +3652,23 @@ const oo = (i) => class extends i {
   }
   async setBoost(t, e) {
     const a = this._config.entities, o = t === "wallbox" ? a.wallbox.boost : a.boiler.boost;
-    o && (this._feedback = "", t === "wallbox" && e && a.wallbox.block_charging && R(this.hass, a.wallbox.block_charging) === "on" && (await this.setSwitch(a.wallbox.block_charging, !1, this.t.wallbox.block), this._feedback = this.t.feedback.unblocked), this.choose(o, e ? "on" : "off"), await this.call("switch", e ? "turn_on" : "turn_off", { entity_id: o }, o, t === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title));
+    o && (this._feedback = "", t === "wallbox" && e && a.wallbox.block_charging && U(this.hass, a.wallbox.block_charging) === "on" && (await this.setSwitch(a.wallbox.block_charging, !1, this.t.wallbox.block), this._feedback = this.t.feedback.unblocked), this.choose(o, e ? "on" : "off"), await this.call("switch", e ? "turn_on" : "turn_off", { entity_id: o }, o, t === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title));
   }
   async setNumber(t, e, a) {
     this._feedback = "", await this.call("number", "set_value", { entity_id: t, value: e }, t, a);
   }
   async setTank(t, e) {
     if (this._feedback = "", this.choose(t, e), !!await this.call("water_heater", "set_operation_mode", { entity_id: t, operation_mode: e }, t, this.t.tank.modeLabel) && e === "heat") {
-      const { min: a, max: o } = this.tankRange(this._config), s = Y(Z(this.hass, t), "temperature");
-      (s === void 0 || s < a || s > o) && await this.setTemperature(t, tt(s ?? a, a, o));
+      const { min: a, max: o } = this.tankRange(this._config), s = Q(K(this.hass, t), "temperature");
+      (s === void 0 || s < a || s > o) && await this.setTemperature(t, it(s ?? a, a, o));
     }
   }
   /** The range of the tank temperature: the configured one, narrowed by what the entity allows. */
   tankRange(t) {
-    const e = Z(this.hass, t.entities.tank.water_heater);
+    const e = K(this.hass, t.entities.tank.water_heater);
     return {
-      min: Math.max(t.num.tank.temp_min, Y(e, "min_temp") ?? t.num.tank.temp_min),
-      max: Math.min(t.num.tank.temp_max, Y(e, "max_temp") ?? t.num.tank.temp_max)
+      min: Math.max(t.num.tank.temp_min, Q(e, "min_temp") ?? t.num.tank.temp_min),
+      max: Math.min(t.num.tank.temp_max, Q(e, "max_temp") ?? t.num.tank.temp_max)
     };
   }
   async setTemperature(t, e) {
@@ -3687,14 +3693,14 @@ const oo = (i) => class extends i {
     ])).every(Boolean) || (this._feedback = this._feedback || this.t.feedback.mixingNotSent);
   }
 };
-function ao(i, t = vt) {
-  const e = Math.round(Math.max(116, Math.min(132, i * 0.377))), a = 56, o = 6, s = Math.max(1, t.length), n = s * a + (s - 1) * o, r = Object.fromEntries(t.map((d, c) => [d, a / 2 + c * (a + o)])), l = Object.fromEntries(
-    W.map((d, c) => [d, s < 4 ? a / 2 + c * (a + o) : (c + 0.5) * n / W.length])
+function so(i, t = xt) {
+  const e = Math.round(Math.max(116, Math.min(132, i * 0.377))), a = 56, o = 6, s = Math.max(1, t.length), n = s * a + (s - 1) * o, r = Object.fromEntries(t.map((c, d) => [c, a / 2 + d * (a + o)])), l = Object.fromEntries(
+    F.map((c, d) => [c, s < 4 ? a / 2 + d * (a + o) : (d + 0.5) * n / F.length])
   );
   return { width: i, tile: { w: e, h: a }, gap: o, height: n, left: l, right: r, xa: e - 8, xb: i - e + 8 };
 }
 const z = (i) => i.toFixed(1);
-function no(i, t, e) {
+function ro(i, t, e) {
   const a = i.filter((u) => u.to in t.right);
   if (!a.length) return [];
   const o = (u) => {
@@ -3702,36 +3708,36 @@ function no(i, t, e) {
     for (const m of a) b.set(m[u], (b.get(m[u]) ?? 0) + m.watts);
     return b;
   }, s = Math.max(...o("from").values(), ...o("to").values()), n = Math.min(e.maxPxPerKw / 1e3, 44 / s), r = (u) => Math.max(e.minPx, u.watts * n), l = /* @__PURE__ */ new Map();
-  for (const u of W) {
+  for (const u of F) {
     const b = a.filter((m) => m.from === u).reduce((m, w) => m + r(w), 0);
     l.set(u, t.left[u] - b / 2);
   }
-  const d = /* @__PURE__ */ new Map();
-  for (const u of vt.filter((b) => b in t.right)) {
+  const c = /* @__PURE__ */ new Map();
+  for (const u of xt.filter((b) => b in t.right)) {
     const b = a.filter((m) => m.to === u).reduce((m, w) => m + r(w), 0);
-    d.set(u, t.right[u] - b / 2);
+    c.set(u, t.right[u] - b / 2);
   }
-  const c = /* @__PURE__ */ new Map(), p = /* @__PURE__ */ new Map();
-  for (const u of W)
-    for (const b of a.filter((m) => m.from === u).sort((m, w) => vt.indexOf(m.to) - vt.indexOf(w.to)))
-      c.set(b, l.get(u)), l.set(u, l.get(u) + r(b));
-  for (const u of vt.filter((b) => b in t.right))
-    for (const b of a.filter((m) => m.to === u).sort((m, w) => W.indexOf(m.from) - W.indexOf(w.from)))
-      p.set(b, d.get(u)), d.set(u, d.get(u) + r(b));
-  const { xa: h, xb: $ } = t, v = (h + $) / 2;
+  const d = /* @__PURE__ */ new Map(), p = /* @__PURE__ */ new Map();
+  for (const u of F)
+    for (const b of a.filter((m) => m.from === u).sort((m, w) => xt.indexOf(m.to) - xt.indexOf(w.to)))
+      d.set(b, l.get(u)), l.set(u, l.get(u) + r(b));
+  for (const u of xt.filter((b) => b in t.right))
+    for (const b of a.filter((m) => m.to === u).sort((m, w) => F.indexOf(m.from) - F.indexOf(w.from)))
+      p.set(b, c.get(u)), c.set(u, c.get(u) + r(b));
+  const { xa: h, xb: x } = t, f = (h + x) / 2;
   return a.map((u) => {
-    const b = r(u), m = c.get(u), w = m + b, S = p.get(u), A = S + b;
+    const b = r(u), m = d.get(u), w = m + b, k = p.get(u), D = k + b;
     return {
       from: u.from,
       to: u.to,
       watts: u.watts,
       thickness: b,
-      d: `M${h} ${z(m)} C${z(v)} ${z(m)} ${z(v)} ${z(S)} ${$} ${z(S)} L${$} ${z(A)} C${z(v)} ${z(A)} ${z(v)} ${z(w)} ${h} ${z(w)} Z`,
-      centre: `M${h} ${z(m + b / 2)} C${z(v)} ${z(m + b / 2)} ${z(v)} ${z(S + b / 2)} ${$} ${z(S + b / 2)}`
+      d: `M${h} ${z(m)} C${z(f)} ${z(m)} ${z(f)} ${z(k)} ${x} ${z(k)} L${x} ${z(D)} C${z(f)} ${z(D)} ${z(f)} ${z(w)} ${h} ${z(w)} Z`,
+      centre: `M${h} ${z(m + b / 2)} C${z(f)} ${z(m + b / 2)} ${z(f)} ${z(k + b / 2)} ${x} ${z(k + b / 2)}`
     };
   });
 }
-const M = {
+const T = {
   sun: "M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,2L14.39,5.42C13.65,5.15 12.84,5 12,5C11.16,5 10.35,5.15 9.61,5.42L12,2M3.34,7L7.5,6.65C6.9,7.16 6.36,7.78 5.94,8.5C5.5,9.24 5.25,10 5.11,10.79L3.34,7M3.36,17L5.12,13.23C5.26,14 5.53,14.78 5.95,15.5C6.37,16.24 6.91,16.86 7.5,17.37L3.36,17M20.65,7L18.88,10.79C18.74,10 18.47,9.23 18.05,8.5C17.63,7.78 17.1,7.15 16.5,6.64L20.65,7M20.64,17L16.5,17.36C17.09,16.85 17.62,16.22 18.04,15.5C18.46,14.77 18.73,14 18.87,13.21L20.64,17M12,22L9.59,18.56C10.33,18.83 11.14,19 12,19C12.82,19 13.63,18.83 14.37,18.56L12,22Z",
   grid: "M8.28,5.45L6.5,4.55L7.76,2H16.23L17.5,4.55L15.72,5.44L15,4H9L8.28,5.45M18.62,8H14.09L13.3,5H10.7L9.91,8H5.38L4.1,10.55L5.89,11.44L6.62,10H17.38L18.1,11.45L19.89,10.56L18.62,8M17.77,22H15.7L15.46,21.1L12,15.9L8.53,21.1L8.3,22H6.23L9.12,11H11.19L10.83,12.35L12,14.1L13.16,12.35L12.81,11H14.88L17.77,22M11.4,15L10.5,13.65L9.32,18.13L11.4,15M14.68,18.12L13.5,13.64L12.6,15L14.68,18.12Z",
   home: "M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z",
@@ -3752,15 +3758,15 @@ const M = {
   info: "M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z",
   /** Chevron pointing down (rotated 180° when a row is open). */
   expand: "M7.4 8.6 12 13.2l4.6-4.6L18 10l-6 6-6-6z"
-}, so = (i) => class extends i {
+}, lo = (i) => class extends i {
   onKey(t) {
     t.key === "Escape" && (this._pop || this._all) && (this._pop = void 0, this._all = !1);
   }
   // ----------------------------------------------------------------- alerts
   /** Deviations only (CURRENT_SPEC.md, Upozornění): a battery on its reserve and a house on the grid are not alerts. */
   alerts(t, e) {
-    const a = this.t, o = t.entities.wallbox, s = [], n = e.carLink === "connected" || e.carLink === "charging", r = R(this.hass, o.block_charging) === "on", l = R(this.hass, o.prioritize_connected) === "on" && e.carLink === "connected" && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
-    return r ? s.push({ kind: "info", ...a.alerts.blocked }) : l && s.push({ kind: "warn", ...a.alerts.priorityWaiting }), R(this.hass, o.boost) === "on" && n && s.push({ kind: "warn", ...a.alerts.boostWallbox }), R(this.hass, t.entities.boiler.boost) === "on" && s.push({ kind: "warn", ...a.alerts.boostBoiler }), s;
+    const a = this.t, o = t.entities.wallbox, s = [], n = e.carLink === "connected" || e.carLink === "charging", r = U(this.hass, o.block_charging) === "on", l = U(this.hass, o.prioritize_connected) === "on" && e.carLink === "connected" && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
+    return r ? s.push({ kind: "info", ...a.alerts.blocked }) : l && s.push({ kind: "warn", ...a.alerts.priorityWaiting }), U(this.hass, o.boost) === "on" && n && s.push({ kind: "warn", ...a.alerts.boostWallbox }), U(this.hass, t.entities.boiler.boost) === "on" && s.push({ kind: "warn", ...a.alerts.boostBoiler }), s;
   }
   renderAlerts(t, e) {
     const a = this.alerts(t, e);
@@ -3769,28 +3775,28 @@ const M = {
         <ul class="group">
           ${a.map(
       (o) => g`<li class="alert ${o.kind}">
-              <span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d=${o.kind === "warn" ? M.alert : M.info}></path></svg></span>
+              <span class="badge" aria-hidden="true"><svg viewBox="0 0 24 24"><path d=${o.kind === "warn" ? T.alert : T.info}></path></svg></span>
               <span class="row-text"><span class="row-title">${o.title}</span><span class="alert-text">${o.text}</span></span>
             </li>`
     )}
         </ul>
-      </section>` : x;
+      </section>` : v;
   }
   renderElectricity(t, e) {
-    const a = e.summarySource ? `var(${X[e.summarySource]})` : void 0;
+    const a = e.summarySource ? `var(${J[e.summarySource]})` : void 0;
     return g`<section class="panel" aria-labelledby="h-el">
         <div class="head click" @click=${() => this.openAll()}>
           <h2 id="h-el">
             <button type="button" class="title-btn" aria-haspopup="dialog" aria-expanded=${this._all ? "true" : "false"} @click=${(o) => {
       o.stopPropagation(), this.openAll();
     }}>
-              ${t.titles.electricity ?? this.t.titles.electricity}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${M.chevron}></path></svg>
+              ${t.titles.electricity ?? this.t.titles.electricity}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${T.chevron}></path></svg>
             </button>
           </h2>
           ${this.stateLine(e.summary, a)}
         </div>
-        ${this.renderFlow(t, e)} ${this._all ? this.renderDayPopup(t, e) : x}
-        ${this._pop || this._all ? g`<button type="button" class="scrim" aria-label=${this.t.close} @click=${() => this.closePop()}></button>` : x}
+        ${this.renderFlow(t, e)} ${this._all ? this.renderDayPopup(t, e) : v}
+        ${this._pop || this._all ? g`<button type="button" class="scrim" aria-label=${this.t.close} @click=${() => this.closePop()}></button>` : v}
       </section>`;
   }
   openAll() {
@@ -3801,87 +3807,87 @@ const M = {
   }
   /** The level of a tile (battery, car, boiler) as the fill of its background. */
   tiles(t, e, a) {
-    const o = this.t, s = t.entities, n = t.num.scale, r = t.num.flows.idle_threshold, l = e.carLink, d = e.soc, c = d !== void 0 && d <= this.batteryReserve(t), p = (f) => d === void 0 ? void 0 : { f: d / 100, active: f, color: c ? "var(--ed-warning)" : "var(--ed-battery)", a1: c ? 0.5 : 0.58 }, h = (f) => `${o.tileSpoken.batteryState(f)}, ${d === void 0 ? o.noData : o.tileSpoken.chargeLevel(et(d))}${c ? `, ${o.tileSpoken.atReserve}` : ""}`, $ = l === "connected" || l === "charging" || H(e.car, r), v = t.num.water.gauge_min, u = Math.max(t.num.water.gauge_max, B(this.hass, s.boiler.target_temperature) ?? 0), b = e.boilTemp, m = (f) => H(f, r), w = W.filter((f) => e.share[f] >= 0.02), S = m(e.other) && w.length ? w.length === 1 ? `linear-gradient(135deg, ${rt(`var(${X[w[0]]})`, 40)}, ${rt(`var(${X[w[0]]})`, 12)}), var(--ed-tile)` : `linear-gradient(135deg, ${w.map((f, E) => {
-      const D = w.slice(0, E).reduce((P, T) => P + e.share[T], 0);
-      return `${rt(`var(${X[f]})`, 40)} ${((D + e.share[f] / 2) * 100).toFixed(0)}%`;
-    }).join(", ")}), var(--ed-tile)` : void 0, A = [
-      { side: "L", key: "sun", name: o.tile.sun, watts: e.sun, k: (e.sun ?? 0) / n.sun, icon: M.sun, idleIcon: M.moon, idleText: o.idle.sun, aria: e.sun === void 0 ? o.noData : "" },
-      { side: "L", key: "bat", name: o.tile.bat, watts: e.batDis, k: (e.batDis ?? 0) / n.battery, icon: M.battery, icon2: M.batteryDown, idleIcon: M.pause, idleText: o.idle.bat, level: p(m(e.batDis)), aria: h(!0) },
-      { side: "L", key: "grid", name: o.tile.grid, watts: e.imp, k: (e.imp ?? 0) / n.grid, icon: M.grid, idleIcon: M.minus, idleText: o.idle.grid, aria: e.imp === void 0 ? o.noData : m(e.imp) ? o.tileSpoken.gridImport : "" },
-      { side: "R", key: "house", name: o.tile.house, watts: e.other, k: (e.other ?? 0) / n.house, icon: M.home, idleIcon: M.minus, idleText: o.idle.house, background: S, aria: e.other === void 0 ? o.noData : o.tileSpoken.houseOther }
+    const o = this.t, s = t.entities, n = t.num.scale, r = t.num.flows.idle_threshold, l = e.carLink, c = e.soc, d = c !== void 0 && c <= this.batteryReserve(t), p = (_) => c === void 0 ? void 0 : { f: c / 100, active: _, color: d ? "var(--ed-warning)" : "var(--ed-battery)", a1: d ? 0.5 : 0.58 }, h = (_) => `${o.tileSpoken.batteryState(_)}, ${c === void 0 ? o.noData : o.tileSpoken.chargeLevel(ot(c))}${d ? `, ${o.tileSpoken.atReserve}` : ""}`, x = l === "connected" || l === "charging" || H(e.car, r), f = t.num.water.gauge_min, u = Math.max(t.num.water.gauge_max, B(this.hass, s.boiler.target_temperature) ?? 0), b = e.boilTemp, m = (_) => H(_, r), w = e.loadShare.house, k = F.filter((_) => w[_] >= 0.02), D = m(e.other) && k.length ? k.length === 1 ? `linear-gradient(135deg, ${lt(`var(${J[k[0]]})`, 40)}, ${lt(`var(${J[k[0]]})`, 12)}), var(--ed-tile)` : `linear-gradient(135deg, ${k.map((_, N) => {
+      const j = k.slice(0, N).reduce((O, L) => O + w[L], 0);
+      return `${lt(`var(${J[_]})`, 40)} ${((j + w[_] / 2) * 100).toFixed(0)}%`;
+    }).join(", ")}), var(--ed-tile)` : void 0, $ = [
+      { side: "L", key: "sun", name: o.tile.sun, watts: e.sun, k: (e.sun ?? 0) / n.sun, icon: T.sun, idleIcon: T.moon, idleText: o.idle.sun, aria: e.sun === void 0 ? o.noData : "" },
+      { side: "L", key: "bat", name: o.tile.bat, watts: e.batDis, k: (e.batDis ?? 0) / n.battery, icon: T.battery, icon2: T.batteryDown, idleIcon: T.pause, idleText: o.idle.bat, level: p(m(e.batDis)), aria: h(!0) },
+      { side: "L", key: "grid", name: o.tile.grid, watts: e.imp, k: (e.imp ?? 0) / n.grid, icon: T.grid, idleIcon: T.minus, idleText: o.idle.grid, aria: e.imp === void 0 ? o.noData : m(e.imp) ? o.tileSpoken.gridImport : "" },
+      { side: "R", key: "house", name: o.tile.house, watts: e.other, k: (e.other ?? 0) / n.house, icon: T.home, idleIcon: T.minus, idleText: o.idle.house, background: D, aria: e.other === void 0 ? o.noData : o.tileSpoken.houseOther }
     ];
     if (this.carVisible(t, e)) {
-      const f = $ && e.carSoc !== void 0 ? { f: e.carSoc / 100, active: m(e.car), color: "var(--ed-car)", a1: 0.5 } : void 0;
-      A.push({
+      const _ = x && e.carSoc !== void 0 ? { f: e.carSoc / 100, active: m(e.car), color: "var(--ed-car)", a1: 0.5 } : void 0;
+      $.push({
         side: "R",
         key: "car",
         name: o.tile.car,
         watts: l === void 0 && e.car === void 0 ? void 0 : e.car ?? 0,
         k: (e.car ?? 0) / n.car,
-        icon: M.car,
-        idleIcon: l === "disconnected" ? M.minus : M.plug,
+        icon: T.car,
+        idleIcon: l === "disconnected" ? T.minus : T.plug,
         idleText: l === "disconnected" ? o.idle.carDisconnected : l === void 0 ? o.idle.carNoState : o.idle.carConnected,
-        level: f,
-        aria: [l === void 0 && e.car === void 0 ? o.noData : m(e.car) ? o.tileSpoken.charging : "", $ && e.carSoc !== void 0 ? o.tileSpoken.chargeLevel(et(e.carSoc)) : ""].filter(Boolean).join(", ")
+        level: _,
+        aria: [l === void 0 && e.car === void 0 ? o.noData : m(e.car) ? o.tileSpoken.charging : "", x && e.carSoc !== void 0 ? o.tileSpoken.chargeLevel(ot(e.carSoc)) : ""].filter(Boolean).join(", ")
       });
     }
     if (this.boilerVisible(t, e)) {
-      const f = b === void 0 ? void 0 : { f: tt((b - v) / (u - v), 0, 1), active: m(e.boil), color: "var(--ed-boiler)", a1: 0.5 };
-      A.push({
+      const _ = b === void 0 ? void 0 : { f: it((b - f) / (u - f), 0, 1), active: m(e.boil), color: "var(--ed-boiler)", a1: 0.5 };
+      $.push({
         side: "R",
         key: "boil",
         name: o.tile.boil,
         watts: e.boil,
         k: (e.boil ?? 0) / n.boiler,
-        icon: M.therm,
-        idleIcon: M.pause,
+        icon: T.therm,
+        idleIcon: T.pause,
         idleText: o.idle.boil,
-        level: f,
-        aria: [b === void 0 ? o.noData : o.tileSpoken.temperature(`${k(b)} °C`), m(e.boil) ? o.tileSpoken.heating : ""].filter(Boolean).join(", ")
+        level: _,
+        aria: [b === void 0 ? o.noData : o.tileSpoken.temperature(`${S(b)} °C`), m(e.boil) ? o.tileSpoken.heating : ""].filter(Boolean).join(", ")
       });
     }
-    return A.push(
-      { side: "R", key: "batIn", name: o.tile.batIn, watts: e.batIn, k: (e.batIn ?? 0) / n.battery, icon: M.battery, icon2: M.batteryBolt, idleIcon: M.pause, idleText: o.idle.batIn, level: p(m(e.batIn)), aria: h(!1) },
-      { side: "R", key: "gridOut", name: o.tile.gridOut, watts: e.exp, k: (e.exp ?? 0) / n.grid, icon: M.grid, idleIcon: M.minus, idleText: o.idle.gridOut, aria: e.exp === void 0 ? o.noData : m(e.exp) ? o.tileSpoken.gridExport : "" }
-    ), A;
+    return $.push(
+      { side: "R", key: "batIn", name: o.tile.batIn, watts: e.batIn, k: (e.batIn ?? 0) / n.battery, icon: T.battery, icon2: T.batteryBolt, idleIcon: T.pause, idleText: o.idle.batIn, level: p(m(e.batIn)), aria: h(!1) },
+      { side: "R", key: "gridOut", name: o.tile.gridOut, watts: e.exp, k: (e.exp ?? 0) / n.grid, icon: T.grid, idleIcon: T.minus, idleText: o.idle.gridOut, aria: e.exp === void 0 ? o.noData : m(e.exp) ? o.tileSpoken.gridExport : "" }
+    ), $;
   }
   renderFlow(t, e) {
-    const a = t.num.flows.idle_threshold, o = Yt(
-      [e.sun, e.batDis, e.batIn, e.imp, e.exp, e.other, e.car, e.boil].map((c) => H(c, a) ? c : void 0),
+    const a = t.num.flows.idle_threshold, o = Qt(
+      [e.sun, e.batDis, e.batIn, e.imp, e.exp, e.other, e.car, e.boil].map((d) => H(d, a) ? d : void 0),
       t.num.flows.kw_from
-    ), s = this.tiles(t, e, o), n = ao(this._width, s.filter((c) => c.side === "R").map((c) => c.key)), r = no(e.flows, n, { maxPxPerKw: t.num.flows.band_max_px_per_kw, minPx: t.num.flows.band_min_px }), l = (c) => pt`<linearGradient id="rg-${c}" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" style="stop-color:var(${X[c]});stop-opacity:0.2"></stop>
-          <stop offset="0.14" style="stop-color:var(${X[c]});stop-opacity:0.88"></stop>
-          <stop offset="0.86" style="stop-color:var(${X[c]});stop-opacity:0.88"></stop>
-          <stop offset="1" style="stop-color:var(${X[c]});stop-opacity:0.2"></stop>
-        </linearGradient>`, d = this._pop ? s.find((c) => c.key === this._pop) : void 0;
+    ), s = this.tiles(t, e, o), n = so(this._width, s.filter((d) => d.side === "R").map((d) => d.key)), r = ro(e.flows, n, { maxPxPerKw: t.num.flows.band_max_px_per_kw, minPx: t.num.flows.band_min_px }), l = (d) => ut`<linearGradient id="rg-${d}" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" style="stop-color:var(${J[d]});stop-opacity:0.2"></stop>
+          <stop offset="0.14" style="stop-color:var(${J[d]});stop-opacity:0.88"></stop>
+          <stop offset="0.86" style="stop-color:var(${J[d]});stop-opacity:0.88"></stop>
+          <stop offset="1" style="stop-color:var(${J[d]});stop-opacity:0.2"></stop>
+        </linearGradient>`, c = this._pop ? s.find((d) => d.key === this._pop) : void 0;
     return g`<div class="flow" role="group" aria-label=${this.t.flowLabel} style="height:${n.height}px">
         <svg width=${n.width} height=${n.height} viewBox="0 0 ${n.width} ${n.height}" aria-hidden="true">
-          <defs>${W.map(l)}</defs>
+          <defs>${F.map(l)}</defs>
           ${r.map(
-      (c) => pt`<g>
-              <path d=${c.d} fill="url(#rg-${c.from})"></path>
-              <path class="dots" d=${c.centre} style="stroke-width:${Math.max(1.8, Math.min(3.2, c.thickness * 0.55)).toFixed(1)}px;animation-duration:${(14 / (14 + 6 * Math.min(c.watts / 1e3, 10))).toFixed(2)}s"></path>
+      (d) => ut`<g>
+              <path d=${d.d} fill="url(#rg-${d.from})"></path>
+              <path class="dots" d=${d.centre} style="stroke-width:${Math.max(1.8, Math.min(3.2, d.thickness * 0.55)).toFixed(1)}px;animation-duration:${(14 / (14 + 6 * Math.min(d.watts / 1e3, 10))).toFixed(2)}s"></path>
             </g>`
     )}
         </svg>
-        ${s.map((c) => this.renderTile(c, n, o, t))} ${d ? this.renderTilePopup(d, n, t, e, o) : x}
+        ${s.map((d) => this.renderTile(d, n, o, t))} ${c ? this.renderTilePopup(c, n, t, e, o) : v}
       </div>`;
   }
   tileBackground(t, e, a) {
-    const o = `var(${$e[t.key]})`, s = t.level;
+    const o = `var(${ye[t.key]})`, s = t.level;
     if (s) {
-      const n = tt(s.f, 0, 1), r = `${(n * 100).toFixed(1)}%`, l = s.active ? rt(s.color, s.a1 * 100) : "var(--ed-fill-idle)", d = s.active ? rt(s.color, 10) : "var(--ed-tile)";
-      return n < 5e-3 ? s.active ? `linear-gradient(${d}, ${d}), var(--ed-tile)` : void 0 : `linear-gradient(90deg, ${l} 0%, ${l} ${r}, ${d} ${r}, ${d} 100%), var(--ed-tile)`;
+      const n = it(s.f, 0, 1), r = `${(n * 100).toFixed(1)}%`, l = s.active ? lt(s.color, s.a1 * 100) : "var(--ed-fill-idle)", c = s.active ? lt(s.color, 10) : "var(--ed-tile)";
+      return n < 5e-3 ? s.active ? `linear-gradient(${c}, ${c}), var(--ed-tile)` : void 0 : `linear-gradient(90deg, ${l} 0%, ${l} ${r}, ${c} ${r}, ${c} 100%), var(--ed-tile)`;
     }
     if (t.background) return t.background;
     if (e) {
-      const n = rt(o, Math.round(21 + 7 * a));
+      const n = lt(o, Math.round(21 + 7 * a));
       return `linear-gradient(${n}, ${n}), var(--ed-tile)`;
     }
   }
   renderTile(t, e, a, o) {
-    const s = t.watts === void 0, n = H(t.watts, o.num.flows.idle_threshold), r = t.side === "L" ? 0 : e.width - e.tile.w, l = t.side === "L" ? e.left[t.key] : e.right[t.key], d = tt(t.k, 0, 1), c = s ? C : bt(t.watts, a), p = this.tileBackground(t, n, d), h = `left:${r}px;top:${(l - e.tile.h / 2).toFixed(1)}px;width:${e.tile.w}px;height:${e.tile.h}px;--tc:var(${$e[t.key]});--gr:${(2 + 9 * d).toFixed(1)}px;--ga:${Math.round(30 + 60 * d)}%${p ? `;background:${p}` : ""}`;
+    const s = t.watts === void 0, n = H(t.watts, o.num.flows.idle_threshold), r = t.side === "L" ? 0 : e.width - e.tile.w, l = t.side === "L" ? e.left[t.key] : e.right[t.key], c = it(t.k, 0, 1), d = s ? M : mt(t.watts, a), p = this.tileBackground(t, n, c), h = `left:${r}px;top:${(l - e.tile.h / 2).toFixed(1)}px;width:${e.tile.w}px;height:${e.tile.h}px;--tc:var(${ye[t.key]});--gr:${(2 + 9 * c).toFixed(1)}px;--ga:${Math.round(30 + 60 * c)}%${p ? `;background:${p}` : ""}`;
     return g`<button
         type="button"
         class="tile ${n ? "on" : "idle"} ${t.key === "bat" || t.key === "batIn" ? "battery" : ""}"
@@ -3889,15 +3895,15 @@ const M = {
         style=${h}
         aria-haspopup="dialog"
         aria-expanded=${this._pop === t.key ? "true" : "false"}
-        aria-label=${[`${t.name} ${n ? c : s ? C : t.idleText}`, t.aria].filter(Boolean).join(", ")}
+        aria-label=${[`${t.name} ${n ? d : s ? M : t.idleText}`, t.aria].filter(Boolean).join(", ")}
         @click=${() => this.openTile(t.key)}
       >
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d=${n ? t.icon : t.idleIcon}></path>${n && t.icon2 ? pt`<path class="icon2" d=${t.icon2}></path>` : x}
+          <path d=${n ? t.icon : t.idleIcon}></path>${n && t.icon2 ? ut`<path class="icon2" d=${t.icon2}></path>` : v}
         </svg>
         <span class="text">
           <span class="name">${t.name}</span>
-          <span class="value" aria-hidden="true">${n ? c : s ? C : t.idleText}</span>
+          <span class="value" aria-hidden="true">${n ? d : s ? M : t.idleText}</span>
         </span>
       </button>`;
   }
@@ -3906,7 +3912,7 @@ const M = {
   }
   /** Energy of today in kWh from the counters of the configuration; undefined = no data. */
   today(t) {
-    const e = t.entities.daily, a = (r) => Ai(this.hass, r), o = {
+    const e = t.entities.daily, a = (r) => Li(this.hass, r), o = {
       pv: a(e.pv_generation),
       bchg: a(e.battery_charge),
       bdis: a(e.battery_discharge),
@@ -3918,73 +3924,73 @@ const M = {
     return { ...o, house: n };
   }
   renderTilePopup(t, e, a, o, s) {
-    const n = this.t, r = a.num.flows.idle_threshold, l = this.today(a), d = (O) => O === void 0 ? C : `${me(O)} kWh`, c = (O) => O === void 0 ? C : bt(O, s), p = (O) => H(O, r), h = o.soc, $ = h !== void 0 && h <= this.batteryReserve(a), v = (O) => ({
-      title: O ? n.tile.bat : n.tile.batIn,
-      now: O ? p(o.batDis) ? n.pop.discharging(c(o.batDis)) : o.batDis === void 0 && h === void 0 ? C : n.idle.bat : p(o.batIn) ? n.pop.charging(c(o.batIn)) : o.batIn === void 0 && h === void 0 ? C : n.idle.batIn,
-      level: h === void 0 ? void 0 : { label: n.pop.level, text: et(h), percent: h, color: $ ? "var(--ed-warning)" : "var(--ed-battery)", note: $ ? n.pop.atReserve : "" },
-      rows: O ? [{ label: n.pop.rows.discharged, value: d(l.bdis) }] : [{ label: n.pop.rows.charged, value: d(l.bchg) }]
-    }), u = (O) => ({
-      title: O ? n.tile.gridOut : n.tile.grid,
-      now: O ? p(o.exp) ? n.pop.exporting(c(o.exp)) : o.exp === void 0 ? C : n.idle.gridOut : p(o.imp) ? n.pop.importing(c(o.imp)) : o.imp === void 0 ? C : n.idle.grid,
-      rows: O ? [{ label: n.pop.rows.exported, value: d(l.gout) }] : [{ label: n.pop.rows.imported, value: d(l.gin) }]
-    }), b = o.carLink, m = o.boilTemp, w = a.num.water.gauge_min, S = Math.max(a.num.water.gauge_max, B(this.hass, a.entities.boiler.target_temperature) ?? 0), f = {
-      sun: { title: n.tile.sun, now: p(o.sun) ? c(o.sun) : o.sun === void 0 ? C : n.idle.sun, rows: [{ label: n.pop.rows.produced, value: d(l.pv) }] },
-      bat: v(!0),
-      batIn: v(!1),
+    const n = this.t, r = a.num.flows.idle_threshold, l = this.today(a), c = (A) => A === void 0 ? M : `${ve(A)} kWh`, d = (A) => A === void 0 ? M : mt(A, s), p = (A) => H(A, r), h = o.soc, x = h !== void 0 && h <= this.batteryReserve(a), f = (A) => ({
+      title: A ? n.tile.bat : n.tile.batIn,
+      now: A ? p(o.batDis) ? n.pop.discharging(d(o.batDis)) : o.batDis === void 0 && h === void 0 ? M : n.idle.bat : p(o.batIn) ? n.pop.charging(d(o.batIn)) : o.batIn === void 0 && h === void 0 ? M : n.idle.batIn,
+      level: h === void 0 ? void 0 : { label: n.pop.level, text: ot(h), percent: h, color: x ? "var(--ed-warning)" : "var(--ed-battery)", note: x ? n.pop.atReserve : "" },
+      rows: A ? [{ label: n.pop.rows.discharged, value: c(l.bdis) }] : [{ label: n.pop.rows.charged, value: c(l.bchg) }]
+    }), u = (A) => ({
+      title: A ? n.tile.gridOut : n.tile.grid,
+      now: A ? p(o.exp) ? n.pop.exporting(d(o.exp)) : o.exp === void 0 ? M : n.idle.gridOut : p(o.imp) ? n.pop.importing(d(o.imp)) : o.imp === void 0 ? M : n.idle.grid,
+      rows: A ? [{ label: n.pop.rows.exported, value: c(l.gout) }] : [{ label: n.pop.rows.imported, value: c(l.gin) }]
+    }), b = o.carLink, m = o.boilTemp, w = a.num.water.gauge_min, k = Math.max(a.num.water.gauge_max, B(this.hass, a.entities.boiler.target_temperature) ?? 0), $ = {
+      sun: { title: n.tile.sun, now: p(o.sun) ? d(o.sun) : o.sun === void 0 ? M : n.idle.sun, rows: [{ label: n.pop.rows.produced, value: c(l.pv) }] },
+      bat: f(!0),
+      batIn: f(!1),
       grid: u(!1),
       gridOut: u(!0),
-      house: { title: n.tile.house, now: p(o.other) ? c(o.other) : o.other === void 0 ? C : n.idle.house, rows: [{ label: n.pop.rows.consumed, value: d(l.house) }] },
+      house: { title: n.tile.house, now: p(o.other) ? d(o.other) : o.other === void 0 ? M : n.idle.house, rows: [{ label: n.pop.rows.consumed, value: c(l.house) }] },
       car: {
         title: n.tile.car,
-        now: p(o.car) ? n.pop.charging(c(o.car)) : b === "connected" || b === "charging" ? n.pop.carConnectedIdle : b === "disconnected" ? n.idle.carDisconnected : C,
-        level: o.carSoc !== void 0 && (b === "connected" || b === "charging") ? { label: n.pop.level, text: et(o.carSoc), percent: o.carSoc, color: "var(--ed-car)", note: "" } : void 0,
-        rows: [{ label: n.pop.rows.carCharged, value: d(l.car) }]
+        now: p(o.car) ? n.pop.charging(d(o.car)) : b === "connected" || b === "charging" ? n.pop.carConnectedIdle : b === "disconnected" ? n.idle.carDisconnected : M,
+        level: o.carSoc !== void 0 && (b === "connected" || b === "charging") ? { label: n.pop.level, text: ot(o.carSoc), percent: o.carSoc, color: "var(--ed-car)", note: "" } : void 0,
+        rows: [{ label: n.pop.rows.carCharged, value: c(l.car) }]
       },
       boil: {
         title: n.tile.boil,
-        now: p(o.boil) ? n.pop.heating(c(o.boil)) : o.boil === void 0 ? C : n.idle.boil,
-        level: m === void 0 ? void 0 : { label: n.pop.temperature, text: `${k(m)} °C`, percent: tt((m - w) / (S - w) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
-        rows: [{ label: n.pop.rows.boilerHeated, value: d(l.boil) }]
+        now: p(o.boil) ? n.pop.heating(d(o.boil)) : o.boil === void 0 ? M : n.idle.boil,
+        level: m === void 0 ? void 0 : { label: n.pop.temperature, text: `${S(m)} °C`, percent: it((m - w) / (k - w) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
+        rows: [{ label: n.pop.rows.boilerHeated, value: c(l.boil) }]
       }
-    }[t.key], E = 236, D = t.side === "L" ? e.tile.w / 2 : e.width - e.tile.w / 2, P = t.side === "L" ? e.left[t.key] : e.right[t.key], T = P - e.tile.h / 2, F = P < e.height / 2, mt = tt(D - E / 2, 0, e.width - E), nt = F ? `top:${(T + e.tile.h + 8).toFixed(0)}px` : `bottom:${(e.height - T + 8).toFixed(0)}px`;
-    return g`<div class="pop" role="dialog" aria-label=${f.title} tabindex="-1" style="left:${mt.toFixed(0)}px;${nt};width:${Math.min(E, e.width)}px">
-        <i class="arrow ${F ? "up" : "down"}" aria-hidden="true" style="left:${(D - mt - 6).toFixed(0)}px"></i>
-        <div class="pop-head"><span class="pop-title">${f.title}</span><span class="pop-now">${f.now}</span></div>
-        ${f.level ? g`<div class="pop-level">
+    }[t.key], _ = 236, N = t.side === "L" ? e.tile.w / 2 : e.width - e.tile.w / 2, j = t.side === "L" ? e.left[t.key] : e.right[t.key], O = j - e.tile.h / 2, L = j < e.height / 2, W = it(N - _ / 2, 0, e.width - _), Y = L ? `top:${(O + e.tile.h + 8).toFixed(0)}px` : `bottom:${(e.height - O + 8).toFixed(0)}px`;
+    return g`<div class="pop" role="dialog" aria-label=${$.title} tabindex="-1" style="left:${W.toFixed(0)}px;${Y};width:${Math.min(_, e.width)}px">
+        <i class="arrow ${L ? "up" : "down"}" aria-hidden="true" style="left:${(N - W - 6).toFixed(0)}px"></i>
+        <div class="pop-head"><span class="pop-title">${$.title}</span><span class="pop-now">${$.now}</span></div>
+        ${$.level ? g`<div class="pop-level">
               <div class="pop-level-row">
-                <span class="pop-label">${f.level.label}${f.level.note ? g`<span class="note"> ${f.level.note}</span>` : x}</span>
-                <span class="pop-big" style="color:${f.level.note ? "var(--ed-warning)" : "var(--ed-text)"}">${f.level.text}</span>
+                <span class="pop-label">${$.level.label}${$.level.note ? g`<span class="note"> ${$.level.note}</span>` : v}</span>
+                <span class="pop-big" style="color:${$.level.note ? "var(--ed-warning)" : "var(--ed-text)"}">${$.level.text}</span>
               </div>
-              <div class="segs" aria-hidden="true">${eo(f.level.percent).map((O) => g`<span><i style="width:${O.toFixed(0)}%;background:${f.level.color}"></i></span>`)}</div>
-            </div>` : x}
-        <div class="pop-rows">${f.rows.map((O) => g`<div class="pop-row"><span>${O.label}</span><b>${O.value}</b></div>`)}</div>
+              <div class="segs" aria-hidden="true">${oo($.level.percent).map((A) => g`<span><i style="width:${A.toFixed(0)}%;background:${$.level.color}"></i></span>`)}</div>
+            </div>` : v}
+        <div class="pop-rows">${$.rows.map((A) => g`<div class="pop-row"><span>${A.label}</span><b>${A.value}</b></div>`)}</div>
       </div>`;
   }
   /** The big popup of the heading: today's totals of everything (sources = consumption, the house is the rest). */
   renderDayPopup(t, e) {
-    const a = this.t, o = this.today(t), s = (h) => h === void 0 ? C : me(h), n = [o.pv, o.bdis, o.gin], r = n.every((h) => h !== void 0) ? n.reduce((h, $) => h + $, 0) : void 0, l = o.house === void 0 ? void 0 : o.house + o.car + o.boil + o.bchg + o.gout, d = [
+    const a = this.t, o = this.today(t), s = (h) => h === void 0 ? M : ve(h), n = [o.pv, o.bdis, o.gin], r = n.every((h) => h !== void 0) ? n.reduce((h, x) => h + x, 0) : void 0, l = o.house === void 0 ? void 0 : o.house + o.car + o.boil + o.bchg + o.gout, c = [
       { label: a.tile.sun, color: "var(--ed-sun)", value: o.pv },
       { label: a.pop.fromBattery, color: "var(--ed-battery)", value: o.bdis },
       { label: a.pop.fromGrid, color: "var(--ed-grid)", value: o.gin }
-    ], c = [
+    ], d = [
       { label: a.tile.house, color: "var(--ed-house)", value: o.house },
       { label: a.tile.car, color: "var(--ed-car)", value: o.car },
       { label: a.tile.boil, color: "var(--ed-boiler)", value: o.boil },
       { label: a.pop.toBattery, color: "var(--ed-battery)", value: o.bchg },
       { label: a.tile.gridOut, color: "var(--ed-grid)", value: o.gout }
-    ], p = (h, $, v) => g`<div role="list" aria-label=${h} class="day-col">
-        <div class="day-total"><span>${h}</span><b>${s($)}</b></div>
-        ${v.map((u) => g`<div role="listitem" class="day-item"><i style="background:${u.color}" aria-hidden="true"></i><span>${u.label}</span><b>${s(u.value)}</b></div>`)}
+    ], p = (h, x, f) => g`<div role="list" aria-label=${h} class="day-col">
+        <div class="day-total"><span>${h}</span><b>${s(x)}</b></div>
+        ${f.map((u) => g`<div role="listitem" class="day-item"><i style="background:${u.color}" aria-hidden="true"></i><span>${u.label}</span><b>${s(u.value)}</b></div>`)}
       </div>`;
     return g`<div class="pop day" role="dialog" aria-labelledby="day-h" tabindex="-1">
         <i class="arrow up" aria-hidden="true" style="left:30px"></i>
         <h3 id="day-h">${a.pop.day} <span>· kWh</span></h3>
-        <div class="day-cols">${p(a.pop.sources, r, d)} ${p(a.pop.consumption, l, c)}</div>
+        <div class="day-cols">${p(a.pop.sources, r, c)} ${p(a.pop.consumption, l, d)}</div>
       </div>`;
   }
-}, ro = (i) => class extends i {
+}, co = (i) => class extends i {
   constructor() {
-    super(...arguments), this._carGesture = new qt(() => ({
+    super(...arguments), this._carGesture = new Yt(() => ({
       holdMs: this._config?.num.ui.hold_ms ?? 550,
       doubleTapMs: this._config?.num.ui.double_tap_ms ?? 400
     })), this.carDown = () => {
@@ -4012,125 +4018,125 @@ const M = {
     t && (this._carHint = !1, t.startsWith("/") ? (window.history.pushState(null, "", t), window.dispatchEvent(new CustomEvent("location-changed", { detail: { replace: !1 } }))) : window.open(t, "_blank", "noopener"));
   }
   renderCar(t, e) {
-    const a = this.t, o = t.entities, s = t.num.flows, n = t.num.car.charge_limit, r = e.carLink, l = H(e.car, s.idle_threshold) && r !== "disconnected", d = Be(e.share, s, a), c = this.sourceColor(d), p = R(this.hass, o.wallbox.block_charging) === "on", h = this.shown(o.wallbox.boost), $ = R(this.hass, o.wallbox.prioritize_connected) === "on" && r === "connected" && !p && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
-    let v, u;
-    l ? (v = `${a.car.charging(d.text)}${h === "on" ? ` · ${a.boostOptions.on}` : ""}`, u = c) : r === "connected" || r === "charging" ? (v = a.car.connectedIdle, u = $ ? "var(--ed-warning)" : void 0) : r === "disconnected" && (v = a.car.disconnected);
-    const b = rt(u ?? "#d8d8dc", u ? 42 : 28), m = Z(this.hass, o.car.image)?.attributes?.entity_picture, w = e.carSoc, S = Yt([H(e.car, s.idle_threshold) ? e.car : void 0], s.kw_from), A = n < 100, f = a.car.chargeLevel(w === void 0 ? a.noData : et(w), A ? et(n) : void 0), E = o.wallbox, D = h === "on" ? "on" : h === "off" ? "off" : "", P = this.boostOptions, T = h === "on" ? a.car.modeBoost : h === "off" ? a.car.modeSurplus : C;
+    const a = this.t, o = t.entities, s = t.num.flows, n = t.num.car.charge_limit, r = e.carLink, l = H(e.car, s.idle_threshold) && r !== "disconnected", c = He(e.loadShare.car, s, a), d = this.sourceColor(c), p = U(this.hass, o.wallbox.block_charging) === "on", h = this.shown(o.wallbox.boost), x = U(this.hass, o.wallbox.prioritize_connected) === "on" && r === "connected" && !p && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
+    let f, u;
+    l ? (f = `${a.car.charging(c.text)}${h === "on" ? ` · ${a.boostOptions.on}` : ""}`, u = d) : r === "connected" || r === "charging" ? (f = a.car.connectedIdle, u = x ? "var(--ed-warning)" : void 0) : r === "disconnected" && (f = a.car.disconnected);
+    const b = lt(u ?? "#d8d8dc", u ? 42 : 28), m = K(this.hass, o.car.image)?.attributes?.entity_picture, w = e.carSoc, k = Qt([H(e.car, s.idle_threshold) ? e.car : void 0], s.kw_from), D = n < 100, $ = a.car.chargeLevel(w === void 0 ? a.noData : ot(w), D ? ot(n) : void 0), _ = o.wallbox, N = h === "on" ? "on" : h === "off" ? "off" : "", j = this.boostOptions, O = h === "on" ? a.car.modeBoost : h === "off" ? a.car.modeSurplus : M;
     return g`<section class="panel car-panel" aria-labelledby="h-car">
         <div class="car-top" style="height:${Math.round(168 + 40 * Math.max(0, t.num.car.image_scale - 1))}px">
           <div class="car-art" aria-hidden="true" style="transform:scale(${t.num.car.image_scale})">
             <div class="glow" style="background:radial-gradient(closest-side, ${b}, transparent)"></div><div class="shadow"></div>
-            ${typeof m == "string" && m ? g`<img src=${m} alt="" />` : x}
+            ${typeof m == "string" && m ? g`<img src=${m} alt="" />` : v}
           </div>
           ${t.carLink ? g`<div class="car-art car-hitbox" style="transform:scale(${t.num.car.image_scale})">
-                <button type="button" class="car-hit" aria-label=${a.car.openDashboard} @pointerdown=${this.carDown} @pointerup=${this.carRelease} @pointercancel=${this.carCancel} @pointerleave=${this.carRelease} @contextmenu=${(F) => F.preventDefault()} @click=${this.carClick}></button>
+                <button type="button" class="car-hit" aria-label=${a.car.openDashboard} @pointerdown=${this.carDown} @pointerup=${this.carRelease} @pointercancel=${this.carCancel} @pointerleave=${this.carRelease} @contextmenu=${(L) => L.preventDefault()} @click=${this.carClick}></button>
               </div>
-              ${this._carHint ? g`<div class="car-hint" aria-hidden="true">${a.hint.holdOrDouble}</div>` : x}` : x}
-          <div class="head"><h2 id="h-car">${t.titles.car ?? a.titles.car}</h2>${this.stateLine(v, u)}</div>
+              ${this._carHint ? g`<div class="car-hint" aria-hidden="true">${a.hint.holdOrDouble}</div>` : v}` : v}
+          <div class="head"><h2 id="h-car">${t.titles.car ?? a.titles.car}</h2>${this.stateLine(f, u)}</div>
           <div class="car-soc">
-            <span class="soc">${w === void 0 ? C : k(w)}<small>${this._i18n.percent("")}</small>${w === void 0 ? g`<span class="sr-only">${a.noData}</span>` : x}</span>
-            <span class="range">${a.car.range} <b>${e.carRange === void 0 ? C : `${k(e.carRange)} km`}</b></span>
+            <span class="soc">${w === void 0 ? M : S(w)}<small>${this._i18n.percent("")}</small>${w === void 0 ? g`<span class="sr-only">${a.noData}</span>` : v}</span>
+            <span class="range">${a.car.range} <b>${e.carRange === void 0 ? M : `${S(e.carRange)} km`}</b></span>
           </div>
         </div>
         <div class="meter-wrap">
-          <div class="meter" role="img" aria-label=${f}>
-            <div class="fill" style="width:${tt(w ?? 0, 0, 100)}%"></div>
+          <div class="meter" role="img" aria-label=${$}>
+            <div class="fill" style="width:${it(w ?? 0, 0, 100)}%"></div>
             <div class="ticks"></div>
-            ${A ? g`<div class="limit" style="left:${n}%"></div>` : x}
+            ${D ? g`<div class="limit" style="left:${n}%"></div>` : v}
           </div>
-          ${A ? g`<div class="meter-label" aria-hidden="true"><span style="left:${n}%">${a.car.limit(et(n))}</span></div>` : x}
+          ${D ? g`<div class="meter-label" aria-hidden="true"><span style="left:${n}%">${a.car.limit(ot(n))}</span></div>` : v}
         </div>
-        ${l ? this.renderCarSources(e, s, bt(e.car ?? 0, S)) : x}
-        ${E.boost ? g`<div class="mode">
-              <div class="mode-head"><span id="mode-l">${a.car.mode}</span><span class="mode-sub ${h === "on" ? "warn" : ""}">${T}</span></div>
+        ${l ? this.renderCarSources(e, s, mt(e.car ?? 0, k)) : v}
+        ${_.boost ? g`<div class="mode">
+              <div class="mode-head"><span id="mode-l">${a.car.mode}</span><span class="mode-sub ${h === "on" ? "warn" : ""}">${O}</span></div>
               <ed-segmented
-                guarded .options=${P} .value=${D} label=${a.car.modeLabel} .hint=${a.hint.holdDragOrDouble} ?disabled=${h === void 0}
+                guarded .options=${j} .value=${N} label=${a.car.modeLabel} .hint=${a.hint.holdDragOrDouble} ?disabled=${h === void 0}
                 .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
-                @hdk-select=${(F) => this.setBoost("wallbox", F.detail.value === "on")}
+                @hdk-select=${(L) => this.setBoost("wallbox", L.detail.value === "on")}
               ></ed-segmented>
               ${this.renderPowerFold(t, h === "on")}
-            </div>` : x}
-        ${this.carVisible(t, e) ? this.renderWallboxGroup(t, e, l, c, S) : x}
+            </div>` : v}
+        ${this.carVisible(t, e) ? this.renderWallboxGroup(t, e, l, d, k) : v}
       </section>`;
   }
   renderCarSources(t, e, a) {
-    const o = this.t, s = o.source, n = W.filter((d) => t.share[d] > 4e-3), r = to(n.map((d) => t.share[d])), l = (d) => d === "grid" && t.share.grid > e.grid_deviation_share / 100 ? "var(--ed-warning)" : `var(${X[d]})`;
+    const o = this.t, s = o.source, n = t.loadShare.car, r = F.filter((d) => n[d] > 4e-3), l = io(r.map((d) => n[d])), c = (d) => d === "grid" && n.grid > e.grid_deviation_share / 100 ? "var(--ed-warning)" : `var(${J[d]})`;
     return g`<div class="mix">
         <div class="mix-head"><span>${o.car.sourcesTitle}</span><span>${a}</span></div>
-        <div class="mix-bar" aria-hidden="true">${n.map((d) => g`<div style="flex:${t.share[d]} 1 0;background:${l(d)}"></div>`)}</div>
+        <div class="mix-bar" aria-hidden="true">${r.map((d) => g`<div style="flex:${n[d]} 1 0;background:${c(d)}"></div>`)}</div>
         <p class="mix-legend" role="group" aria-label=${o.car.sourcesLabel}>
-          ${n.map((d, c) => g`<span><i style="background:${l(d)}"></i>${s[d]}<em>${et(r[c])}</em></span>`)}
+          ${r.map((d, p) => g`<span><i style="background:${c(d)}"></i>${s[d]}<em>${ot(l[p])}</em></span>`)}
         </p>
       </div>`;
   }
   /** Charging power in boost: the card shows the total of all phases, the entity holds the power of one phase. */
   renderPowerFold(t, e) {
     const a = t.entities.wallbox.charging_power;
-    if (!a) return x;
-    const { phases: o, power_min: s, power_max: n, power_step: r } = t.num.wallbox, l = Z(this.hass, a), d = B(this.hass, a), c = d === void 0 ? void 0 : d * o / 1e3;
+    if (!a) return v;
+    const { phases: o, power_min: s, power_max: n, power_step: r } = t.num.wallbox, l = K(this.hass, a), c = B(this.hass, a), d = c === void 0 ? void 0 : c * o / 1e3;
     let p = s / 1e3, h = n / 1e3;
-    const $ = Y(l, "min"), v = Y(l, "max");
-    return $ !== void 0 && (p = Math.max(p, $ * o / 1e3)), v !== void 0 && (h = Math.min(h, v * o / 1e3)), g`<div class="fold ${e ? "open" : ""}" ?inert=${!e}><div>
+    const x = Q(l, "min"), f = Q(l, "max");
+    return x !== void 0 && (p = Math.max(p, x * o / 1e3)), f !== void 0 && (h = Math.min(h, f * o / 1e3)), g`<div class="fold ${e ? "open" : ""}" ?inert=${!e}><div>
         <div class="field">
-          <span class="field-label">${this.t.car.power}</span><span class="field-value">${c === void 0 ? C : k(c, 1)}<small> kW</small></span>
+          <span class="field-label">${this.t.car.power}</span><span class="field-value">${d === void 0 ? M : S(d, 1)}<small> kW</small></span>
           <ed-slider
-            .min=${p} .max=${h} .step=${r / 1e3} .value=${c ?? p}
-            label=${this.t.car.powerLabel} valueText=${c === void 0 ? this.t.noData : `${k(c, 1)} kW`}
-            minLabel="${k(p, 1)} kW" maxLabel="${k(h, 1)} kW"
-            ?disabled=${c === void 0}
+            .min=${p} .max=${h} .step=${r / 1e3} .value=${d ?? p}
+            label=${this.t.car.powerLabel} valueText=${d === void 0 ? this.t.noData : `${S(d, 1)} kW`}
+            minLabel="${S(p, 1)} kW" maxLabel="${S(h, 1)} kW"
+            ?disabled=${d === void 0}
             @hdk-change=${(u) => this.setNumber(a, Math.round(u.detail.value * 1e3 / o), this.t.car.power)}
           ></ed-slider>
         </div>
       </div></div>`;
   }
   renderWallboxGroup(t, e, a, o, s) {
-    const n = this.t, r = t.entities.wallbox, l = !!this._open.wallbox, d = !!(r.block_charging || r.prioritize_connected), c = e.carLink, p = a ? g`<span>${n.wallbox.charging} </span><b style="--c:${o}">${bt(e.car ?? 0, s)}</b>` : c === "connected" || c === "charging" ? g`${n.wallbox.idle}` : c === "disconnected" ? g`${n.wallbox.disconnected}` : g`${C}`, h = t.entities.car.state_of_charge, $ = B(this.hass, h) === void 0 ? void 0 : Ti(Z(this.hass, h)?.last_updated, this._now, n), v = this.shown(r.block_charging), u = this.shown(r.prioritize_connected);
+    const n = this.t, r = t.entities.wallbox, l = !!this._open.wallbox, c = !!(r.block_charging || r.prioritize_connected), d = e.carLink, p = a ? g`<span>${n.wallbox.charging} </span><b style="--c:${o}">${mt(e.car ?? 0, s)}</b>` : d === "connected" || d === "charging" ? g`${n.wallbox.idle}` : d === "disconnected" ? g`${n.wallbox.disconnected}` : g`${M}`, h = t.entities.car.state_of_charge, x = B(this.hass, h) === void 0 ? void 0 : Oi(K(this.hass, h)?.last_updated, this._now, n), f = this.shown(r.block_charging), u = this.shown(r.prioritize_connected);
     return g`<ul class="group">
         <li class=${l ? "open" : ""}>
-          <button type="button" class="row row-btn" aria-expanded=${l ? "true" : "false"} ?disabled=${!d} @click=${() => this.toggle("wallbox")}>
-            <span class="badge" aria-hidden="true" style=${a ? `--bc:${o}` : ""}><svg viewBox="0 0 24 24"><path d=${M.wallbox}></path></svg></span>
+          <button type="button" class="row row-btn" aria-expanded=${l ? "true" : "false"} ?disabled=${!c} @click=${() => this.toggle("wallbox")}>
+            <span class="badge" aria-hidden="true" style=${a ? `--bc:${o}` : ""}><svg viewBox="0 0 24 24"><path d=${T.wallbox}></path></svg></span>
             <span class="row-text"><span class="row-title">${n.wallbox.title}</span><span class="row-sub">${p}</span></span>
-            <span class="row-aside">${$ ? n.wallbox.fromCar($) : ""}</span>
-            ${d ? g`<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d=${M.expand}></path></svg>` : g`<span></span>`}
+            <span class="row-aside">${x ? n.wallbox.fromCar(x) : ""}</span>
+            ${c ? g`<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d=${T.expand}></path></svg>` : g`<span></span>`}
           </button>
-          ${d ? g`<div class="fold ${l ? "open" : ""}" ?inert=${!l}><div>
-                ${r.block_charging ? this.switchRow(n.wallbox.block, r.block_charging, v === "on" ? n.wallbox.blockOn : n.wallbox.blockOff, v === "on") : x}
-                ${r.prioritize_connected ? this.switchRow(n.wallbox.priority, r.prioritize_connected, u === "on" ? n.wallbox.priorityOn : n.wallbox.priorityOff, !1) : x}
-              </div></div>` : x}
+          ${c ? g`<div class="fold ${l ? "open" : ""}" ?inert=${!l}><div>
+                ${r.block_charging ? this.switchRow(n.wallbox.block, r.block_charging, f === "on" ? n.wallbox.blockOn : n.wallbox.blockOff, f === "on") : v}
+                ${r.prioritize_connected ? this.switchRow(n.wallbox.priority, r.prioritize_connected, u === "on" ? n.wallbox.priorityOn : n.wallbox.priorityOff, !1) : v}
+              </div></div>` : v}
         </li>
       </ul>`;
   }
-}, At = 45, dt = 46, lo = 62, co = 58;
-function Nt(i, t) {
+}, Lt = 45, ct = 46, ho = 62, po = 58;
+function Rt(i, t) {
   let e = 1;
   for (; e < i.length - 1 && t > i[e].temp; ) e++;
-  const a = i[e - 1], o = i[e], s = Math.max(0, Math.min(1, (t - a.temp) / (o.temp - a.temp))), n = (d) => [1, 3, 5].map((c) => parseInt(d.slice(c, c + 2), 16)), r = n(a.color), l = n(o.color);
-  return `rgb(${[0, 1, 2].map((d) => Math.round(r[d] + (l[d] - r[d]) * s)).join(",")})`;
+  const a = i[e - 1], o = i[e], s = Math.max(0, Math.min(1, (t - a.temp) / (o.temp - a.temp))), n = (c) => [1, 3, 5].map((d) => parseInt(c.slice(d, d + 2), 16)), r = n(a.color), l = n(o.color);
+  return `rgb(${[0, 1, 2].map((c) => Math.round(r[c] + (l[c] - r[c]) * s)).join(",")})`;
 }
-const $t = (i, t) => {
+const wt = (i, t) => {
   const e = (135 + 270 * i) * Math.PI / 180;
-  return [lo + t * Math.cos(e), co + t * Math.sin(e)];
-}, ho = (i, t) => {
-  const [e, a] = $t(i, dt), [o, s] = $t(t, dt);
-  return `M${e.toFixed(2)} ${a.toFixed(2)} A${dt} ${dt} 0 0 1 ${o.toFixed(2)} ${s.toFixed(2)}`;
+  return [ho + t * Math.cos(e), po + t * Math.sin(e)];
+}, uo = (i, t) => {
+  const [e, a] = wt(i, ct), [o, s] = wt(t, ct);
+  return `M${e.toFixed(2)} ${a.toFixed(2)} A${ct} ${ct} 0 0 1 ${o.toFixed(2)} ${s.toFixed(2)}`;
 };
-function po(i, t, e, a) {
-  const o = i === void 0 ? 0 : Math.max(0, Math.min(1, (i - t) / (e - t))), s = "var(--ed-gauge-track)", n = Array.from({ length: At }, ($, v) => {
-    const u = (v + 0.5) / At, b = i !== void 0 && u <= o ? Nt(a, t + u * (e - t)) : s;
-    return pt`<path d=${ho(v / At, Math.min(1, (v + 1) / At + 4e-3))} fill="none" stroke=${b} stroke-width="10"></path>`;
-  }), [r, l] = $t(0, dt), [d, c] = $t(1, dt), [p, h] = $t(o, dt);
-  return pt`<svg viewBox="0 0 124 112" width="108" height="98" aria-hidden="true">
+function go(i, t, e, a) {
+  const o = i === void 0 ? 0 : Math.max(0, Math.min(1, (i - t) / (e - t))), s = "var(--ed-gauge-track)", n = Array.from({ length: Lt }, (x, f) => {
+    const u = (f + 0.5) / Lt, b = i !== void 0 && u <= o ? Rt(a, t + u * (e - t)) : s;
+    return ut`<path d=${uo(f / Lt, Math.min(1, (f + 1) / Lt + 4e-3))} fill="none" stroke=${b} stroke-width="10"></path>`;
+  }), [r, l] = wt(0, ct), [c, d] = wt(1, ct), [p, h] = wt(o, ct);
+  return ut`<svg viewBox="0 0 124 112" width="108" height="98" aria-hidden="true">
     ${n}
-    <circle cx=${r.toFixed(1)} cy=${l.toFixed(1)} r="5" fill=${i !== void 0 && o > 0 ? Nt(a, t) : s}></circle>
-    <circle cx=${d.toFixed(1)} cy=${c.toFixed(1)} r="5" fill=${i !== void 0 && o >= 0.99 ? Nt(a, e) : s}></circle>
-    ${i === void 0 ? null : pt`<circle class="knob" cx=${p.toFixed(1)} cy=${h.toFixed(1)} r="6.5" fill="#ffffff" stroke="var(--ed-tile)" stroke-width="2.5"></circle>`}
+    <circle cx=${r.toFixed(1)} cy=${l.toFixed(1)} r="5" fill=${i !== void 0 && o > 0 ? Rt(a, t) : s}></circle>
+    <circle cx=${c.toFixed(1)} cy=${d.toFixed(1)} r="5" fill=${i !== void 0 && o >= 0.99 ? Rt(a, e) : s}></circle>
+    ${i === void 0 ? null : ut`<circle class="knob" cx=${p.toFixed(1)} cy=${h.toFixed(1)} r="6.5" fill="#ffffff" stroke="var(--ed-tile)" stroke-width="2.5"></circle>`}
   </svg>`;
 }
-const uo = (i) => class extends i {
+const bo = (i) => class extends i {
   renderWater(t, e) {
-    const a = this.t, o = t.entities, s = t.num.flows, n = H(e.boil, s.idle_threshold), r = Be(e.share, s, a), l = this.sourceColor(r), c = this.shown(o.boiler.boost) === "on", p = Yt([n ? e.boil : void 0], s.kw_from);
+    const a = this.t, o = t.entities, s = t.num.flows, n = H(e.boil, s.idle_threshold), r = He(e.loadShare.boil, s, a), l = this.sourceColor(r), d = this.shown(o.boiler.boost) === "on", p = Qt([n ? e.boil : void 0], s.kw_from);
     let h;
-    return n ? h = `${a.water.boilerHeats(r.text)}${c ? ` · ${a.boostOptions.on}` : ""}` : e.boil !== void 0 && (h = a.water.noHeating), g`<section class="panel" aria-labelledby="h-water">
+    return n ? h = `${a.water.boilerHeats(r.text)}${d ? ` · ${a.boostOptions.on}` : ""}` : e.boil !== void 0 && (h = a.water.noHeating), g`<section class="panel" aria-labelledby="h-water">
         <div class="head"><h2 id="h-water">${t.titles.water ?? a.titles.water}</h2>${this.stateLine(h, n ? l : void 0)}</div>
         <div class="water">
           ${this.renderBoilerTile(t, e, n, l, p)} ${this.renderMixing(t)} ${this.renderTankTile(t)}
@@ -4140,63 +4146,63 @@ const uo = (i) => class extends i {
   /** The common frame of a water tile: the gauge on the left, name, state and main control on the right. */
   gauge(t, e, a, o, s) {
     return g`<div class="arc" role="img" aria-label=${s}>
-        ${po(t, e, a, o.tempScale)}
-        <div class="arc-num"><b>${t === void 0 ? C : k(t)}</b>${t === void 0 ? g`<span class="sr-only">${this.t.noData}</span>` : g`<span>°C</span>`}</div>
-        <span class="arc-min" aria-hidden="true">${k(e)}</span><span class="arc-max" aria-hidden="true">${k(a)}</span>
+        ${go(t, e, a, o.tempScale)}
+        <div class="arc-num"><b>${t === void 0 ? M : S(t)}</b>${t === void 0 ? g`<span class="sr-only">${this.t.noData}</span>` : g`<span>°C</span>`}</div>
+        <span class="arc-min" aria-hidden="true">${S(e)}</span><span class="arc-max" aria-hidden="true">${S(a)}</span>
       </div>`;
   }
   renderBoilerTile(t, e, a, o, s) {
     const n = this.t, r = t.entities.boiler;
     t.num.boiler;
-    const l = this.shown(r.boost), d = l === "on", c = B(this.hass, r.target_temperature), p = B(this.hass, r.boost_target_temperature), h = d ? p : c, $ = t.num.water.gauge_min, v = Math.max(t.num.water.gauge_max, c ?? 0), u = e.boilTemp, b = !!this._open.targets, m = !!(r.target_temperature || r.boost_target_temperature), w = n.water.boilerLabel(
-      u === void 0 ? n.noData : `${k(u)} °C`,
-      a ? n.water.heatingWith(bt(e.boil, s)) : n.water.notHeating,
-      h === void 0 ? void 0 : `${k(h)} °C`,
-      k($),
-      `${k(v)} °C`
+    const l = this.shown(r.boost), c = l === "on", d = B(this.hass, r.target_temperature), p = B(this.hass, r.boost_target_temperature), h = c ? p : d, x = t.num.water.gauge_min, f = Math.max(t.num.water.gauge_max, d ?? 0), u = e.boilTemp, b = !!this._open.targets, m = !!(r.target_temperature || r.boost_target_temperature), w = n.water.boilerLabel(
+      u === void 0 ? n.noData : `${S(u)} °C`,
+      a ? n.water.heatingWith(mt(e.boil, s)) : n.water.notHeating,
+      h === void 0 ? void 0 : `${S(h)} °C`,
+      S(x),
+      `${S(f)} °C`
     );
     return g`<div class="source">
         <div class="source-top">
-          ${this.gauge(u, $, v, t, w)}
+          ${this.gauge(u, x, f, t, w)}
           <div class="source-body">
             <div>
               <div class="source-title">${n.water.boilerTitle}</div>
               <div class="source-line">
-                <span class="src" style="--c:${a ? o : "var(--ed-secondary)"}">${a ? bt(e.boil, s) : e.boil === void 0 ? C : n.water.notHeating}</span>${h === void 0 ? x : g` <span class="dim">· ${n.water.target(`${k(h)} °C`)}</span>`}
+                <span class="src" style="--c:${a ? o : "var(--ed-secondary)"}">${a ? mt(e.boil, s) : e.boil === void 0 ? M : n.water.notHeating}</span>${h === void 0 ? v : g` <span class="dim">· ${n.water.target(`${S(h)} °C`)}</span>`}
               </div>
             </div>
             ${r.boost ? g`<ed-segmented
                   compact guarded .options=${this.boostOptions} .value=${l ?? ""} label=${n.water.boostMode} .hint=${n.hint.holdDragOrDouble} ?disabled=${l === void 0}
                   .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
-                  @hdk-select=${(S) => this.setBoost("boiler", S.detail.value === "on")}
-                ></ed-segmented>` : x}
+                  @hdk-select=${(k) => this.setBoost("boiler", k.detail.value === "on")}
+                ></ed-segmented>` : v}
           </div>
         </div>
         ${m ? g`<div class="subrow">
               <button type="button" class="rowbtn" aria-expanded=${b ? "true" : "false"} @click=${() => this.toggle("targets")}>
                 <span class="rowbtn-title">${n.water.targets}</span>
-                <span class="rowbtn-value">${n.water.targetFlow} <b>${c === void 0 ? C : k(c)}</b> · ${n.water.targetBoost} <b>${p === void 0 ? C : `${k(p)} °C`}</b></span>
-                <svg class="chevron ${b ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${M.expand}></path></svg>
+                <span class="rowbtn-value">${n.water.targetFlow} <b>${d === void 0 ? M : S(d)}</b> · ${n.water.targetBoost} <b>${p === void 0 ? M : `${S(p)} °C`}</b></span>
+                <svg class="chevron ${b ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${T.expand}></path></svg>
               </button>
-              <div class="fold ${b ? "open" : ""}" ?inert=${!b}><div>${this.renderTargets(t, c, p)}</div></div>
-            </div>` : x}
+              <div class="fold ${b ? "open" : ""}" ?inert=${!b}><div>${this.renderTargets(t, d, p)}</div></div>
+            </div>` : v}
       </div>`;
   }
   /** The two targets of the boiler: Přetoky may not be below Boost (CURRENT_SPEC.md, Cíle ohřevu). */
   renderTargets(t, e, a) {
-    const o = this.t, s = t.entities.boiler, n = t.num.boiler, r = (l, d, c, p, h, $) => {
-      if (!l) return x;
-      const v = Z(this.hass, l);
+    const o = this.t, s = t.entities.boiler, n = t.num.boiler, r = (l, c, d, p, h, x) => {
+      if (!l) return v;
+      const f = K(this.hass, l);
       let u = n.target_min, b = n.target_max;
-      const m = Y(v, "min"), w = Y(v, "max");
-      return m !== void 0 && (u = Math.max(u, m)), w !== void 0 && (b = Math.min(b, w)), h !== void 0 && (u = Math.max(u, h)), $ !== void 0 && (b = Math.min(b, $)), g`<div class="field">
-          <span class="field-label">${c}<span class="hint">${p}</span></span><span class="field-value">${d === void 0 ? C : k(d)}<small> °C</small></span>
+      const m = Q(f, "min"), w = Q(f, "max");
+      return m !== void 0 && (u = Math.max(u, m)), w !== void 0 && (b = Math.min(b, w)), h !== void 0 && (u = Math.max(u, h)), x !== void 0 && (b = Math.min(b, x)), g`<div class="field">
+          <span class="field-label">${d}<span class="hint">${p}</span></span><span class="field-value">${c === void 0 ? M : S(c)}<small> °C</small></span>
           <ed-slider
-            .min=${u} .max=${b} .step=${n.target_step} .value=${d ?? u}
-            label=${o.water.targetSliderLabel(c)} valueText=${d === void 0 ? o.noData : o.water.targetSliderSpoken(`${d} °C`, c)}
-            minLabel="${k(u)} °C" maxLabel="${k(b)} °C"
-            ?disabled=${d === void 0}
-            @hdk-change=${(S) => this.setNumber(l, S.detail.value, o.water.targetWhat(c))}
+            .min=${u} .max=${b} .step=${n.target_step} .value=${c ?? u}
+            label=${o.water.targetSliderLabel(d)} valueText=${c === void 0 ? o.noData : o.water.targetSliderSpoken(`${c} °C`, d)}
+            minLabel="${S(u)} °C" maxLabel="${S(b)} °C"
+            ?disabled=${c === void 0}
+            @hdk-change=${(k) => this.setNumber(l, k.detail.value, o.water.targetWhat(d))}
           ></ed-slider>
         </div>`;
     };
@@ -4209,8 +4215,8 @@ const uo = (i) => class extends i {
   /** Mixing: a capsule between the two tiles, joined to them by lines (solid when on, dotted when off). */
   renderMixing(t) {
     const e = t.entities.mixing;
-    if (!e.valve_c1 && !e.valve_c2) return x;
-    const a = Di(this.shown(e.valve_c1), this.shown(e.valve_c2)), o = a === "on", s = !!(e.valve_c1 && e.valve_c2), n = a === "unclear" ? this.t.water.mixingUnclear : a === void 0 ? this.t.noData : "";
+    if (!e.valve_c1 && !e.valve_c2) return v;
+    const a = zi(this.shown(e.valve_c1), this.shown(e.valve_c2)), o = a === "on", s = !!(e.valve_c1 && e.valve_c2), n = a === "unclear" ? this.t.water.mixingUnclear : a === void 0 ? this.t.noData : "";
     return g`
         <div class="link ${o ? "on" : ""}" aria-hidden="true"></div>
         <div class="mixcap" role="group" aria-labelledby="l-mix">
@@ -4218,7 +4224,7 @@ const uo = (i) => class extends i {
             <path d="M12 2.5 C12 2.5 5.5 10 5.5 15 A6.5 6.5 0 0 0 12 21.5 Z" fill=${o ? t.colors.cold : "var(--ed-off)"}></path>
             <path d="M12 2.5 C12 2.5 18.5 10 18.5 15 A6.5 6.5 0 0 1 12 21.5 Z" fill=${o ? t.colors.hot : "var(--ed-off)"}></path>
           </svg>
-          <span class="mixcap-text"><span id="l-mix" style=${o ? "" : "color:var(--ed-secondary)"}>${this.t.water.mixing}</span>${n ? g`<span class="mixcap-note">${n}</span>` : x}</span>
+          <span class="mixcap-text"><span id="l-mix" style=${o ? "" : "color:var(--ed-secondary)"}>${this.t.water.mixing}</span>${n ? g`<span class="mixcap-note">${n}</span>` : v}</span>
           <ed-switch
             guarded hintPlacement="above" label=${this.t.water.mixing} .hint=${this.t.hint.holdOrDouble} .checked=${o} ?disabled=${a === void 0 || !s}
             .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
@@ -4228,69 +4234,69 @@ const uo = (i) => class extends i {
         <div class="link ${o ? "on" : ""}" aria-hidden="true"></div>`;
   }
   renderTankTile(t) {
-    const e = this.t, a = t.entities.tank, o = t.num.tank, s = a.water_heater, n = Z(this.hass, s), r = this.shown(s), l = r === "off", d = r === "heat", c = Y(n, "temperature"), p = this._tankTemp, h = p && p.id === s ? p.value : c, $ = t.num.water.gauge_min, v = Math.max(t.num.water.gauge_max, B(this.hass, t.entities.boiler.target_temperature) ?? 0), u = l ? o.temp_min : h, b = Array.isArray(n?.attributes?.operation_list) ? n.attributes.operation_list : Object.keys(e.tank.modes), m = Object.keys(e.tank.modes).filter((T) => b.includes(T)).map((T) => ({ value: T, label: e.tank.modes[T] })), w = !!this._open.tank, { min: S, max: A } = this.tankRange(t), f = r === void 0 ? C : e.tank.modes[r] ?? r, E = l ? e.tank.keepsMinimum : d ? e.tank.setManually : e.tank.byPlan, D = u === void 0 ? C : l ? e.tank.summaryOff(`${k(o.temp_min)} °C`) : (d ? e.tank.summaryManual : e.tank.summaryPlan)(`${k(u)} °C`), P = e.tank.label(
-      u === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${k(o.temp_min)} °C`) : e.tank.settingSet(`${k(u)} °C`),
-      f,
-      k($),
-      `${k(v)} °C`
+    const e = this.t, a = t.entities.tank, o = t.num.tank, s = a.water_heater, n = K(this.hass, s), r = this.shown(s), l = r === "off", c = r === "heat", d = Q(n, "temperature"), p = this._tankTemp, h = p && p.id === s ? p.value : d, x = t.num.water.gauge_min, f = Math.max(t.num.water.gauge_max, B(this.hass, t.entities.boiler.target_temperature) ?? 0), u = l ? o.temp_min : h, b = Array.isArray(n?.attributes?.operation_list) ? n.attributes.operation_list : Object.keys(e.tank.modes), m = Object.keys(e.tank.modes).filter((O) => b.includes(O)).map((O) => ({ value: O, label: e.tank.modes[O] })), w = !!this._open.tank, { min: k, max: D } = this.tankRange(t), $ = r === void 0 ? M : e.tank.modes[r] ?? r, _ = l ? e.tank.keepsMinimum : c ? e.tank.setManually : e.tank.byPlan, N = u === void 0 ? M : l ? e.tank.summaryOff(`${S(o.temp_min)} °C`) : (c ? e.tank.summaryManual : e.tank.summaryPlan)(`${S(u)} °C`), j = e.tank.label(
+      u === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${S(o.temp_min)} °C`) : e.tank.settingSet(`${S(u)} °C`),
+      $,
+      S(x),
+      `${S(f)} °C`
     );
     return g`<div class="source">
         <div class="source-top">
-          ${this.gauge(u, $, v, t, P)}
+          ${this.gauge(u, x, f, t, j)}
           <div class="source-body">
             <div>
               <div class="source-title">${e.tank.title}</div>
-              <div class="source-line"><span class="src" style="--c:${d ? "var(--ed-text)" : "var(--ed-secondary)"}">${f}</span>${r === void 0 ? x : g` <span class="dim">· ${E}</span>`}</div>
+              <div class="source-line"><span class="src" style="--c:${c ? "var(--ed-text)" : "var(--ed-secondary)"}">${$}</span>${r === void 0 ? v : g` <span class="dim">· ${_}</span>`}</div>
             </div>
-            ${s ? g`<ed-segmented compact .options=${m} .value=${r ?? ""} label=${e.tank.modeLabel} ?disabled=${r === void 0} @hdk-select=${(T) => this.setTank(s, T.detail.value)}></ed-segmented>` : x}
+            ${s ? g`<ed-segmented compact .options=${m} .value=${r ?? ""} label=${e.tank.modeLabel} ?disabled=${r === void 0} @hdk-select=${(O) => this.setTank(s, O.detail.value)}></ed-segmented>` : v}
           </div>
         </div>
         ${s ? g`<div class="subrow">
               <button type="button" class="rowbtn" aria-expanded=${w ? "true" : "false"} @click=${() => this.toggle("tank")}>
                 <span class="rowbtn-title">${e.tank.temperature}</span>
-                <span class="rowbtn-value">${D}</span>
-                <svg class="chevron ${w ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${M.expand}></path></svg>
+                <span class="rowbtn-value">${N}</span>
+                <svg class="chevron ${w ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${T.expand}></path></svg>
               </button>
               <div class="fold ${w ? "open" : ""}" ?inert=${!w}><div>
                 <div class="detail">
                   <div class="field ${l ? "off" : ""}">
-                    <span class="field-label">${e.tank.temperature}<span class="hint">${l ? e.tank.hintOff : d ? e.tank.hintManual : e.tank.hintPlan}</span></span>
-                    <span class="field-value">${u === void 0 ? C : k(u)}<small> °C</small></span>
+                    <span class="field-label">${e.tank.temperature}<span class="hint">${l ? e.tank.hintOff : c ? e.tank.hintManual : e.tank.hintPlan}</span></span>
+                    <span class="field-value">${u === void 0 ? M : S(u)}<small> °C</small></span>
                     <ed-slider
-                      .min=${S} .max=${A} .step=${o.temp_step} .tickStep=${5} .value=${u ?? S}
+                      .min=${k} .max=${D} .step=${o.temp_step} .tickStep=${5} .value=${u ?? k}
                       label=${e.tank.sliderLabel} valueText=${h === void 0 ? e.noData : e.tank.sliderSpoken(`${h} °C`)}
-                      minLabel="${k(S)} °C" maxLabel="${k(A)} °C"
+                      minLabel="${S(k)} °C" maxLabel="${S(D)} °C"
                       ?disabled=${h === void 0 || l}
-                      @hdk-change=${(T) => this.setTankTemperature(s, T.detail.value, r)}
+                      @hdk-change=${(O) => this.setTankTemperature(s, O.detail.value, r)}
                     ></ed-slider>
                   </div>
                 </div>
               </div></div>
-            </div>` : x}
+            </div>` : v}
       </div>`;
   }
-}, oe = class oe extends uo(ro(so(oo(G)))) {
+}, ne = class ne extends bo(co(lo(no(Z)))) {
   // ----------------------------------------------------------------- render
   render() {
     const t = this._config;
-    if (!t) return x;
-    const e = Oi(this.hass, t, this.t), a = t.colors, o = `--ed-sun:${a.sun};--ed-battery:${a.battery};--ed-grid:${a.grid};--ed-house:${a.house};--ed-car:${a.car};--ed-boiler:${a.boiler};--ed-accent:${a.accent};--ed-warning:${a.warning};--ed-off:${a.neutral}`;
+    if (!t) return v;
+    const e = Di(this.hass, t, this.t), a = t.colors, o = `--ed-sun:${a.sun};--ed-battery:${a.battery};--ed-grid:${a.grid};--ed-house:${a.house};--ed-car:${a.car};--ed-boiler:${a.boiler};--ed-accent:${a.accent};--ed-warning:${a.warning};--ed-off:${a.neutral}`;
     return g`<div class="page" style=${o} @keydown=${this.onKey}>
-      ${t.title === "" ? x : g`<h1>${t.title ?? this.t.title}</h1>`} ${this.renderAlerts(t, e)} ${this.renderElectricity(t, e)} ${this.renderCar(t, e)}
+      ${t.title === "" ? v : g`<h1>${t.title ?? this.t.title}</h1>`} ${this.renderAlerts(t, e)} ${this.renderElectricity(t, e)} ${this.renderCar(t, e)}
       ${this.renderWater(t, e)}
       <p class="feedback" aria-live="polite">${this._feedback}</p>
     </div>`;
   }
 };
-oe.styles = Bi;
-let Rt = oe;
-ci("ed");
-customElements.get("ha-energie-dashboard") || customElements.define("ha-energie-dashboard", Rt);
+ne.styles = Hi;
+let Ut = ne;
+pi("ed");
+customElements.get("ha-energie-dashboard") || customElements.define("ha-energie-dashboard", Ut);
 window.customCards = window.customCards ?? [];
 window.customCards.some((i) => i.type === "ha-energie-dashboard") || window.customCards.push({
   type: "ha-energie-dashboard",
   name: "Energie Dashboard",
   // The card picker has no `hass` yet: the language Home Assistant set on the page.
-  description: Dt(bi()).t.cardDescription,
+  description: zt(fi()).t.cardDescription,
   preview: !1
 });
