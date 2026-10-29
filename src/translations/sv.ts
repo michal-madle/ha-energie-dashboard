@@ -63,7 +63,7 @@ export const sv: Texts = {
     houseOther: "övrig förbrukning",
     charging: "laddar",
     heating: "värmer",
-    belowReserve: "under reserven",
+    atReserve: "på reserven",
     chargeLevel: (value: string) => `laddning ${value}`,
     temperature: (value: string) => `temperatur ${value}`,
     batteryState: (discharging: boolean) => (discharging ? "urladdning" : "laddning"),
@@ -77,7 +77,7 @@ export const sv: Texts = {
     carConnectedIdle: "ansluten, laddar inte",
     heating: (power: string) => `värmer ${power}`,
     level: "Laddning",
-    belowReserve: "under reserven",
+    atReserve: "på reserven",
     temperature: "Temperatur",
     rows: {
       discharged: "Urladdat idag",

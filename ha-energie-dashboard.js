@@ -1408,7 +1408,7 @@ const ki = {
     houseOther: "ostatní spotřeba",
     charging: "nabíjí",
     heating: "ohřev",
-    belowReserve: "pod rezervou",
+    atReserve: "na rezervě",
     chargeLevel: (i) => `nabití ${i}`,
     temperature: (i) => `teplota ${i}`,
     batteryState: (i) => i ? "vybíjení" : "nabíjení"
@@ -1422,7 +1422,7 @@ const ki = {
     carConnectedIdle: "připojeno, nenabíjí",
     heating: (i) => `ohřev ${i}`,
     level: "Nabití",
-    belowReserve: "pod rezervou",
+    atReserve: "na rezervě",
     temperature: "Teplota",
     rows: {
       discharged: "Dnes vybito",
@@ -1587,7 +1587,7 @@ const ki = {
     houseOther: "other consumption",
     charging: "charging",
     heating: "heating",
-    belowReserve: "below reserve",
+    atReserve: "at reserve",
     chargeLevel: (i) => `charge ${i}`,
     temperature: (i) => `temperature ${i}`,
     batteryState: (i) => i ? "discharging" : "charging"
@@ -1600,7 +1600,7 @@ const ki = {
     carConnectedIdle: "plugged in, not charging",
     heating: (i) => `heating ${i}`,
     level: "Charge",
-    belowReserve: "below reserve",
+    atReserve: "at reserve",
     temperature: "Temperature",
     rows: {
       discharged: "Discharged today",
@@ -1758,7 +1758,7 @@ const ki = {
     houseOther: "övrig förbrukning",
     charging: "laddar",
     heating: "värmer",
-    belowReserve: "under reserven",
+    atReserve: "på reserven",
     chargeLevel: (i) => `laddning ${i}`,
     temperature: (i) => `temperatur ${i}`,
     batteryState: (i) => i ? "urladdning" : "laddning"
@@ -1771,7 +1771,7 @@ const ki = {
     carConnectedIdle: "ansluten, laddar inte",
     heating: (i) => `värmer ${i}`,
     level: "Laddning",
-    belowReserve: "under reserven",
+    atReserve: "på reserven",
     temperature: "Temperatur",
     rows: {
       discharged: "Urladdat idag",
@@ -3801,7 +3801,7 @@ const M = {
   }
   /** The level of a tile (battery, car, boiler) as the fill of its background. */
   tiles(t, e, a) {
-    const o = this.t, s = t.entities, n = t.num.scale, r = t.num.flows.idle_threshold, l = e.carLink, d = e.soc, c = d !== void 0 && d <= this.batteryReserve(t), p = (f) => d === void 0 ? void 0 : { f: d / 100, active: f, color: c ? "var(--ed-warning)" : "var(--ed-battery)", a1: c ? 0.5 : 0.58 }, h = (f) => `${o.tileSpoken.batteryState(f)}, ${d === void 0 ? o.noData : o.tileSpoken.chargeLevel(et(d))}${c ? `, ${o.tileSpoken.belowReserve}` : ""}`, $ = l === "connected" || l === "charging" || H(e.car, r), v = t.num.water.gauge_min, u = Math.max(t.num.water.gauge_max, B(this.hass, s.boiler.target_temperature) ?? 0), b = e.boilTemp, m = (f) => H(f, r), w = W.filter((f) => e.share[f] >= 0.02), S = m(e.other) && w.length ? w.length === 1 ? `linear-gradient(135deg, ${rt(`var(${X[w[0]]})`, 40)}, ${rt(`var(${X[w[0]]})`, 12)}), var(--ed-tile)` : `linear-gradient(135deg, ${w.map((f, E) => {
+    const o = this.t, s = t.entities, n = t.num.scale, r = t.num.flows.idle_threshold, l = e.carLink, d = e.soc, c = d !== void 0 && d <= this.batteryReserve(t), p = (f) => d === void 0 ? void 0 : { f: d / 100, active: f, color: c ? "var(--ed-warning)" : "var(--ed-battery)", a1: c ? 0.5 : 0.58 }, h = (f) => `${o.tileSpoken.batteryState(f)}, ${d === void 0 ? o.noData : o.tileSpoken.chargeLevel(et(d))}${c ? `, ${o.tileSpoken.atReserve}` : ""}`, $ = l === "connected" || l === "charging" || H(e.car, r), v = t.num.water.gauge_min, u = Math.max(t.num.water.gauge_max, B(this.hass, s.boiler.target_temperature) ?? 0), b = e.boilTemp, m = (f) => H(f, r), w = W.filter((f) => e.share[f] >= 0.02), S = m(e.other) && w.length ? w.length === 1 ? `linear-gradient(135deg, ${rt(`var(${X[w[0]]})`, 40)}, ${rt(`var(${X[w[0]]})`, 12)}), var(--ed-tile)` : `linear-gradient(135deg, ${w.map((f, E) => {
       const D = w.slice(0, E).reduce((P, T) => P + e.share[T], 0);
       return `${rt(`var(${X[f]})`, 40)} ${((D + e.share[f] / 2) * 100).toFixed(0)}%`;
     }).join(", ")}), var(--ed-tile)` : void 0, A = [
@@ -3921,7 +3921,7 @@ const M = {
     const n = this.t, r = a.num.flows.idle_threshold, l = this.today(a), d = (O) => O === void 0 ? C : `${me(O)} kWh`, c = (O) => O === void 0 ? C : bt(O, s), p = (O) => H(O, r), h = o.soc, $ = h !== void 0 && h <= this.batteryReserve(a), v = (O) => ({
       title: O ? n.tile.bat : n.tile.batIn,
       now: O ? p(o.batDis) ? n.pop.discharging(c(o.batDis)) : o.batDis === void 0 && h === void 0 ? C : n.idle.bat : p(o.batIn) ? n.pop.charging(c(o.batIn)) : o.batIn === void 0 && h === void 0 ? C : n.idle.batIn,
-      level: h === void 0 ? void 0 : { label: n.pop.level, text: et(h), percent: h, color: $ ? "var(--ed-warning)" : "var(--ed-battery)", note: $ ? n.pop.belowReserve : "" },
+      level: h === void 0 ? void 0 : { label: n.pop.level, text: et(h), percent: h, color: $ ? "var(--ed-warning)" : "var(--ed-battery)", note: $ ? n.pop.atReserve : "" },
       rows: O ? [{ label: n.pop.rows.discharged, value: d(l.bdis) }] : [{ label: n.pop.rows.charged, value: d(l.bchg) }]
     }), u = (O) => ({
       title: O ? n.tile.gridOut : n.tile.grid,

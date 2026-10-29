@@ -79,7 +79,7 @@ export const cs = {
     houseOther: "ostatní spotřeba",
     charging: "nabíjí",
     heating: "ohřev",
-    belowReserve: "pod rezervou",
+    atReserve: "na rezervě",
     chargeLevel: (value: string) => `nabití ${value}`,
     temperature: (value: string) => `teplota ${value}`,
     batteryState: (discharging: boolean): string => (discharging ? "vybíjení" : "nabíjení"),
@@ -94,7 +94,7 @@ export const cs = {
     carConnectedIdle: "připojeno, nenabíjí",
     heating: (power: string) => `ohřev ${power}`,
     level: "Nabití",
-    belowReserve: "pod rezervou",
+    atReserve: "na rezervě",
     temperature: "Teplota",
     rows: {
       discharged: "Dnes vybito",

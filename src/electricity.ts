@@ -100,7 +100,7 @@ export const withElectricity = <T extends Constructor<CardBase>>(Base: T) =>
       const batLevel = (active: boolean): Level | undefined =>
         soc === undefined ? undefined : { f: soc / 100, active, color: low ? "var(--ed-warning)" : "var(--ed-battery)", a1: low ? 0.5 : 0.58 };
       const batText = (discharging: boolean) =>
-        `${t.tileSpoken.batteryState(discharging)}, ${soc === undefined ? t.noData : t.tileSpoken.chargeLevel(formatPercent(soc))}${low ? `, ${t.tileSpoken.belowReserve}` : ""}`;
+        `${t.tileSpoken.batteryState(discharging)}, ${soc === undefined ? t.noData : t.tileSpoken.chargeLevel(formatPercent(soc))}${low ? `, ${t.tileSpoken.atReserve}` : ""}`;
       const carConnected = link === "connected" || link === "charging" || isOn(model.car, idle);
       const gMin = s.num.water.gauge_min;
       const gMax = Math.max(s.num.water.gauge_max, readNumber(this.hass, e.boiler.target_temperature) ?? 0);
@@ -262,7 +262,7 @@ export const withElectricity = <T extends Constructor<CardBase>>(Base: T) =>
         now: out
           ? on(model.batDis) ? t.pop.discharging(p(model.batDis)) : model.batDis === undefined && soc === undefined ? NO_DATA : t.idle.bat
           : on(model.batIn) ? t.pop.charging(p(model.batIn)) : model.batIn === undefined && soc === undefined ? NO_DATA : t.idle.batIn,
-        level: soc === undefined ? undefined : { label: t.pop.level, text: formatPercent(soc), percent: soc, color: low ? "var(--ed-warning)" : "var(--ed-battery)", note: low ? t.pop.belowReserve : "" },
+        level: soc === undefined ? undefined : { label: t.pop.level, text: formatPercent(soc), percent: soc, color: low ? "var(--ed-warning)" : "var(--ed-battery)", note: low ? t.pop.atReserve : "" },
         rows: out ? [{ label: t.pop.rows.discharged, value: kwh(day.bdis) }] : [{ label: t.pop.rows.charged, value: kwh(day.bchg) }],
       });
       const gridInfo = (out: boolean): PopInfo => ({

@@ -63,7 +63,7 @@ export const en: Texts = {
     houseOther: "other consumption",
     charging: "charging",
     heating: "heating",
-    belowReserve: "below reserve",
+    atReserve: "at reserve",
     chargeLevel: (value: string) => `charge ${value}`,
     temperature: (value: string) => `temperature ${value}`,
     batteryState: (discharging: boolean) => (discharging ? "discharging" : "charging"),
@@ -77,7 +77,7 @@ export const en: Texts = {
     carConnectedIdle: "plugged in, not charging",
     heating: (power: string) => `heating ${power}`,
     level: "Charge",
-    belowReserve: "below reserve",
+    atReserve: "at reserve",
     temperature: "Temperature",
     rows: {
       discharged: "Discharged today",

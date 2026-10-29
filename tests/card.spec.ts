@@ -314,7 +314,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
 
   test("dlaždice: hladina, rezerva baterie a barva Domu", async ({ page }) => {
     test.setTimeout(90000);
-    await test.step("hladina v dlaždici: baterie, auto a bojler jako výplň pozadí; baterie pod rezervou oranžově", async () => {
+    await test.step("hladina v dlaždici: baterie, auto a bojler jako výplň pozadí; baterie na rezervě oranžově", async () => {
       await open(page, "day");
       const bat = await tile(page, "batIn");
       expect(bat.style).toMatch(/linear-gradient\(90deg.*88\.0%/);
@@ -325,6 +325,13 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await update(page, { "sensor.goodwe_battery_state_of_charge": "15" });
       expect((await tile(page, "batIn")).style).toContain("var(--ed-warning)");
       expect((await tile(page, "bat")).style).toContain("15.0%");
+      // Na rezervě (20 %), ne „pod“: střídač pod rezervu nevybije (uživatel 29. 10.).
+      await update(page, { "sensor.goodwe_battery_state_of_charge": "20" });
+      await page.locator('.tile[data-tile="batIn"]').click();
+      const pop = page.getByRole("dialog", { name: "Baterie" });
+      await expect(pop).toContainText("na rezervě");
+      await expect(pop).not.toContainText("pod rezervou");
+      await page.keyboard.press("Escape");
     });
     await test.step("rezerva baterie se bere z nastavení střídače (100 − hloubka vybití), jinak z battery.reserve", async () => {
       await open(page, "day");
