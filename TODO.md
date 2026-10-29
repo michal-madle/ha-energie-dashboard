@@ -3,7 +3,7 @@
 Jen to, co čeká na vaši odpověď nebo na ověření v živém Home Assistantu a na iPhonu 14 Pro (Apple Human Interface Guidelines). **Nejsou součástí zadání**: platí `CURRENT_SPEC.md`. Kde se v kitu dá sdílet kód, je to v `TODO.md` kitu (K1–K3).
 
 Pravidla:
-- Čísla E1–E18 jsou trvalá (odkazuje se na ně ze `CURRENT_SPEC.md`, `ENTITY_MAP.md` a `AUDIT.md`). Vyřízený bod se odsud smaže (platné chování je ve specifikaci) a jeho číslo se nepoužije znovu; nový bod dostane další volné číslo.
+- Čísla E1–E19 jsou trvalá (odkazuje se na ně ze `CURRENT_SPEC.md`, `ENTITY_MAP.md` a `AUDIT.md`). Vyřízený bod se odsud smaže (platné chování je ve specifikaci) a jeho číslo se nepoužije znovu; nový bod dostane další volné číslo.
 - Do TODO patří jen jasná otázka nebo jasný úkol. Co jste potvrdil, je ve specifikaci; nápady bez vaší žádosti se nevedou.
 - Druh: **Rozhodnutí** (čeká na vás), **Ověření** (v živém Home Assistantu nebo na zařízení), **Návrh** (zlepšení, které jste chtěl nebo odsouhlasil směr).
 
@@ -31,6 +31,7 @@ Konsolidace 28. 10.: čísla přepsána od E1. Smazáno: popisné body bez otáz
 | [E16](#e16) | Rozhodnutí | Modrá Síť × modrý akcent ovladačů |
 | [E17](#e17) | Rozhodnutí | Prototyp: co jsem rozhodl sám |
 | [E18](#e18) | Návrh | Zvýšený kontrast a skleněný jezdec při dotyku |
+| [E19](#e19) | Ověření | Přednost před bojlerem: spínač neodpovídá AZ Routeru |
 
 <a id="e1"></a>
 ## E1 Kdy jsou data zastaralá · Rozhodnutí
@@ -131,3 +132,8 @@ Potvrdit, nebo změnit:
 ## E18 Zvýšený kontrast a skleněný jezdec při dotyku · Návrh
 
 HIG (Materials, Color) dovoluje u jezdce posuvníku a přepínače skleněný vzhled při dotyku a vyžaduje podporu zvýšeného kontrastu (`prefers-contrast: more`). V kartě zatím není.
+
+<a id="e19"></a>
+## E19 Přednost před bojlerem: spínač neodpovídá AZ Routeru · Ověření
+
+Uživatel 29. 10.: „switch.wallbox_2_prioritize_when_connected neodpovídá tomu co je zobrazeno v AZ routeru.“ Karta jen čte a přepíná tuto entitu (`wallbox.prioritize_connected`), takže chyba je v mapování nebo v integraci, ne v kartě. Ověřit v živém Home Assistantu: (1) zda neexistuje i `switch.wallbox_1_prioritize_when_connected` nebo jiná podobná entita a která patří kterému wallboxu v routeru; (2) zda se stav entity mění, když se volba přepne v routeru (a naopak), a za jak dlouho; (3) zda není stav obrácený. Podle výsledku změnit entitu v `examples/energie.yaml` a v `ENTITY_MAP.md`, případně popsat zpoždění. Do vyřešení platí údaj v `ENTITY_MAP.md` jako neověřený.
