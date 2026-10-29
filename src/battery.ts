@@ -1,4 +1,4 @@
-/* The battery: its popup (level, gauge, estimate, trend) and the battery detail with the history (CURRENT_SPEC.md, Baterie). */
+/* The battery: its popup (level, gauge, estimate, today's energy) and the battery detail with the history (CURRENT_SPEC.md, Baterie). */
 import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import type { FlowModel } from "./model";
@@ -16,7 +16,6 @@ import type { Period, Range, StatType, Stats } from "./battery-data";
 /** How long a loaded history is used before it is fetched again (ms). */
 const REFRESH = 5 * 60000;
 /** Bins of the charts. */
-const TREND_BINS = 28;
 const LEVEL_BINS = 48;
 const HEALTH_BINS = 60;
 /** The width of the fade-in on the left of the charts, in the units of the viewBox. */
@@ -79,7 +78,6 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
     /** The views of the history the open parts need (keys of `_batData`). */
     batNeeds(s: Settings): string[] {
       const keys: string[] = [];
-      if (this._pop === "bat" || this._pop === "batIn") keys.push("trend");
       if (this._batDetail) {
         if (this._batTab === "now") keys.push(`day:${this._batSpan}`);
         if (this._batTab === "hist") keys.push(`hist:${this.batRange(s)}`);
@@ -93,9 +91,6 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const b = s.entities.battery;
       const ids = (...list: Array<string | undefined>) => list.filter((id): id is string => !!id);
       const [view, arg] = key.split(":");
-      if (view === "trend") {
-        return [{ part: "power", ids: ids(b.power), start: midnight(at), end: at, period: "5minute", types: ["mean"] }];
-      }
       if (view === "day") {
         const start = at - (arg === "6h" ? 6 : 24) * HOUR;
         return [{ part: "level", ids: ids(b.power, b.state_of_charge), start, end: at, period: "5minute", types: ["mean"] }];
@@ -247,70 +242,26 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const day = this.today(s);
       const total = out ? day.bdis : day.bchg;
       const estimate = this.batEstimate(model, s);
-      const width = lay.width;
+      const width = Math.min(236, lay.width);
       const centreX = tile.side === "L" ? lay.tile.w / 2 : lay.width - lay.tile.w / 2;
+      const left = clamp(centreX - width / 2, 0, lay.width - width);
       const centreY = tile.side === "L" ? lay.left[tile.key as "bat"] : lay.right[tile.key as "batIn"];
       const top = centreY - lay.tile.h / 2;
       const below = centreY < lay.height / 2;
       const place = below ? `top:${(top + lay.tile.h + 8).toFixed(0)}px` : `bottom:${(lay.height - top + 8).toFixed(0)}px`;
-      return html`<div class="pop bat-pop" role="dialog" aria-label=${tile.name} tabindex="-1" style="left:0;${place};width:${width}px">
-        <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - 6).toFixed(0)}px"></i>
+      return html`<div class="pop bat-pop" role="dialog" aria-label=${tile.name} tabindex="-1" style="left:${left.toFixed(0)}px;${place};width:${width}px">
+        <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - left - 6).toFixed(0)}px"></i>
         <div class="pop-head"><span class="pop-title">${tile.name}</span><span class="pop-now">${now}</span></div>
         <div class="pop-level">
           <div class="pop-level-row">
             <span class="pop-label">${t.pop.level}${low ? html`<span class="note"> ${t.pop.atReserve}</span>` : nothing}</span>
             <span class="pop-big" style="color:${low ? "var(--ed-warning)" : "var(--ed-text)"}">${soc === undefined ? NO_DATA : formatPercent(soc)}</span>
           </div>
-          ${this.renderGauge(soc, s, 26)}
+          ${this.renderGauge(soc, s, 12)}
         </div>
         ${estimate ? html`<p class="bat-estimate"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 4.5V8l2.4 1.6"></path></svg>${estimate}</p>` : nothing}
-        ${this.renderTrend(s, model)}
         <div class="pop-rows"><div class="pop-row"><span>${out ? t.pop.rows.discharged : t.pop.rows.charged}</span><b>${total === undefined ? NO_DATA : `${formatKwh(total)} kWh`}</b></div></div>
         <button type="button" class="bat-open" @click=${() => this.openBatteryDetail()}><span>${t.bat.open}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg></button>
-      </div>`;
-    }
-
-    /** The microtrend of today's power: charging above the zero axis, discharging below, "now" always at the right end. */
-    renderTrend(s: Settings, model: FlowModel): TemplateResult {
-      const t = this.t;
-      const entry = this._batData.trend;
-      const rows = this.batRows("trend", "power", s.entities.battery.power);
-      const end = entry?.at ?? Date.now();
-      const start = midnight(end);
-      const values = bin(rows, "mean", start, end, TREND_BINS).map((value) => (value === undefined ? undefined : -value / 1000));
-      const live = this.batSigned(model);
-      if (live !== undefined) values[TREND_BINS - 1] = live;
-      const known = values.filter((value): value is number => value !== undefined);
-      const nowX = W - 6;
-      const x = (i: number) => (i / (TREND_BINS - 1)) * nowX;
-      const peak = Math.max(1, ...known.map((value) => Math.abs(value)));
-      const y = (value: number) => 48 - clamp(value / peak, -1, 1) * 42;
-      const lastIndex = values.length - 1;
-      const dot = values[lastIndex];
-      const legend = html`<div class="bat-legend"><span>${t.bat.today}</span><span><i class="dot" style="background:var(--ed-battery)"></i>${t.bat.charging}</span><span><i class="dot" style="background:var(--ed-discharge)"></i>${t.bat.discharging}</span></div>`;
-      if (known.length < 2) {
-        return html`<div class="bat-trend">${legend}<div class="bat-nodata small">${entry?.status === "loading" ? NO_DATA : t.bat.noDataChart}</div></div>`;
-      }
-      const line = linePath(values, x, y);
-      const area = areaPath(values, x, y, 48);
-      return html`<div class="bat-trend">
-        ${legend}
-        <svg viewBox="0 0 ${W} 96" role="img" aria-label=${t.bat.trendLabel}>
-          <defs>
-            <linearGradient id="bt-line" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2=${W} y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="1" stop-color="#fff" stop-opacity="1"></stop></linearGradient>
-            <linearGradient id="bt-fade" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2=${W} y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="0.5" stop-color="#fff" stop-opacity="0.6"></stop><stop offset="1" stop-color="#fff" stop-opacity="1"></stop></linearGradient>
-            <mask id="bt-mask" maskUnits="userSpaceOnUse" x="0" y="0" width=${W} height="96"><rect width=${W} height="96" fill="url(#bt-fade)"></rect></mask>
-            <clipPath id="bt-up"><rect x="0" y="0" width=${W} height="48"></rect></clipPath>
-            <clipPath id="bt-down"><rect x="0" y="48" width=${W} height="48"></rect></clipPath>
-          </defs>
-          <line x1="0" y1="48" x2=${W} y2="48" class="axis"></line>
-          <g mask="url(#bt-mask)">
-            <path d=${area} clip-path="url(#bt-up)" style="fill:var(--ed-battery);fill-opacity:0.32"></path>
-            <path d=${area} clip-path="url(#bt-down)" style="fill:var(--ed-discharge);fill-opacity:0.32"></path>
-          </g>
-          <path d=${line} fill="none" stroke="url(#bt-line)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>
-          ${dot === undefined ? nothing : svg`<circle cx=${round1(x(lastIndex))} cy=${round1(y(dot))} r="5" style="fill:var(--ed-text)"></circle>`}
-        </svg>
       </div>`;
     }
 

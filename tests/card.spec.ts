@@ -1271,11 +1271,9 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     expect(pills[9].radius).toBe("0px 8px 8px 0px");
     expect(pills.slice(1, 9).every((pill) => pill.radius === "0px")).toBe(true);
     expect(pills.every((pill) => pill.motion === "0s")).toBe(true);
-    // Mikrotrend z dlouhodobých statistik: výkon od půlnoci po 5 minutách.
-    await expect(pop.getByRole("img", { name: "Výkon baterie dnes od půlnoci" })).toBeVisible();
-    const sent = (await requests(page)).filter((item) => item.statistic_ids.includes("sensor.goodwe_battery_power"));
-    expect(sent[0]).toMatchObject({ type: "recorder/statistics_during_period", period: "5minute", types: ["mean"], statistic_ids: ["sensor.goodwe_battery_power"] });
-    expect(await pop.locator(".bat-trend path").evaluateAll((items) => items.map((item) => item.getAttribute("d")?.length ?? 0))).not.toContain(0);
+    // Popup je malý jako ostatní a nestahuje statistiky.
+    expect((await page.locator(".bat-pop").boundingBox())!.width).toBeLessThanOrEqual(236);
+    await expect(pop.locator(".bat-trend")).toHaveCount(0);
     await page.keyboard.press("Escape");
     // Vybíjení (Baterie vlevo): jiná věta a jen „Dnes vybito“.
     await open(page, "full");
@@ -1434,7 +1432,6 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await page.goto(`/tests/harness.html?s=full&stats=${stats}`);
       await page.locator(".tile").first().waitFor();
       await page.locator('.tile[data-tile="bat"]').click();
-      await expect(page.locator(".bat-trend")).toContainText("–– bez dat");
       await page.getByRole("button", { name: "Detail baterie" }).click();
       await expect(page.locator(".bat-detail .bat-nodata")).toContainText("–– bez dat");
       await tab(page, "Historie").click();
@@ -1489,7 +1486,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     for (const theme of ["dark", "light"] as const) {
       await open(page, "day", 393, 852, theme);
       await page.locator('.tile[data-tile="batIn"]').click();
-      await expect(page.locator(".bat-trend svg")).toBeVisible();
+      await expect(page.locator(".bat-pop")).toBeVisible();
       expect(await axeViolations(page), `popup ${theme}`).toEqual([]);
     }
   });

@@ -1274,9 +1274,6 @@ export const styles = css`
   /* Popup of the battery: gauge of ten pills, estimate, trend (CURRENT_SPEC.md, Baterie). */
   .bat-pop {
     --pill: var(--ed-pop-line);
-    gap: 12px;
-    padding: 16px;
-    border-radius: 20px;
   }
 
   .bat-gauge {
@@ -1383,12 +1380,12 @@ export const styles = css`
     justify-content: space-between;
     box-sizing: border-box;
     width: 100%;
-    min-height: 50px;
-    padding: 0 16px;
-    border-radius: 14px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
     background: var(--ed-pop-line);
     color: var(--ed-text);
-    font-size: 17px;
+    font-size: 15px;
     font-weight: 500;
     text-align: left;
   }
