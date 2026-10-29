@@ -706,16 +706,24 @@ export const styles = css`
   .meter {
     position: relative;
     display: flex;
-    gap: 3px;
-    height: 16px;
+    gap: 5px;
+    height: 34px;
   }
 
   .meter > span {
     position: relative;
     flex: 1 1 0;
     overflow: hidden;
-    border-radius: 8px;
-    background: var(--ed-gauge-track);
+    border-radius: 3px;
+    background: var(--ed-tile);
+  }
+
+  .meter > span:first-child {
+    border-radius: 12px 3px 3px 12px;
+  }
+
+  .meter > span:last-of-type {
+    border-radius: 3px 12px 12px 3px;
   }
 
   .meter > span > i {

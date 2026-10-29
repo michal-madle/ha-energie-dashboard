@@ -224,7 +224,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         colors: { ...config.colors, sun: "#FF0000" },
       });
       await expect(page.locator(".panel h2")).toHaveText(["Proud", "Moje auto", "Voda"]);
-      await expect(page.locator(".meter .limit")).toHaveAttribute("style", /calc\(.*\* 0\.9 \+ 24px\)/);
+      await expect(page.locator(".meter .limit")).toHaveAttribute("style", /calc\(.*\* 0\.9 \+ 40px\)/);
       await expect(page.locator(".meter-label")).toContainText("limit 90 %");
       await expect(page.locator(".page")).toHaveAttribute("style", /--ed-sun:#FF0000/);
       expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
@@ -542,9 +542,9 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
     await test.step("měřič nabití auta: limit jen pod 100 %, popisek čtečky", async () => {
       await open(page, "day");
       await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %");
-      // Deset bloků po 10 % s mezerou 3 px; 62 % = šest plných a sedmý z 20 %.
+      // Deset bloků po 10 % s mezerou 5 px; 62 % = šest plných a sedmý z 20 %.
       expect(await page.locator(".meter > span > i").evaluateAll((bars) => bars.map((bar) => (bar as HTMLElement).style.width))).toEqual(["100%", "100%", "100%", "100%", "100%", "100%", "20%", "0%", "0%", "0%"]);
-      expect(await page.locator(".meter").evaluate((el) => getComputedStyle(el).columnGap)).toBe("3px");
+      expect(await page.locator(".meter").evaluate((el) => getComputedStyle(el).columnGap)).toBe("5px");
       await reconfigure(page, { car: { ...example().car, charge_limit: 80 } });
       await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %, limit 80 %");
     });

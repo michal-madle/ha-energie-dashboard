@@ -2700,16 +2700,24 @@ const Pi = St`
   .meter {
     position: relative;
     display: flex;
-    gap: 3px;
-    height: 16px;
+    gap: 5px;
+    height: 34px;
   }
 
   .meter > span {
     position: relative;
     flex: 1 1 0;
     overflow: hidden;
-    border-radius: 8px;
-    background: var(--ed-gauge-track);
+    border-radius: 3px;
+    background: var(--ed-tile);
+  }
+
+  .meter > span:first-child {
+    border-radius: 12px 3px 3px 12px;
+  }
+
+  .meter > span:last-of-type {
+    border-radius: 3px 12px 12px 3px;
   }
 
   .meter > span > i {
@@ -3492,7 +3500,7 @@ function ao(i) {
     o-- > 0 && a[s]++;
   }), a;
 }
-const Q = (i, t, e) => Math.max(t, Math.min(e, i)), lt = (i, t) => `color-mix(in srgb, ${i} ${t}%, transparent)`, Fe = (i) => Array.from({ length: 10 }, (t, e) => Q((i - e * 10) / 10, 0, 1) * 100), _e = (i) => `calc((100% - 27px) * ${Q(i, 0, 100) / 100} + ${Math.max(0, Math.ceil(Q(i, 0, 100) / 10) - 1) * 3}px)`;
+const Q = (i, t, e) => Math.max(t, Math.min(e, i)), lt = (i, t) => `color-mix(in srgb, ${i} ${t}%, transparent)`, Fe = (i) => Array.from({ length: 10 }, (t, e) => Q((i - e * 10) / 10, 0, 1) * 100), _e = (i) => `calc((100% - 45px) * ${Q(i, 0, 100) / 100} + ${Math.max(0, Math.ceil(Q(i, 0, 100) / 10) - 1) * 5}px)`;
 var no = Object.defineProperty, X = (i, t, e, a) => {
   for (var o = void 0, s = i.length - 1, n; s >= 0; s--)
     (n = i[s]) && (o = n(t, e, o) || o);
