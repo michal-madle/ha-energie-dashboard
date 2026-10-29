@@ -18,13 +18,15 @@ Smyčka, na které se dohodneme 29. 10.: jednou týdně napíšu, co z dat nech�
 
 Důsledek pro kartu: místo okamžitého prahu „kolik dá slunce“ se počítá **plán do cíle**: kolik kWh auto potřebuje do neděle (75 %), kolik jich zítra dá slunce podle předpovědi, a když to nevychází, karta navrhne rychlé nabití ze sítě v nejlepší hodinu (nízký tarif, pokud ho máte), ne „nenabíjej“.
 
-## Otázky pro tento týden (15. až 29. 10.)
+## Odpovědi z 29. 10. (21:14) a co z nich plyne
 
-1. **Neděle 18. 10.** skončila s autem na 52 %, v pondělí v 5 h jste dobil na 70 %. Bylo to rozhodnutí (málo slunce, levný proud), nebo se to nepovedlo?
-2. **Noční odběr 1,3 až 1,4 kW** 17. 10. ve 20 až 23 h a 18. 10. ve 0 až 2 h ze sítě: je to bojler (`tuv_1_max_power` 1325 W) v nízkém tarifu, nebo něco jiného?
-3. **Nízký tarif (HDO):** v jakých hodinách ho máte (`sensor.master_hdo`)? Podle toho se vybere nejlevnější okno pro rychlé nabití.
-4. **Rezerva baterie 20 %:** u dobíjení ze sítě (19. 10. v 5 h, 25. 10. ve 12 h) jste baterii ručně neovlivňoval, jen jste pustil wallbox na 6 až 10,5 kW? (Rozhoduje, zda do pravidla patří i přepnutí režimu střídače.)
-5. **18. 10. (výroba 8 kWh, ze sítě 15 kWh)** a **28. 10. (ze sítě 9,8 kWh při baterii na rezervě)**: co se ten den dělo navíc (vaření, topení, bojler)?
+- **18. 10. byl zátěžový test baterie:** celou sobotu schválně na 100 % a v noci plynulé vybíjení bez vlivu okolí. Ten den (17. až 19. 10.) se **nepočítá do učení** výroby, normy ani pravidel; v exportu je označen jako `test`.
+- **Noční odběr 1,3 až 1,4 kW** je pračka, sušička nebo myčka. Běžné velké spotřebiče jsou auto, pračka, sušička, myčka, trouba.
+- **Bojler z baterie nikdy nejede.** Teplá voda je primárně ze zásobníku na plyn. Karta proto bojler z baterie nikdy nenavrhuje a upozornění „baterie krmí bojler“ je skutečný problém (N14), na rozdíl od auta.
+- **Nízký tarif (HDO)** se mění každý den a spíná ho distributor: 20 h denně 3,21587 Kč/kWh, 4 h denně 3,87691 Kč/kWh. Rozdíl je 0,66 Kč/kWh (asi 17 %), pro 10 kWh do auta 6,6 Kč. **Čas nabíjení se tedy podle tarifu neladí**, rozhoduje cíl a slunce. Plán z API distributora zatím není potřeba.
+- **Jak nabíjíte:** vždy pustíte jen wallbox. V létě z přebytku při nabité baterii. Když baterie doma nabitá není a auto je potřeba, **boost 4 kW**; víc výkonu jen když potřebujete jet a auto má málo. Rychlé nabíjení 6 až 10,5 kW je tedy výjimka pro naléhavý případ, ne běžné pravidlo.
+
+Zbývá otázka k ověření: 28. 10. odběr ze sítě 9,8 kWh při baterii na rezervě (pračka, sušička, myčka a trouba najednou?).
 
 ## Jak se měří, že to funguje
 
