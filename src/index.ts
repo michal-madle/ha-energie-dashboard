@@ -18,3 +18,6 @@ if (!window.customCards.some((card) => card.type === "ha-energie-dashboard")) {
     preview: false,
   });
 }
+
+// Which build runs in Home Assistant (a stale cached module is the usual reason a change is "not there").
+console.info(`%c ENERGIE-DASHBOARD %c ${__BUILD__} `, "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

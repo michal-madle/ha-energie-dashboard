@@ -148,6 +148,8 @@ export interface Settings {
 }
 
 declare global {
+  /** The build stamp (version, time, the commit the build was made after), written by vite.config.ts. */
+  const __BUILD__: string;
   interface Window {
     customCards?: Array<{
       type: string;

@@ -5752,3 +5752,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ut(Ga()).t.cardDescription,
   preview: !1
 });
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-10-29 15:08 UTC · po 69954b2 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

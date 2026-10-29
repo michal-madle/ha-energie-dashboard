@@ -17,6 +17,8 @@ Vlastní Lovelace karta `custom:ha-energie-dashboard` pro přehled energie domu:
 4. V **Nastavení → Nástěnky → Zdroje** (*Settings → Dashboards → Resources*) ověřte zdroj `/hacsfiles/ha-energie-dashboard/ha-energie-dashboard.js` typu **JavaScript module** (HACS ho obvykle přidá sám; nepřidávejte ho dvakrát).
 5. Na nástěnce **⋮ → Upravit nástěnku → Přidat kartu → Ruční** (*Manual*) a vložte celý obsah [examples/energie.yaml](./examples/energie.yaml). Uložte kartu i nástěnku.
 
+Jaká verze karty v prohlížeči doopravdy běží, ukáže konzole (F12): řádek `ENERGIE-DASHBOARD` s verzí, časem sestavení (UTC) a commitem, po kterém vzniklo. Když tam je starší čas než poslední změna, prohlížeč nebo aplikace drží starý modul: v HACS *Update information* a *Redownload*, pak tvrdé obnovení (Ctrl+Shift+R) nebo v mobilní aplikaci *Reset frontend cache*.
+
 Ruční instalace bez HACS: soubor `ha-energie-dashboard.js` uložte do `/config/www/` a jako zdroj přidejte `/local/ha-energie-dashboard.js` (JavaScript module). Když se po aktualizaci změna neprojeví, změňte adresu na `/local/ha-energie-dashboard.js?v=2`.
 
 Dokud karta nemá všechny funkce dnešního dashboardu, nechte „Energie dům“ beze změny a kartu přidejte na zkoušku vedle něj.
