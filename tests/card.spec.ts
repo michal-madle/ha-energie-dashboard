@@ -1329,6 +1329,10 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     await expect(detail).toContainText("5,20 kWh");
     await expect(detail).toContainText("3,10 kWh");
     await expect(detail).toContainText("Čistě uloženo +2,10 kWh");
+    // Pruh nabito/vybito: dva samostatné segmenty oddělené mezerou 2 px (zelená a modrá se nesmí slévat).
+    const split = detail.locator(".bat-split");
+    await expect(split.locator("> i")).toHaveCount(2);
+    expect(await split.evaluate((el) => getComputedStyle(el).columnGap)).toBe("2px");
     // Zpět = popup dlaždice, Hotovo a Escape zavřou vše.
     await detail.getByRole("button", { name: /Zpět/ }).click();
     await expect(page.locator(".bat-detail")).toHaveCount(0);

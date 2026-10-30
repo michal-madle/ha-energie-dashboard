@@ -569,7 +569,6 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       ];
       const inn = day.bchg;
       const out = day.bdis;
-      const total = inn !== undefined && out !== undefined ? Math.max(0.01, inn + out) : 1;
       const netStored = inn !== undefined && out !== undefined ? inn - out : undefined;
       const spans = (["6h", "24h"] as const).map((value) => ({ value, label: t.bat.spans[value] }));
       return html`<div class="bat-card">
@@ -586,7 +585,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         <div class="bat-card">
           <span class="bat-cap">${t.bat.energyToday}</span>
           <div class="bat-two"><div><span class="sub">${t.bat.charged}</span><span class="val">${inn === undefined ? NO_DATA : `${formatKwh(inn)} kWh`}</span></div><div><span class="sub">${t.bat.discharged}</span><span class="val">${out === undefined ? NO_DATA : `${formatKwh(out)} kWh`}</span></div></div>
-          <div class="bat-split" aria-hidden="true"><i style="width:${inn !== undefined && out !== undefined ? ((inn / total) * 100).toFixed(1) : 0}%;background:var(--ed-battery)"></i><i style="width:${inn !== undefined && out !== undefined ? ((out / total) * 100).toFixed(1) : 0}%;background:var(--ed-discharge)"></i></div>
+          <div class="bat-split" aria-hidden="true">${inn !== undefined && out !== undefined && inn + out > 0 ? html`${inn > 0 ? html`<i style="flex:${inn.toFixed(3)} 1 0;background:var(--ed-battery)"></i>` : nothing}${out > 0 ? html`<i style="flex:${out.toFixed(3)} 1 0;background:var(--ed-discharge)"></i>` : nothing}` : nothing}</div>
           <p class="bat-sub">${netStored === undefined ? NO_DATA : t.bat.netStored(`${netStored >= 0 ? "+" : "−"}${formatKwh(Math.abs(netStored))} kWh`)}</p>
         </div>`;
     }

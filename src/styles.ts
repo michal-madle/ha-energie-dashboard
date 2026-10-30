@@ -1554,10 +1554,27 @@ export const styles = css`
 
   .bat-split {
     display: flex;
+    gap: 2px;
     overflow: hidden;
     height: 10px;
     border-radius: 5px;
     background: var(--ed-tile);
+  }
+
+  .bat-split > i {
+    min-width: 4px;
+  }
+
+  .bat-split > i:first-child {
+    border-radius: 5px 0 0 5px;
+  }
+
+  .bat-split > i:last-child {
+    border-radius: 0 5px 5px 0;
+  }
+
+  .bat-split > i:only-child {
+    border-radius: 5px;
   }
 
   .bat-read {
