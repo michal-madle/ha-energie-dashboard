@@ -1333,11 +1333,11 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     const split = detail.locator(".bat-split");
     await expect(split.locator("> i")).toHaveCount(2);
     expect(await split.evaluate((el) => getComputedStyle(el).columnGap)).toBe("2px");
-    // Zpět = popup dlaždice, Hotovo a Escape zavřou vše.
+    // Zpět, Hotovo i Escape vrátí na kartu a zavřou i popup, ze kterého se detail otevřel.
     await detail.getByRole("button", { name: /Zpět/ }).click();
     await expect(page.locator(".bat-detail")).toHaveCount(0);
-    await expect(page.getByRole("dialog", { name: "Baterie" })).toBeVisible();
-    await page.getByRole("button", { name: "Detail baterie" }).click();
+    await expect(page.locator(".pop")).toHaveCount(0);
+    await openDetail(page);
     await page.getByRole("button", { name: "Hotovo" }).click();
     await expect(page.locator(".bat-detail")).toHaveCount(0);
     await expect(page.locator(".pop")).toHaveCount(0);

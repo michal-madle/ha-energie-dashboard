@@ -4788,9 +4788,9 @@ const Ri = 5 * 6e4, Qt = 48, Xe = 60, Ii = 90, Ni = (a) => class extends a {
   openBatteryDetail() {
     this._batDetail = !0, this._batTab = "now", this._batOpen = void 0, this._batScrub = {};
   }
-  /** "Zpět" returns to the popup of the tile, "Hotovo" closes everything. */
-  closeBatteryDetail(t) {
-    this._batDetail = !1, t && (this._pop = void 0), this.updateComplete.then(() => this.scrollIntoView({ block: "nearest" }));
+  /** "Zpět" and "Hotovo" both return to the card; the popup the detail was opened from is closed too (user 2026-10-30). */
+  closeBatteryDetail(t = !0) {
+    this._batDetail = !1, this._pop = void 0, this.updateComplete.then(() => this.scrollIntoView({ block: "nearest" }));
   }
   // ----------------------------------------------------------------- shared pieces
   batState(t, e) {
@@ -5769,4 +5769,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ut(Ga()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-10-30 07:40 UTC · po 97abdb2 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-10-30 07:52 UTC · po 19877ee ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

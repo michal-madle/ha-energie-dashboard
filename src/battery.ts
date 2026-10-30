@@ -172,10 +172,10 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       this._batScrub = {};
     }
 
-    /** "Zpět" returns to the popup of the tile, "Hotovo" closes everything. */
-    closeBatteryDetail(all: boolean): void {
+    /** "Zpět" and "Hotovo" both return to the card; the popup the detail was opened from is closed too (user 2026-10-30). */
+    closeBatteryDetail(_all = true): void {
       this._batDetail = false;
-      if (all) this._pop = undefined;
+      this._pop = undefined;
       this.updateComplete.then(() => this.scrollIntoView({ block: "nearest" }));
     }
 
