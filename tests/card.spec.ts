@@ -1639,6 +1639,12 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(detail.locator(".sun-five-row").first().locator(".strip i.now")).toHaveCount(1);
       await expect(detail).toContainText("Dnes do večera");
       await expect(detail).toContainText("Baterie v 06:00");
+      await expect(detail).toContainText("Baterie teď");
+      await expect(detail).toContainText("Slunce do 22:00");
+      await expect(detail).toContainText("Dům do 22:00");
+      // Auto se nenabíjí, dokud si to člověk nezapne (pamatuje se).
+      const carMode = detail.locator("ed-segmented[label='Nabíjení auta ve výpočtu']");
+      await expect(carMode).toHaveCount(1);
       const tiles = await kpis(page);
       expect(tiles.map((item) => item[0])).toEqual(["Den", "Nejlepší den"]);
       expect(tiles[1][1]).toMatch(/^(Dnes|Sobota|Neděle|Pondělí|Úterý)$/);

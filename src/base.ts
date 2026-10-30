@@ -45,6 +45,8 @@ export class CardBase extends LitElement {
   @state() _sunTab: SunTab = "today";
   @state() _sunRange?: "7d" | "30d";
   @state() _sunMode: "total" | "parts" = "total";
+  /** Whether "Dnes do večera" counts the car (the rule of the wallbox) or not; remembered in the browser. */
+  @state() _sunCar?: "off" | "rule";
   @state() _sunHint?: string;
   /** The daily forecast of the weather entity (condition by day), asked for when the outlook is open. */
   @state() _sunWeather?: { at: number; days: Array<{ day: number; condition?: string }> };

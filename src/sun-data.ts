@@ -253,6 +253,9 @@ export interface Evening {
   /** kWh the car takes from the sun, in total and the km it makes (the caller multiplies by km/kWh). */
   carSun: number;
   carTotal: number;
+  /** kWh of the sun and of the house from now until the evening hour. */
+  sunUntilEvening: number;
+  houseUntilEvening: number;
   /** % at the morning hour of the next day (the reserve at the lowest). */
   socAtMorning?: number;
 }
@@ -266,7 +269,7 @@ export function simulateEvening(input: EveningInput): Evening {
   const { capacity, efficiency } = input;
   let stored = (input.soc / 100) * capacity;
   const reserveKwh = (input.reserve / 100) * capacity;
-  const result: Evening = { carSun: 0, carTotal: 0 };
+  const result: Evening = { carSun: 0, carTotal: 0, sunUntilEvening: 0, houseUntilEvening: 0 };
   let t = Math.ceil(input.now / (HOUR / 4)) * (HOUR / 4);
   const dayStart = midnight(input.now);
   const eveningAt = dayStart + input.eveningHour * HOUR;
@@ -281,6 +284,10 @@ export function simulateEvening(input: EveningInput): Evening {
     const sameDay = t - 1 < addDays(dayStart, 1);
     const sun = sameDay ? (input.sun[hour] ?? 0) / 4 : 0;
     const house = (input.house[hour] ?? 0) / 4;
+    if (t <= eveningAt) {
+      result.sunUntilEvening += sun;
+      result.houseUntilEvening += house;
+    }
     const soc = (stored / capacity) * 100;
     let carStep = 0;
     if (input.car && sameDay) {

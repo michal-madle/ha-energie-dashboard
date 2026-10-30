@@ -2332,6 +2332,9 @@ export const styles = css`
     border-radius: 50%;
   }
 
+  .sun-line ed-segmented {
+    width: 230px;
+  }
   .sun-line b {
     color: var(--ed-text);
     font-weight: 700;

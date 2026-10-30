@@ -8,7 +8,7 @@ import type { HomeAssistant, Settings } from "./types";
 import { entityState, formatClock, formatDayName, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { CardBase } from "./base";
-import { NO_DATA, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
+import { NO_DATA, SUN_CAR_KEY, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
 import type { BatEntry, Constructor, SunTab, Tile } from "./view";
 import { DAY, HOUR, W, areaPath, bandPath, bin, fetchStatistics, linePath, midnight, niceCeil, round1 } from "./battery-data";
 import type { Period, StatRow, StatType, Stats } from "./battery-data";
@@ -86,6 +86,26 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       this._batScrub = {};
       try {
         localStorage.setItem(SUN_RANGE_KEY, range);
+      } catch {
+        /* no storage: the choice lasts until the page is closed */
+      }
+    }
+
+    /** The car in "Dnes do večera": by default not charged (the person plans no charging), or by the rule of the wallbox. */
+    sunCar(): "off" | "rule" {
+      if (this._sunCar) return this._sunCar;
+      try {
+        if (localStorage.getItem(SUN_CAR_KEY) === "rule") return "rule";
+      } catch {
+        /* no storage: not charged */
+      }
+      return "off";
+    }
+
+    setSunCar(mode: "off" | "rule"): void {
+      this._sunCar = mode;
+      try {
+        localStorage.setItem(SUN_CAR_KEY, mode);
       } catch {
         /* no storage: the choice lasts until the page is closed */
       }
@@ -442,14 +462,17 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const low = fc.map((value) => (value === undefined ? undefined : value * lowRatio));
       const high = fc.map((value) => (value === undefined ? undefined : value * highRatio));
       const peak = Math.max(1, ...actual.map((value) => value ?? 0), ...possible.map((value) => value ?? 0), ...high.map((value) => value ?? 0));
-      const top = niceCeil(peak);
+      // Guide lines every 1 kW, every 2 kW when that would be more than 7 lines.
+      const step = Math.ceil(peak) > 7 ? 2 : 1;
+      const top = Math.ceil(peak / step) * step;
       const hy = 150;
       const y = (value: number) => round1(hy - (clamp(value, 0, top) / top) * (hy - 12));
       const kw = (value: number) => formatPower(value * 1000, "kW");
+      const levels = Array.from({ length: top / step }, (_, k) => (k + 1) * step);
       return {
         id: "sun-today", h: 170, n, x, fade: 0, start: clamp((nowIndex / (n - 1)) * 100, 0, 100),
-        grid: [{ y: hy, strong: true }, { y: y(top / 2) }, { y: y(top) }],
-        labels: [{ y: y(top), text: formatNumber(top) }, { y: y(top / 2), text: formatNumber(top / 2, top / 2 % 1 ? 1 : 0) }, { y: hy, text: "0" }],
+        grid: [{ y: hy, strong: true }, ...levels.map((level) => ({ y: y(level) }))],
+        labels: [...levels.map((level) => ({ y: y(level), text: formatNumber(level) })), { y: hy, text: "0" }],
         body: svg`<defs><linearGradient id="sun-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ed-sun)" stop-opacity="0.28"></stop><stop offset="1" style="stop-color:var(--ed-sun)" stop-opacity="0"></stop></linearGradient></defs>
           <path d=${bandPath(low, high, x, y)} style="fill:var(--ed-sun);fill-opacity:0.24"></path>
           <path d=${linePath(possible, x, y)} fill="none" style="stroke:var(--ed-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path>
@@ -768,13 +791,21 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         ${evening
           ? html`<div class="bat-card rel">
               <div class="bat-card-bar"><span class="bat-cap">${o.eveningTitle}</span>${this.hint("eve", t.hints.eve)}</div>
-              <div class="bat-list">${evening.map((row) => html`<div class="bat-line sun-line"><span><i style="background:var(${row.color})"></i>${row.label}</span><b>${row.value}</b></div>`)}</div>
+              <div class="bat-list">${evening.map((row) => html`<div class="bat-line sun-line"><span><i style="background:var(${row.color})"></i>${row.label}</span><b>${row.value}</b></div>${row.color === "--ed-house" ? this.carChoice(s) : nothing}`)}
+              </div>
             </div>`
           : nothing}
         <div class="bat-kpis">
           <div class="bat-kpi"><span class="sub">${o.dayLength}</span><span class="val">${length === undefined ? NO_DATA : o.hoursMinutes(Math.floor(length / 60), length % 60)}</span><span class="sub">${change === undefined ? "" : o.dayChange(change)}</span></div>
           <div class="bat-kpi"><span class="sub">${o.bestDay}</span><span class="val">${best ? (best.i === 0 ? o.today : formatDayName(best.day)) : NO_DATA}</span><span class="sub">${best ? o.bestSub(formatKwh(best.kwh!), bestWindow ? o.window(bestWindow[0], bestWindow[1]) : "") : ""}</span></div>
         </div>`;
+    }
+
+    /** The row with the choice whether the estimate counts the car (only with a wallbox). */
+    carChoice(s: Settings): TemplateResult | typeof nothing {
+      const o = this.t.sun.outlook;
+      if (!s.entities.wallbox.power) return nothing;
+      return html`<div class="bat-line sun-line"><span><i style="background:var(--ed-car)"></i>${o.car}</span><ed-segmented compact .options=${[{ value: "off", label: o.carOff }, { value: "rule", label: o.carRule }]} .value=${this.sunCar()} label=${o.carLabel} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setSunCar(event.detail.value as "off" | "rule")}></ed-segmented></div>`;
     }
 
     /** The rows of "Dnes do večera": the battery full, its level in the evening, the car from the sun, the grid at night; none without the data it needs. */
@@ -787,10 +818,16 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const result = simulateEvening({
         now: v.now, soc, capacity: s.num.battery.capacity, reserve: this.batteryReserve(s), sun: v.hours, house,
         efficiency: num.efficiency / 100, eveningHour: num.evening_hour, morningHour: num.morning_hour,
-        car: model.wallbox.power && carLink(readText(this.hass, model.wallbox.status)) !== "disconnected" ? { startSoc: num.car_start_soc, stopSoc: num.car_stop_soc, minSun: num.car_min_sun, watts: s.num.wallbox.power_min } : undefined,
+        car: this.sunCar() === "rule" && model.wallbox.power && carLink(readText(this.hass, model.wallbox.status)) !== "disconnected" ? { startSoc: num.car_start_soc, stopSoc: num.car_stop_soc, minSun: num.car_min_sun, watts: s.num.wallbox.power_min } : undefined,
       });
       const o = this.t.sun.outlook;
       const rows: Array<{ color: string; label: string; value: string }> = [];
+      const evening = formatClock(v.today + num.evening_hour * HOUR);
+      if (result.socAtEvening !== undefined) {
+        rows.push({ color: "--ed-battery", label: o.batteryNow, value: formatPercent(Math.round(soc)) });
+        rows.push({ color: "--ed-sun", label: o.sunUntil(evening), value: `≈ ${formatKwh(result.sunUntilEvening)} kWh` });
+        rows.push({ color: "--ed-house", label: o.houseUntil(evening), value: `≈ ${formatKwh(result.houseUntilEvening)} kWh` });
+      }
       if (result.fullAt !== undefined) rows.push({ color: "--ed-battery", label: o.full, value: `≈ ${formatClock(result.fullAt)}` });
       if (result.socAtEvening !== undefined) rows.push({ color: "--ed-battery", label: o.batteryAt(formatClock(v.today + num.evening_hour * HOUR)), value: `≈ ${formatPercent(Math.round(result.socAtEvening))}` });
       if (result.carTotal > 0) {
