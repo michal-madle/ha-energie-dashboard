@@ -2451,7 +2451,7 @@ function Aa(a) {
 function Q(a, t) {
   return t === "kW" ? `${Aa(a / 1e3)} kW` : `${et.whole(Math.round(a))} W`;
 }
-function H(a, t = 0) {
+function O(a, t = 0) {
   return t === 0 ? et.whole(a) : et.one(a);
 }
 function N(a, t) {
@@ -2472,7 +2472,7 @@ function nt(a) {
   return et.time(a);
 }
 function R(a) {
-  return et.percent(typeof a == "number" ? H(a) : a);
+  return et.percent(typeof a == "number" ? O(a) : a);
 }
 function Ot(a, t) {
   const e = it(a, t), s = ht(a, t);
@@ -4970,79 +4970,77 @@ const ge = {
   mixing: { valve_c1: "switch", valve_c2: "switch" },
   forecast: { energy_today: void 0, energy_tomorrow: void 0, energy_day_2: void 0, energy_day_3: void 0, energy_day_4: void 0, weather: "weather" },
   daily: { pv_generation: void 0, battery_charge: void 0, battery_discharge: void 0, grid_import: void 0, grid_export: void 0, car: void 0, boiler: void 0 }
-}, Ha = { boiler: ["show"], car: ["link"], flows: ["decimals"], battery: ["default_range"], forecast: ["default_range"] }, na = ["1d", "7d", "30d"], Is = "1d", ia = ["7d", "30d"], Fs = "7d", oa = ["always", "heating"], Us = "heating", ra = ["auto", 1, 2], Vs = "auto", Pa = Object.keys(ge), O = (a, t, e, s, n = !1) => ({ value: a, min: t, max: e, what: s, integer: n }), Pe = {
+}, Ha = { boiler: ["show"], car: ["link"], flows: ["decimals"], battery: ["default_range"], forecast: ["default_range"] }, na = ["1d", "7d", "30d"], Is = "1d", ia = ["7d", "30d"], Fs = "7d", oa = ["always", "heating"], Us = "heating", ra = ["auto", 1, 2], Vs = "auto", Pa = Object.keys(ge), H = (a, t, e, s, n = !1) => ({ value: a, min: t, max: e, what: s, integer: n }), Pe = {
   battery: {
-    reserve: O(20, 0, 100, "% battery reserve"),
-    capacity: O(11.2, 0.1, 1e3, "kWh usable capacity (time estimates, equivalent cycles, load in C)"),
-    imbalance_good: O(15, 0, 1e3, "mV cell imbalance up to which it is called excellent"),
-    imbalance_warn: O(30, 0, 1e3, "mV cell imbalance up to which it is called good (above it needs attention)"),
-    imbalance_fault: O(100, 0, 1e3, "mV cell imbalance above which it is called a fault")
+    reserve: H(20, 0, 100, "% battery reserve"),
+    capacity: H(11.2, 0.1, 1e3, "kWh usable capacity (time estimates, equivalent cycles, load in C)"),
+    imbalance_good: H(15, 0, 1e3, "mV cell imbalance up to which it is called excellent"),
+    imbalance_warn: H(30, 0, 1e3, "mV cell imbalance up to which it is called good (above it needs attention)"),
+    imbalance_fault: H(100, 0, 1e3, "mV cell imbalance above which it is called a fault")
   },
   car: {
-    charge_limit: O(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
-    image_scale: O(2, 0.5, 3, "× size of the car picture (grows up and to the sides, the bottom stays)"),
-    battery_capacity: O(37.9, 5, 200, "kWh usable capacity of the car battery when car.capacity is not set (the km of the sun are counted from it, the charge and the range)")
+    charge_limit: H(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
+    image_scale: H(2, 0.5, 3, "× size of the car picture (grows up and to the sides, the bottom stays)")
   },
   wallbox: {
-    phases: O(3, 1, 3, "number of phases", !0),
-    power_min: O(4200, 0, 1e5, "W, lowest charging power (all phases)"),
-    power_max: O(11100, 0, 1e5, "W, highest charging power (all phases)"),
-    power_step: O(300, 1, 1e5, "W, step of the charging power (all phases)"),
-    priority_min_sun: O(200, 0, 1e5, "W of sun above which a waiting car is reported")
+    phases: H(3, 1, 3, "number of phases", !0),
+    power_min: H(4200, 0, 1e5, "W, lowest charging power (all phases)"),
+    power_max: H(11100, 0, 1e5, "W, highest charging power (all phases)"),
+    power_step: H(300, 1, 1e5, "W, step of the charging power (all phases)"),
+    priority_min_sun: H(200, 0, 1e5, "W of sun above which a waiting car is reported")
   },
   boiler: {
-    target_min: O(20, 0, 100, "°C, lowest target"),
-    target_max: O(85, 0, 100, "°C, highest target"),
-    target_step: O(5, 1, 50, "°C, target step"),
-    hold_minutes: O(15, 0, 1440, "min the boiler tile stays after heating (boiler.show: heating)")
+    target_min: H(20, 0, 100, "°C, lowest target"),
+    target_max: H(85, 0, 100, "°C, highest target"),
+    target_step: H(5, 1, 50, "°C, target step"),
+    hold_minutes: H(15, 0, 1440, "min the boiler tile stays after heating (boiler.show: heating)")
   },
   water: {
-    gauge_min: O(15, -50, 100, "°C, start of the hot-water gauges and of the boiler tile fill"),
-    gauge_max: O(65, 0, 150, "°C, end of the hot-water gauges (the higher of this and the surplus target counts)")
+    gauge_min: H(15, -50, 100, "°C, start of the hot-water gauges and of the boiler tile fill"),
+    gauge_max: H(65, 0, 150, "°C, end of the hot-water gauges (the higher of this and the surplus target counts)")
   },
   tank: {
-    temp_min: O(38, 0, 100, "°C, lowest temperature"),
-    temp_max: O(65, 0, 100, "°C, highest temperature"),
-    temp_step: O(1, 1, 50, "°C, temperature step")
+    temp_min: H(38, 0, 100, "°C, lowest temperature"),
+    temp_max: H(65, 0, 100, "°C, highest temperature"),
+    temp_step: H(1, 1, 50, "°C, temperature step")
   },
   flows: {
-    idle_threshold: O(100, 0, 1e3, "W, below this a flow counts as none"),
-    kw_from: O(1e3, 100, 1e5, "W, from this any power is shown in kW"),
-    export_notice: O(300, 0, 1e5, "W of export that counts as a surplus"),
-    source_min_share: O(15, 0, 100, "% a source needs to be named in a text"),
-    grid_deviation_share: O(50, 0, 100, "% of the grid above which it is a deviation"),
-    band_max_px_per_kw: O(10, 0.5, 50, "px per kW, thickness of the bands"),
-    band_min_px: O(1.6, 0.5, 10, "px, thinnest band")
+    idle_threshold: H(100, 0, 1e3, "W, below this a flow counts as none"),
+    kw_from: H(1e3, 100, 1e5, "W, from this any power is shown in kW"),
+    export_notice: H(300, 0, 1e5, "W of export that counts as a surplus"),
+    source_min_share: H(15, 0, 100, "% a source needs to be named in a text"),
+    grid_deviation_share: H(50, 0, 100, "% of the grid above which it is a deviation"),
+    band_max_px_per_kw: H(10, 0.5, 50, "px per kW, thickness of the bands"),
+    band_min_px: H(1.6, 0.5, 10, "px, thinnest band")
   },
   forecast: {
-    good_power: O(2e3, 100, 1e5, "W of sun from which an hour counts as strong (the filled blocks of the five days, the window)"),
-    good_day: O(10, 0.1, 1e3, "kWh a day from which a day counts as good (Historie)"),
-    learn_days: O(14, 3, 90, "days the curve of what is possible and the typical deviation of the forecast are learned from", !0),
-    possible_percentile: O(90, 50, 100, "% percentile of the days that sets what is possible in an hour"),
-    typical_deviation: O(20, 1, 100, "% deviation of the forecast assumed until the card has seen enough days"),
-    strip_from: O(6, 0, 23, "hour the hourly strips start at", !0),
-    strip_to: O(17, 1, 24, "hour the hourly strips end at (the hour itself is the last block)", !0),
-    evening_hour: O(22, 12, 23, "hour the evening battery level is estimated for", !0),
-    morning_hour: O(6, 0, 11, "hour the night ends at (the battery level in the morning)", !0),
-    car_start_soc: O(50, 0, 100, "% battery level from which the wallbox is started in the evening estimate"),
-    car_stop_soc: O(30, 0, 100, "% battery level at which the wallbox is stopped in the evening estimate"),
-    car_min_sun: O(2e3, 0, 1e5, "W of sun from which the wallbox is started in the evening estimate"),
-    car_kwh_per_km: O(0.19, 0.01, 10, "kWh per km used when the car reports no charge or range (otherwise it is counted from them)"),
-    efficiency: O(95, 50, 100, "% efficiency of the battery in one direction")
+    good_power: H(2e3, 100, 1e5, "W of sun from which an hour counts as strong (the filled blocks of the five days, the window)"),
+    good_day: H(10, 0.1, 1e3, "kWh a day from which a day counts as good (Historie)"),
+    learn_days: H(14, 3, 90, "days the curve of what is possible and the typical deviation of the forecast are learned from", !0),
+    possible_percentile: H(90, 50, 100, "% percentile of the days that sets what is possible in an hour"),
+    typical_deviation: H(20, 1, 100, "% deviation of the forecast assumed until the card has seen enough days"),
+    strip_from: H(6, 0, 23, "hour the hourly strips start at", !0),
+    strip_to: H(17, 1, 24, "hour the hourly strips end at (the hour itself is the last block)", !0),
+    evening_hour: H(22, 12, 23, "hour the evening battery level is estimated for", !0),
+    morning_hour: H(6, 0, 11, "hour the night ends at (the battery level in the morning)", !0),
+    car_start_soc: H(50, 0, 100, "% battery level from which the wallbox is started in the evening estimate"),
+    car_stop_soc: H(30, 0, 100, "% battery level at which the wallbox is stopped in the evening estimate"),
+    car_min_sun: H(2e3, 0, 1e5, "W of sun from which the wallbox is started in the evening estimate"),
+    efficiency: H(95, 50, 100, "% efficiency of the battery in one direction")
   },
   scale: {
-    sun: O(1e4, 100, 1e6, "W, full strength of the sun tile"),
-    battery: O(5e3, 100, 1e6, "W, full strength of the battery tiles"),
-    grid: O(1e4, 100, 1e6, "W, full strength of the grid tiles"),
-    house: O(1e4, 100, 1e6, "W, full strength of the house tile"),
-    car: O(11100, 100, 1e6, "W, full strength of the car tile"),
-    boiler: O(4e3, 100, 1e6, "W, full strength of the boiler tile")
+    sun: H(1e4, 100, 1e6, "W, full strength of the sun tile"),
+    battery: H(5e3, 100, 1e6, "W, full strength of the battery tiles"),
+    grid: H(1e4, 100, 1e6, "W, full strength of the grid tiles"),
+    house: H(1e4, 100, 1e6, "W, full strength of the house tile"),
+    car: H(11100, 100, 1e6, "W, full strength of the car tile"),
+    boiler: H(4e3, 100, 1e6, "W, full strength of the boiler tile")
   },
   ui: {
-    revert_after: O(6, 1, 60, "s until a chosen value falls back to the real state"),
-    hold_ms: O(550, 200, 3e3, "ms to hold a protected control to switch it", !0),
-    double_tap_ms: O(400, 150, 1e3, "ms between the two taps of a double tap", !0),
-    hint_seconds: O(3, 1, 10, "s the hint of a protected control stays")
+    revert_after: H(6, 1, 60, "s until a chosen value falls back to the real state"),
+    hold_ms: H(550, 200, 3e3, "ms to hold a protected control to switch it", !0),
+    double_tap_ms: H(400, 150, 1e3, "ms between the two taps of a double tap", !0),
+    hint_seconds: H(3, 1, 10, "s the hint of a protected control stays")
   }
 }, ne = {
   sun: "#FFD60A",
@@ -5813,7 +5811,7 @@ const pn = 5 * 6e4, ye = 48, ga = 60, un = 90, bn = (a) => class extends a {
       n: c,
       x,
       grid: [{ y: 10 }, { y: u(b) }, { y: 130, strong: !0 }],
-      labels: [{ y: 10, text: `${H(g)} mV` }, { y: u(b), text: `${H(b)} mV` }, { y: 130, text: "0" }],
+      labels: [{ y: 10, text: `${O(g)} mV` }, { y: u(b), text: `${O(b)} mV` }, { y: 130, text: "0" }],
       body: I`<defs>
             <linearGradient id=${E} gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="0" y2="130">
               <stop offset=${D} stop-color="#FF9230"></stop><stop offset=${D} stop-color="#30D158"></stop>
@@ -5824,10 +5822,10 @@ const pn = 5 * 6e4, ye = 48, ga = 60, un = 90, bn = (a) => class extends a {
           <path d=${de(v, x, u, 130)} fill="url(#${E}-area)"></path>
           <path d=${zt(v, x, u)} fill="none" stroke="url(#${E})" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
       dot: (k) => v[k] === void 0 ? void 0 : { y: u(v[k]), color: B(v[k]) },
-      read: (k) => v[k] === void 0 ? `${A(k)} · ${T}` : `${A(k)} · ${$.difference} ${H(v[k])} mV · ${$.min} ${N(p[k], 3)} V · ${$.max} ${N(h[k], 3)} V`,
+      read: (k) => v[k] === void 0 ? `${A(k)} · ${T}` : `${A(k)} · ${$.difference} ${O(v[k])} mV · ${$.min} ${N(p[k], 3)} V · ${$.max} ${N(h[k], 3)} V`,
       from: o === 1 ? "−24 h" : `−${o} d`,
       to: this.t.bat.today,
-      legend: m`<div class="bat-legend"><span><i class="swatch" style="background:${w};opacity:0.35"></i>${$.excellentZone(`${H(b)} mV`)}</span></div>`
+      legend: m`<div class="bat-legend"><span><i class="swatch" style="background:${w};opacity:0.35"></i>${$.excellentZone(`${O(b)} mV`)}</span></div>`
     };
   }
   /** A line (and band) chart of the health rows (temperature, life) with an auto-scaled vertical axis. */
@@ -5845,8 +5843,8 @@ const pn = 5 * 6e4, ye = 48, ga = 60, un = 90, bn = (a) => class extends a {
         line: B,
         minSpan: 6,
         colour: "var(--ed-sun)",
-        text: (E) => `${H(E)} °C`,
-        mid: (E) => `${H(E)} °C`,
+        text: (E) => `${O(E)} °C`,
+        mid: (E) => `${O(E)} °C`,
         read: (E) => {
           const D = [w[E] === void 0 ? void 0 : `${this.t.bat.health.min} ${N(w[E], 1)}`, B[E] === void 0 ? void 0 : `${this.t.bat.health.battery.toLowerCase()} ${N(B[E], 1)}`, j[E] === void 0 ? void 0 : `${this.t.bat.health.max} ${N(j[E], 1)}`].filter(Boolean);
           return `${y(E)} · ${D.length ? `${D.join(" · ")} °C` : T}`;
@@ -5861,8 +5859,8 @@ const pn = 5 * 6e4, ye = 48, ga = 60, un = 90, bn = (a) => class extends a {
         line: w,
         minSpan: 1,
         colour: "var(--ed-battery)",
-        text: (j) => H(j),
-        mid: (j) => H(j),
+        text: (j) => O(j),
+        mid: (j) => O(j),
         read: (j) => `${y(j)} · ${w[j] === void 0 ? T : this.t.bat.health.cycles(N(w[j], 1))}`
       };
     }
@@ -5958,12 +5956,12 @@ const pn = 5 * 6e4, ye = 48, ga = 60, un = 90, bn = (a) => class extends a {
   renderBatteryHealth(t, e) {
     const s = this.t, n = t.entities.battery, i = s.bat.health, o = this.batRange(t), r = (M) => V(this.hass, M), l = r(n.state_of_health), c = r(n.min_cell_voltage), d = r(n.max_cell_voltage), p = r(n.min_cell_temperature), h = r(n.max_cell_temperature), v = this.batProblem(n.error), y = this.batProblem(n.warning), b = Ot(this.hass, n.total_charge), f = Ot(this.hass, n.total_discharge), g = t.num.battery, u = c !== void 0 && d !== void 0 ? (d - c) * 1e3 : void 0, x = u === void 0 ? void 0 : u <= g.imbalance_good ? "good" : u <= g.imbalance_warn ? "ok" : u <= g.imbalance_fault ? "warn" : "fault", A = x === "warn" || x === "fault" ? "var(--ed-warning)" : "var(--ed-pop-sec)", j = [l, c, d, p, h, e.soc].every((M) => M === void 0) && v === void 0 && y === void 0 ? { title: i.noData, sub: i.noDataSub, tone: "off", icon: "M5 12h14" } : v || y ? { title: v ? i.error(v) : i.warning(y), sub: i.problemSub, tone: "warn", icon: "M12 7v6M12 17h.01" } : { title: i.ok, sub: i.okSub, tone: "ok", icon: "M5 12.5l4.5 4.5L19 7.5" }, B = f === void 0 ? void 0 : f / g.capacity, E = [
       { key: "soh", label: i.capacity, value: l === void 0 ? T : R(l), sub: l === void 0 ? s.noData : i.capacitySub(`${N(g.capacity * l / 100, 1)} kWh`, `${N(g.capacity, g.capacity % 1 === 0 ? 0 : 1)} kWh`), details: [] },
-      { key: "gap", label: i.balance, value: u === void 0 ? T : `${H(u)} mV`, word: x ? i.words[x] : void 0, sub: i.balanceSub, details: [] },
+      { key: "gap", label: i.balance, value: u === void 0 ? T : `${O(u)} mV`, word: x ? i.words[x] : void 0, sub: i.balanceSub, details: [] },
       {
         key: "temp",
         label: i.temperature,
-        value: h === void 0 ? T : `${H(h)} °C`,
-        sub: h !== void 0 && p !== void 0 ? i.temperatureSub(`${H(h - p)} °C`) : s.noData,
+        value: h === void 0 ? T : `${O(h)} °C`,
+        sub: h !== void 0 && p !== void 0 ? i.temperatureSub(`${O(h - p)} °C`) : s.noData,
         details: [
           [i.battery, n.temperature],
           [i.inverterAir, n.inverter_temperature_air],
@@ -5973,15 +5971,15 @@ const pn = 5 * 6e4, ye = 48, ga = 60, un = 90, bn = (a) => class extends a {
       {
         key: "life",
         label: i.life,
-        value: B === void 0 ? T : i.cycles(H(B)),
+        value: B === void 0 ? T : i.cycles(O(B)),
         sub: b && f !== void 0 ? i.lifeSub(R(N(f / b * 100, 1))) : s.noData,
         details: [
-          { label: i.totalCharged, value: b === void 0 ? T : `${H(b)} kWh` },
-          { label: i.totalDischarged, value: f === void 0 ? T : `${H(f)} kWh` }
+          { label: i.totalCharged, value: b === void 0 ? T : `${O(b)} kWh` },
+          { label: i.totalDischarged, value: f === void 0 ? T : `${O(f)} kWh` }
         ]
       }
     ], D = (M) => M ? gn(this.hass, M) : void 0, k = [];
-    if (n.mode && k.push({ label: i.mode, value: D(n.mode) ?? T }), n.charge_limit && k.push({ label: i.chargeLimit, value: r(n.charge_limit) === void 0 ? T : `${H(r(n.charge_limit))} A` }), n.discharge_limit && k.push({ label: i.dischargeLimit, value: r(n.discharge_limit) === void 0 ? T : `${H(r(n.discharge_limit))} A` }), n.error || n.warning) {
+    if (n.mode && k.push({ label: i.mode, value: D(n.mode) ?? T }), n.charge_limit && k.push({ label: i.chargeLimit, value: r(n.charge_limit) === void 0 ? T : `${O(r(n.charge_limit))} A` }), n.discharge_limit && k.push({ label: i.dischargeLimit, value: r(n.discharge_limit) === void 0 ? T : `${O(r(n.discharge_limit))} A` }), n.error || n.warning) {
       const M = [v, y].filter(Boolean).join(", ");
       k.push({ label: i.errors, value: v === void 0 && y === void 0 ? T : M || i.none, warn: !!M });
     }
@@ -6451,7 +6449,7 @@ const Cn = 5 * 6e4, Dn = 30 * 6e4, Ft = 12, ee = 26, $a = [
       fade: 0,
       start: F(v / (r - 1) * 100, 0, 100),
       grid: [{ y: M, strong: !0 }, ...S.map((C) => ({ y: z(C) }))],
-      labels: [...S.map((C) => ({ y: z(C), text: H(C) })), { y: M, text: "0" }],
+      labels: [...S.map((C) => ({ y: z(C), text: O(C) })), { y: M, text: "0" }],
       body: I`<defs><linearGradient id="sun-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ed-sun)" stop-opacity="0.28"></stop><stop offset="1" style="stop-color:var(--ed-sun)" stop-opacity="0"></stop></linearGradient></defs>
           <path d=${Wa(j, B, d, z)} style="fill:var(--ed-sun);fill-opacity:0.24"></path>
           <path d=${zt(f, d, z)} fill="none" style="stroke:var(--ed-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path>
@@ -6547,7 +6545,7 @@ const Cn = 5 * 6e4, Dn = 30 * 6e4, Ft = 12, ee = 26, $a = [
       x: l,
       fade: 0,
       grid: [{ y: p, strong: !0 }, { y: h(d / 2) }, { y: h(d) }],
-      labels: [{ y: h(d), text: H(d) }, { y: h(d / 2), text: H(d / 2, d / 2 % 1 ? 1 : 0) }, { y: p, text: "0" }],
+      labels: [{ y: h(d), text: O(d) }, { y: h(d / 2), text: O(d / 2, d / 2 % 1 ? 1 : 0) }, { y: p, text: "0" }],
       body: I`${b}${f.map((u) => I`<text x=${l(u)} y=${p + 16} text-anchor="middle" style="fill:var(--ed-secondary)" font-size="11">${y(u)}</text>`)}`,
       dot: (u) => i[u].total === void 0 ? void 0 : { y: h(i[u].total), color: "var(--ed-sun)" },
       read: (u) => {
@@ -6607,7 +6605,7 @@ const Cn = 5 * 6e4, Dn = 30 * 6e4, Ft = 12, ee = 26, $a = [
         </div>
         <div class="sun-two">
           <div class="bat-card"><span class="bat-cap">${s.hist.eastWest}</span>${k === void 0 ? m`<span class="bat-sub">${T}</span>` : this.eastWest(k)}</div>
-          <div class="bat-card"><span class="bat-cap">${s.hist.goodDays}</span><span class="val big">${r.length ? s.hist.goodOf(M, r.length) : T}</span><span class="bat-sub">${s.hist.over(H(n.good_day))}</span>
+          <div class="bat-card"><span class="bat-cap">${s.hist.goodDays}</span><span class="val big">${r.length ? s.hist.goodOf(M, r.length) : T}</span><span class="bat-sub">${s.hist.over(O(n.good_day))}</span>
             <div class="sun-dots" aria-hidden="true">${r.map((_) => m`<i class=${_.total > n.good_day ? "on" : ""}></i>`)}</div></div>
         </div>
         ${z.length >= 3 ? this.renderAccuracy(z, e) : L}`;
@@ -6674,10 +6672,11 @@ const Cn = 5 * 6e4, Dn = 30 * 6e4, Ft = 12, ee = 26, $a = [
           <div class="bat-kpi"><span class="sub">${n.bestDay}</span><span class="val">${g ? g.i === 0 ? n.today : aa(g.day) : T}</span><span class="sub">${g ? n.bestSub(at(g.kwh), u ? n.window(u[0], u[1]) : "") : ""}</span></div>
         </div>`;
   }
-  /** kWh per km of the car: from its charge, the capacity and the range it reports, else the configured number. */
+  /** kWh per km of the car, from its charge, the capacity and the range it reports; undefined when it reports none of them. */
   carKwhPerKm(t) {
-    const e = V(this.hass, t.entities.car.state_of_charge), s = V(this.hass, t.entities.car.range);
-    return e !== void 0 && s !== void 0 && e >= 5 && s >= 5 ? (V(this.hass, t.entities.car.capacity) ?? t.num.car.battery_capacity) * e / 100 / s : t.num.forecast.car_kwh_per_km;
+    const e = V(this.hass, t.entities.car.state_of_charge), s = V(this.hass, t.entities.car.range), n = V(this.hass, t.entities.car.capacity);
+    if (!(e === void 0 || s === void 0 || n === void 0 || e < 5 || s < 5 || n <= 0))
+      return n * e / 100 / s;
   }
   /** The rows of "Dnes do večera": the battery full, its level in the evening, the car from the sun, the grid at night; none without the data it needs. */
   evening(t, e) {
@@ -6695,7 +6694,11 @@ const Cn = 5 * 6e4, Dn = 30 * 6e4, Ft = 12, ee = 26, $a = [
       morningHour: s.morning_hour,
       car: n.wallbox.power && Ea(ht(this.hass, n.wallbox.status)) !== "disconnected" ? { startSoc: s.car_start_soc, stopSoc: s.car_stop_soc, minSun: s.car_min_sun, watts: t.num.wallbox.power_min } : void 0
     }), l = this.t.sun.outlook, c = [], d = nt(e.today + s.evening_hour * X);
-    return r.socAtEvening !== void 0 && (c.push({ color: "--ed-battery", label: l.batteryNow, value: R(Math.round(i)) }), c.push({ color: "--ed-sun", label: l.sunUntil(d), value: `≈ ${at(r.sunUntilEvening)} kWh` }), c.push({ color: "--ed-house", label: l.houseUntil(d), value: `≈ ${at(r.houseUntilEvening)} kWh` })), r.fullAt !== void 0 && c.push({ color: "--ed-battery", label: l.full, value: `≈ ${nt(r.fullAt)}` }), r.socAtEvening !== void 0 && c.push({ color: "--ed-battery", label: l.batteryAt(nt(e.today + s.evening_hour * X)), value: `≈ ${R(Math.round(r.socAtEvening))}` }), r.carTotal > 0 && c.push({ color: "--ed-car", label: l.carSun, value: `≈ ${at(r.carSun)} kWh · ${H(r.carSun / this.carKwhPerKm(t))} km` }), r.socAtMorning !== void 0 && c.push({ color: "--ed-battery", label: l.batteryAt(nt(mt(e.today, 1) + s.morning_hour * X)), value: `≈ ${R(Math.round(r.socAtMorning))}` }), c;
+    if (r.socAtEvening !== void 0 && (c.push({ color: "--ed-battery", label: l.batteryNow, value: R(Math.round(i)) }), c.push({ color: "--ed-sun", label: l.sunUntil(d), value: `≈ ${at(r.sunUntilEvening)} kWh` }), c.push({ color: "--ed-house", label: l.houseUntil(d), value: `≈ ${at(r.houseUntilEvening)} kWh` })), r.fullAt !== void 0 && c.push({ color: "--ed-battery", label: l.full, value: `≈ ${nt(r.fullAt)}` }), r.socAtEvening !== void 0 && c.push({ color: "--ed-battery", label: l.batteryAt(nt(e.today + s.evening_hour * X)), value: `≈ ${R(Math.round(r.socAtEvening))}` }), r.carTotal > 0) {
+      const p = this.carKwhPerKm(t);
+      c.push({ color: "--ed-car", label: l.carSun, value: `≈ ${at(r.carSun)} kWh${p ? ` · ${O(r.carSun / p)} km` : ""}` });
+    }
+    return r.socAtMorning !== void 0 && c.push({ color: "--ed-battery", label: l.batteryAt(nt(mt(e.today, 1) + s.morning_hour * X)), value: `≈ ${R(Math.round(r.socAtMorning))}` }), c;
   }
 };
 function An(a, t = Bt) {
@@ -6845,7 +6848,7 @@ const U = {
         idleIcon: U.pause,
         idleText: n.idle.boil,
         level: w,
-        aria: [f === void 0 ? n.noData : n.tileSpoken.temperature(`${H(f)} °C`), g(e.boil) ? n.tileSpoken.heating : ""].filter(Boolean).join(", ")
+        aria: [f === void 0 ? n.noData : n.tileSpoken.temperature(`${O(f)} °C`), g(e.boil) ? n.tileSpoken.heating : ""].filter(Boolean).join(", ")
       });
     }
     return $.push(
@@ -6953,7 +6956,7 @@ const U = {
       boil: {
         title: o.tile.boil,
         now: p(n.boil) ? o.pop.heating(d(n.boil)) : n.boil === void 0 ? T : o.idle.boil,
-        level: g === void 0 ? void 0 : { label: o.pop.temperature, text: `${H(g)} °C`, percent: F((g - u) / (x - u) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
+        level: g === void 0 ? void 0 : { label: o.pop.temperature, text: `${O(g)} °C`, percent: F((g - u) / (x - u) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
         rows: [{ label: o.pop.rows.boilerHeated, value: c(l.boil) }]
       }
     }[t.key], w = 236, j = t.side === "L" ? e.tile.w / 2 : e.width - e.tile.w / 2, B = t.side === "L" ? e.left[t.key] : e.right[t.key], E = B - e.tile.h / 2, D = B < e.height / 2, k = F(j - w / 2, 0, e.width - w), M = D ? `top:${(E + e.tile.h + 8).toFixed(0)}px` : `bottom:${(e.height - E + 8).toFixed(0)}px`;
@@ -7038,8 +7041,8 @@ const U = {
               ${this._carHint ? m`<div class="car-hint" aria-hidden="true">${s.hint.holdOrDouble}</div>` : L}` : L}
           <div class="head"><h2 id="h-car">${t.titles.car ?? s.titles.car}</h2>${this.stateLine(y, b)}</div>
           <div class="car-soc">
-            <span class="soc">${u === void 0 ? T : H(u)}<small>${this._i18n.percent("")}</small>${u === void 0 ? m`<span class="sr-only">${s.noData}</span>` : L}</span>
-            <span class="range">${s.car.range} <b>${e.carRange === void 0 ? T : `${H(e.carRange)} km`}</b></span>
+            <span class="soc">${u === void 0 ? T : O(u)}<small>${this._i18n.percent("")}</small>${u === void 0 ? m`<span class="sr-only">${s.noData}</span>` : L}</span>
+            <span class="range">${s.car.range} <b>${e.carRange === void 0 ? T : `${O(e.carRange)} km`}</b></span>
           </div>
         </div>
         <div class="meter-wrap">
@@ -7081,11 +7084,11 @@ const U = {
     const v = xt(l, "min"), y = xt(l, "max");
     return v !== void 0 && (p = Math.max(p, v * n / 1e3)), y !== void 0 && (h = Math.min(h, y * n / 1e3)), m`<div class="fold ${e ? "open" : ""}" ?inert=${!e}><div>
         <div class="field">
-          <span class="field-label">${this.t.car.power}</span><span class="field-value">${d === void 0 ? T : H(d, 1)}<small> kW</small></span>
+          <span class="field-label">${this.t.car.power}</span><span class="field-value">${d === void 0 ? T : O(d, 1)}<small> kW</small></span>
           <ed-slider
             .min=${p} .max=${h} .step=${r / 1e3} .value=${d ?? p}
-            label=${this.t.car.powerLabel} valueText=${d === void 0 ? this.t.noData : `${H(d, 1)} kW`}
-            minLabel="${H(p, 1)} kW" maxLabel="${H(h, 1)} kW"
+            label=${this.t.car.powerLabel} valueText=${d === void 0 ? this.t.noData : `${O(d, 1)} kW`}
+            minLabel="${O(p, 1)} kW" maxLabel="${O(h, 1)} kW"
             ?disabled=${d === void 0}
             @hdk-change=${(b) => this.setNumber(s, Math.round(b.detail.value * 1e3 / n), this.t.car.power)}
           ></ed-slider>
@@ -7150,19 +7153,19 @@ const Rn = (a) => class extends a {
   gauge(t, e, s, n, i) {
     return m`<div class="arc" role="img" aria-label=${i}>
         ${Pn(t, e, s, n.tempScale)}
-        <div class="arc-num"><b>${t === void 0 ? T : H(t)}</b>${t === void 0 ? m`<span class="sr-only">${this.t.noData}</span>` : m`<span>°C</span>`}</div>
-        <span class="arc-min" aria-hidden="true">${H(e)}</span><span class="arc-max" aria-hidden="true">${H(s)}</span>
+        <div class="arc-num"><b>${t === void 0 ? T : O(t)}</b>${t === void 0 ? m`<span class="sr-only">${this.t.noData}</span>` : m`<span>°C</span>`}</div>
+        <span class="arc-min" aria-hidden="true">${O(e)}</span><span class="arc-max" aria-hidden="true">${O(s)}</span>
       </div>`;
   }
   renderBoilerTile(t, e, s, n, i) {
     const o = this.t, r = t.entities.boiler;
     t.num.boiler;
     const l = this.shown(r.boost), c = l === "on", d = V(this.hass, r.target_temperature), p = V(this.hass, r.boost_target_temperature), h = c ? p : d, v = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, d ?? 0), b = e.boilTemp, f = !!this._open.targets, g = !!(r.target_temperature || r.boost_target_temperature), u = o.water.boilerLabel(
-      b === void 0 ? o.noData : `${H(b)} °C`,
+      b === void 0 ? o.noData : `${O(b)} °C`,
       s ? o.water.heatingWith(Q(e.boil, i)) : o.water.notHeating,
-      h === void 0 ? void 0 : `${H(h)} °C`,
-      H(v),
-      `${H(y)} °C`
+      h === void 0 ? void 0 : `${O(h)} °C`,
+      O(v),
+      `${O(y)} °C`
     );
     return m`<div class="source">
         <div class="source-top">
@@ -7171,7 +7174,7 @@ const Rn = (a) => class extends a {
             <div>
               <div class="source-title">${o.water.boilerTitle}</div>
               <div class="source-line">
-                <span class="src" style="--c:${s ? n : "var(--ed-secondary)"}">${s ? Q(e.boil, i) : e.boil === void 0 ? T : o.water.notHeating}</span>${h === void 0 ? L : m` <span class="dim">· ${o.water.target(`${H(h)} °C`)}</span>`}
+                <span class="src" style="--c:${s ? n : "var(--ed-secondary)"}">${s ? Q(e.boil, i) : e.boil === void 0 ? T : o.water.notHeating}</span>${h === void 0 ? L : m` <span class="dim">· ${o.water.target(`${O(h)} °C`)}</span>`}
               </div>
             </div>
             ${r.boost ? m`<ed-segmented
@@ -7184,7 +7187,7 @@ const Rn = (a) => class extends a {
         ${g ? m`<div class="subrow">
               <button type="button" class="rowbtn" aria-expanded=${f ? "true" : "false"} @click=${() => this.toggle("targets")}>
                 <span class="rowbtn-title">${o.water.targets}</span>
-                <span class="rowbtn-value">${o.water.targetFlow} <b>${d === void 0 ? T : H(d)}</b> · ${o.water.targetBoost} <b>${p === void 0 ? T : `${H(p)} °C`}</b></span>
+                <span class="rowbtn-value">${o.water.targetFlow} <b>${d === void 0 ? T : O(d)}</b> · ${o.water.targetBoost} <b>${p === void 0 ? T : `${O(p)} °C`}</b></span>
                 <svg class="chevron ${f ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${U.expand}></path></svg>
               </button>
               <div class="fold ${f ? "open" : ""}" ?inert=${!f}><div>${this.renderTargets(t, d, p)}</div></div>
@@ -7199,11 +7202,11 @@ const Rn = (a) => class extends a {
       let b = o.target_min, f = o.target_max;
       const g = xt(y, "min"), u = xt(y, "max");
       return g !== void 0 && (b = Math.max(b, g)), u !== void 0 && (f = Math.min(f, u)), h !== void 0 && (b = Math.max(b, h)), v !== void 0 && (f = Math.min(f, v)), m`<div class="field">
-          <span class="field-label">${d}<span class="hint">${p}</span></span><span class="field-value">${c === void 0 ? T : H(c)}<small> °C</small></span>
+          <span class="field-label">${d}<span class="hint">${p}</span></span><span class="field-value">${c === void 0 ? T : O(c)}<small> °C</small></span>
           <ed-slider
             .min=${b} .max=${f} .step=${o.target_step} .value=${c ?? b}
             label=${n.water.targetSliderLabel(d)} valueText=${c === void 0 ? n.noData : n.water.targetSliderSpoken(`${c} °C`, d)}
-            minLabel="${H(b)} °C" maxLabel="${H(f)} °C"
+            minLabel="${O(b)} °C" maxLabel="${O(f)} °C"
             ?disabled=${c === void 0}
             @hdk-change=${(x) => this.setNumber(l, x.detail.value, n.water.targetWhat(d))}
           ></ed-slider>
@@ -7237,11 +7240,11 @@ const Rn = (a) => class extends a {
         <div class="link ${n ? "on" : ""}" aria-hidden="true"></div>`;
   }
   renderTankTile(t) {
-    const e = this.t, s = t.entities.tank, n = t.num.tank, i = s.water_heater, o = it(this.hass, i), r = this.shown(i), l = r === "off", c = r === "heat", d = xt(o, "temperature"), p = this._tankTemp, h = p && p.id === i ? p.value : d, v = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, V(this.hass, t.entities.boiler.target_temperature) ?? 0), b = l ? n.temp_min : h, f = Array.isArray(o?.attributes?.operation_list) ? o.attributes.operation_list : Object.keys(e.tank.modes), g = Object.keys(e.tank.modes).filter((E) => f.includes(E)).map((E) => ({ value: E, label: e.tank.modes[E] })), u = !!this._open.tank, { min: x, max: A } = this.tankRange(t), $ = r === void 0 ? T : e.tank.modes[r] ?? r, w = l ? e.tank.keepsMinimum : c ? e.tank.setManually : e.tank.byPlan, j = b === void 0 ? T : l ? e.tank.summaryOff(`${H(n.temp_min)} °C`) : (c ? e.tank.summaryManual : e.tank.summaryPlan)(`${H(b)} °C`), B = e.tank.label(
-      b === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${H(n.temp_min)} °C`) : e.tank.settingSet(`${H(b)} °C`),
+    const e = this.t, s = t.entities.tank, n = t.num.tank, i = s.water_heater, o = it(this.hass, i), r = this.shown(i), l = r === "off", c = r === "heat", d = xt(o, "temperature"), p = this._tankTemp, h = p && p.id === i ? p.value : d, v = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, V(this.hass, t.entities.boiler.target_temperature) ?? 0), b = l ? n.temp_min : h, f = Array.isArray(o?.attributes?.operation_list) ? o.attributes.operation_list : Object.keys(e.tank.modes), g = Object.keys(e.tank.modes).filter((E) => f.includes(E)).map((E) => ({ value: E, label: e.tank.modes[E] })), u = !!this._open.tank, { min: x, max: A } = this.tankRange(t), $ = r === void 0 ? T : e.tank.modes[r] ?? r, w = l ? e.tank.keepsMinimum : c ? e.tank.setManually : e.tank.byPlan, j = b === void 0 ? T : l ? e.tank.summaryOff(`${O(n.temp_min)} °C`) : (c ? e.tank.summaryManual : e.tank.summaryPlan)(`${O(b)} °C`), B = e.tank.label(
+      b === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${O(n.temp_min)} °C`) : e.tank.settingSet(`${O(b)} °C`),
       $,
-      H(v),
-      `${H(y)} °C`
+      O(v),
+      `${O(y)} °C`
     );
     return m`<div class="source">
         <div class="source-top">
@@ -7264,11 +7267,11 @@ const Rn = (a) => class extends a {
                 <div class="detail">
                   <div class="field ${l ? "off" : ""}">
                     <span class="field-label">${e.tank.temperature}<span class="hint">${l ? e.tank.hintOff : c ? e.tank.hintManual : e.tank.hintPlan}</span></span>
-                    <span class="field-value">${b === void 0 ? T : H(b)}<small> °C</small></span>
+                    <span class="field-value">${b === void 0 ? T : O(b)}<small> °C</small></span>
                     <ed-slider
                       .min=${x} .max=${A} .step=${n.temp_step} .tickStep=${5} .value=${b ?? x}
                       label=${e.tank.sliderLabel} valueText=${h === void 0 ? e.noData : e.tank.sliderSpoken(`${h} °C`)}
-                      minLabel="${H(x)} °C" maxLabel="${H(A)} °C"
+                      minLabel="${O(x)} °C" maxLabel="${O(A)} °C"
                       ?disabled=${h === void 0 || l}
                       @hdk-change=${(E) => this.setTankTemperature(i, E.detail.value, r)}
                     ></ed-slider>
@@ -7303,4 +7306,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: re($s()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-10-30 15:09 UTC · po bf5f183 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-10-30 15:13 UTC · po eaeacf7 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

@@ -76,7 +76,6 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
   car: {
     charge_limit: range(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
     image_scale: range(2, 0.5, 3, "× size of the car picture (grows up and to the sides, the bottom stays)"),
-    battery_capacity: range(37.9, 5, 200, "kWh usable capacity of the car battery when car.capacity is not set (the km of the sun are counted from it, the charge and the range)"),
   },
   wallbox: {
     phases: range(3, 1, 3, "number of phases", true),
@@ -122,7 +121,6 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     car_start_soc: range(50, 0, 100, "% battery level from which the wallbox is started in the evening estimate"),
     car_stop_soc: range(30, 0, 100, "% battery level at which the wallbox is stopped in the evening estimate"),
     car_min_sun: range(2000, 0, 100000, "W of sun from which the wallbox is started in the evening estimate"),
-    car_kwh_per_km: range(0.19, 0.01, 10, "kWh per km used when the car reports no charge or range (otherwise it is counted from them)"),
     efficiency: range(95, 50, 100, "% efficiency of the battery in one direction"),
   },
   scale: {

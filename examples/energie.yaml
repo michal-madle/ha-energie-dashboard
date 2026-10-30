@@ -60,10 +60,9 @@ house:
 car:
   state_of_charge: sensor.vin_stav_nabiti_predikce_integrace  # nabití auta (%); ID obsahuje VIN, doplňte své
   range: sensor.i3_120_range_ev_remaining_range         # dojezd (km)
-  capacity: sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana  # užitečná energie plné baterie (kWh); z ní, z nabití a z dojezdu se počítá spotřeba; ID obsahuje VIN, doplňte své
+  capacity: sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana  # užitečná energie plné baterie (kWh); z ní, z nabití a z dojezdu se počítá spotřeba auta a km ze slunce; ID obsahuje VIN, doplňte své
   image: image.vin                                      # obrázek auta (image.…); ID obsahuje VIN, doplňte své
   charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
-  battery_capacity: 37.9                                # kWh užitečná kapacita baterie auta, když není nastavená entita capacity
   image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
   link: /dashboard-bmw                                  # kam vede dvojklep nebo podržení obrázku auta (cesta nebo https://…); "" = nikam
 wallbox:
@@ -127,7 +126,6 @@ forecast:
   car_start_soc: 50                                     # % baterie, od které se v odhadu večera pustí wallbox
   car_stop_soc: 30                                      # % baterie, při které se wallbox v odhadu zastaví
   car_min_sun: 2000                                     # W slunce, od kterého se wallbox v odhadu pustí
-  car_kwh_per_km: 0.19                                  # kWh na km, když auto nehlásí nabití nebo dojezd (jinak se spočítá z nich)
   efficiency: 95                                        # % účinnost baterie v jednom směru
 
 # ------------------------------------------------ dnešní součty (jen v popupech, kWh)

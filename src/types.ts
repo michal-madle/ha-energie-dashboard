@@ -75,7 +75,7 @@ export type SectionName = keyof EntitySections;
 /** Numeric settings (limits, thresholds, scales); every one has a default (config.ts, NUMBERS). */
 export interface NumberSettings {
   battery: { reserve: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
-  car: { charge_limit: number; image_scale: number; battery_capacity: number };
+  car: { charge_limit: number; image_scale: number };
   wallbox: { phases: number; power_min: number; power_max: number; power_step: number; priority_min_sun: number };
   boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
   water: { gauge_min: number; gauge_max: number };
@@ -92,7 +92,7 @@ export interface NumberSettings {
   forecast: {
     good_power: number; good_day: number; learn_days: number; possible_percentile: number; typical_deviation: number;
     strip_from: number; strip_to: number; evening_hour: number; morning_hour: number;
-    car_start_soc: number; car_stop_soc: number; car_min_sun: number; car_kwh_per_km: number; efficiency: number;
+    car_start_soc: number; car_stop_soc: number; car_min_sun: number; efficiency: number;
   };
   scale: { sun: number; battery: number; grid: number; house: number; car: number; boiler: number };
   ui: { revert_after: number; hold_ms: number; double_tap_ms: number; hint_seconds: number };

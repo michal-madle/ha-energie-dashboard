@@ -793,12 +793,13 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         </div>`;
     }
 
-    /** kWh per km of the car: from its charge, the capacity and the range it reports, else the configured number. */
-    carKwhPerKm(s: Settings): number {
+    /** kWh per km of the car, from its charge, the capacity and the range it reports; undefined when it reports none of them. */
+    carKwhPerKm(s: Settings): number | undefined {
       const soc = readNumber(this.hass, s.entities.car.state_of_charge);
       const range = readNumber(this.hass, s.entities.car.range);
-      if (soc !== undefined && range !== undefined && soc >= 5 && range >= 5) return ((readNumber(this.hass, s.entities.car.capacity) ?? s.num.car.battery_capacity) * soc / 100) / range;
-      return s.num.forecast.car_kwh_per_km;
+      const capacity = readNumber(this.hass, s.entities.car.capacity);
+      if (soc === undefined || range === undefined || capacity === undefined || soc < 5 || range < 5 || capacity <= 0) return undefined;
+      return (capacity * soc / 100) / range;
     }
 
     /** The rows of "Dnes do večera": the battery full, its level in the evening, the car from the sun, the grid at night; none without the data it needs. */
@@ -824,7 +825,8 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       if (result.fullAt !== undefined) rows.push({ color: "--ed-battery", label: o.full, value: `≈ ${formatClock(result.fullAt)}` });
       if (result.socAtEvening !== undefined) rows.push({ color: "--ed-battery", label: o.batteryAt(formatClock(v.today + num.evening_hour * HOUR)), value: `≈ ${formatPercent(Math.round(result.socAtEvening))}` });
       if (result.carTotal > 0) {
-        rows.push({ color: "--ed-car", label: o.carSun, value: `≈ ${formatKwh(result.carSun)} kWh · ${formatNumber(result.carSun / this.carKwhPerKm(s))} km` });
+        const perKm = this.carKwhPerKm(s);
+        rows.push({ color: "--ed-car", label: o.carSun, value: `≈ ${formatKwh(result.carSun)} kWh${perKm ? ` · ${formatNumber(result.carSun / perKm)} km` : ""}` });
       }
       if (result.socAtMorning !== undefined) rows.push({ color: "--ed-battery", label: o.batteryAt(formatClock(addDays(v.today, 1) + num.morning_hour * HOUR)), value: `≈ ${formatPercent(Math.round(result.socAtMorning))}` });
       return rows;

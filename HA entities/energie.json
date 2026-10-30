@@ -8,9 +8,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.235938+00:00",
-    "last_updated": "2026-10-24T11:26:36.235938+00:00",
-    "last_reported": "2026-10-24T11:26:36.235938+00:00"
+    "last_changed": "2026-10-30T14:13:36.526513+00:00",
+    "last_updated": "2026-10-30T14:13:36.526513+00:00",
+    "last_reported": "2026-10-30T14:13:36.526513+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -26,9 +26,9 @@
       "step": 1,
       "mode": "auto"
     },
-    "last_changed": "2026-10-24T11:26:36.981327+00:00",
-    "last_updated": "2026-10-24T11:26:36.981327+00:00",
-    "last_reported": "2026-10-24T11:26:36.981327+00:00"
+    "last_changed": "2026-10-30T14:13:38.399054+00:00",
+    "last_updated": "2026-10-30T14:13:38.399054+00:00",
+    "last_reported": "2026-10-30T14:13:38.399054+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -44,9 +44,9 @@
       "step": 100,
       "mode": "auto"
     },
-    "last_changed": "2026-10-24T11:26:36.981139+00:00",
-    "last_updated": "2026-10-24T11:26:36.981139+00:00",
-    "last_reported": "2026-10-24T11:26:36.981139+00:00"
+    "last_changed": "2026-10-30T14:13:38.398891+00:00",
+    "last_updated": "2026-10-30T14:13:38.398891+00:00",
+    "last_reported": "2026-10-30T14:13:38.398891+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -65,74 +65,74 @@
         "peak_shaving"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.723208+00:00",
-    "last_updated": "2026-10-24T11:26:36.723208+00:00",
-    "last_reported": "2026-10-24T11:26:36.723208+00:00"
+    "last_changed": "2026-10-30T14:13:37.303486+00:00",
+    "last_updated": "2026-10-30T14:13:37.303486+00:00",
+    "last_reported": "2026-10-30T14:13:37.303486+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_active_power",
     "name": "GoodWe Active Power",
-    "state": "-119",
+    "state": "-1313",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.357238+00:00",
-    "last_updated": "2026-10-24T20:53:29.357238+00:00",
-    "last_reported": "2026-10-24T20:53:29.357238+00:00"
+    "last_changed": "2026-10-30T14:29:56.657046+00:00",
+    "last_updated": "2026-10-30T14:29:56.657046+00:00",
+    "last_reported": "2026-10-30T14:29:56.657046+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_active_power_l1",
     "name": "GoodWe Active Power L1",
-    "state": "-43",
+    "state": "-352",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:57.853942+00:00",
-    "last_updated": "2026-10-24T20:52:57.853942+00:00",
-    "last_reported": "2026-10-24T20:53:30.352415+00:00"
+    "last_changed": "2026-10-30T14:29:58.151954+00:00",
+    "last_updated": "2026-10-30T14:29:58.151954+00:00",
+    "last_reported": "2026-10-30T14:29:58.151954+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_active_power_l2",
     "name": "GoodWe Active Power L2",
-    "state": "-16",
+    "state": "-49",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.352431+00:00",
-    "last_updated": "2026-10-24T20:53:30.352431+00:00",
-    "last_reported": "2026-10-24T20:53:30.352431+00:00"
+    "last_changed": "2026-10-30T14:29:58.250077+00:00",
+    "last_updated": "2026-10-30T14:29:58.250077+00:00",
+    "last_reported": "2026-10-30T14:29:58.250077+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_active_power_l3",
     "name": "GoodWe Active Power L3",
-    "state": "-44",
+    "state": "-33",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:20.641161+00:00",
-    "last_updated": "2026-10-24T20:53:20.641161+00:00",
-    "last_reported": "2026-10-24T20:53:30.414628+00:00"
+    "last_changed": "2026-10-30T14:29:58.325659+00:00",
+    "last_updated": "2026-10-30T14:29:58.325659+00:00",
+    "last_reported": "2026-10-30T14:29:58.325659+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_active_power_total",
     "name": "GoodWe Active Power Total",
-    "state": "-103",
+    "state": "-435",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.414706+00:00",
-    "last_updated": "2026-10-24T20:53:30.414706+00:00",
-    "last_reported": "2026-10-24T20:53:30.414706+00:00"
+    "last_changed": "2026-10-30T14:29:58.401438+00:00",
+    "last_updated": "2026-10-30T14:29:58.401438+00:00",
+    "last_reported": "2026-10-30T14:29:58.401438+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -143,100 +143,100 @@
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T17:31:57.966842+00:00",
-    "last_updated": "2026-10-24T17:31:57.966842+00:00",
-    "last_reported": "2026-10-24T20:53:29.497017+00:00"
+    "last_changed": "2026-10-30T14:13:36.445530+00:00",
+    "last_updated": "2026-10-30T14:13:36.445530+00:00",
+    "last_reported": "2026-10-30T14:29:56.981400+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l1_frequency",
     "name": "GoodWe Back-up L1 Frequency",
-    "state": "50.0",
+    "state": "49.99",
     "unit": "Hz",
     "device_class": "frequency",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.497072+00:00",
-    "last_updated": "2026-10-24T20:53:29.497072+00:00",
-    "last_reported": "2026-10-24T20:53:29.497072+00:00"
+    "last_changed": "2026-10-30T14:29:56.981458+00:00",
+    "last_updated": "2026-10-30T14:29:56.981458+00:00",
+    "last_reported": "2026-10-30T14:29:56.981458+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l1_power",
     "name": "GoodWe Back-up L1 Power",
-    "state": "10",
+    "state": "9",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:19.417584+00:00",
-    "last_updated": "2026-10-24T20:53:19.417584+00:00",
-    "last_reported": "2026-10-24T20:53:29.567855+00:00"
+    "last_changed": "2026-10-30T14:29:57.056599+00:00",
+    "last_updated": "2026-10-30T14:29:57.056599+00:00",
+    "last_reported": "2026-10-30T14:29:57.056599+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l1_voltage",
     "name": "GoodWe Back-up L1 Voltage",
-    "state": "236.9",
+    "state": "235.6",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.426429+00:00",
-    "last_updated": "2026-10-24T20:53:29.426429+00:00",
-    "last_reported": "2026-10-24T20:53:29.426429+00:00"
+    "last_changed": "2026-10-30T14:29:56.897768+00:00",
+    "last_updated": "2026-10-30T14:29:56.897768+00:00",
+    "last_reported": "2026-10-30T14:29:56.897768+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l2_current",
     "name": "GoodWe Back-up L2 Current",
-    "state": "0.3",
+    "state": "0.2",
     "unit": "A",
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:08.626365+00:00",
-    "last_updated": "2026-10-24T20:53:08.626365+00:00",
-    "last_reported": "2026-10-24T20:53:29.641400+00:00"
+    "last_changed": "2026-10-30T14:28:38.513917+00:00",
+    "last_updated": "2026-10-30T14:28:38.513917+00:00",
+    "last_reported": "2026-10-30T14:29:57.203379+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l2_frequency",
     "name": "GoodWe Back-up L2 Frequency",
-    "state": "50.01",
+    "state": "50.0",
     "unit": "Hz",
     "device_class": "frequency",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:19.570045+00:00",
-    "last_updated": "2026-10-24T20:53:19.570045+00:00",
-    "last_reported": "2026-10-24T20:53:29.641447+00:00"
+    "last_changed": "2026-10-30T14:29:57.203424+00:00",
+    "last_updated": "2026-10-30T14:29:57.203424+00:00",
+    "last_reported": "2026-10-30T14:29:57.203424+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l2_power",
     "name": "GoodWe Back-up L2 Power",
-    "state": "7",
+    "state": "3",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.641490+00:00",
-    "last_updated": "2026-10-24T20:53:29.641490+00:00",
-    "last_reported": "2026-10-24T20:53:29.641490+00:00"
+    "last_changed": "2026-10-30T14:29:57.279000+00:00",
+    "last_updated": "2026-10-30T14:29:57.279000+00:00",
+    "last_reported": "2026-10-30T14:29:57.279000+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l2_voltage",
     "name": "GoodWe Back-up L2 Voltage",
-    "state": "238.3",
+    "state": "237.9",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.567890+00:00",
-    "last_updated": "2026-10-24T20:53:29.567890+00:00",
-    "last_reported": "2026-10-24T20:53:29.567890+00:00"
+    "last_changed": "2026-10-30T14:29:57.136499+00:00",
+    "last_updated": "2026-10-30T14:29:57.136499+00:00",
+    "last_reported": "2026-10-30T14:29:57.136499+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -247,22 +247,22 @@
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T12:07:46.621414+00:00",
-    "last_updated": "2026-10-24T12:07:46.621414+00:00",
-    "last_reported": "2026-10-24T20:53:29.772689+00:00"
+    "last_changed": "2026-10-30T14:13:36.447238+00:00",
+    "last_updated": "2026-10-30T14:13:36.447238+00:00",
+    "last_reported": "2026-10-30T14:29:57.385862+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l3_frequency",
     "name": "GoodWe Back-up L3 Frequency",
-    "state": "50.01",
+    "state": "49.98",
     "unit": "Hz",
     "device_class": "frequency",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.772745+00:00",
-    "last_updated": "2026-10-24T20:53:29.772745+00:00",
-    "last_reported": "2026-10-24T20:53:29.772745+00:00"
+    "last_changed": "2026-10-30T14:29:33.513494+00:00",
+    "last_updated": "2026-10-30T14:29:33.513494+00:00",
+    "last_reported": "2026-10-30T14:29:57.385941+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -273,35 +273,35 @@
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:06.075923+00:00",
-    "last_updated": "2026-10-24T20:52:06.075923+00:00",
-    "last_reported": "2026-10-24T20:53:29.836199+00:00"
+    "last_changed": "2026-10-30T14:29:33.513537+00:00",
+    "last_updated": "2026-10-30T14:29:33.513537+00:00",
+    "last_reported": "2026-10-30T14:29:57.386038+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_l3_voltage",
     "name": "GoodWe Back-up L3 Voltage",
-    "state": "235.2",
+    "state": "234.4",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.705091+00:00",
-    "last_updated": "2026-10-24T20:53:29.705091+00:00",
-    "last_reported": "2026-10-24T20:53:29.705091+00:00"
+    "last_changed": "2026-10-30T14:29:33.513448+00:00",
+    "last_updated": "2026-10-30T14:29:33.513448+00:00",
+    "last_reported": "2026-10-30T14:29:57.385768+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_back_up_load",
     "name": "GoodWe Back-up Load",
-    "state": "15",
+    "state": "13",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:20.084101+00:00",
-    "last_updated": "2026-10-24T20:53:20.084101+00:00",
-    "last_reported": "2026-10-24T20:53:30.025147+00:00"
+    "last_changed": "2026-10-30T14:29:44.515528+00:00",
+    "last_updated": "2026-10-30T14:29:44.515528+00:00",
+    "last_reported": "2026-10-30T14:29:57.692315+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -312,9 +312,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.169338+00:00",
-    "last_updated": "2026-10-24T11:26:36.169338+00:00",
-    "last_reported": "2026-10-24T20:53:30.940704+00:00"
+    "last_changed": "2026-10-30T14:13:36.462343+00:00",
+    "last_updated": "2026-10-30T14:13:36.462343+00:00",
+    "last_reported": "2026-10-30T14:29:59.515404+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -325,22 +325,22 @@
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.169877+00:00",
-    "last_updated": "2026-10-24T11:26:36.169877+00:00",
-    "last_reported": "2026-10-24T20:53:30.940788+00:00"
+    "last_changed": "2026-10-30T14:13:36.463040+00:00",
+    "last_updated": "2026-10-30T14:13:36.463040+00:00",
+    "last_reported": "2026-10-30T14:29:59.515523+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_current",
     "name": "GoodWe Battery Current",
-    "state": "0.9",
+    "state": "0.2",
     "unit": "A",
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:06.076283+00:00",
-    "last_updated": "2026-10-24T20:52:06.076283+00:00",
-    "last_reported": "2026-10-24T20:53:30.225526+00:00"
+    "last_changed": "2026-10-30T14:26:15.509133+00:00",
+    "last_updated": "2026-10-30T14:26:15.509133+00:00",
+    "last_reported": "2026-10-30T14:29:57.999264+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -351,9 +351,9 @@
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.170013+00:00",
-    "last_updated": "2026-10-24T11:26:36.170013+00:00",
-    "last_reported": "2026-10-24T20:53:30.940804+00:00"
+    "last_changed": "2026-10-30T14:13:36.463257+00:00",
+    "last_updated": "2026-10-30T14:13:36.463257+00:00",
+    "last_reported": "2026-10-30T14:29:59.515540+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -364,9 +364,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171382+00:00",
-    "last_updated": "2026-10-24T11:26:36.171382+00:00",
-    "last_reported": "2026-10-24T20:53:30.941198+00:00"
+    "last_changed": "2026-10-30T14:13:36.465802+00:00",
+    "last_updated": "2026-10-30T14:13:36.465802+00:00",
+    "last_reported": "2026-10-30T14:29:59.515746+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -377,9 +377,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171262+00:00",
-    "last_updated": "2026-10-24T11:26:36.171262+00:00",
-    "last_reported": "2026-10-24T20:53:30.941184+00:00"
+    "last_changed": "2026-10-30T14:13:36.465541+00:00",
+    "last_updated": "2026-10-30T14:13:36.465541+00:00",
+    "last_reported": "2026-10-30T14:29:59.515723+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -390,9 +390,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.170146+00:00",
-    "last_updated": "2026-10-24T11:26:36.170146+00:00",
-    "last_reported": "2026-10-24T20:53:30.940819+00:00"
+    "last_changed": "2026-10-30T14:13:36.463443+00:00",
+    "last_updated": "2026-10-30T14:13:36.463443+00:00",
+    "last_reported": "2026-10-30T14:29:59.515555+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -403,9 +403,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171887+00:00",
-    "last_updated": "2026-10-24T11:26:36.171887+00:00",
-    "last_reported": "2026-10-24T20:53:30.941251+00:00"
+    "last_changed": "2026-10-30T14:13:36.467051+00:00",
+    "last_updated": "2026-10-30T14:13:36.467051+00:00",
+    "last_reported": "2026-10-30T14:29:59.515819+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -416,22 +416,22 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.169456+00:00",
-    "last_updated": "2026-10-24T11:26:36.169456+00:00",
-    "last_reported": "2026-10-24T20:53:30.940721+00:00"
+    "last_changed": "2026-10-30T14:13:36.462513+00:00",
+    "last_updated": "2026-10-30T14:13:36.462513+00:00",
+    "last_reported": "2026-10-30T14:29:59.515435+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_max_cell_temperature",
     "name": "GoodWe Battery Max Cell Temperature",
-    "state": "25.7",
+    "state": "24.4",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:43:36.605891+00:00",
-    "last_updated": "2026-10-24T20:43:36.605891+00:00",
-    "last_reported": "2026-10-24T20:53:31.082568+00:00"
+    "last_changed": "2026-10-30T14:13:36.468363+00:00",
+    "last_updated": "2026-10-30T14:13:36.468363+00:00",
+    "last_reported": "2026-10-30T14:29:59.604765+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -442,48 +442,48 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.172007+00:00",
-    "last_updated": "2026-10-24T11:26:36.172007+00:00",
-    "last_reported": "2026-10-24T20:53:30.941265+00:00"
+    "last_changed": "2026-10-30T14:13:36.467283+00:00",
+    "last_updated": "2026-10-30T14:13:36.467283+00:00",
+    "last_reported": "2026-10-30T14:29:59.515845+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_max_cell_voltage",
     "name": "GoodWe Battery Max Cell Voltage",
-    "state": "3.279",
+    "state": "3.305",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:51:55.617488+00:00",
-    "last_updated": "2026-10-24T20:51:55.617488+00:00",
-    "last_reported": "2026-10-24T20:53:31.082640+00:00"
+    "last_changed": "2026-10-30T14:29:00.515950+00:00",
+    "last_updated": "2026-10-30T14:29:00.515950+00:00",
+    "last_reported": "2026-10-30T14:29:59.604829+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_max_cell_voltage_id",
     "name": "GoodWe Battery Max Cell Voltage ID",
-    "state": "6",
+    "state": "4",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.941292+00:00",
-    "last_updated": "2026-10-24T20:53:30.941292+00:00",
-    "last_reported": "2026-10-24T20:53:30.941292+00:00"
+    "last_changed": "2026-10-30T14:29:44.517262+00:00",
+    "last_updated": "2026-10-30T14:29:44.517262+00:00",
+    "last_reported": "2026-10-30T14:29:59.515887+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_min_cell_temperature",
     "name": "GoodWe Battery Min Cell Temperature",
-    "state": "22.3",
+    "state": "21.5",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:34:15.602498+00:00",
-    "last_updated": "2026-10-24T20:34:15.602498+00:00",
-    "last_reported": "2026-10-24T20:53:31.082614+00:00"
+    "last_changed": "2026-10-30T14:13:36.468658+00:00",
+    "last_updated": "2026-10-30T14:13:36.468658+00:00",
+    "last_reported": "2026-10-30T14:29:59.604806+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -494,35 +494,35 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.172139+00:00",
-    "last_updated": "2026-10-24T11:26:36.172139+00:00",
-    "last_reported": "2026-10-24T20:53:30.941278+00:00"
+    "last_changed": "2026-10-30T14:13:36.467588+00:00",
+    "last_updated": "2026-10-30T14:13:36.467588+00:00",
+    "last_reported": "2026-10-30T14:29:59.515866+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_min_cell_voltage",
     "name": "GoodWe Battery Min Cell Voltage",
-    "state": "3.274",
+    "state": "3.301",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:31.082660+00:00",
-    "last_updated": "2026-10-24T20:53:31.082660+00:00",
-    "last_reported": "2026-10-24T20:53:31.082660+00:00"
+    "last_changed": "2026-10-30T14:29:44.517374+00:00",
+    "last_updated": "2026-10-30T14:29:44.517374+00:00",
+    "last_reported": "2026-10-30T14:29:59.604848+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_min_cell_voltage_id",
     "name": "GoodWe Battery Min Cell Voltage ID",
-    "state": "74",
+    "state": "8",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:31.007696+00:00",
-    "last_updated": "2026-10-24T20:53:31.007696+00:00",
-    "last_reported": "2026-10-24T20:53:31.007696+00:00"
+    "last_changed": "2026-10-30T14:29:59.515908+00:00",
+    "last_updated": "2026-10-30T14:29:59.515908+00:00",
+    "last_reported": "2026-10-30T14:29:59.515908+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -533,9 +533,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T15:18:48.623022+00:00",
-    "last_updated": "2026-10-24T15:18:48.623022+00:00",
-    "last_reported": "2026-10-24T20:53:30.286703+00:00"
+    "last_changed": "2026-10-30T14:16:31.506832+00:00",
+    "last_updated": "2026-10-30T14:16:31.506832+00:00",
+    "last_reported": "2026-10-30T14:29:58.072710+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -546,9 +546,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T15:18:48.622998+00:00",
-    "last_updated": "2026-10-24T15:18:48.622998+00:00",
-    "last_reported": "2026-10-24T20:53:30.286663+00:00"
+    "last_changed": "2026-10-30T14:16:31.506799+00:00",
+    "last_updated": "2026-10-30T14:16:31.506799+00:00",
+    "last_reported": "2026-10-30T14:29:58.072668+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -559,22 +559,22 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.170715+00:00",
-    "last_updated": "2026-10-24T11:26:36.170715+00:00",
-    "last_reported": "2026-10-24T20:53:30.941140+00:00"
+    "last_changed": "2026-10-30T14:13:36.464706+00:00",
+    "last_updated": "2026-10-30T14:13:36.464706+00:00",
+    "last_reported": "2026-10-30T14:29:59.515654+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_power",
     "name": "GoodWe Battery Power",
-    "state": "274",
+    "state": "77",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.225556+00:00",
-    "last_updated": "2026-10-24T20:53:30.225556+00:00",
-    "last_reported": "2026-10-24T20:53:30.225556+00:00"
+    "last_changed": "2026-10-30T14:29:57.999287+00:00",
+    "last_updated": "2026-10-30T14:29:57.999287+00:00",
+    "last_reported": "2026-10-30T14:29:57.999287+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -585,9 +585,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171036+00:00",
-    "last_updated": "2026-10-24T11:26:36.171036+00:00",
-    "last_reported": "2026-10-24T20:53:30.941170+00:00"
+    "last_changed": "2026-10-30T14:13:36.465244+00:00",
+    "last_updated": "2026-10-30T14:13:36.465244+00:00",
+    "last_reported": "2026-10-30T14:29:59.515700+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -598,22 +598,22 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171765+00:00",
-    "last_updated": "2026-10-24T11:26:36.171765+00:00",
-    "last_reported": "2026-10-24T20:53:30.941237+00:00"
+    "last_changed": "2026-10-30T14:13:36.466742+00:00",
+    "last_updated": "2026-10-30T14:13:36.466742+00:00",
+    "last_reported": "2026-10-30T14:29:59.515791+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_state_of_charge",
     "name": "GoodWe Battery State of Charge",
-    "state": "63",
+    "state": "43",
     "unit": "%",
     "device_class": "battery",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:48:23.610188+00:00",
-    "last_updated": "2026-10-24T20:48:23.610188+00:00",
-    "last_reported": "2026-10-24T20:53:30.940838+00:00"
+    "last_changed": "2026-10-30T14:20:01.517246+00:00",
+    "last_updated": "2026-10-30T14:20:01.517246+00:00",
+    "last_reported": "2026-10-30T14:29:59.515572+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -624,9 +624,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.170590+00:00",
-    "last_updated": "2026-10-24T11:26:36.170590+00:00",
-    "last_reported": "2026-10-24T20:53:30.941123+00:00"
+    "last_changed": "2026-10-30T14:13:36.463875+00:00",
+    "last_updated": "2026-10-30T14:13:36.463875+00:00",
+    "last_reported": "2026-10-30T14:29:59.515635+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -637,35 +637,35 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.169591+00:00",
-    "last_updated": "2026-10-24T11:26:36.169591+00:00",
-    "last_reported": "2026-10-24T20:53:30.940738+00:00"
+    "last_changed": "2026-10-30T14:13:36.462648+00:00",
+    "last_updated": "2026-10-30T14:13:36.462648+00:00",
+    "last_reported": "2026-10-30T14:29:59.515464+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_temperature",
     "name": "GoodWe Battery Temperature",
-    "state": "23.8",
+    "state": "22.7",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:41:45.613965+00:00",
-    "last_updated": "2026-10-24T20:41:45.613965+00:00",
-    "last_reported": "2026-10-24T20:53:30.940768+00:00"
+    "last_changed": "2026-10-30T14:13:36.462873+00:00",
+    "last_updated": "2026-10-30T14:13:36.462873+00:00",
+    "last_reported": "2026-10-30T14:29:59.515503+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_battery_voltage",
     "name": "GoodWe Battery Voltage",
-    "state": "294.9",
+    "state": "297.2",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:51:55.615471+00:00",
-    "last_updated": "2026-10-24T20:51:55.615471+00:00",
-    "last_reported": "2026-10-24T20:53:30.225461+00:00"
+    "last_changed": "2026-10-30T14:29:00.514097+00:00",
+    "last_updated": "2026-10-30T14:29:00.514097+00:00",
+    "last_reported": "2026-10-30T14:29:57.999221+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -676,9 +676,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171638+00:00",
-    "last_updated": "2026-10-24T11:26:36.171638+00:00",
-    "last_reported": "2026-10-24T20:53:30.941225+00:00"
+    "last_changed": "2026-10-30T14:13:36.466291+00:00",
+    "last_updated": "2026-10-30T14:13:36.466291+00:00",
+    "last_reported": "2026-10-30T14:29:59.515777+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -689,9 +689,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.171507+00:00",
-    "last_updated": "2026-10-24T11:26:36.171507+00:00",
-    "last_reported": "2026-10-24T20:53:30.941211+00:00"
+    "last_changed": "2026-10-30T14:13:36.466060+00:00",
+    "last_updated": "2026-10-30T14:13:36.466060+00:00",
+    "last_reported": "2026-10-30T14:29:59.515764+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -702,22 +702,22 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.170905+00:00",
-    "last_updated": "2026-10-24T11:26:36.170905+00:00",
-    "last_reported": "2026-10-24T20:53:30.941156+00:00"
+    "last_changed": "2026-10-30T14:13:36.465024+00:00",
+    "last_updated": "2026-10-30T14:13:36.465024+00:00",
+    "last_reported": "2026-10-30T14:29:59.515677+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_bus_voltage",
     "name": "GoodWe Bus Voltage",
-    "state": "777.9",
+    "state": "777.3",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.089166+00:00",
-    "last_updated": "2026-10-24T20:53:30.089166+00:00",
-    "last_reported": "2026-10-24T20:53:30.089166+00:00"
+    "last_changed": "2026-10-30T14:29:57.845826+00:00",
+    "last_updated": "2026-10-30T14:29:57.845826+00:00",
+    "last_reported": "2026-10-30T14:29:57.845826+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -728,9 +728,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.165541+00:00",
-    "last_updated": "2026-10-24T11:26:36.165541+00:00",
-    "last_reported": "2026-10-24T20:53:30.352304+00:00"
+    "last_changed": "2026-10-30T14:13:36.455929+00:00",
+    "last_updated": "2026-10-30T14:13:36.455929+00:00",
+    "last_reported": "2026-10-30T14:29:58.151795+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -741,9 +741,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T15:18:48.623377+00:00",
-    "last_updated": "2026-10-24T15:18:48.623377+00:00",
-    "last_reported": "2026-10-24T20:53:30.287062+00:00"
+    "last_changed": "2026-10-30T14:16:31.507323+00:00",
+    "last_updated": "2026-10-30T14:16:31.507323+00:00",
+    "last_reported": "2026-10-30T14:29:58.073129+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -754,9 +754,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T15:18:48.623357+00:00",
-    "last_updated": "2026-10-24T15:18:48.623357+00:00",
-    "last_reported": "2026-10-24T20:53:30.287050+00:00"
+    "last_changed": "2026-10-30T14:16:31.507293+00:00",
+    "last_updated": "2026-10-30T14:16:31.507293+00:00",
+    "last_reported": "2026-10-30T14:29:58.073114+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -767,9 +767,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.162704+00:00",
-    "last_updated": "2026-10-24T11:26:36.162704+00:00",
-    "last_reported": "2026-10-24T20:53:30.286819+00:00"
+    "last_changed": "2026-10-30T14:13:36.452295+00:00",
+    "last_updated": "2026-10-30T14:13:36.452295+00:00",
+    "last_reported": "2026-10-30T14:29:58.072867+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -780,9 +780,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.163037+00:00",
-    "last_updated": "2026-10-24T11:26:36.163037+00:00",
-    "last_reported": "2026-10-24T20:53:30.286833+00:00"
+    "last_changed": "2026-10-30T14:13:36.452478+00:00",
+    "last_updated": "2026-10-30T14:13:36.452478+00:00",
+    "last_reported": "2026-10-30T14:29:58.072882+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -793,9 +793,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.160704+00:00",
-    "last_updated": "2026-10-24T11:26:36.160704+00:00",
-    "last_reported": "2026-10-24T20:53:30.089145+00:00"
+    "last_changed": "2026-10-30T14:13:36.449652+00:00",
+    "last_updated": "2026-10-30T14:13:36.449652+00:00",
+    "last_reported": "2026-10-30T14:29:57.845744+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -806,9 +806,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.155199+00:00",
-    "last_updated": "2026-10-24T11:26:36.155199+00:00",
-    "last_reported": "2026-10-24T20:53:29.290580+00:00"
+    "last_changed": "2026-10-30T14:13:36.443874+00:00",
+    "last_updated": "2026-10-30T14:13:36.443874+00:00",
+    "last_reported": "2026-10-30T14:29:56.586911+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -819,35 +819,35 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.155031+00:00",
-    "last_updated": "2026-10-24T11:26:36.155031+00:00",
-    "last_reported": "2026-10-24T20:53:29.290512+00:00"
+    "last_changed": "2026-10-30T14:13:36.443688+00:00",
+    "last_updated": "2026-10-30T14:13:36.443688+00:00",
+    "last_reported": "2026-10-30T14:29:56.586873+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_house_consumption",
     "name": "GoodWe House Consumption",
-    "state": "393",
+    "state": "1557",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.287078+00:00",
-    "last_updated": "2026-10-24T20:53:30.287078+00:00",
-    "last_reported": "2026-10-24T20:53:30.287078+00:00"
+    "last_changed": "2026-10-30T14:29:58.073145+00:00",
+    "last_updated": "2026-10-30T14:29:58.073145+00:00",
+    "last_reported": "2026-10-30T14:29:58.073145+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_inverter_temperature_air",
     "name": "GoodWe Inverter Temperature (Air)",
-    "state": "33.5",
+    "state": "35.7",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:20:55.613131+00:00",
-    "last_updated": "2026-10-24T20:20:55.613131+00:00",
-    "last_reported": "2026-10-24T20:53:30.089083+00:00"
+    "last_changed": "2026-10-30T14:28:16.511141+00:00",
+    "last_updated": "2026-10-30T14:28:16.511141+00:00",
+    "last_reported": "2026-10-30T14:29:57.775681+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -858,74 +858,74 @@
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.160412+00:00",
-    "last_updated": "2026-10-24T11:26:36.160412+00:00",
-    "last_reported": "2026-10-24T20:53:30.089106+00:00"
+    "last_changed": "2026-10-30T14:13:36.449323+00:00",
+    "last_updated": "2026-10-30T14:13:36.449323+00:00",
+    "last_reported": "2026-10-30T14:29:57.775707+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_inverter_temperature_radiator",
     "name": "GoodWe Inverter Temperature (Radiator)",
-    "state": "27.8",
+    "state": "29.4",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:09.268389+00:00",
-    "last_updated": "2026-10-24T20:53:09.268389+00:00",
-    "last_reported": "2026-10-24T20:53:30.089126+00:00"
+    "last_changed": "2026-10-30T14:29:57.775728+00:00",
+    "last_updated": "2026-10-30T14:29:57.775728+00:00",
+    "last_reported": "2026-10-30T14:29:57.775728+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_load",
     "name": "GoodWe Load",
-    "state": "382",
+    "state": "1493",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.025191+00:00",
-    "last_updated": "2026-10-24T20:53:30.025191+00:00",
-    "last_reported": "2026-10-24T20:53:30.025191+00:00"
+    "last_changed": "2026-10-30T14:29:57.692365+00:00",
+    "last_updated": "2026-10-30T14:29:57.692365+00:00",
+    "last_reported": "2026-10-30T14:29:57.692365+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_load_l1",
     "name": "GoodWe Load L1",
-    "state": "90",
+    "state": "1305",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.836232+00:00",
-    "last_updated": "2026-10-24T20:53:29.836232+00:00",
-    "last_reported": "2026-10-24T20:53:29.836232+00:00"
+    "last_changed": "2026-10-30T14:29:57.386060+00:00",
+    "last_updated": "2026-10-30T14:29:57.386060+00:00",
+    "last_reported": "2026-10-30T14:29:57.386060+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_load_l2",
     "name": "GoodWe Load L2",
-    "state": "190",
+    "state": "155",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.899843+00:00",
-    "last_updated": "2026-10-24T20:53:29.899843+00:00",
-    "last_reported": "2026-10-24T20:53:29.899843+00:00"
+    "last_changed": "2026-10-30T14:29:57.509704+00:00",
+    "last_updated": "2026-10-30T14:29:57.509704+00:00",
+    "last_reported": "2026-10-30T14:29:57.509704+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_load_l3",
     "name": "GoodWe Load L3",
-    "state": "98",
+    "state": "30",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.961594+00:00",
-    "last_updated": "2026-10-24T20:53:29.961594+00:00",
-    "last_reported": "2026-10-24T20:53:29.961594+00:00"
+    "last_changed": "2026-10-30T14:29:57.600776+00:00",
+    "last_updated": "2026-10-30T14:29:57.600776+00:00",
+    "last_reported": "2026-10-30T14:29:57.600776+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -936,9 +936,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.156626+00:00",
-    "last_updated": "2026-10-24T11:26:36.156626+00:00",
-    "last_reported": "2026-10-24T20:53:29.567781+00:00"
+    "last_changed": "2026-10-30T14:13:36.445871+00:00",
+    "last_updated": "2026-10-30T14:13:36.445871+00:00",
+    "last_reported": "2026-10-30T14:29:57.056540+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -949,9 +949,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.157383+00:00",
-    "last_updated": "2026-10-24T11:26:36.157383+00:00",
-    "last_reported": "2026-10-24T20:53:29.641469+00:00"
+    "last_changed": "2026-10-30T14:13:36.446670+00:00",
+    "last_updated": "2026-10-30T14:13:36.446670+00:00",
+    "last_reported": "2026-10-30T14:29:57.278952+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -962,9 +962,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.158217+00:00",
-    "last_updated": "2026-10-24T11:26:36.158217+00:00",
-    "last_reported": "2026-10-24T20:53:29.836128+00:00"
+    "last_changed": "2026-10-30T14:13:36.447585+00:00",
+    "last_updated": "2026-10-30T14:13:36.447585+00:00",
+    "last_reported": "2026-10-30T14:29:57.386011+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -975,61 +975,61 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.165786+00:00",
-    "last_updated": "2026-10-24T11:26:36.165786+00:00",
-    "last_reported": "2026-10-24T20:53:30.352363+00:00"
+    "last_changed": "2026-10-30T14:13:36.456227+00:00",
+    "last_updated": "2026-10-30T14:13:36.456227+00:00",
+    "last_reported": "2026-10-30T14:29:58.151875+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_active_power_l1",
     "name": "GoodWe Meter Active Power L1",
-    "state": "-43",
+    "state": "-352",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:57.931719+00:00",
-    "last_updated": "2026-10-24T20:52:57.931719+00:00",
-    "last_reported": "2026-10-24T20:53:30.813695+00:00"
+    "last_changed": "2026-10-30T14:29:58.914671+00:00",
+    "last_updated": "2026-10-30T14:29:58.914671+00:00",
+    "last_reported": "2026-10-30T14:29:58.914671+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_active_power_l2",
     "name": "GoodWe Meter Active Power L2",
-    "state": "-16",
+    "state": "-49",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.813715+00:00",
-    "last_updated": "2026-10-24T20:53:30.813715+00:00",
-    "last_reported": "2026-10-24T20:53:30.813715+00:00"
+    "last_changed": "2026-10-30T14:29:59.119955+00:00",
+    "last_updated": "2026-10-30T14:29:59.119955+00:00",
+    "last_reported": "2026-10-30T14:29:59.119955+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_active_power_l3",
     "name": "GoodWe Meter Active Power L3",
-    "state": "-44",
+    "state": "-33",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:21.304000+00:00",
-    "last_updated": "2026-10-24T20:53:21.304000+00:00",
-    "last_reported": "2026-10-24T20:53:30.877550+00:00"
+    "last_changed": "2026-10-30T14:29:59.322050+00:00",
+    "last_updated": "2026-10-30T14:29:59.322050+00:00",
+    "last_reported": "2026-10-30T14:29:59.322050+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_active_power_total",
     "name": "GoodWe Meter Active Power Total",
-    "state": "-103",
+    "state": "-435",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.877602+00:00",
-    "last_updated": "2026-10-24T20:53:30.877602+00:00",
-    "last_reported": "2026-10-24T20:53:30.877602+00:00"
+    "last_changed": "2026-10-30T14:29:59.423658+00:00",
+    "last_updated": "2026-10-30T14:29:59.423658+00:00",
+    "last_reported": "2026-10-30T14:29:59.423658+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1040,74 +1040,74 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.166042+00:00",
-    "last_updated": "2026-10-24T11:26:36.166042+00:00",
-    "last_reported": "2026-10-24T20:53:30.352396+00:00"
+    "last_changed": "2026-10-30T14:13:36.456530+00:00",
+    "last_updated": "2026-10-30T14:13:36.456530+00:00",
+    "last_reported": "2026-10-30T14:29:58.151924+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_frequency",
     "name": "GoodWe Meter Frequency",
-    "state": "50.01",
+    "state": "49.99",
     "unit": "Hz",
     "device_class": "frequency",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.745527+00:00",
-    "last_updated": "2026-10-24T20:53:30.745527+00:00",
-    "last_reported": "2026-10-24T20:53:30.745527+00:00"
+    "last_changed": "2026-10-30T14:29:58.814836+00:00",
+    "last_updated": "2026-10-30T14:29:58.814836+00:00",
+    "last_reported": "2026-10-30T14:29:58.814836+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_power_factor",
     "name": "GoodWe Meter Power Factor",
-    "state": "-0.129",
+    "state": "-0.402",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.681971+00:00",
-    "last_updated": "2026-10-24T20:53:30.681971+00:00",
-    "last_reported": "2026-10-24T20:53:30.681971+00:00"
+    "last_changed": "2026-10-30T14:29:58.738990+00:00",
+    "last_updated": "2026-10-30T14:29:58.738990+00:00",
+    "last_reported": "2026-10-30T14:29:58.738990+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_power_factor_l1",
     "name": "GoodWe Meter Power Factor L1",
-    "state": "-0.111",
+    "state": "-0.608",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.477229+00:00",
-    "last_updated": "2026-10-24T20:53:30.477229+00:00",
-    "last_reported": "2026-10-24T20:53:30.477229+00:00"
+    "last_changed": "2026-10-30T14:29:58.479420+00:00",
+    "last_updated": "2026-10-30T14:29:58.479420+00:00",
+    "last_reported": "2026-10-30T14:29:58.479420+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_power_factor_l2",
     "name": "GoodWe Meter Power Factor L2",
-    "state": "-0.092",
+    "state": "-0.08",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.544187+00:00",
-    "last_updated": "2026-10-24T20:53:30.544187+00:00",
-    "last_reported": "2026-10-24T20:53:30.544187+00:00"
+    "last_changed": "2026-10-30T14:29:58.566689+00:00",
+    "last_updated": "2026-10-30T14:29:58.566689+00:00",
+    "last_reported": "2026-10-30T14:29:58.566689+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_power_factor_l3",
     "name": "GoodWe Meter Power Factor L3",
-    "state": "-0.244",
+    "state": "-0.114",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.610047+00:00",
-    "last_updated": "2026-10-24T20:53:30.610047+00:00",
-    "last_reported": "2026-10-24T20:53:30.610047+00:00"
+    "last_changed": "2026-10-30T14:29:58.647989+00:00",
+    "last_updated": "2026-10-30T14:29:58.647989+00:00",
+    "last_reported": "2026-10-30T14:29:58.647989+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1118,9 +1118,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.169214+00:00",
-    "last_updated": "2026-10-24T11:26:36.169214+00:00",
-    "last_reported": "2026-10-24T20:53:30.940685+00:00"
+    "last_changed": "2026-10-30T14:13:36.462126+00:00",
+    "last_updated": "2026-10-30T14:13:36.462126+00:00",
+    "last_reported": "2026-10-30T14:29:59.515379+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1131,35 +1131,35 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.165916+00:00",
-    "last_updated": "2026-10-24T11:26:36.165916+00:00",
-    "last_reported": "2026-10-24T20:53:30.352380+00:00"
+    "last_changed": "2026-10-30T14:13:36.456387+00:00",
+    "last_updated": "2026-10-30T14:13:36.456387+00:00",
+    "last_reported": "2026-10-30T14:29:58.151901+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_total_energy_export",
     "name": "GoodWe Meter Total Energy (export)",
-    "state": "4437.19",
+    "state": "4440.96",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T19:51:10.661407+00:00",
-    "last_updated": "2026-10-24T19:51:10.661407+00:00",
-    "last_reported": "2026-10-24T20:53:30.813522+00:00"
+    "last_changed": "2026-10-30T14:13:36.459991+00:00",
+    "last_updated": "2026-10-30T14:13:36.459991+00:00",
+    "last_reported": "2026-10-30T14:29:58.914548+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_meter_total_energy_import",
     "name": "GoodWe Meter Total Energy (import)",
-    "state": "4385.75",
+    "state": "4450.34",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:50:24.012203+00:00",
-    "last_updated": "2026-10-24T20:50:24.012203+00:00",
-    "last_reported": "2026-10-24T20:53:30.813666+00:00"
+    "last_changed": "2026-10-30T14:28:05.511291+00:00",
+    "last_updated": "2026-10-30T14:28:05.511291+00:00",
+    "last_reported": "2026-10-30T14:29:58.914628+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1170,178 +1170,178 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.169084+00:00",
-    "last_updated": "2026-10-24T11:26:36.169084+00:00",
-    "last_reported": "2026-10-24T20:53:30.940641+00:00"
+    "last_changed": "2026-10-30T14:13:36.461973+00:00",
+    "last_updated": "2026-10-30T14:13:36.461973+00:00",
+    "last_reported": "2026-10-30T14:29:59.515311+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_nbus_voltage",
     "name": "GoodWe NBus Voltage",
-    "state": "388.5",
+    "state": "388.3",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:30.162855+00:00",
-    "last_updated": "2026-10-24T20:53:30.162855+00:00",
-    "last_reported": "2026-10-24T20:53:30.162855+00:00"
+    "last_changed": "2026-10-30T14:29:57.925328+00:00",
+    "last_updated": "2026-10-30T14:29:57.925328+00:00",
+    "last_reported": "2026-10-30T14:29:57.925328+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_on_grid_l1_current",
     "name": "GoodWe On-grid L1 Current",
-    "state": "0.5",
-    "unit": "A",
-    "device_class": "current",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:52:57.625565+00:00",
-    "last_updated": "2026-10-24T20:52:57.625565+00:00",
-    "last_reported": "2026-10-24T20:53:28.738848+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l1_frequency",
-    "name": "GoodWe On-grid L1 Frequency",
-    "state": "50.0",
-    "unit": "Hz",
-    "device_class": "frequency",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:28.738898+00:00",
-    "last_updated": "2026-10-24T20:53:28.738898+00:00",
-    "last_reported": "2026-10-24T20:53:28.738898+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l1_power",
-    "name": "GoodWe On-grid L1 Power",
-    "state": "58",
-    "unit": "W",
-    "device_class": "power",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:28.804255+00:00",
-    "last_updated": "2026-10-24T20:53:28.804255+00:00",
-    "last_reported": "2026-10-24T20:53:28.804255+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l1_voltage",
-    "name": "GoodWe On-grid L1 Voltage",
-    "state": "239.5",
-    "unit": "V",
-    "device_class": "voltage",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:28.667482+00:00",
-    "last_updated": "2026-10-24T20:53:28.667482+00:00",
-    "last_reported": "2026-10-24T20:53:28.667482+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l2_current",
-    "name": "GoodWe On-grid L2 Current",
-    "state": "0.9",
-    "unit": "A",
-    "device_class": "current",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:28.869976+00:00",
-    "last_updated": "2026-10-24T20:53:28.869976+00:00",
-    "last_reported": "2026-10-24T20:53:28.869976+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l2_frequency",
-    "name": "GoodWe On-grid L2 Frequency",
-    "state": "50.01",
-    "unit": "Hz",
-    "device_class": "frequency",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:18.783916+00:00",
-    "last_updated": "2026-10-24T20:53:18.783916+00:00",
-    "last_reported": "2026-10-24T20:53:28.945138+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l2_power",
-    "name": "GoodWe On-grid L2 Power",
-    "state": "164",
-    "unit": "W",
-    "device_class": "power",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:28.945204+00:00",
-    "last_updated": "2026-10-24T20:53:28.945204+00:00",
-    "last_reported": "2026-10-24T20:53:28.945204+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l2_voltage",
-    "name": "GoodWe On-grid L2 Voltage",
-    "state": "240.5",
-    "unit": "V",
-    "device_class": "voltage",
-    "state_class": "measurement",
-    "attributes": {},
-    "last_changed": "2026-10-24T20:53:18.700756+00:00",
-    "last_updated": "2026-10-24T20:53:18.700756+00:00",
-    "last_reported": "2026-10-24T20:53:28.869927+00:00"
-  },
-  {
-    "system": "FVE, baterie, elektroměr",
-    "entity": "sensor.goodwe_on_grid_l3_current",
-    "name": "GoodWe On-grid L3 Current",
     "state": "0.4",
     "unit": "A",
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:16.600953+00:00",
-    "last_updated": "2026-10-24T20:52:16.600953+00:00",
-    "last_reported": "2026-10-24T20:53:29.157297+00:00"
+    "last_changed": "2026-10-30T14:27:10.506413+00:00",
+    "last_updated": "2026-10-30T14:27:10.506413+00:00",
+    "last_reported": "2026-10-30T14:29:55.949216+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l1_frequency",
+    "name": "GoodWe On-grid L1 Frequency",
+    "state": "49.99",
+    "unit": "Hz",
+    "device_class": "frequency",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:29:55.949268+00:00",
+    "last_updated": "2026-10-30T14:29:55.949268+00:00",
+    "last_reported": "2026-10-30T14:29:55.949268+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l1_power",
+    "name": "GoodWe On-grid L1 Power",
+    "state": "62",
+    "unit": "W",
+    "device_class": "power",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:29:56.068248+00:00",
+    "last_updated": "2026-10-30T14:29:56.068248+00:00",
+    "last_reported": "2026-10-30T14:29:56.068248+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l1_voltage",
+    "name": "GoodWe On-grid L1 Voltage",
+    "state": "238.6",
+    "unit": "V",
+    "device_class": "voltage",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:29:55.887026+00:00",
+    "last_updated": "2026-10-30T14:29:55.887026+00:00",
+    "last_reported": "2026-10-30T14:29:55.887026+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l2_current",
+    "name": "GoodWe On-grid L2 Current",
+    "state": "0.8",
+    "unit": "A",
+    "device_class": "current",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:28:27.508496+00:00",
+    "last_updated": "2026-10-30T14:28:27.508496+00:00",
+    "last_reported": "2026-10-30T14:29:56.210770+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l2_frequency",
+    "name": "GoodWe On-grid L2 Frequency",
+    "state": "50.0",
+    "unit": "Hz",
+    "device_class": "frequency",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:29:56.210798+00:00",
+    "last_updated": "2026-10-30T14:29:56.210798+00:00",
+    "last_reported": "2026-10-30T14:29:56.210798+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l2_power",
+    "name": "GoodWe On-grid L2 Power",
+    "state": "133",
+    "unit": "W",
+    "device_class": "power",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:29:56.323214+00:00",
+    "last_updated": "2026-10-30T14:29:56.323214+00:00",
+    "last_reported": "2026-10-30T14:29:56.323214+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l2_voltage",
+    "name": "GoodWe On-grid L2 Voltage",
+    "state": "239.4",
+    "unit": "V",
+    "device_class": "voltage",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:29:44.514748+00:00",
+    "last_updated": "2026-10-30T14:29:44.514748+00:00",
+    "last_reported": "2026-10-30T14:29:56.210722+00:00"
+  },
+  {
+    "system": "FVE, baterie, elektroměr",
+    "entity": "sensor.goodwe_on_grid_l3_current",
+    "name": "GoodWe On-grid L3 Current",
+    "state": "0.3",
+    "unit": "A",
+    "device_class": "current",
+    "state_class": "measurement",
+    "attributes": {},
+    "last_changed": "2026-10-30T14:26:15.508178+00:00",
+    "last_updated": "2026-10-30T14:26:15.508178+00:00",
+    "last_reported": "2026-10-30T14:29:56.518879+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_on_grid_l3_frequency",
     "name": "GoodWe On-grid L3 Frequency",
-    "state": "50.01",
+    "state": "49.98",
     "unit": "Hz",
     "device_class": "frequency",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.157350+00:00",
-    "last_updated": "2026-10-24T20:53:29.157350+00:00",
-    "last_reported": "2026-10-24T20:53:29.157350+00:00"
+    "last_changed": "2026-10-30T14:29:33.512987+00:00",
+    "last_updated": "2026-10-30T14:29:33.512987+00:00",
+    "last_reported": "2026-10-30T14:29:56.518926+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_on_grid_l3_power",
     "name": "GoodWe On-grid L3 Power",
-    "state": "55",
+    "state": "-6",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.224656+00:00",
-    "last_updated": "2026-10-24T20:53:29.224656+00:00",
-    "last_reported": "2026-10-24T20:53:29.224656+00:00"
+    "last_changed": "2026-10-30T14:29:56.518948+00:00",
+    "last_updated": "2026-10-30T14:29:56.518948+00:00",
+    "last_reported": "2026-10-30T14:29:56.518948+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_on_grid_l3_voltage",
     "name": "GoodWe On-grid L3 Voltage",
-    "state": "237.4",
+    "state": "236.7",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.058714+00:00",
-    "last_updated": "2026-10-24T20:53:29.058714+00:00",
-    "last_reported": "2026-10-24T20:53:29.058714+00:00"
+    "last_changed": "2026-10-30T14:29:56.434479+00:00",
+    "last_updated": "2026-10-30T14:29:56.434479+00:00",
+    "last_reported": "2026-10-30T14:29:56.434479+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1352,9 +1352,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:51:55.614724+00:00",
-    "last_updated": "2026-10-24T20:51:55.614724+00:00",
-    "last_reported": "2026-10-24T20:53:29.426397+00:00"
+    "last_changed": "2026-10-30T14:29:56.805772+00:00",
+    "last_updated": "2026-10-30T14:29:56.805772+00:00",
+    "last_reported": "2026-10-30T14:29:56.805772+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1365,9 +1365,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:51:55.614700+00:00",
-    "last_updated": "2026-10-24T20:51:55.614700+00:00",
-    "last_reported": "2026-10-24T20:53:29.426353+00:00"
+    "last_changed": "2026-10-30T14:29:56.730436+00:00",
+    "last_updated": "2026-10-30T14:29:56.730436+00:00",
+    "last_reported": "2026-10-30T14:29:56.730436+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1378,165 +1378,165 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.162580+00:00",
-    "last_updated": "2026-10-24T11:26:36.162580+00:00",
-    "last_reported": "2026-10-24T20:53:30.286804+00:00"
+    "last_changed": "2026-10-30T14:13:36.452092+00:00",
+    "last_updated": "2026-10-30T14:13:36.452092+00:00",
+    "last_reported": "2026-10-30T14:29:58.072846+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv1_current",
     "name": "GoodWe PV1 Current",
-    "state": "0.0",
+    "state": "0.3",
     "unit": "A",
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T15:55:52.977563+00:00",
-    "last_updated": "2026-10-24T15:55:52.977563+00:00",
-    "last_reported": "2026-10-24T20:53:28.667302+00:00"
+    "last_changed": "2026-10-30T14:14:30.503001+00:00",
+    "last_updated": "2026-10-30T14:14:30.503001+00:00",
+    "last_reported": "2026-10-30T14:29:55.644366+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv1_mode",
     "name": "GoodWe PV1 Mode",
-    "state": "PV panels not connected",
+    "state": "PV panels connected, producing power",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:03:49.819975+00:00",
-    "last_updated": "2026-10-24T16:03:49.819975+00:00",
-    "last_reported": "2026-10-24T20:53:28.667462+00:00"
+    "last_changed": "2026-10-30T14:13:36.440806+00:00",
+    "last_updated": "2026-10-30T14:13:36.440806+00:00",
+    "last_reported": "2026-10-30T14:29:55.887000+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv1_mode_code",
     "name": "GoodWe PV1 Mode code",
-    "state": "0",
+    "state": "2",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:03:49.819943+00:00",
-    "last_updated": "2026-10-24T16:03:49.819943+00:00",
-    "last_reported": "2026-10-24T20:53:28.667447+00:00"
+    "last_changed": "2026-10-30T14:13:36.440576+00:00",
+    "last_updated": "2026-10-30T14:13:36.440576+00:00",
+    "last_reported": "2026-10-30T14:29:55.886985+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv1_power",
     "name": "GoodWe PV1 Power",
-    "state": "0",
+    "state": "60",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T15:55:52.977590+00:00",
-    "last_updated": "2026-10-24T15:55:52.977590+00:00",
-    "last_reported": "2026-10-24T20:53:28.667325+00:00"
+    "last_changed": "2026-10-30T14:29:44.514380+00:00",
+    "last_updated": "2026-10-30T14:29:44.514380+00:00",
+    "last_reported": "2026-10-30T14:29:55.644439+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv1_voltage",
     "name": "GoodWe PV1 Voltage",
-    "state": "0.0",
+    "state": "202.9",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:26:17.605839+00:00",
-    "last_updated": "2026-10-24T16:26:17.605839+00:00",
-    "last_reported": "2026-10-24T20:53:28.667257+00:00"
+    "last_changed": "2026-10-30T14:29:55.576026+00:00",
+    "last_updated": "2026-10-30T14:29:55.576026+00:00",
+    "last_reported": "2026-10-30T14:29:55.576026+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv2_current",
     "name": "GoodWe PV2 Current",
-    "state": "0.0",
+    "state": "0.5",
     "unit": "A",
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:20:57.603782+00:00",
-    "last_updated": "2026-10-24T16:20:57.603782+00:00",
-    "last_reported": "2026-10-24T20:53:28.667364+00:00"
+    "last_changed": "2026-10-30T14:29:00.512301+00:00",
+    "last_updated": "2026-10-30T14:29:00.512301+00:00",
+    "last_reported": "2026-10-30T14:29:55.733387+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv2_mode",
     "name": "GoodWe PV2 Mode",
-    "state": "PV panels not connected",
+    "state": "PV panels connected, producing power",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:05:31.001688+00:00",
-    "last_updated": "2026-10-24T16:05:31.001688+00:00",
-    "last_reported": "2026-10-24T20:53:28.667432+00:00"
+    "last_changed": "2026-10-30T14:13:36.440341+00:00",
+    "last_updated": "2026-10-30T14:13:36.440341+00:00",
+    "last_reported": "2026-10-30T14:29:55.886966+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv2_mode_code",
     "name": "GoodWe PV2 Mode code",
-    "state": "0",
+    "state": "2",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:05:31.001644+00:00",
-    "last_updated": "2026-10-24T16:05:31.001644+00:00",
-    "last_reported": "2026-10-24T20:53:28.667416+00:00"
+    "last_changed": "2026-10-30T14:13:36.440184+00:00",
+    "last_updated": "2026-10-30T14:13:36.440184+00:00",
+    "last_reported": "2026-10-30T14:29:55.886928+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv2_power",
     "name": "GoodWe PV2 Power",
-    "state": "0",
+    "state": "107",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:20:57.603814+00:00",
-    "last_updated": "2026-10-24T16:20:57.603814+00:00",
-    "last_reported": "2026-10-24T20:53:28.667382+00:00"
+    "last_changed": "2026-10-30T14:29:55.733455+00:00",
+    "last_updated": "2026-10-30T14:29:55.733455+00:00",
+    "last_reported": "2026-10-30T14:29:55.733455+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv2_voltage",
     "name": "GoodWe PV2 Voltage",
-    "state": "0.0",
+    "state": "216.0",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:29:30.972586+00:00",
-    "last_updated": "2026-10-24T16:29:30.972586+00:00",
-    "last_reported": "2026-10-24T20:53:28.667344+00:00"
+    "last_changed": "2026-10-30T14:29:55.644511+00:00",
+    "last_updated": "2026-10-30T14:29:55.644511+00:00",
+    "last_reported": "2026-10-30T14:29:55.644511+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_pv_power",
     "name": "GoodWe PV Power",
-    "state": "0",
+    "state": "167",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:20:57.603845+00:00",
-    "last_updated": "2026-10-24T16:20:57.603845+00:00",
-    "last_reported": "2026-10-24T20:53:28.667398+00:00"
+    "last_changed": "2026-10-30T14:29:55.818540+00:00",
+    "last_updated": "2026-10-30T14:29:55.818540+00:00",
+    "last_reported": "2026-10-30T14:29:55.818540+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_rssi",
     "name": "GoodWe RSSI",
-    "state": "28",
+    "state": "25",
     "unit": "",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.165665+00:00",
-    "last_updated": "2026-10-24T11:26:36.165665+00:00",
-    "last_reported": "2026-10-24T20:53:30.352345+00:00"
+    "last_changed": "2026-10-30T14:13:36.456084+00:00",
+    "last_updated": "2026-10-30T14:13:36.456084+00:00",
+    "last_reported": "2026-10-30T14:29:58.151848+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1547,9 +1547,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.162197+00:00",
-    "last_updated": "2026-10-24T11:26:36.162197+00:00",
-    "last_reported": "2026-10-24T20:53:30.286757+00:00"
+    "last_changed": "2026-10-30T14:13:36.451397+00:00",
+    "last_updated": "2026-10-30T14:13:36.451397+00:00",
+    "last_reported": "2026-10-30T14:29:58.072770+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1560,61 +1560,61 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.162075+00:00",
-    "last_updated": "2026-10-24T11:26:36.162075+00:00",
-    "last_reported": "2026-10-24T20:53:30.286741+00:00"
+    "last_changed": "2026-10-30T14:13:36.451236+00:00",
+    "last_updated": "2026-10-30T14:13:36.451236+00:00",
+    "last_reported": "2026-10-30T14:29:58.072750+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_timestamp",
     "name": "GoodWe Timestamp",
-    "state": "2026-10-24 22:53:01",
+    "state": "2026-10-30 15:29:29",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:28.604591+00:00",
-    "last_updated": "2026-10-24T20:53:28.604591+00:00",
-    "last_reported": "2026-10-24T20:53:28.604591+00:00"
+    "last_changed": "2026-10-30T14:29:55.505275+00:00",
+    "last_updated": "2026-10-30T14:29:55.505275+00:00",
+    "last_reported": "2026-10-30T14:29:55.505275+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_today_battery_charge",
     "name": "GoodWe Today Battery Charge",
-    "state": "7.8",
+    "state": "3.4",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T14:07:52.603688+00:00",
-    "last_updated": "2026-10-24T14:07:52.603688+00:00",
-    "last_reported": "2026-10-24T20:53:30.287004+00:00"
+    "last_changed": "2026-10-30T14:13:36.454763+00:00",
+    "last_updated": "2026-10-30T14:13:36.454763+00:00",
+    "last_reported": "2026-10-30T14:29:58.073066+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_today_battery_discharge",
     "name": "GoodWe Today Battery Discharge",
-    "state": "2.6",
+    "state": "0.9",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:34:56.605869+00:00",
-    "last_updated": "2026-10-24T20:34:56.605869+00:00",
-    "last_reported": "2026-10-24T20:53:30.287035+00:00"
+    "last_changed": "2026-10-30T14:13:36.455105+00:00",
+    "last_updated": "2026-10-30T14:13:36.455105+00:00",
+    "last_reported": "2026-10-30T14:29:58.073098+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_today_energy_export",
     "name": "GoodWe Today Energy (export)",
-    "state": "8.0",
+    "state": "4.6",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:40:34.696770+00:00",
-    "last_updated": "2026-10-24T20:40:34.696770+00:00",
-    "last_reported": "2026-10-24T20:53:30.286911+00:00"
+    "last_changed": "2026-10-30T14:13:36.453575+00:00",
+    "last_updated": "2026-10-30T14:13:36.453575+00:00",
+    "last_reported": "2026-10-30T14:29:58.072966+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1625,126 +1625,126 @@
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.164059+00:00",
-    "last_updated": "2026-10-24T11:26:36.164059+00:00",
-    "last_reported": "2026-10-24T20:53:30.286943+00:00"
+    "last_changed": "2026-10-30T14:13:36.453914+00:00",
+    "last_updated": "2026-10-30T14:13:36.453914+00:00",
+    "last_reported": "2026-10-30T14:29:58.072999+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_today_load",
     "name": "GoodWe Today Load",
-    "state": "11.5",
+    "state": "6.7",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:16.603039+00:00",
-    "last_updated": "2026-10-24T20:52:16.603039+00:00",
-    "last_reported": "2026-10-24T20:53:30.286973+00:00"
+    "last_changed": "2026-10-30T14:13:36.454300+00:00",
+    "last_updated": "2026-10-30T14:13:36.454300+00:00",
+    "last_reported": "2026-10-30T14:29:58.073032+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_today_s_pv_generation",
     "name": "GoodWe Today's PV Generation",
-    "state": "13.9",
+    "state": "7.3",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T15:31:09.600478+00:00",
-    "last_updated": "2026-10-24T15:31:09.600478+00:00",
-    "last_reported": "2026-10-24T20:53:30.286877+00:00"
+    "last_changed": "2026-10-30T14:13:36.453116+00:00",
+    "last_updated": "2026-10-30T14:13:36.453116+00:00",
+    "last_reported": "2026-10-30T14:29:58.072930+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_battery_charge",
     "name": "GoodWe Total Battery Charge",
-    "state": "2730.8",
+    "state": "2760.6",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T14:07:52.603656+00:00",
-    "last_updated": "2026-10-24T14:07:52.603656+00:00",
-    "last_reported": "2026-10-24T20:53:30.286988+00:00"
+    "last_changed": "2026-10-30T14:13:36.454452+00:00",
+    "last_updated": "2026-10-30T14:13:36.454452+00:00",
+    "last_reported": "2026-10-30T14:29:58.073049+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_battery_discharge",
     "name": "GoodWe Total Battery Discharge",
-    "state": "2031.8",
+    "state": "2056.7",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:34:56.605834+00:00",
-    "last_updated": "2026-10-24T20:34:56.605834+00:00",
-    "last_reported": "2026-10-24T20:53:30.287020+00:00"
+    "last_changed": "2026-10-30T14:13:36.454939+00:00",
+    "last_updated": "2026-10-30T14:13:36.454939+00:00",
+    "last_reported": "2026-10-30T14:29:58.073083+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_energy_export",
     "name": "GoodWe Total Energy (export)",
-    "state": "13570.2",
+    "state": "13629.4",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:40:34.696738+00:00",
-    "last_updated": "2026-10-24T20:40:34.696738+00:00",
-    "last_reported": "2026-10-24T20:53:30.286895+00:00"
+    "last_changed": "2026-10-30T14:13:36.453275+00:00",
+    "last_updated": "2026-10-30T14:13:36.453275+00:00",
+    "last_reported": "2026-10-30T14:29:58.072949+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_energy_import",
     "name": "GoodWe Total Energy (import)",
-    "state": "152.2",
+    "state": "152.3",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.163911+00:00",
-    "last_updated": "2026-10-24T11:26:36.163911+00:00",
-    "last_reported": "2026-10-24T20:53:30.286927+00:00"
+    "last_changed": "2026-10-30T14:13:36.453740+00:00",
+    "last_updated": "2026-10-30T14:13:36.453740+00:00",
+    "last_reported": "2026-10-30T14:29:58.072983+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_load",
     "name": "GoodWe Total Load",
-    "state": "12501.8",
+    "state": "12621.6",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:16.602988+00:00",
-    "last_updated": "2026-10-24T20:52:16.602988+00:00",
-    "last_reported": "2026-10-24T20:53:30.286958+00:00"
+    "last_changed": "2026-10-30T14:13:36.454110+00:00",
+    "last_updated": "2026-10-30T14:13:36.454110+00:00",
+    "last_reported": "2026-10-30T14:29:58.073016+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_power",
     "name": "GoodWe Total Power",
-    "state": "278",
+    "state": "193",
     "unit": "W",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:29.290608+00:00",
-    "last_updated": "2026-10-24T20:53:29.290608+00:00",
-    "last_reported": "2026-10-24T20:53:29.290608+00:00"
+    "last_changed": "2026-10-30T14:29:56.586934+00:00",
+    "last_updated": "2026-10-30T14:29:56.586934+00:00",
+    "last_reported": "2026-10-30T14:29:56.586934+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
     "entity": "sensor.goodwe_total_pv_generation",
     "name": "GoodWe Total PV Generation",
-    "state": "14747.9",
+    "state": "14814.9",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T15:31:09.600454+00:00",
-    "last_updated": "2026-10-24T15:31:09.600454+00:00",
-    "last_reported": "2026-10-24T20:53:30.286859+00:00"
+    "last_changed": "2026-10-30T14:13:36.452672+00:00",
+    "last_updated": "2026-10-30T14:13:36.452672+00:00",
+    "last_reported": "2026-10-30T14:29:58.072910+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1755,9 +1755,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T12:13:13.601989+00:00",
-    "last_updated": "2026-10-24T12:13:13.601989+00:00",
-    "last_reported": "2026-10-24T20:53:30.089027+00:00"
+    "last_changed": "2026-10-30T14:13:36.448788+00:00",
+    "last_updated": "2026-10-30T14:13:36.448788+00:00",
+    "last_reported": "2026-10-30T14:29:57.775612+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1768,9 +1768,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.161948+00:00",
-    "last_updated": "2026-10-24T11:26:36.161948+00:00",
-    "last_reported": "2026-10-24T20:53:30.286723+00:00"
+    "last_changed": "2026-10-30T14:13:36.451081+00:00",
+    "last_updated": "2026-10-30T14:13:36.451081+00:00",
+    "last_reported": "2026-10-30T14:29:58.072730+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1781,9 +1781,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.162460+00:00",
-    "last_updated": "2026-10-24T11:26:36.162460+00:00",
-    "last_reported": "2026-10-24T20:53:30.286788+00:00"
+    "last_changed": "2026-10-30T14:13:36.451843+00:00",
+    "last_updated": "2026-10-30T14:13:36.451843+00:00",
+    "last_reported": "2026-10-30T14:29:58.072800+00:00"
   },
   {
     "system": "FVE, baterie, elektroměr",
@@ -1794,9 +1794,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.162333+00:00",
-    "last_updated": "2026-10-24T11:26:36.162333+00:00",
-    "last_reported": "2026-10-24T20:53:30.286772+00:00"
+    "last_changed": "2026-10-30T14:13:36.451707+00:00",
+    "last_updated": "2026-10-30T14:13:36.451707+00:00",
+    "last_reported": "2026-10-30T14:29:58.072786+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1812,9 +1812,9 @@
       "step": 10,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.227048+00:00",
-    "last_updated": "2026-10-24T11:26:36.227048+00:00",
-    "last_reported": "2026-10-24T20:53:25.300184+00:00"
+    "last_changed": "2026-10-30T14:13:36.404630+00:00",
+    "last_updated": "2026-10-30T14:13:36.404630+00:00",
+    "last_reported": "2026-10-30T14:29:50.068969+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1830,9 +1830,9 @@
       "step": 25,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.227612+00:00",
-    "last_updated": "2026-10-24T11:26:36.227612+00:00",
-    "last_reported": "2026-10-24T20:53:25.300329+00:00"
+    "last_changed": "2026-10-30T14:13:36.405236+00:00",
+    "last_updated": "2026-10-30T14:13:36.405236+00:00",
+    "last_reported": "2026-10-30T14:29:50.069090+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1848,9 +1848,9 @@
       "step": 5,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.227248+00:00",
-    "last_updated": "2026-10-24T11:26:36.227248+00:00",
-    "last_reported": "2026-10-24T20:53:25.300237+00:00"
+    "last_changed": "2026-10-30T14:13:36.404866+00:00",
+    "last_updated": "2026-10-30T14:13:36.404866+00:00",
+    "last_reported": "2026-10-30T14:29:50.069013+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1866,9 +1866,9 @@
       "step": 5,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.227440+00:00",
-    "last_updated": "2026-10-24T11:26:36.227440+00:00",
-    "last_reported": "2026-10-24T20:53:25.300285+00:00"
+    "last_changed": "2026-10-30T14:13:36.405052+00:00",
+    "last_updated": "2026-10-30T14:13:36.405052+00:00",
+    "last_reported": "2026-10-30T14:29:50.069050+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1884,9 +1884,9 @@
       "step": 100.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.229250+00:00",
-    "last_updated": "2026-10-24T11:26:36.229250+00:00",
-    "last_reported": "2026-10-24T20:53:25.300664+00:00"
+    "last_changed": "2026-10-30T14:13:36.407165+00:00",
+    "last_updated": "2026-10-30T14:13:36.407165+00:00",
+    "last_reported": "2026-10-30T14:29:50.069403+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1902,9 +1902,9 @@
       "step": 100.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.227794+00:00",
-    "last_updated": "2026-10-24T11:26:36.227794+00:00",
-    "last_reported": "2026-10-24T20:53:25.300389+00:00"
+    "last_changed": "2026-10-30T14:13:36.405437+00:00",
+    "last_updated": "2026-10-30T14:13:36.405437+00:00",
+    "last_reported": "2026-10-30T14:29:50.069144+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1920,9 +1920,9 @@
       "step": 1.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.227960+00:00",
-    "last_updated": "2026-10-24T11:26:36.227960+00:00",
-    "last_reported": "2026-10-24T20:53:25.300432+00:00"
+    "last_changed": "2026-10-30T14:13:36.405610+00:00",
+    "last_updated": "2026-10-30T14:13:36.405610+00:00",
+    "last_reported": "2026-10-30T14:29:50.069186+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1938,9 +1938,9 @@
       "step": 100.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.228108+00:00",
-    "last_updated": "2026-10-24T11:26:36.228108+00:00",
-    "last_reported": "2026-10-24T20:53:25.300474+00:00"
+    "last_changed": "2026-10-30T14:13:36.405890+00:00",
+    "last_updated": "2026-10-30T14:13:36.405890+00:00",
+    "last_reported": "2026-10-30T14:29:50.069227+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1956,9 +1956,9 @@
       "step": 1.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.228252+00:00",
-    "last_updated": "2026-10-24T11:26:36.228252+00:00",
-    "last_reported": "2026-10-24T20:53:25.300521+00:00"
+    "last_changed": "2026-10-30T14:13:36.406079+00:00",
+    "last_updated": "2026-10-30T14:13:36.406079+00:00",
+    "last_reported": "2026-10-30T14:29:50.069275+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1974,9 +1974,9 @@
       "step": 100.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.228585+00:00",
-    "last_updated": "2026-10-24T11:26:36.228585+00:00",
-    "last_reported": "2026-10-24T20:53:25.300572+00:00"
+    "last_changed": "2026-10-30T14:13:36.406484+00:00",
+    "last_updated": "2026-10-30T14:13:36.406484+00:00",
+    "last_reported": "2026-10-30T14:29:50.069323+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -1992,9 +1992,9 @@
       "step": 100.0,
       "mode": "box"
     },
-    "last_changed": "2026-10-24T11:26:36.228868+00:00",
-    "last_updated": "2026-10-24T11:26:36.228868+00:00",
-    "last_reported": "2026-10-24T20:53:25.300619+00:00"
+    "last_changed": "2026-10-30T14:13:36.406835+00:00",
+    "last_updated": "2026-10-30T14:13:36.406835+00:00",
+    "last_reported": "2026-10-30T14:29:50.069363+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2012,9 +2012,9 @@
         "window+hdo"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.232507+00:00",
-    "last_updated": "2026-10-24T11:26:36.232507+00:00",
-    "last_reported": "2026-10-24T20:53:25.301015+00:00"
+    "last_changed": "2026-10-30T14:13:36.412117+00:00",
+    "last_updated": "2026-10-30T14:13:36.412117+00:00",
+    "last_reported": "2026-10-30T14:29:50.069748+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2031,9 +2031,9 @@
         "L3"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.232696+00:00",
-    "last_updated": "2026-10-24T11:26:36.232696+00:00",
-    "last_reported": "2026-10-24T20:53:25.301045+00:00"
+    "last_changed": "2026-10-30T14:13:36.412304+00:00",
+    "last_updated": "2026-10-30T14:13:36.412304+00:00",
+    "last_reported": "2026-10-30T14:29:50.069773+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2044,9 +2044,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.221074+00:00",
-    "last_updated": "2026-10-24T11:26:36.221074+00:00",
-    "last_reported": "2026-10-24T20:53:25.299354+00:00"
+    "last_changed": "2026-10-30T14:13:36.393870+00:00",
+    "last_updated": "2026-10-30T14:13:36.393870+00:00",
+    "last_reported": "2026-10-30T14:29:50.068361+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2057,9 +2057,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.221820+00:00",
-    "last_updated": "2026-10-24T11:26:36.221820+00:00",
-    "last_reported": "2026-10-24T20:53:25.299428+00:00"
+    "last_changed": "2026-10-30T14:13:36.394515+00:00",
+    "last_updated": "2026-10-30T14:13:36.394515+00:00",
+    "last_reported": "2026-10-30T14:29:50.068428+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2070,9 +2070,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.221502+00:00",
-    "last_updated": "2026-10-24T11:26:36.221502+00:00",
-    "last_reported": "2026-10-24T20:53:25.299389+00:00"
+    "last_changed": "2026-10-30T14:13:36.394189+00:00",
+    "last_updated": "2026-10-30T14:13:36.394189+00:00",
+    "last_reported": "2026-10-30T14:29:50.068393+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2083,9 +2083,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.221966+00:00",
-    "last_updated": "2026-10-24T11:26:36.221966+00:00",
-    "last_reported": "2026-10-24T20:53:25.299445+00:00"
+    "last_changed": "2026-10-30T14:13:36.394906+00:00",
+    "last_updated": "2026-10-30T14:13:36.394906+00:00",
+    "last_reported": "2026-10-30T14:29:50.068444+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2096,9 +2096,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.221362+00:00",
-    "last_updated": "2026-10-24T11:26:36.221362+00:00",
-    "last_reported": "2026-10-24T20:53:25.299372+00:00"
+    "last_changed": "2026-10-30T14:13:36.394027+00:00",
+    "last_updated": "2026-10-30T14:13:36.394027+00:00",
+    "last_reported": "2026-10-30T14:29:50.068377+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2109,9 +2109,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.221676+00:00",
-    "last_updated": "2026-10-24T11:26:36.221676+00:00",
-    "last_reported": "2026-10-24T20:53:25.299411+00:00"
+    "last_changed": "2026-10-30T14:13:36.394359+00:00",
+    "last_updated": "2026-10-30T14:13:36.394359+00:00",
+    "last_reported": "2026-10-30T14:29:50.068411+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2122,9 +2122,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.220920+00:00",
-    "last_updated": "2026-10-24T11:26:36.220920+00:00",
-    "last_reported": "2026-10-24T20:53:25.299336+00:00"
+    "last_changed": "2026-10-30T14:13:36.393701+00:00",
+    "last_updated": "2026-10-30T14:13:36.393701+00:00",
+    "last_reported": "2026-10-30T14:29:50.068346+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2135,9 +2135,9 @@
     "device_class": "signal_strength",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.220756+00:00",
-    "last_updated": "2026-10-24T11:26:36.220756+00:00",
-    "last_reported": "2026-10-24T20:53:25.299307+00:00"
+    "last_changed": "2026-10-30T14:13:36.393488+00:00",
+    "last_updated": "2026-10-30T14:13:36.393488+00:00",
+    "last_reported": "2026-10-30T14:29:50.068324+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2148,9 +2148,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214506+00:00",
-    "last_updated": "2026-10-24T11:26:36.214506+00:00",
-    "last_reported": "2026-10-24T20:53:34.010077+00:00"
+    "last_changed": "2026-10-30T14:13:36.386140+00:00",
+    "last_updated": "2026-10-30T14:13:36.386140+00:00",
+    "last_reported": "2026-10-30T14:30:01.259176+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2161,9 +2161,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214640+00:00",
-    "last_updated": "2026-10-24T11:26:36.214640+00:00",
-    "last_reported": "2026-10-24T20:53:34.010095+00:00"
+    "last_changed": "2026-10-30T14:13:36.386317+00:00",
+    "last_updated": "2026-10-30T14:13:36.386317+00:00",
+    "last_reported": "2026-10-30T14:30:01.259194+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2174,9 +2174,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214371+00:00",
-    "last_updated": "2026-10-24T11:26:36.214371+00:00",
-    "last_reported": "2026-10-24T20:53:34.010057+00:00"
+    "last_changed": "2026-10-30T14:13:36.385986+00:00",
+    "last_updated": "2026-10-30T14:13:36.385986+00:00",
+    "last_reported": "2026-10-30T14:30:01.259158+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2187,100 +2187,100 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214090+00:00",
-    "last_updated": "2026-10-24T11:26:36.214090+00:00",
-    "last_reported": "2026-10-24T20:53:34.010019+00:00"
+    "last_changed": "2026-10-30T14:13:36.385565+00:00",
+    "last_updated": "2026-10-30T14:13:36.385565+00:00",
+    "last_reported": "2026-10-30T14:30:01.259121+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_current_l1",
     "name": "Master Grid Current L1",
-    "state": "-0.183",
+    "state": "-0.109",
     "unit": "A",
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.663370+00:00",
-    "last_updated": "2026-10-24T20:53:33.663370+00:00",
-    "last_reported": "2026-10-24T20:53:33.663370+00:00"
+    "last_changed": "2026-10-30T14:30:00.723577+00:00",
+    "last_updated": "2026-10-30T14:30:00.723577+00:00",
+    "last_reported": "2026-10-30T14:30:00.723577+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_current_l2",
     "name": "Master Grid Current L2",
-    "state": "-0.185",
+    "state": "-0.177",
     "unit": "A",
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.729319+00:00",
-    "last_updated": "2026-10-24T20:53:33.729319+00:00",
-    "last_reported": "2026-10-24T20:53:33.729319+00:00"
+    "last_changed": "2026-10-30T14:30:00.826461+00:00",
+    "last_updated": "2026-10-30T14:30:00.826461+00:00",
+    "last_reported": "2026-10-30T14:30:00.826461+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_current_l3",
     "name": "Master Grid Current L3",
-    "state": "-0.183",
+    "state": "-0.145",
     "unit": "A",
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.800638+00:00",
-    "last_updated": "2026-10-24T20:53:33.800638+00:00",
-    "last_reported": "2026-10-24T20:53:33.800638+00:00"
+    "last_changed": "2026-10-30T14:30:00.932515+00:00",
+    "last_updated": "2026-10-30T14:30:00.932515+00:00",
+    "last_reported": "2026-10-30T14:30:00.932515+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_power_l1",
     "name": "Master Grid Power L1",
-    "state": "-43",
+    "state": "-26",
     "unit": "W",
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.253564+00:00",
-    "last_updated": "2026-10-24T20:53:33.253564+00:00",
-    "last_reported": "2026-10-24T20:53:33.253564+00:00"
+    "last_changed": "2026-10-30T14:30:00.080548+00:00",
+    "last_updated": "2026-10-30T14:30:00.080548+00:00",
+    "last_reported": "2026-10-30T14:30:00.080548+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_power_l2",
     "name": "Master Grid Power L2",
-    "state": "-44",
+    "state": "-42",
     "unit": "W",
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.324547+00:00",
-    "last_updated": "2026-10-24T20:53:33.324547+00:00",
-    "last_reported": "2026-10-24T20:53:33.324547+00:00"
+    "last_changed": "2026-10-30T14:30:00.171391+00:00",
+    "last_updated": "2026-10-30T14:30:00.171391+00:00",
+    "last_reported": "2026-10-30T14:30:00.171391+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_power_l3",
     "name": "Master Grid Power L3",
-    "state": "-43",
+    "state": "-34",
     "unit": "W",
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:24.428669+00:00",
-    "last_updated": "2026-10-24T20:53:24.428669+00:00",
-    "last_reported": "2026-10-24T20:53:33.391006+00:00"
+    "last_changed": "2026-10-30T14:30:00.254736+00:00",
+    "last_updated": "2026-10-30T14:30:00.254736+00:00",
+    "last_reported": "2026-10-30T14:30:00.254736+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_power_total",
     "name": "Master Grid Power Total",
-    "state": "-130",
+    "state": "-102",
     "unit": "W",
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.391073+00:00",
-    "last_updated": "2026-10-24T20:53:33.391073+00:00",
-    "last_reported": "2026-10-24T20:53:33.391073+00:00"
+    "last_changed": "2026-10-30T14:30:00.339718+00:00",
+    "last_updated": "2026-10-30T14:30:00.339718+00:00",
+    "last_reported": "2026-10-30T14:30:00.339718+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2291,9 +2291,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.211774+00:00",
-    "last_updated": "2026-10-24T11:26:36.211774+00:00",
-    "last_reported": "2026-10-24T20:53:33.870898+00:00"
+    "last_changed": "2026-10-30T14:13:36.382721+00:00",
+    "last_updated": "2026-10-30T14:13:36.382721+00:00",
+    "last_reported": "2026-10-30T14:30:01.015450+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2304,9 +2304,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.211909+00:00",
-    "last_updated": "2026-10-24T11:26:36.211909+00:00",
-    "last_reported": "2026-10-24T20:53:33.870950+00:00"
+    "last_changed": "2026-10-30T14:13:36.382874+00:00",
+    "last_updated": "2026-10-30T14:13:36.382874+00:00",
+    "last_reported": "2026-10-30T14:30:01.015495+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2317,48 +2317,48 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.212043+00:00",
-    "last_updated": "2026-10-24T11:26:36.212043+00:00",
-    "last_reported": "2026-10-24T20:53:33.870971+00:00"
+    "last_changed": "2026-10-30T14:13:36.383021+00:00",
+    "last_updated": "2026-10-30T14:13:36.383021+00:00",
+    "last_reported": "2026-10-30T14:30:01.015517+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_voltage_l1",
     "name": "Master Grid Voltage L1",
-    "state": "239.3",
+    "state": "239.4",
     "unit": "V",
     "device_class": "voltage",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.457186+00:00",
-    "last_updated": "2026-10-24T20:53:33.457186+00:00",
-    "last_reported": "2026-10-24T20:53:33.457186+00:00"
+    "last_changed": "2026-10-30T14:30:00.427485+00:00",
+    "last_updated": "2026-10-30T14:30:00.427485+00:00",
+    "last_reported": "2026-10-30T14:30:00.427485+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_voltage_l2",
     "name": "Master Grid Voltage L2",
-    "state": "240.1",
+    "state": "239.2",
     "unit": "V",
     "device_class": "voltage",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.520128+00:00",
-    "last_updated": "2026-10-24T20:53:33.520128+00:00",
-    "last_reported": "2026-10-24T20:53:33.520128+00:00"
+    "last_changed": "2026-10-30T14:30:00.505529+00:00",
+    "last_updated": "2026-10-30T14:30:00.505529+00:00",
+    "last_reported": "2026-10-30T14:30:00.505529+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_grid_voltage_l3",
     "name": "Master Grid Voltage L3",
-    "state": "237.4",
+    "state": "236.7",
     "unit": "V",
     "device_class": "voltage",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.592903+00:00",
-    "last_updated": "2026-10-24T20:53:33.592903+00:00",
-    "last_reported": "2026-10-24T20:53:33.592903+00:00"
+    "last_changed": "2026-10-30T14:30:00.602189+00:00",
+    "last_updated": "2026-10-30T14:30:00.602189+00:00",
+    "last_reported": "2026-10-30T14:30:00.602189+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2369,9 +2369,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.212676+00:00",
-    "last_updated": "2026-10-24T11:26:36.212676+00:00",
-    "last_reported": "2026-10-24T20:53:33.871126+00:00"
+    "last_changed": "2026-10-30T14:13:36.383782+00:00",
+    "last_updated": "2026-10-30T14:13:36.383782+00:00",
+    "last_reported": "2026-10-30T14:30:01.103220+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2382,22 +2382,22 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.213650+00:00",
-    "last_updated": "2026-10-24T11:26:36.213650+00:00",
-    "last_reported": "2026-10-24T20:53:34.009919+00:00"
+    "last_changed": "2026-10-30T14:13:36.384756+00:00",
+    "last_updated": "2026-10-30T14:13:36.384756+00:00",
+    "last_reported": "2026-10-30T14:30:01.259031+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_last_update",
     "name": "Master Last Update",
-    "state": "2026-10-24 22:52:48",
+    "state": "2026-10-30 15:29:54",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:52:53.357941+00:00",
-    "last_updated": "2026-10-24T20:52:53.357941+00:00",
-    "last_reported": "2026-10-24T20:53:33.871058+00:00"
+    "last_changed": "2026-10-30T14:30:01.015612+00:00",
+    "last_updated": "2026-10-30T14:30:01.015612+00:00",
+    "last_reported": "2026-10-30T14:30:01.015612+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2408,9 +2408,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.213953+00:00",
-    "last_updated": "2026-10-24T11:26:36.213953+00:00",
-    "last_reported": "2026-10-24T20:53:34.009998+00:00"
+    "last_changed": "2026-10-30T14:13:36.385071+00:00",
+    "last_updated": "2026-10-30T14:13:36.385071+00:00",
+    "last_reported": "2026-10-30T14:30:01.259102+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2421,9 +2421,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.212832+00:00",
-    "last_updated": "2026-10-24T11:26:36.212832+00:00",
-    "last_reported": "2026-10-24T20:53:33.871145+00:00"
+    "last_changed": "2026-10-30T14:13:36.383931+00:00",
+    "last_updated": "2026-10-30T14:13:36.383931+00:00",
+    "last_reported": "2026-10-30T14:30:01.103245+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2434,9 +2434,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.212966+00:00",
-    "last_updated": "2026-10-24T11:26:36.212966+00:00",
-    "last_reported": "2026-10-24T20:53:33.871163+00:00"
+    "last_changed": "2026-10-30T14:13:36.384075+00:00",
+    "last_updated": "2026-10-30T14:13:36.384075+00:00",
+    "last_reported": "2026-10-30T14:30:01.103266+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2447,9 +2447,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T12:15:27.742995+00:00",
-    "last_updated": "2026-10-24T12:15:27.742995+00:00",
-    "last_reported": "2026-10-24T20:53:25.301077+00:00"
+    "last_changed": "2026-10-30T14:13:38.517066+00:00",
+    "last_updated": "2026-10-30T14:13:38.517066+00:00",
+    "last_reported": "2026-10-30T14:29:50.069805+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2460,9 +2460,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T15:19:57.263590+00:00",
-    "last_updated": "2026-10-24T15:19:57.263590+00:00",
-    "last_reported": "2026-10-24T20:53:33.253327+00:00"
+    "last_changed": "2026-10-30T14:13:36.378890+00:00",
+    "last_updated": "2026-10-30T14:13:36.378890+00:00",
+    "last_reported": "2026-10-30T14:30:00.080385+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2473,9 +2473,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T12:10:55.893918+00:00",
-    "last_updated": "2026-10-24T12:10:55.893918+00:00",
-    "last_reported": "2026-10-24T20:53:33.253438+00:00"
+    "last_changed": "2026-10-30T14:13:36.379150+00:00",
+    "last_updated": "2026-10-30T14:13:36.379150+00:00",
+    "last_reported": "2026-10-30T14:30:00.080415+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2486,74 +2486,74 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T15:19:57.263747+00:00",
-    "last_updated": "2026-10-24T15:19:57.263747+00:00",
-    "last_reported": "2026-10-24T20:53:33.253461+00:00"
+    "last_changed": "2026-10-30T14:13:36.379425+00:00",
+    "last_updated": "2026-10-30T14:13:36.379425+00:00",
+    "last_reported": "2026-10-30T14:30:00.080436+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_saved_energy_this_month",
     "name": "Master Saved Energy This Month",
-    "state": "33",
+    "state": "49",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.209717+00:00",
-    "last_updated": "2026-10-24T11:26:36.209717+00:00",
-    "last_reported": "2026-10-24T20:53:33.253515+00:00"
+    "last_changed": "2026-10-30T14:13:36.379988+00:00",
+    "last_updated": "2026-10-30T14:13:36.379988+00:00",
+    "last_reported": "2026-10-30T14:30:00.080499+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_saved_energy_this_week",
     "name": "Master Saved Energy This Week",
-    "state": "1",
+    "state": "16",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.209872+00:00",
-    "last_updated": "2026-10-24T11:26:36.209872+00:00",
-    "last_reported": "2026-10-24T20:53:33.253532+00:00"
+    "last_changed": "2026-10-30T14:13:36.380168+00:00",
+    "last_updated": "2026-10-30T14:13:36.380168+00:00",
+    "last_reported": "2026-10-30T14:30:00.080515+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_saved_energy_this_year",
     "name": "Master Saved Energy This Year",
-    "state": "315",
+    "state": "331",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.209554+00:00",
-    "last_updated": "2026-10-24T11:26:36.209554+00:00",
-    "last_reported": "2026-10-24T20:53:33.253499+00:00"
+    "last_changed": "2026-10-30T14:13:36.379825+00:00",
+    "last_updated": "2026-10-30T14:13:36.379825+00:00",
+    "last_reported": "2026-10-30T14:30:00.080480+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_saved_energy_today",
     "name": "Master Saved Energy Today",
-    "state": "0",
+    "state": "6",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.210021+00:00",
-    "last_updated": "2026-10-24T11:26:36.210021+00:00",
-    "last_reported": "2026-10-24T20:53:33.253547+00:00"
+    "last_changed": "2026-10-30T14:13:36.380331+00:00",
+    "last_updated": "2026-10-30T14:13:36.380331+00:00",
+    "last_reported": "2026-10-30T14:30:00.080531+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_saved_energy_total",
     "name": "Master Saved Energy Total",
-    "state": "4294",
+    "state": "4310",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.209402+00:00",
-    "last_updated": "2026-10-24T11:26:36.209402+00:00",
-    "last_reported": "2026-10-24T20:53:33.253481+00:00"
+    "last_changed": "2026-10-30T14:13:36.379640+00:00",
+    "last_updated": "2026-10-30T14:13:36.379640+00:00",
+    "last_reported": "2026-10-30T14:30:00.080455+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2564,9 +2564,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.213797+00:00",
-    "last_updated": "2026-10-24T11:26:36.213797+00:00",
-    "last_reported": "2026-10-24T20:53:34.009963+00:00"
+    "last_changed": "2026-10-30T14:13:36.384918+00:00",
+    "last_updated": "2026-10-30T14:13:36.384918+00:00",
+    "last_reported": "2026-10-30T14:30:01.259070+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2577,9 +2577,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.212402+00:00",
-    "last_updated": "2026-10-24T11:26:36.212402+00:00",
-    "last_reported": "2026-10-24T20:53:33.871085+00:00"
+    "last_changed": "2026-10-30T14:13:36.383472+00:00",
+    "last_updated": "2026-10-30T14:13:36.383472+00:00",
+    "last_reported": "2026-10-30T14:30:01.103131+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2590,9 +2590,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.212533+00:00",
-    "last_updated": "2026-10-24T11:26:36.212533+00:00",
-    "last_reported": "2026-10-24T20:53:33.871105+00:00"
+    "last_changed": "2026-10-30T14:13:36.383615+00:00",
+    "last_updated": "2026-10-30T14:13:36.383615+00:00",
+    "last_reported": "2026-10-30T14:30:01.103183+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2603,35 +2603,35 @@
     "device_class": "temperature",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.213122+00:00",
-    "last_updated": "2026-10-24T11:26:36.213122+00:00",
-    "last_reported": "2026-10-24T20:53:33.871190+00:00"
+    "last_changed": "2026-10-30T14:13:36.384263+00:00",
+    "last_updated": "2026-10-30T14:13:36.384263+00:00",
+    "last_reported": "2026-10-30T14:30:01.103299+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_system_time",
     "name": "Master System Time",
-    "state": "2026-10-24 22:53:31",
+    "state": "2026-10-30 15:29:54",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.871230+00:00",
-    "last_updated": "2026-10-24T20:53:33.871230+00:00",
-    "last_reported": "2026-10-24T20:53:33.871230+00:00"
+    "last_changed": "2026-10-30T14:30:01.103397+00:00",
+    "last_updated": "2026-10-30T14:30:01.103397+00:00",
+    "last_reported": "2026-10-30T14:30:01.103397+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.master_system_uptime",
     "name": "Master System Uptime",
-    "state": "5 days 19:00:49",
+    "state": "11 days 12:37:07",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:33.943197+00:00",
-    "last_updated": "2026-10-24T20:53:33.943197+00:00",
-    "last_reported": "2026-10-24T20:53:33.943197+00:00"
+    "last_changed": "2026-10-30T14:30:01.186790+00:00",
+    "last_updated": "2026-10-30T14:30:01.186790+00:00",
+    "last_reported": "2026-10-30T14:30:01.186790+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2642,9 +2642,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214221+00:00",
-    "last_updated": "2026-10-24T11:26:36.214221+00:00",
-    "last_reported": "2026-10-24T20:53:34.010038+00:00"
+    "last_changed": "2026-10-30T14:13:36.385789+00:00",
+    "last_updated": "2026-10-30T14:13:36.385789+00:00",
+    "last_reported": "2026-10-30T14:30:01.259139+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2655,9 +2655,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.216985+00:00",
-    "last_updated": "2026-10-24T11:26:36.216985+00:00",
-    "last_reported": "2026-10-24T20:53:34.010356+00:00"
+    "last_changed": "2026-10-30T14:13:36.389048+00:00",
+    "last_updated": "2026-10-30T14:13:36.389048+00:00",
+    "last_reported": "2026-10-30T14:30:01.339839+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2668,9 +2668,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.217391+00:00",
-    "last_updated": "2026-10-24T11:26:36.217391+00:00",
-    "last_reported": "2026-10-24T20:53:34.010390+00:00"
+    "last_changed": "2026-10-30T14:13:36.389538+00:00",
+    "last_updated": "2026-10-30T14:13:36.389538+00:00",
+    "last_reported": "2026-10-30T14:30:01.339875+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2681,9 +2681,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.215725+00:00",
-    "last_updated": "2026-10-24T11:26:36.215725+00:00",
-    "last_reported": "2026-10-24T20:53:34.010222+00:00"
+    "last_changed": "2026-10-30T14:13:36.387695+00:00",
+    "last_updated": "2026-10-30T14:13:36.387695+00:00",
+    "last_reported": "2026-10-30T14:30:01.339647+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2694,9 +2694,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.216184+00:00",
-    "last_updated": "2026-10-24T11:26:36.216184+00:00",
-    "last_reported": "2026-10-24T20:53:34.010262+00:00"
+    "last_changed": "2026-10-30T14:13:36.388084+00:00",
+    "last_updated": "2026-10-30T14:13:36.388084+00:00",
+    "last_reported": "2026-10-30T14:30:01.339732+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2707,9 +2707,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.216335+00:00",
-    "last_updated": "2026-10-24T11:26:36.216335+00:00",
-    "last_reported": "2026-10-24T20:53:34.010280+00:00"
+    "last_changed": "2026-10-30T14:13:36.388245+00:00",
+    "last_updated": "2026-10-30T14:13:36.388245+00:00",
+    "last_reported": "2026-10-30T14:30:01.339757+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2720,9 +2720,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214986+00:00",
-    "last_updated": "2026-10-24T11:26:36.214986+00:00",
-    "last_reported": "2026-10-24T20:53:34.010153+00:00"
+    "last_changed": "2026-10-30T14:13:36.386817+00:00",
+    "last_updated": "2026-10-30T14:13:36.386817+00:00",
+    "last_reported": "2026-10-30T14:30:01.259256+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2733,9 +2733,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.217697+00:00",
-    "last_updated": "2026-10-24T11:26:36.217697+00:00",
-    "last_reported": "2026-10-24T20:53:34.010426+00:00"
+    "last_changed": "2026-10-30T14:13:36.389871+00:00",
+    "last_updated": "2026-10-30T14:13:36.389871+00:00",
+    "last_reported": "2026-10-30T14:30:01.339912+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2746,9 +2746,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T15:19:00.620583+00:00",
-    "last_updated": "2026-10-24T15:19:00.620583+00:00",
-    "last_reported": "2026-10-24T20:53:34.010303+00:00"
+    "last_changed": "2026-10-30T14:13:36.388457+00:00",
+    "last_updated": "2026-10-30T14:13:36.388457+00:00",
+    "last_reported": "2026-10-30T14:30:01.339784+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2759,9 +2759,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T15:19:57.264882+00:00",
-    "last_updated": "2026-10-24T15:19:57.264882+00:00",
-    "last_reported": "2026-10-24T20:53:34.010321+00:00"
+    "last_changed": "2026-10-30T14:13:36.388690+00:00",
+    "last_updated": "2026-10-30T14:13:36.388690+00:00",
+    "last_reported": "2026-10-30T14:30:01.339804+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2772,9 +2772,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T12:12:23.329137+00:00",
-    "last_updated": "2026-10-24T12:12:23.329137+00:00",
-    "last_reported": "2026-10-24T20:53:34.010339+00:00"
+    "last_changed": "2026-10-30T14:13:36.388873+00:00",
+    "last_updated": "2026-10-30T14:13:36.388873+00:00",
+    "last_reported": "2026-10-30T14:30:01.339822+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2783,11 +2783,11 @@
     "state": "0",
     "unit": "W",
     "device_class": "power",
-    "state_class": null,
+    "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T15:19:57.264937+00:00",
-    "last_updated": "2026-10-24T15:19:57.264937+00:00",
-    "last_reported": "2026-10-24T20:53:34.010374+00:00"
+    "last_changed": "2026-10-30T14:13:36.389355+00:00",
+    "last_updated": "2026-10-30T14:13:36.389355+00:00",
+    "last_reported": "2026-10-30T14:30:01.339856+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2798,9 +2798,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.214809+00:00",
-    "last_updated": "2026-10-24T11:26:36.214809+00:00",
-    "last_reported": "2026-10-24T20:53:34.010130+00:00"
+    "last_changed": "2026-10-30T14:13:36.386578+00:00",
+    "last_updated": "2026-10-30T14:13:36.386578+00:00",
+    "last_reported": "2026-10-30T14:30:01.259230+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2811,9 +2811,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.216029+00:00",
-    "last_updated": "2026-10-24T11:26:36.216029+00:00",
-    "last_reported": "2026-10-24T20:53:34.010245+00:00"
+    "last_changed": "2026-10-30T14:13:36.387914+00:00",
+    "last_updated": "2026-10-30T14:13:36.387914+00:00",
+    "last_reported": "2026-10-30T14:30:01.339709+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2824,35 +2824,35 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T17:00:07.239558+00:00",
-    "last_updated": "2026-10-24T17:00:07.239558+00:00",
-    "last_reported": "2026-10-24T20:53:34.010178+00:00"
+    "last_changed": "2026-10-30T14:13:36.387034+00:00",
+    "last_updated": "2026-10-30T14:13:36.387034+00:00",
+    "last_reported": "2026-10-30T14:30:01.259280+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.tuv_temperature",
     "name": "TUV Temperature",
-    "state": "15",
+    "state": "16",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T12:23:07.279619+00:00",
-    "last_updated": "2026-10-24T12:23:07.279619+00:00",
-    "last_reported": "2026-10-24T20:53:34.010409+00:00"
+    "last_changed": "2026-10-30T14:13:36.389720+00:00",
+    "last_updated": "2026-10-30T14:13:36.389720+00:00",
+    "last_reported": "2026-10-30T14:30:01.339894+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.tuv_wifi_signal",
     "name": "TUV WiFi Signal",
-    "state": "-45",
+    "state": "-42",
     "unit": "dB",
     "device_class": "signal_strength",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:25.142334+00:00",
-    "last_updated": "2026-10-24T20:53:25.142334+00:00",
-    "last_reported": "2026-10-24T20:53:34.010205+00:00"
+    "last_changed": "2026-10-30T14:30:01.259305+00:00",
+    "last_updated": "2026-10-30T14:30:01.259305+00:00",
+    "last_reported": "2026-10-30T14:30:01.259305+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2863,22 +2863,22 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T19:14:58.311357+00:00",
-    "last_updated": "2026-10-24T19:14:58.311357+00:00",
-    "last_reported": "2026-10-24T20:53:25.299234+00:00"
+    "last_changed": "2026-10-30T14:13:36.392808+00:00",
+    "last_updated": "2026-10-30T14:13:36.392808+00:00",
+    "last_reported": "2026-10-30T14:29:50.068268+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.wallbox_charge_state",
     "name": "Wallbox Charge State",
-    "state": "0",
+    "state": "64",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.219465+00:00",
-    "last_updated": "2026-10-24T11:26:36.219465+00:00",
-    "last_reported": "2026-10-24T20:53:25.299126+00:00"
+    "last_changed": "2026-10-30T14:13:36.391931+00:00",
+    "last_updated": "2026-10-30T14:13:36.391931+00:00",
+    "last_reported": "2026-10-30T14:29:50.068173+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2889,9 +2889,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:00:02.244123+00:00",
-    "last_updated": "2026-10-24T18:00:02.244123+00:00",
-    "last_reported": "2026-10-24T20:53:25.299108+00:00"
+    "last_changed": "2026-10-30T14:13:36.391778+00:00",
+    "last_updated": "2026-10-30T14:13:36.391778+00:00",
+    "last_reported": "2026-10-30T14:29:50.068159+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2902,22 +2902,22 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:00:02.244086+00:00",
-    "last_updated": "2026-10-24T18:00:02.244086+00:00",
-    "last_reported": "2026-10-24T20:53:25.299089+00:00"
+    "last_changed": "2026-10-30T14:13:36.391619+00:00",
+    "last_updated": "2026-10-30T14:13:36.391619+00:00",
+    "last_reported": "2026-10-30T14:29:50.068144+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.wallbox_charger_temperature",
     "name": "Wallbox Charger Temperature",
-    "state": "10",
+    "state": "17",
     "unit": "°C",
     "device_class": "temperature",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:32:40.750142+00:00",
-    "last_updated": "2026-10-24T20:32:40.750142+00:00",
-    "last_reported": "2026-10-24T20:53:25.299215+00:00"
+    "last_changed": "2026-10-30T14:13:36.392635+00:00",
+    "last_updated": "2026-10-30T14:13:36.392635+00:00",
+    "last_reported": "2026-10-30T14:29:50.068252+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2928,9 +2928,9 @@
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.220398+00:00",
-    "last_updated": "2026-10-24T11:26:36.220398+00:00",
-    "last_reported": "2026-10-24T20:53:25.299253+00:00"
+    "last_changed": "2026-10-30T14:13:36.392994+00:00",
+    "last_updated": "2026-10-30T14:13:36.392994+00:00",
+    "last_reported": "2026-10-30T14:29:50.068284+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2941,9 +2941,9 @@
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:00:02.244383+00:00",
-    "last_updated": "2026-10-24T18:00:02.244383+00:00",
-    "last_reported": "2026-10-24T20:53:25.299153+00:00"
+    "last_changed": "2026-10-30T14:13:36.392115+00:00",
+    "last_updated": "2026-10-30T14:13:36.392115+00:00",
+    "last_reported": "2026-10-30T14:29:50.068190+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2954,9 +2954,9 @@
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:00:02.244417+00:00",
-    "last_updated": "2026-10-24T18:00:02.244417+00:00",
-    "last_reported": "2026-10-24T20:53:25.299174+00:00"
+    "last_changed": "2026-10-30T14:13:36.392287+00:00",
+    "last_updated": "2026-10-30T14:13:36.392287+00:00",
+    "last_reported": "2026-10-30T14:29:50.068207+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2967,9 +2967,9 @@
     "device_class": "current",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:00:02.244452+00:00",
-    "last_updated": "2026-10-24T18:00:02.244452+00:00",
-    "last_reported": "2026-10-24T20:53:25.299193+00:00"
+    "last_changed": "2026-10-30T14:13:36.392457+00:00",
+    "last_updated": "2026-10-30T14:13:36.392457+00:00",
+    "last_reported": "2026-10-30T14:29:50.068231+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2980,9 +2980,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.218560+00:00",
-    "last_updated": "2026-10-24T11:26:36.218560+00:00",
-    "last_reported": "2026-10-24T20:53:25.298961+00:00"
+    "last_changed": "2026-10-30T14:13:36.390757+00:00",
+    "last_updated": "2026-10-30T14:13:36.390757+00:00",
+    "last_reported": "2026-10-30T14:29:50.068084+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -2993,9 +2993,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.218830+00:00",
-    "last_updated": "2026-10-24T11:26:36.218830+00:00",
-    "last_reported": "2026-10-24T20:53:25.299044+00:00"
+    "last_changed": "2026-10-30T14:13:36.391073+00:00",
+    "last_updated": "2026-10-30T14:13:36.391073+00:00",
+    "last_reported": "2026-10-30T14:29:50.068114+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3006,9 +3006,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.218979+00:00",
-    "last_updated": "2026-10-24T11:26:36.218979+00:00",
-    "last_reported": "2026-10-24T20:53:25.299069+00:00"
+    "last_changed": "2026-10-30T14:13:36.391294+00:00",
+    "last_updated": "2026-10-30T14:13:36.391294+00:00",
+    "last_reported": "2026-10-30T14:29:50.068129+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3019,9 +3019,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.218065+00:00",
-    "last_updated": "2026-10-24T11:26:36.218065+00:00",
-    "last_reported": "2026-10-24T20:53:34.010469+00:00"
+    "last_changed": "2026-10-30T14:13:36.390241+00:00",
+    "last_updated": "2026-10-30T14:13:36.390241+00:00",
+    "last_reported": "2026-10-30T14:30:01.339967+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3032,9 +3032,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.217861+00:00",
-    "last_updated": "2026-10-24T11:26:36.217861+00:00",
-    "last_reported": "2026-10-24T20:53:34.010448+00:00"
+    "last_changed": "2026-10-30T14:13:36.390061+00:00",
+    "last_updated": "2026-10-30T14:13:36.390061+00:00",
+    "last_reported": "2026-10-30T14:30:01.339942+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3045,22 +3045,22 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.218699+00:00",
-    "last_updated": "2026-10-24T11:26:36.218699+00:00",
-    "last_reported": "2026-10-24T20:53:25.299020+00:00"
+    "last_changed": "2026-10-30T14:13:36.390911+00:00",
+    "last_updated": "2026-10-30T14:13:36.390911+00:00",
+    "last_reported": "2026-10-30T14:29:50.068099+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.wallbox_status",
     "name": "Wallbox Status",
-    "state": "online",
+    "state": "active",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T19:14:58.310893+00:00",
-    "last_updated": "2026-10-24T19:14:58.310893+00:00",
-    "last_reported": "2026-10-24T20:53:34.010490+00:00"
+    "last_changed": "2026-10-30T14:13:36.390420+00:00",
+    "last_updated": "2026-10-30T14:13:36.390420+00:00",
+    "last_reported": "2026-10-30T14:30:01.339994+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3069,24 +3069,24 @@
     "state": "0",
     "unit": "W",
     "device_class": "power",
-    "state_class": null,
+    "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.220568+00:00",
-    "last_updated": "2026-10-24T11:26:36.220568+00:00",
-    "last_reported": "2026-10-24T20:53:25.299271+00:00"
+    "last_changed": "2026-10-30T14:13:36.393187+00:00",
+    "last_updated": "2026-10-30T14:13:36.393187+00:00",
+    "last_reported": "2026-10-30T14:29:50.068301+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "sensor.wallbox_wifi_signal",
     "name": "Wallbox WiFi Signal",
-    "state": "-38",
+    "state": "-37",
     "unit": "dB",
     "device_class": "signal_strength",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:53:34.010508+00:00",
-    "last_updated": "2026-10-24T20:53:34.010508+00:00",
-    "last_reported": "2026-10-24T20:53:34.010508+00:00"
+    "last_changed": "2026-10-30T14:30:01.340015+00:00",
+    "last_updated": "2026-10-30T14:30:01.340015+00:00",
+    "last_reported": "2026-10-30T14:30:01.340015+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3097,9 +3097,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223062+00:00",
-    "last_updated": "2026-10-24T11:26:36.223062+00:00",
-    "last_reported": "2026-10-24T20:53:25.299506+00:00"
+    "last_changed": "2026-10-30T14:13:36.396809+00:00",
+    "last_updated": "2026-10-30T14:13:36.396809+00:00",
+    "last_reported": "2026-10-30T14:29:50.068472+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3110,9 +3110,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.224069+00:00",
-    "last_updated": "2026-10-24T11:26:36.224069+00:00",
-    "last_reported": "2026-10-24T20:53:25.299679+00:00"
+    "last_changed": "2026-10-30T14:13:36.398259+00:00",
+    "last_updated": "2026-10-30T14:13:36.398259+00:00",
+    "last_reported": "2026-10-30T14:29:50.068606+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3123,9 +3123,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.224338+00:00",
-    "last_updated": "2026-10-24T11:26:36.224338+00:00",
-    "last_reported": "2026-10-24T20:53:25.299697+00:00"
+    "last_changed": "2026-10-30T14:13:36.398394+00:00",
+    "last_updated": "2026-10-30T14:13:36.398394+00:00",
+    "last_reported": "2026-10-30T14:29:50.068621+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3136,9 +3136,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.224458+00:00",
-    "last_updated": "2026-10-24T11:26:36.224458+00:00",
-    "last_reported": "2026-10-24T20:53:25.299712+00:00"
+    "last_changed": "2026-10-30T14:13:36.398523+00:00",
+    "last_updated": "2026-10-30T14:13:36.398523+00:00",
+    "last_reported": "2026-10-30T14:29:50.068634+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3149,9 +3149,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223513+00:00",
-    "last_updated": "2026-10-24T11:26:36.223513+00:00",
-    "last_reported": "2026-10-24T20:53:25.299586+00:00"
+    "last_changed": "2026-10-30T14:13:36.397493+00:00",
+    "last_updated": "2026-10-30T14:13:36.397493+00:00",
+    "last_reported": "2026-10-30T14:29:50.068534+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3162,9 +3162,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223372+00:00",
-    "last_updated": "2026-10-24T11:26:36.223372+00:00",
-    "last_reported": "2026-10-24T20:53:25.299561+00:00"
+    "last_changed": "2026-10-30T14:13:36.397159+00:00",
+    "last_updated": "2026-10-30T14:13:36.397159+00:00",
+    "last_reported": "2026-10-30T14:29:50.068513+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3175,9 +3175,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223637+00:00",
-    "last_updated": "2026-10-24T11:26:36.223637+00:00",
-    "last_reported": "2026-10-24T20:53:25.299604+00:00"
+    "last_changed": "2026-10-30T14:13:36.397645+00:00",
+    "last_updated": "2026-10-30T14:13:36.397645+00:00",
+    "last_reported": "2026-10-30T14:29:50.068550+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3188,9 +3188,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223933+00:00",
-    "last_updated": "2026-10-24T11:26:36.223933+00:00",
-    "last_reported": "2026-10-24T20:53:25.299654+00:00"
+    "last_changed": "2026-10-30T14:13:36.398103+00:00",
+    "last_updated": "2026-10-30T14:13:36.398103+00:00",
+    "last_reported": "2026-10-30T14:29:50.068588+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3201,9 +3201,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223779+00:00",
-    "last_updated": "2026-10-24T11:26:36.223779+00:00",
-    "last_reported": "2026-10-24T20:53:25.299629+00:00"
+    "last_changed": "2026-10-30T14:13:36.397891+00:00",
+    "last_updated": "2026-10-30T14:13:36.397891+00:00",
+    "last_reported": "2026-10-30T14:29:50.068569+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3214,9 +3214,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.224596+00:00",
-    "last_updated": "2026-10-24T11:26:36.224596+00:00",
-    "last_reported": "2026-10-24T20:53:25.299735+00:00"
+    "last_changed": "2026-10-30T14:13:36.398680+00:00",
+    "last_updated": "2026-10-30T14:13:36.398680+00:00",
+    "last_reported": "2026-10-30T14:29:50.068652+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3227,9 +3227,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.224746+00:00",
-    "last_updated": "2026-10-24T11:26:36.224746+00:00",
-    "last_reported": "2026-10-24T20:53:25.299751+00:00"
+    "last_changed": "2026-10-30T14:13:36.398835+00:00",
+    "last_updated": "2026-10-30T14:13:36.398835+00:00",
+    "last_reported": "2026-10-30T14:29:50.068667+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3240,9 +3240,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.224868+00:00",
-    "last_updated": "2026-10-24T11:26:36.224868+00:00",
-    "last_reported": "2026-10-24T20:53:25.299820+00:00"
+    "last_changed": "2026-10-30T14:13:36.398973+00:00",
+    "last_updated": "2026-10-30T14:13:36.398973+00:00",
+    "last_reported": "2026-10-30T14:29:50.068680+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3253,9 +3253,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.223228+00:00",
-    "last_updated": "2026-10-24T11:26:36.223228+00:00",
-    "last_reported": "2026-10-24T20:53:25.299536+00:00"
+    "last_changed": "2026-10-30T14:13:36.396996+00:00",
+    "last_updated": "2026-10-30T14:13:36.396996+00:00",
+    "last_reported": "2026-10-30T14:29:50.068494+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3266,9 +3266,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.226267+00:00",
-    "last_updated": "2026-10-24T11:26:36.226267+00:00",
-    "last_reported": "2026-10-24T20:53:25.300115+00:00"
+    "last_changed": "2026-10-30T14:13:36.400569+00:00",
+    "last_updated": "2026-10-30T14:13:36.400569+00:00",
+    "last_reported": "2026-10-30T14:29:50.068917+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3279,22 +3279,22 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.225256+00:00",
-    "last_updated": "2026-10-24T11:26:36.225256+00:00",
-    "last_reported": "2026-10-24T20:53:25.299881+00:00"
+    "last_changed": "2026-10-30T14:13:36.399400+00:00",
+    "last_updated": "2026-10-30T14:13:36.399400+00:00",
+    "last_reported": "2026-10-30T14:29:50.068724+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
     "entity": "switch.wallbox_2_prioritize_when_connected",
     "name": "Wallbox 2. Prioritize When Connected",
-    "state": "on",
+    "state": "off",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.225417+00:00",
-    "last_updated": "2026-10-24T11:26:36.225417+00:00",
-    "last_reported": "2026-10-24T20:53:25.299914+00:00"
+    "last_changed": "2026-10-30T14:13:36.399565+00:00",
+    "last_updated": "2026-10-30T14:13:36.399565+00:00",
+    "last_reported": "2026-10-30T14:29:50.068788+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3305,9 +3305,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.225547+00:00",
-    "last_updated": "2026-10-24T11:26:36.225547+00:00",
-    "last_reported": "2026-10-24T20:53:25.299937+00:00"
+    "last_changed": "2026-10-30T14:13:36.399710+00:00",
+    "last_updated": "2026-10-30T14:13:36.399710+00:00",
+    "last_reported": "2026-10-30T14:29:50.068814+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3318,9 +3318,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.225679+00:00",
-    "last_updated": "2026-10-24T11:26:36.225679+00:00",
-    "last_reported": "2026-10-24T20:53:25.299958+00:00"
+    "last_changed": "2026-10-30T14:13:36.399889+00:00",
+    "last_updated": "2026-10-30T14:13:36.399889+00:00",
+    "last_reported": "2026-10-30T14:29:50.068833+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3331,9 +3331,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.225849+00:00",
-    "last_updated": "2026-10-24T11:26:36.225849+00:00",
-    "last_reported": "2026-10-24T20:53:25.299989+00:00"
+    "last_changed": "2026-10-30T14:13:36.400098+00:00",
+    "last_updated": "2026-10-30T14:13:36.400098+00:00",
+    "last_reported": "2026-10-30T14:29:50.068857+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3344,9 +3344,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.226002+00:00",
-    "last_updated": "2026-10-24T11:26:36.226002+00:00",
-    "last_reported": "2026-10-24T20:53:25.300070+00:00"
+    "last_changed": "2026-10-30T14:13:36.400264+00:00",
+    "last_updated": "2026-10-30T14:13:36.400264+00:00",
+    "last_reported": "2026-10-30T14:29:50.068882+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3357,9 +3357,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.226135+00:00",
-    "last_updated": "2026-10-24T11:26:36.226135+00:00",
-    "last_reported": "2026-10-24T20:53:25.300096+00:00"
+    "last_changed": "2026-10-30T14:13:36.400430+00:00",
+    "last_updated": "2026-10-30T14:13:36.400430+00:00",
+    "last_reported": "2026-10-30T14:29:50.068901+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3370,9 +3370,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T19:14:51.875180+00:00",
-    "last_updated": "2026-10-24T19:14:51.875180+00:00",
-    "last_reported": "2026-10-24T20:53:25.299846+00:00"
+    "last_changed": "2026-10-30T14:13:36.399203+00:00",
+    "last_updated": "2026-10-30T14:13:36.399203+00:00",
+    "last_reported": "2026-10-30T14:29:50.068698+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3383,9 +3383,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230010+00:00",
-    "last_updated": "2026-10-24T11:26:36.230010+00:00",
-    "last_reported": "2026-10-24T20:53:25.300704+00:00"
+    "last_changed": "2026-10-30T14:13:36.408051+00:00",
+    "last_updated": "2026-10-30T14:13:36.408051+00:00",
+    "last_reported": "2026-10-30T14:29:50.069458+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3396,9 +3396,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230170+00:00",
-    "last_updated": "2026-10-24T11:26:36.230170+00:00",
-    "last_reported": "2026-10-24T20:53:25.300734+00:00"
+    "last_changed": "2026-10-30T14:13:36.408232+00:00",
+    "last_updated": "2026-10-30T14:13:36.408232+00:00",
+    "last_reported": "2026-10-30T14:29:50.069486+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3409,9 +3409,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230319+00:00",
-    "last_updated": "2026-10-24T11:26:36.230319+00:00",
-    "last_reported": "2026-10-24T20:53:25.300755+00:00"
+    "last_changed": "2026-10-30T14:13:36.408384+00:00",
+    "last_updated": "2026-10-30T14:13:36.408384+00:00",
+    "last_reported": "2026-10-30T14:29:50.069503+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3422,9 +3422,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230472+00:00",
-    "last_updated": "2026-10-24T11:26:36.230472+00:00",
-    "last_reported": "2026-10-24T20:53:25.300773+00:00"
+    "last_changed": "2026-10-30T14:13:36.408535+00:00",
+    "last_updated": "2026-10-30T14:13:36.408535+00:00",
+    "last_reported": "2026-10-30T14:29:50.069519+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3435,9 +3435,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230602+00:00",
-    "last_updated": "2026-10-24T11:26:36.230602+00:00",
-    "last_reported": "2026-10-24T20:53:25.300786+00:00"
+    "last_changed": "2026-10-30T14:13:36.408686+00:00",
+    "last_updated": "2026-10-30T14:13:36.408686+00:00",
+    "last_reported": "2026-10-30T14:29:50.069533+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3448,9 +3448,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230722+00:00",
-    "last_updated": "2026-10-24T11:26:36.230722+00:00",
-    "last_reported": "2026-10-24T20:53:25.300798+00:00"
+    "last_changed": "2026-10-30T14:13:36.408815+00:00",
+    "last_updated": "2026-10-30T14:13:36.408815+00:00",
+    "last_reported": "2026-10-30T14:29:50.069544+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3461,9 +3461,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230840+00:00",
-    "last_updated": "2026-10-24T11:26:36.230840+00:00",
-    "last_reported": "2026-10-24T20:53:25.300810+00:00"
+    "last_changed": "2026-10-30T14:13:36.408975+00:00",
+    "last_updated": "2026-10-30T14:13:36.408975+00:00",
+    "last_reported": "2026-10-30T14:29:50.069556+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3474,9 +3474,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.230966+00:00",
-    "last_updated": "2026-10-24T11:26:36.230966+00:00",
-    "last_reported": "2026-10-24T20:53:25.300821+00:00"
+    "last_changed": "2026-10-30T14:13:36.409119+00:00",
+    "last_updated": "2026-10-30T14:13:36.409119+00:00",
+    "last_reported": "2026-10-30T14:29:50.069567+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3487,9 +3487,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231189+00:00",
-    "last_updated": "2026-10-24T11:26:36.231189+00:00",
-    "last_reported": "2026-10-24T20:53:25.300859+00:00"
+    "last_changed": "2026-10-30T14:13:36.409354+00:00",
+    "last_updated": "2026-10-30T14:13:36.409354+00:00",
+    "last_reported": "2026-10-30T14:29:50.069604+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3500,9 +3500,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231332+00:00",
-    "last_updated": "2026-10-24T11:26:36.231332+00:00",
-    "last_reported": "2026-10-24T20:53:25.300888+00:00"
+    "last_changed": "2026-10-30T14:13:36.409531+00:00",
+    "last_updated": "2026-10-30T14:13:36.409531+00:00",
+    "last_reported": "2026-10-30T14:29:50.069630+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3513,9 +3513,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231467+00:00",
-    "last_updated": "2026-10-24T11:26:36.231467+00:00",
-    "last_reported": "2026-10-24T20:53:25.300911+00:00"
+    "last_changed": "2026-10-30T14:13:36.409689+00:00",
+    "last_updated": "2026-10-30T14:13:36.409689+00:00",
+    "last_reported": "2026-10-30T14:29:50.069649+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3526,9 +3526,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231615+00:00",
-    "last_updated": "2026-10-24T11:26:36.231615+00:00",
-    "last_reported": "2026-10-24T20:53:25.300929+00:00"
+    "last_changed": "2026-10-30T14:13:36.410976+00:00",
+    "last_updated": "2026-10-30T14:13:36.410976+00:00",
+    "last_reported": "2026-10-30T14:29:50.069666+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3539,9 +3539,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231741+00:00",
-    "last_updated": "2026-10-24T11:26:36.231741+00:00",
-    "last_reported": "2026-10-24T20:53:25.300945+00:00"
+    "last_changed": "2026-10-30T14:13:36.411145+00:00",
+    "last_updated": "2026-10-30T14:13:36.411145+00:00",
+    "last_reported": "2026-10-30T14:29:50.069680+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3552,9 +3552,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231862+00:00",
-    "last_updated": "2026-10-24T11:26:36.231862+00:00",
-    "last_reported": "2026-10-24T20:53:25.300961+00:00"
+    "last_changed": "2026-10-30T14:13:36.411284+00:00",
+    "last_updated": "2026-10-30T14:13:36.411284+00:00",
+    "last_reported": "2026-10-30T14:29:50.069695+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3565,9 +3565,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.231977+00:00",
-    "last_updated": "2026-10-24T11:26:36.231977+00:00",
-    "last_reported": "2026-10-24T20:53:25.300977+00:00"
+    "last_changed": "2026-10-30T14:13:36.411434+00:00",
+    "last_updated": "2026-10-30T14:13:36.411434+00:00",
+    "last_reported": "2026-10-30T14:29:50.069710+00:00"
   },
   {
     "system": "Wallbox, Bojler (FVE)",
@@ -3578,9 +3578,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.232120+00:00",
-    "last_updated": "2026-10-24T11:26:36.232120+00:00",
-    "last_reported": "2026-10-24T20:53:25.300992+00:00"
+    "last_changed": "2026-10-30T14:13:36.411626+00:00",
+    "last_updated": "2026-10-30T14:13:36.411626+00:00",
+    "last_reported": "2026-10-30T14:29:50.069725+00:00"
   },
   {
     "system": "Zásobník (Plyn)",
@@ -3591,9 +3591,9 @@
     "device_class": "connectivity",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:37.502762+00:00",
-    "last_updated": "2026-10-24T11:26:37.502762+00:00",
-    "last_reported": "2026-10-24T20:42:17.265583+00:00"
+    "last_changed": "2026-10-30T14:13:37.550372+00:00",
+    "last_updated": "2026-10-30T14:13:37.550372+00:00",
+    "last_reported": "2026-10-30T14:13:48.406125+00:00"
   },
   {
     "system": "Zásobník (Plyn)",
@@ -3604,9 +3604,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:37.502778+00:00",
-    "last_updated": "2026-10-24T11:26:37.502778+00:00",
-    "last_reported": "2026-10-24T20:42:17.265606+00:00"
+    "last_changed": "2026-10-30T14:13:37.550397+00:00",
+    "last_updated": "2026-10-30T14:13:37.550397+00:00",
+    "last_reported": "2026-10-30T14:13:48.406160+00:00"
   },
   {
     "system": "Zásobník (Plyn)",
@@ -3617,9 +3617,9 @@
     "device_class": "power",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:37.502747+00:00",
-    "last_updated": "2026-10-24T11:26:37.502747+00:00",
-    "last_reported": "2026-10-24T20:42:17.265530+00:00"
+    "last_changed": "2026-10-30T14:13:37.550351+00:00",
+    "last_updated": "2026-10-30T14:13:37.550351+00:00",
+    "last_reported": "2026-10-30T14:13:48.406108+00:00"
   },
   {
     "system": "Zásobník (Plyn)",
@@ -3630,9 +3630,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:37.503828+00:00",
-    "last_updated": "2026-10-24T11:26:37.503828+00:00",
-    "last_reported": "2026-10-24T20:42:17.267030+00:00"
+    "last_changed": "2026-10-30T14:13:37.551708+00:00",
+    "last_updated": "2026-10-30T14:13:37.551708+00:00",
+    "last_reported": "2026-10-30T14:13:48.408227+00:00"
   },
   {
     "system": "Zásobník (Plyn)",
@@ -3654,9 +3654,9 @@
       "min_temp": 30.0,
       "max_temp": 65.0
     },
-    "last_changed": "2026-10-24T11:26:36.482810+00:00",
-    "last_updated": "2026-10-24T20:12:11.341149+00:00",
-    "last_reported": "2026-10-24T20:42:17.267276+00:00"
+    "last_changed": "2026-10-30T14:13:36.352922+00:00",
+    "last_updated": "2026-10-30T14:13:36.352922+00:00",
+    "last_reported": "2026-10-30T14:13:48.408597+00:00"
   },
   {
     "system": "Zásobník (Plyn)",
@@ -3680,9 +3680,9 @@
         "last"
       ]
     },
-    "last_changed": "2026-10-24T11:26:35.896874+00:00",
-    "last_updated": "2026-10-24T11:26:35.896874+00:00",
-    "last_reported": "2026-10-24T11:26:35.896874+00:00"
+    "last_changed": "2026-10-30T14:13:36.759995+00:00",
+    "last_updated": "2026-10-30T14:13:36.759995+00:00",
+    "last_reported": "2026-10-30T14:13:36.759995+00:00"
   },
   {
     "system": "Mísení vody",
@@ -3693,9 +3693,9 @@
     "device_class": "outlet",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:35.897632+00:00",
-    "last_updated": "2026-10-24T11:26:35.897632+00:00",
-    "last_reported": "2026-10-24T11:26:35.897632+00:00"
+    "last_changed": "2026-10-30T14:13:36.760687+00:00",
+    "last_updated": "2026-10-30T14:13:36.760687+00:00",
+    "last_reported": "2026-10-30T14:13:36.760687+00:00"
   },
   {
     "system": "Mísení vody",
@@ -3712,9 +3712,9 @@
         "last"
       ]
     },
-    "last_changed": "2026-10-24T11:26:35.896634+00:00",
-    "last_updated": "2026-10-24T11:26:35.896634+00:00",
-    "last_reported": "2026-10-24T11:26:35.896634+00:00"
+    "last_changed": "2026-10-30T14:13:36.759719+00:00",
+    "last_updated": "2026-10-30T14:13:36.759719+00:00",
+    "last_reported": "2026-10-30T14:13:36.759719+00:00"
   },
   {
     "system": "Mísení vody",
@@ -3725,9 +3725,9 @@
     "device_class": "outlet",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:35.897489+00:00",
-    "last_updated": "2026-10-24T11:26:35.897489+00:00",
-    "last_reported": "2026-10-24T11:26:35.897489+00:00"
+    "last_changed": "2026-10-30T14:13:36.760537+00:00",
+    "last_updated": "2026-10-30T14:13:36.760537+00:00",
+    "last_reported": "2026-10-30T14:13:36.760537+00:00"
   },
   {
     "system": "Mísení vody",
@@ -3754,9 +3754,9 @@
     "attributes": {
       "mode": "single"
     },
-    "last_changed": "2026-10-24T11:26:25.789650+00:00",
-    "last_updated": "2026-10-24T11:26:25.789650+00:00",
-    "last_reported": "2026-10-24T11:26:25.789650+00:00"
+    "last_changed": "2026-10-30T14:13:29.494939+00:00",
+    "last_updated": "2026-10-30T14:13:29.494939+00:00",
+    "last_reported": "2026-10-30T14:13:29.494939+00:00"
   },
   {
     "system": "Auto",
@@ -3767,9 +3767,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.134208+00:00",
-    "last_updated": "2026-10-24T18:09:27.849813+00:00",
-    "last_reported": "2026-10-24T18:09:28.079763+00:00"
+    "last_changed": "2026-10-30T14:13:36.854770+00:00",
+    "last_updated": "2026-10-30T14:13:36.854770+00:00",
+    "last_reported": "2026-10-30T14:13:36.854770+00:00"
   },
   {
     "system": "Auto",
@@ -3780,9 +3780,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.134610+00:00",
-    "last_updated": "2026-10-24T18:09:28.040301+00:00",
-    "last_reported": "2026-10-24T18:09:28.227343+00:00"
+    "last_changed": "2026-10-30T14:13:36.855159+00:00",
+    "last_updated": "2026-10-30T14:13:36.855159+00:00",
+    "last_reported": "2026-10-30T14:13:36.855159+00:00"
   },
   {
     "system": "Auto",
@@ -3793,9 +3793,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.134399+00:00",
-    "last_updated": "2026-10-24T18:09:28.039867+00:00",
-    "last_reported": "2026-10-24T18:09:28.222041+00:00"
+    "last_changed": "2026-10-30T14:13:36.854960+00:00",
+    "last_updated": "2026-10-30T14:13:36.854960+00:00",
+    "last_reported": "2026-10-30T14:13:36.854960+00:00"
   },
   {
     "system": "Auto",
@@ -3806,9 +3806,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:22:05.653709+00:00",
-    "last_updated": "2026-10-24T20:47:15.016398+00:00",
-    "last_reported": "2026-10-24T20:47:15.196698+00:00"
+    "last_changed": "2026-10-30T14:13:36.853806+00:00",
+    "last_updated": "2026-10-30T14:13:36.853806+00:00",
+    "last_reported": "2026-10-30T14:13:36.853806+00:00"
   },
   {
     "system": "Auto",
@@ -3819,9 +3819,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.133056+00:00",
-    "last_updated": "2026-10-24T20:47:14.961046+00:00",
-    "last_reported": "2026-10-24T20:47:15.158864+00:00"
+    "last_changed": "2026-10-30T14:13:36.853621+00:00",
+    "last_updated": "2026-10-30T14:13:36.853621+00:00",
+    "last_reported": "2026-10-30T14:13:36.853621+00:00"
   },
   {
     "system": "Auto",
@@ -3832,9 +3832,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:22:05.605417+00:00",
-    "last_updated": "2026-10-24T20:47:14.940340+00:00",
-    "last_reported": "2026-10-24T20:47:15.140508+00:00"
+    "last_changed": "2026-10-30T14:13:36.853230+00:00",
+    "last_updated": "2026-10-30T14:13:36.853230+00:00",
+    "last_reported": "2026-10-30T14:13:36.853230+00:00"
   },
   {
     "system": "Auto",
@@ -3845,9 +3845,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.132837+00:00",
-    "last_updated": "2026-10-24T20:47:14.951835+00:00",
-    "last_reported": "2026-10-24T20:47:15.151261+00:00"
+    "last_changed": "2026-10-30T14:13:36.853435+00:00",
+    "last_updated": "2026-10-30T14:13:36.853435+00:00",
+    "last_reported": "2026-10-30T14:13:36.853435+00:00"
   },
   {
     "system": "Auto",
@@ -3858,9 +3858,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.133410+00:00",
-    "last_updated": "2026-10-24T20:47:15.016938+00:00",
-    "last_reported": "2026-10-24T20:47:15.194164+00:00"
+    "last_changed": "2026-10-30T14:13:36.854084+00:00",
+    "last_updated": "2026-10-30T14:13:36.854084+00:00",
+    "last_reported": "2026-10-30T14:13:36.854084+00:00"
   },
   {
     "system": "Auto",
@@ -3871,9 +3871,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:44:28.035892+00:00",
-    "last_updated": "2026-10-24T18:44:28.035892+00:00",
-    "last_reported": "2026-10-24T18:44:28.035892+00:00"
+    "last_changed": "2026-10-30T14:13:36.852998+00:00",
+    "last_updated": "2026-10-30T14:13:36.852998+00:00",
+    "last_reported": "2026-10-30T14:13:36.852998+00:00"
   },
   {
     "system": "Auto",
@@ -3884,9 +3884,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.133746+00:00",
-    "last_updated": "2026-10-24T20:47:15.019774+00:00",
-    "last_reported": "2026-10-24T20:47:15.217597+00:00"
+    "last_changed": "2026-10-30T14:13:36.854437+00:00",
+    "last_updated": "2026-10-30T14:13:36.854437+00:00",
+    "last_reported": "2026-10-30T14:13:36.854437+00:00"
   },
   {
     "system": "Auto",
@@ -3897,9 +3897,9 @@
     "device_class": "opening",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.133580+00:00",
-    "last_updated": "2026-10-24T20:47:15.017371+00:00",
-    "last_reported": "2026-10-24T20:47:15.196095+00:00"
+    "last_changed": "2026-10-30T14:13:36.854264+00:00",
+    "last_updated": "2026-10-30T14:13:36.854264+00:00",
+    "last_reported": "2026-10-30T14:13:36.854264+00:00"
   },
   {
     "system": "Auto",
@@ -3910,9 +3910,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:47:15.178064+00:00",
-    "last_updated": "2026-10-24T20:47:15.178064+00:00",
-    "last_reported": "2026-10-24T20:47:15.178064+00:00"
+    "last_changed": "2026-10-30T14:13:36.855596+00:00",
+    "last_updated": "2026-10-30T14:13:36.855596+00:00",
+    "last_reported": "2026-10-30T14:13:36.855596+00:00"
   },
   {
     "system": "Auto",
@@ -3923,9 +3923,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.142115+00:00",
-    "last_updated": "2026-10-24T20:51:29.365378+00:00",
-    "last_reported": "2026-10-24T20:51:29.365378+00:00"
+    "last_changed": "2026-10-30T14:13:36.867280+00:00",
+    "last_updated": "2026-10-30T14:28:29.445205+00:00",
+    "last_reported": "2026-10-30T14:28:29.445205+00:00"
   },
   {
     "system": "Auto",
@@ -3936,61 +3936,61 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:28:41.570646+00:00",
-    "last_updated": "2026-10-24T20:28:41.570646+00:00",
-    "last_reported": "2026-10-24T20:53:10.676126+00:00"
+    "last_changed": "2026-10-30T14:13:36.851734+00:00",
+    "last_updated": "2026-10-30T14:13:36.851734+00:00",
+    "last_reported": "2026-10-30T14:29:36.783548+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.garaz_bmw_i3_2",
     "name": "BMW i3 Last Message Received",
-    "state": "2026-10-24T20:47:15+00:00",
+    "state": "2026-10-30T14:10:08+00:00",
     "unit": null,
     "device_class": "timestamp",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:47:15.015994+00:00",
-    "last_updated": "2026-10-24T20:47:15.015994+00:00",
-    "last_reported": "2026-10-24T20:53:10.676550+00:00"
+    "last_changed": "2026-10-30T14:13:36.852024+00:00",
+    "last_updated": "2026-10-30T14:13:36.852024+00:00",
+    "last_reported": "2026-10-30T14:29:36.783224+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.garaz_bmw_i3_3",
     "name": "BMW i3 Last Telematics API Call",
-    "state": "2026-10-24T11:28:36+00:00",
+    "state": "2026-10-30T14:10:07+00:00",
     "unit": null,
     "device_class": "timestamp",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:28:36.609142+00:00",
-    "last_updated": "2026-10-24T11:28:36.609142+00:00",
-    "last_reported": "2026-10-24T20:53:10.676601+00:00"
+    "last_changed": "2026-10-30T14:13:36.852251+00:00",
+    "last_updated": "2026-10-30T14:13:36.852251+00:00",
+    "last_reported": "2026-10-30T14:29:36.784551+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.garaz_bmw_i3_4",
     "name": "BMW i3 API Quota Remaining",
-    "state": "43",
+    "state": "45",
     "unit": "requests",
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:28:36.608998+00:00",
-    "last_updated": "2026-10-24T11:28:36.608998+00:00",
-    "last_reported": "2026-10-24T20:53:10.676480+00:00"
+    "last_changed": "2026-10-30T14:13:36.852476+00:00",
+    "last_updated": "2026-10-30T14:13:36.852476+00:00",
+    "last_reported": "2026-10-30T14:29:36.783314+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.i3_120_battery_ev_displayed_state_of_charge",
     "name": "i3 120 Battery EV Displayed state of charge",
-    "state": "49.6",
+    "state": "53.7",
     "unit": "%",
     "device_class": "battery",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.941213+00:00",
-    "last_updated": "2026-10-24T18:09:27.941213+00:00",
-    "last_reported": "2026-10-24T18:09:28.150155+00:00"
+    "last_changed": "2026-10-30T14:13:36.841096+00:00",
+    "last_updated": "2026-10-30T14:13:36.841096+00:00",
+    "last_reported": "2026-10-30T14:13:36.857690+00:00"
   },
   {
     "system": "Auto",
@@ -4001,9 +4001,9 @@
     "device_class": "energy_storage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.128314+00:00",
-    "last_updated": "2026-10-24T18:09:27.948748+00:00",
-    "last_reported": "2026-10-24T18:09:28.155496+00:00"
+    "last_changed": "2026-10-30T14:13:36.841848+00:00",
+    "last_updated": "2026-10-30T14:13:36.841848+00:00",
+    "last_reported": "2026-10-30T14:13:36.857740+00:00"
   },
   {
     "system": "Auto",
@@ -4020,9 +4020,9 @@
         "mincharging"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.126687+00:00",
-    "last_updated": "2026-10-24T18:09:27.903465+00:00",
-    "last_reported": "2026-10-24T18:09:28.106170+00:00"
+    "last_changed": "2026-10-30T14:13:36.840086+00:00",
+    "last_updated": "2026-10-30T14:13:36.840086+00:00",
+    "last_reported": "2026-10-30T14:13:36.857628+00:00"
   },
   {
     "system": "Auto",
@@ -4039,9 +4039,9 @@
         "signal_invalid"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.126031+00:00",
-    "last_updated": "2026-10-24T18:09:27.866606+00:00",
-    "last_reported": "2026-10-24T18:09:28.102942+00:00"
+    "last_changed": "2026-10-30T14:13:36.839380+00:00",
+    "last_updated": "2026-10-30T14:13:36.839380+00:00",
+    "last_reported": "2026-10-30T14:13:36.857517+00:00"
   },
   {
     "system": "Auto",
@@ -4058,9 +4058,9 @@
         "plc_mode"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.129253+00:00",
-    "last_updated": "2026-10-24T18:09:28.037387+00:00",
-    "last_reported": "2026-10-24T18:09:28.189696+00:00"
+    "last_changed": "2026-10-30T14:13:36.842961+00:00",
+    "last_updated": "2026-10-30T14:13:36.842961+00:00",
+    "last_reported": "2026-10-30T14:13:36.857798+00:00"
   },
   {
     "system": "Auto",
@@ -4077,9 +4077,9 @@
         "no_preselection"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.130660+00:00",
-    "last_updated": "2026-10-24T11:26:36.130660+00:00",
-    "last_reported": "2026-10-24T11:26:36.137433+00:00"
+    "last_changed": "2026-10-30T14:13:36.844308+00:00",
+    "last_updated": "2026-10-30T14:13:36.844308+00:00",
+    "last_reported": "2026-10-30T14:13:36.857867+00:00"
   },
   {
     "system": "Auto",
@@ -4090,9 +4090,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.130319+00:00",
-    "last_updated": "2026-10-24T11:26:36.130319+00:00",
-    "last_reported": "2026-10-24T11:26:36.137417+00:00"
+    "last_changed": "2026-10-30T14:13:36.843970+00:00",
+    "last_updated": "2026-10-30T14:13:36.843970+00:00",
+    "last_reported": "2026-10-30T14:13:36.857850+00:00"
   },
   {
     "system": "Auto",
@@ -4103,9 +4103,9 @@
     "device_class": "duration",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.130033+00:00",
-    "last_updated": "2026-10-24T11:26:36.130033+00:00",
-    "last_reported": "2026-10-24T11:26:36.137401+00:00"
+    "last_changed": "2026-10-30T14:13:36.843646+00:00",
+    "last_updated": "2026-10-30T14:13:36.843646+00:00",
+    "last_reported": "2026-10-30T14:13:36.857833+00:00"
   },
   {
     "system": "Auto",
@@ -4116,9 +4116,9 @@
     "device_class": "duration",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.127994+00:00",
-    "last_updated": "2026-10-24T11:26:36.127994+00:00",
-    "last_reported": "2026-10-24T11:26:36.137293+00:00"
+    "last_changed": "2026-10-30T14:13:36.841486+00:00",
+    "last_updated": "2026-10-30T14:13:36.841486+00:00",
+    "last_reported": "2026-10-30T14:13:36.857715+00:00"
   },
   {
     "system": "Auto",
@@ -4129,9 +4129,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.129534+00:00",
-    "last_updated": "2026-10-24T18:09:28.038291+00:00",
-    "last_reported": "2026-10-24T18:09:28.203220+00:00"
+    "last_changed": "2026-10-30T14:13:36.843303+00:00",
+    "last_updated": "2026-10-30T14:13:36.843303+00:00",
+    "last_reported": "2026-10-30T14:13:36.857815+00:00"
   },
   {
     "system": "Auto",
@@ -4147,15 +4147,15 @@
         "notchosen"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.126984+00:00",
-    "last_updated": "2026-10-24T18:09:27.909282+00:00",
-    "last_reported": "2026-10-24T18:09:28.124188+00:00"
+    "last_changed": "2026-10-30T14:13:36.840411+00:00",
+    "last_updated": "2026-10-30T14:13:36.840411+00:00",
+    "last_reported": "2026-10-30T14:13:36.857648+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.i3_120_charging_port_plug_state",
     "name": "i3 120 Charging Port plug state",
-    "state": "disconnected",
+    "state": "connected",
     "unit": null,
     "device_class": "enum",
     "state_class": null,
@@ -4166,9 +4166,9 @@
         "invalid"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.126345+00:00",
-    "last_updated": "2026-10-24T18:09:27.890940+00:00",
-    "last_reported": "2026-10-24T18:09:28.102433+00:00"
+    "last_changed": "2026-10-30T14:13:36.839770+00:00",
+    "last_updated": "2026-10-30T14:13:36.839770+00:00",
+    "last_reported": "2026-10-30T14:13:36.857594+00:00"
   },
   {
     "system": "Auto",
@@ -4187,22 +4187,22 @@
         "unknown"
       ]
     },
-    "last_changed": "2026-10-24T20:47:15.018277+00:00",
-    "last_updated": "2026-10-24T20:47:15.018277+00:00",
-    "last_reported": "2026-10-24T20:47:15.217654+00:00"
+    "last_changed": "2026-10-30T14:13:36.838261+00:00",
+    "last_updated": "2026-10-30T14:13:36.838261+00:00",
+    "last_reported": "2026-10-30T14:13:36.857461+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.i3_120_driving_distance_this_month",
     "name": "i3 120 Driving Distance (This Month)",
-    "state": "169.7",
+    "state": "348.7",
     "unit": "km",
     "device_class": "distance",
     "state_class": "total",
     "attributes": {},
-    "last_changed": "2026-10-24T18:44:28.036324+00:00",
-    "last_updated": "2026-10-24T18:44:28.036324+00:00",
-    "last_reported": "2026-10-24T18:44:28.036324+00:00"
+    "last_changed": "2026-10-30T14:13:36.835608+00:00",
+    "last_updated": "2026-10-30T14:13:36.835608+00:00",
+    "last_reported": "2026-10-30T14:13:36.835608+00:00"
   },
   {
     "system": "Auto",
@@ -4213,22 +4213,22 @@
     "device_class": "distance",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T20:47:15.017775+00:00",
-    "last_updated": "2026-10-24T20:47:15.017775+00:00",
-    "last_reported": "2026-10-24T20:47:15.196398+00:00"
+    "last_changed": "2026-10-30T14:13:36.837667+00:00",
+    "last_updated": "2026-10-30T14:13:36.837667+00:00",
+    "last_reported": "2026-10-30T14:13:36.857441+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.i3_120_range_ev_remaining_range",
     "name": "i3 120 Range EV Remaining range",
-    "state": "95",
+    "state": "104",
     "unit": "km",
     "device_class": "distance",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.918072+00:00",
-    "last_updated": "2026-10-24T18:09:27.918072+00:00",
-    "last_reported": "2026-10-24T18:09:28.136102+00:00"
+    "last_changed": "2026-10-30T14:13:36.840772+00:00",
+    "last_updated": "2026-10-30T14:13:36.840772+00:00",
+    "last_reported": "2026-10-30T14:13:36.857669+00:00"
   },
   {
     "system": "Auto",
@@ -4239,9 +4239,9 @@
     "device_class": "volume_storage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.128977+00:00",
-    "last_updated": "2026-10-24T18:09:27.967100+00:00",
-    "last_reported": "2026-10-24T18:09:28.169263+00:00"
+    "last_changed": "2026-10-30T14:13:36.842628+00:00",
+    "last_updated": "2026-10-30T14:13:36.842628+00:00",
+    "last_reported": "2026-10-30T14:13:36.857780+00:00"
   },
   {
     "system": "Auto",
@@ -4252,9 +4252,9 @@
     "device_class": "distance",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.128667+00:00",
-    "last_updated": "2026-10-24T18:09:27.956955+00:00",
-    "last_reported": "2026-10-24T18:09:28.169187+00:00"
+    "last_changed": "2026-10-30T14:13:36.842178+00:00",
+    "last_updated": "2026-10-30T14:13:36.842178+00:00",
+    "last_reported": "2026-10-30T14:13:36.857760+00:00"
   },
   {
     "system": "Auto",
@@ -4265,9 +4265,9 @@
     "device_class": "distance",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.123341+00:00",
-    "last_updated": "2026-10-24T11:26:36.123341+00:00",
-    "last_reported": "2026-10-24T18:09:28.144500+00:00"
+    "last_changed": "2026-10-30T14:13:36.836082+00:00",
+    "last_updated": "2026-10-30T14:13:36.836082+00:00",
+    "last_reported": "2026-10-30T14:14:06.736515+00:00"
   },
   {
     "system": "Auto",
@@ -4278,9 +4278,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.908265+00:00",
-    "last_updated": "2026-10-24T16:25:57.908265+00:00",
-    "last_reported": "2026-10-24T16:25:58.505164+00:00"
+    "last_changed": "2026-10-30T14:13:36.847833+00:00",
+    "last_updated": "2026-10-30T14:13:36.847833+00:00",
+    "last_reported": "2026-10-30T14:13:36.857991+00:00"
   },
   {
     "system": "Auto",
@@ -4291,9 +4291,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.911865+00:00",
-    "last_updated": "2026-10-24T16:25:57.911865+00:00",
-    "last_reported": "2026-10-24T16:25:58.514131+00:00"
+    "last_changed": "2026-10-30T14:13:36.848145+00:00",
+    "last_updated": "2026-10-30T14:13:36.848145+00:00",
+    "last_reported": "2026-10-30T14:13:36.858007+00:00"
   },
   {
     "system": "Auto",
@@ -4301,12 +4301,12 @@
     "name": "i3 120 Service Next service distance threshold",
     "state": "2000",
     "unit": "km",
-    "device_class": null,
+    "device_class": "distance",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.844732+00:00",
-    "last_updated": "2026-10-24T16:25:57.844732+00:00",
-    "last_reported": "2026-10-24T16:25:58.468545+00:00"
+    "last_changed": "2026-10-30T14:13:36.845387+00:00",
+    "last_updated": "2026-10-30T14:13:36.845387+00:00",
+    "last_reported": "2026-10-30T14:13:36.857905+00:00"
   },
   {
     "system": "Auto",
@@ -4317,9 +4317,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.898857+00:00",
-    "last_updated": "2026-10-24T16:25:57.898857+00:00",
-    "last_reported": "2026-10-24T16:25:58.495498+00:00"
+    "last_changed": "2026-10-30T14:13:36.847504+00:00",
+    "last_updated": "2026-10-30T14:13:36.847504+00:00",
+    "last_reported": "2026-10-30T14:13:36.857975+00:00"
   },
   {
     "system": "Auto",
@@ -4338,9 +4338,9 @@
         "initial status"
       ]
     },
-    "last_changed": "2026-10-24T16:25:57.886293+00:00",
-    "last_updated": "2026-10-24T16:25:57.886293+00:00",
-    "last_reported": "2026-10-24T16:25:58.479707+00:00"
+    "last_changed": "2026-10-30T14:13:36.846396+00:00",
+    "last_updated": "2026-10-30T14:13:36.846396+00:00",
+    "last_reported": "2026-10-30T14:13:36.857939+00:00"
   },
   {
     "system": "Auto",
@@ -4351,9 +4351,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.868591+00:00",
-    "last_updated": "2026-10-24T16:25:57.868591+00:00",
-    "last_reported": "2026-10-24T16:25:58.489535+00:00"
+    "last_changed": "2026-10-30T14:13:36.845814+00:00",
+    "last_updated": "2026-10-30T14:13:36.845814+00:00",
+    "last_reported": "2026-10-30T14:13:36.857923+00:00"
   },
   {
     "system": "Auto",
@@ -4361,12 +4361,12 @@
     "name": "i3 120 Trip Average distance per week",
     "state": "220",
     "unit": "km",
-    "device_class": null,
+    "device_class": "distance",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.895241+00:00",
-    "last_updated": "2026-10-24T16:25:57.895241+00:00",
-    "last_reported": "2026-10-24T16:25:58.487324+00:00"
+    "last_changed": "2026-10-30T14:13:36.847078+00:00",
+    "last_updated": "2026-10-30T14:13:36.847078+00:00",
+    "last_reported": "2026-10-30T14:13:36.857958+00:00"
   },
   {
     "system": "Auto",
@@ -4374,12 +4374,12 @@
     "name": "i3 120 Trip Average distance per week (long-term)",
     "state": "220",
     "unit": "km",
-    "device_class": null,
+    "device_class": "distance",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.920807+00:00",
-    "last_updated": "2026-10-24T16:25:57.920807+00:00",
-    "last_reported": "2026-10-24T16:25:58.514531+00:00"
+    "last_changed": "2026-10-30T14:13:36.849273+00:00",
+    "last_updated": "2026-10-30T14:13:36.849273+00:00",
+    "last_reported": "2026-10-30T14:13:36.858024+00:00"
   },
   {
     "system": "Auto",
@@ -4390,22 +4390,22 @@
     "device_class": "temperature",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:25:57.836347+00:00",
-    "last_updated": "2026-10-24T16:25:57.836347+00:00",
-    "last_reported": "2026-10-24T16:25:58.460396+00:00"
+    "last_changed": "2026-10-30T14:13:36.844657+00:00",
+    "last_updated": "2026-10-30T14:13:36.844657+00:00",
+    "last_reported": "2026-10-30T14:13:36.857887+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.i3_120_vehicle_mileage",
     "name": "i3 120 Vehicle mileage",
-    "state": "33445",
+    "state": "33624",
     "unit": "km",
     "device_class": "distance",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.843758+00:00",
-    "last_updated": "2026-10-24T20:47:14.940736+00:00",
-    "last_reported": "2026-10-24T20:47:15.151364+00:00"
+    "last_changed": "2026-10-30T14:13:36.836455+00:00",
+    "last_updated": "2026-10-30T14:13:36.836455+00:00",
+    "last_reported": "2026-10-30T14:13:36.857418+00:00"
   },
   {
     "system": "Auto",
@@ -4423,9 +4423,9 @@
         "invalid"
       ]
     },
-    "last_changed": "2026-10-24T16:22:05.692541+00:00",
-    "last_updated": "2026-10-24T20:47:15.019187+00:00",
-    "last_reported": "2026-10-24T20:47:15.216273+00:00"
+    "last_changed": "2026-10-30T14:13:36.838675+00:00",
+    "last_updated": "2026-10-30T14:13:36.838675+00:00",
+    "last_reported": "2026-10-30T14:13:36.857480+00:00"
   },
   {
     "system": "Auto",
@@ -4443,22 +4443,22 @@
         "invalid"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.125720+00:00",
-    "last_updated": "2026-10-24T20:47:15.020649+00:00",
-    "last_reported": "2026-10-24T20:47:15.217200+00:00"
+    "last_changed": "2026-10-30T14:13:36.838995+00:00",
+    "last_updated": "2026-10-30T14:13:36.838995+00:00",
+    "last_reported": "2026-10-30T14:13:36.857498+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_aktualni_predpokladany_stav_nabiti",
     "name": "i3 120 Charging EV Predicted State Of Charge",
-    "state": "67",
+    "state": "54",
     "unit": "%",
     "device_class": "battery",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.121524+00:00",
-    "last_updated": "2026-10-24T11:26:36.121524+00:00",
-    "last_reported": "2026-10-24T11:26:36.137074+00:00"
+    "last_changed": "2026-10-30T14:13:36.833977+00:00",
+    "last_updated": "2026-10-30T14:13:36.833977+00:00",
+    "last_reported": "2026-10-30T14:13:36.857386+00:00"
   },
   {
     "system": "Auto",
@@ -4469,9 +4469,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.111970+00:00",
-    "last_updated": "2026-10-24T11:26:36.111970+00:00",
-    "last_reported": "2026-10-24T11:26:36.136857+00:00"
+    "last_changed": "2026-10-30T14:13:36.829641+00:00",
+    "last_updated": "2026-10-30T14:13:36.829641+00:00",
+    "last_reported": "2026-10-30T14:13:36.857102+00:00"
   },
   {
     "system": "Auto",
@@ -4482,9 +4482,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.114289+00:00",
-    "last_updated": "2026-10-24T11:26:36.114289+00:00",
-    "last_reported": "2026-10-24T11:26:36.136988+00:00"
+    "last_changed": "2026-10-30T14:13:36.832114+00:00",
+    "last_updated": "2026-10-30T14:13:36.832114+00:00",
+    "last_reported": "2026-10-30T14:13:36.857227+00:00"
   },
   {
     "system": "Auto",
@@ -4495,9 +4495,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.112978+00:00",
-    "last_updated": "2026-10-24T11:26:36.112978+00:00",
-    "last_reported": "2026-10-24T11:26:36.136916+00:00"
+    "last_changed": "2026-10-30T14:13:36.830802+00:00",
+    "last_updated": "2026-10-30T14:13:36.830802+00:00",
+    "last_reported": "2026-10-30T14:13:36.857166+00:00"
   },
   {
     "system": "Auto",
@@ -4520,9 +4520,9 @@
         "invalid"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.114564+00:00",
-    "last_updated": "2026-10-24T11:26:36.114564+00:00",
-    "last_reported": "2026-10-24T11:26:36.114564+00:00"
+    "last_changed": "2026-10-30T14:13:36.832548+00:00",
+    "last_updated": "2026-10-30T14:13:36.832548+00:00",
+    "last_reported": "2026-10-30T14:13:36.832548+00:00"
   },
   {
     "system": "Auto",
@@ -4533,15 +4533,15 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.112266+00:00",
-    "last_updated": "2026-10-24T11:26:36.112266+00:00",
-    "last_reported": "2026-10-24T11:26:36.136874+00:00"
+    "last_changed": "2026-10-30T14:13:36.830014+00:00",
+    "last_updated": "2026-10-30T14:13:36.830014+00:00",
+    "last_reported": "2026-10-30T14:13:36.857123+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_metoda_nabijeni_a_typ_zastrcky",
     "name": "i3 120 Charging EV Charging method",
-    "state": "nocharging",
+    "state": "ac_type2plug",
     "unit": null,
     "device_class": "enum",
     "state_class": null,
@@ -4552,74 +4552,74 @@
         "nocharging"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.113994+00:00",
-    "last_updated": "2026-10-24T18:09:27.807216+00:00",
-    "last_reported": "2026-10-24T18:09:28.043697+00:00"
+    "last_changed": "2026-10-30T14:13:36.831773+00:00",
+    "last_updated": "2026-10-30T14:13:36.831773+00:00",
+    "last_reported": "2026-10-30T14:13:36.857207+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_nabijeci_napeti_pri_stridavem_proudu",
     "name": "i3 120 Charging EV AC charging voltage",
-    "state": "0",
+    "state": "0.0",
     "unit": "V",
     "device_class": "voltage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:50:58.318699+00:00",
-    "last_updated": "2026-10-24T18:09:28.038602+00:00",
-    "last_reported": "2026-10-24T18:09:28.207540+00:00"
+    "last_changed": "2026-10-30T14:13:36.833649+00:00",
+    "last_updated": "2026-10-30T14:13:36.833649+00:00",
+    "last_reported": "2026-10-30T14:13:36.857342+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_nabijeci_stridany_proud",
     "name": "i3 120 Charging EV AC charging current",
-    "state": "0",
+    "state": "0.0",
     "unit": "A",
     "device_class": "current",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T16:50:58.158660+00:00",
-    "last_updated": "2026-10-24T18:09:27.857160+00:00",
-    "last_reported": "2026-10-24T18:09:28.086656+00:00"
+    "last_changed": "2026-10-30T14:13:36.833243+00:00",
+    "last_updated": "2026-10-30T14:13:36.833243+00:00",
+    "last_reported": "2026-10-30T14:13:36.857271+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_nabita_energie_celkem",
     "name": "i3 120 Charged Energy (Total)",
-    "state": "7.26",
+    "state": "38.135",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total_increasing",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.107354+00:00",
-    "last_updated": "2026-10-24T11:26:36.107354+00:00",
-    "last_reported": "2026-10-24T11:26:36.107354+00:00"
+    "last_changed": "2026-10-30T14:13:36.824863+00:00",
+    "last_updated": "2026-10-30T14:13:36.824863+00:00",
+    "last_reported": "2026-10-30T14:13:36.824863+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_nabita_energie_relace",
     "name": "i3 120 Charged Energy (Session)",
-    "state": "0.771",
+    "state": "4.543",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.107759+00:00",
-    "last_updated": "2026-10-24T11:26:36.107759+00:00",
-    "last_reported": "2026-10-24T11:26:36.107759+00:00"
+    "last_changed": "2026-10-30T14:13:36.825108+00:00",
+    "last_updated": "2026-10-30T14:13:36.825108+00:00",
+    "last_reported": "2026-10-30T14:13:36.825108+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_nabita_energie_tento_mesic",
     "name": "i3 120 Charging Energy (This Month)",
-    "state": "58.633",
+    "state": "89.508",
     "unit": "kWh",
     "device_class": "energy",
     "state_class": "total",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.109165+00:00",
-    "last_updated": "2026-10-24T11:26:36.109165+00:00",
-    "last_reported": "2026-10-24T11:26:36.109165+00:00"
+    "last_changed": "2026-10-30T14:13:36.826542+00:00",
+    "last_updated": "2026-10-30T14:13:36.826542+00:00",
+    "last_reported": "2026-10-30T14:13:36.826542+00:00"
   },
   {
     "system": "Auto",
@@ -4630,9 +4630,9 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.838691+00:00",
-    "last_updated": "2026-10-24T20:47:14.977208+00:00",
-    "last_reported": "2026-10-24T20:47:15.169897+00:00"
+    "last_changed": "2026-10-30T14:13:36.825998+00:00",
+    "last_updated": "2026-10-30T14:13:36.825998+00:00",
+    "last_reported": "2026-10-30T14:13:36.856873+00:00"
   },
   {
     "system": "Auto",
@@ -4643,22 +4643,22 @@
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:28.038960+00:00",
-    "last_updated": "2026-10-24T20:47:15.020573+00:00",
-    "last_reported": "2026-10-24T20:47:15.178189+00:00"
+    "last_changed": "2026-10-30T14:13:36.825636+00:00",
+    "last_updated": "2026-10-30T14:13:36.825636+00:00",
+    "last_reported": "2026-10-30T14:13:36.856848+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_predikce_elektrickeho_dojezdu_pri_dobijeni",
     "name": "i3 120 Range EV Estimate during charging",
-    "state": "138",
+    "state": "104",
     "unit": "km",
     "device_class": "distance",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.113295+00:00",
-    "last_updated": "2026-10-24T11:26:36.113295+00:00",
-    "last_reported": "2026-10-24T11:26:36.136938+00:00"
+    "last_changed": "2026-10-30T14:13:36.831142+00:00",
+    "last_updated": "2026-10-30T14:13:36.831142+00:00",
+    "last_reported": "2026-10-30T14:13:36.857188+00:00"
   },
   {
     "system": "Auto",
@@ -4669,9 +4669,9 @@
     "device_class": null,
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.106906+00:00",
-    "last_updated": "2026-10-24T11:26:36.106906+00:00",
-    "last_reported": "2026-10-24T18:09:27.872365+00:00"
+    "last_changed": "2026-10-30T14:13:36.824349+00:00",
+    "last_updated": "2026-10-30T14:13:36.824349+00:00",
+    "last_reported": "2026-10-30T14:14:06.735357+00:00"
   },
   {
     "system": "Auto",
@@ -4682,9 +4682,9 @@
     "device_class": "duration",
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.107122+00:00",
-    "last_updated": "2026-10-24T11:26:36.107122+00:00",
-    "last_reported": "2026-10-24T18:09:27.872400+00:00"
+    "last_changed": "2026-10-30T14:13:36.824564+00:00",
+    "last_updated": "2026-10-30T14:13:36.824564+00:00",
+    "last_reported": "2026-10-30T14:14:06.735904+00:00"
   },
   {
     "system": "Auto",
@@ -4701,22 +4701,22 @@
         "1-phases"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.110487+00:00",
-    "last_updated": "2026-10-24T18:09:28.036712+00:00",
-    "last_reported": "2026-10-24T18:09:28.189200+00:00"
+    "last_changed": "2026-10-30T14:13:36.827991+00:00",
+    "last_updated": "2026-10-30T14:13:36.827991+00:00",
+    "last_reported": "2026-10-30T14:13:36.856927+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_stav_baterie",
     "name": "i3 120 Battery Health",
-    "state": "Learning (0/10)",
+    "state": "Learning (1/10)",
     "unit": null,
     "device_class": null,
     "state_class": null,
     "attributes": {},
-    "last_changed": "2026-10-24T11:26:36.109466+00:00",
-    "last_updated": "2026-10-24T11:26:36.109466+00:00",
-    "last_reported": "2026-10-24T11:26:36.109466+00:00"
+    "last_changed": "2026-10-30T14:13:36.826926+00:00",
+    "last_updated": "2026-10-30T14:13:36.826926+00:00",
+    "last_reported": "2026-10-30T14:13:36.826926+00:00"
   },
   {
     "system": "Auto",
@@ -4736,9 +4736,9 @@
         "unknown"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.111667+00:00",
-    "last_updated": "2026-10-24T11:26:36.111667+00:00",
-    "last_reported": "2026-10-24T11:26:36.136837+00:00"
+    "last_changed": "2026-10-30T14:13:36.829268+00:00",
+    "last_updated": "2026-10-30T14:13:36.829268+00:00",
+    "last_reported": "2026-10-30T14:13:36.857002+00:00"
   },
   {
     "system": "Auto",
@@ -4760,41 +4760,41 @@
         "chargingdisrupted"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.111235+00:00",
-    "last_updated": "2026-10-24T18:09:27.839329+00:00",
-    "last_reported": "2026-10-24T18:09:28.086987+00:00"
+    "last_changed": "2026-10-30T14:13:36.828820+00:00",
+    "last_updated": "2026-10-30T14:13:36.828820+00:00",
+    "last_reported": "2026-10-30T14:13:36.856974+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_stav_nabijeni_vysokonapetoveho_akumulatoru",
     "name": "i3 120 Battery HV State Of Charge",
-    "state": "49",
+    "state": "53.0",
     "unit": "%",
     "device_class": "battery",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.876586+00:00",
-    "last_updated": "2026-10-24T20:47:14.943959+00:00",
-    "last_reported": "2026-10-24T20:47:15.151150+00:00"
+    "last_changed": "2026-10-30T14:13:36.830477+00:00",
+    "last_updated": "2026-10-30T14:13:36.830477+00:00",
+    "last_reported": "2026-10-30T14:13:36.857145+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_stav_nabiti_predikce_integrace",
     "name": "i3 120 State Of Charge (Predicted on Integration side)",
-    "state": "49.0",
+    "state": "53.0",
     "unit": "%",
     "device_class": "battery",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.872304+00:00",
-    "last_updated": "2026-10-24T18:09:27.872304+00:00",
-    "last_reported": "2026-10-24T18:09:27.872304+00:00"
+    "last_changed": "2026-10-30T14:13:36.824082+00:00",
+    "last_updated": "2026-10-30T14:13:36.824082+00:00",
+    "last_reported": "2026-10-30T14:14:06.735312+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_stav_vysokonapetoveho_nabijeciho_systemu",
     "name": "i3 120 Charging EV HV system state",
-    "state": "invalid",
+    "state": "not_charging",
     "unit": null,
     "device_class": "enum",
     "state_class": null,
@@ -4809,22 +4809,22 @@
         "finished_not_full"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.120253+00:00",
-    "last_updated": "2026-10-24T11:26:36.120253+00:00",
-    "last_reported": "2026-10-24T11:26:36.137012+00:00"
+    "last_changed": "2026-10-30T14:13:36.832882+00:00",
+    "last_updated": "2026-10-30T14:13:36.832882+00:00",
+    "last_reported": "2026-10-30T14:13:36.857246+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_vykon_vedlejsich_spotrebicu_spotreba_elektrickych_komponent",
     "name": "i3 120 Vehicle Auxiliary power",
-    "state": "0.7",
+    "state": "0.45",
     "unit": "kW",
     "device_class": "power",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.826335+00:00",
-    "last_updated": "2026-10-24T18:09:27.826335+00:00",
-    "last_reported": "2026-10-24T18:09:28.069240+00:00"
+    "last_changed": "2026-10-30T14:13:36.828426+00:00",
+    "last_updated": "2026-10-30T14:13:36.828426+00:00",
+    "last_reported": "2026-10-30T14:13:36.856953+00:00"
   },
   {
     "system": "Auto",
@@ -4841,34 +4841,34 @@
         "unknown"
       ]
     },
-    "last_changed": "2026-10-24T11:26:36.113637+00:00",
-    "last_updated": "2026-10-24T11:26:36.113637+00:00",
-    "last_reported": "2026-10-24T11:26:36.113637+00:00"
+    "last_changed": "2026-10-30T14:13:36.831437+00:00",
+    "last_updated": "2026-10-30T14:13:36.831437+00:00",
+    "last_reported": "2026-10-30T14:13:36.831437+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.wby8p210007k43709_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana",
     "name": "i3 120 Battery HV Energy content",
-    "state": "38.5",
+    "state": "37.86",
     "unit": "kWh",
     "device_class": "energy_storage",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.951148+00:00",
-    "last_updated": "2026-10-24T18:09:27.951148+00:00",
-    "last_reported": "2026-10-24T18:09:28.144287+00:00"
+    "last_changed": "2026-10-30T14:13:36.827341+00:00",
+    "last_updated": "2026-10-30T14:13:36.827341+00:00",
+    "last_reported": "2026-10-30T14:13:36.856904+00:00"
   },
   {
     "system": "Auto",
     "entity": "sensor.parkovani_bmw_i3_soc",
     "name": "BMW i3 SoC",
-    "state": "49.6",
+    "state": "53.7",
     "unit": "%",
     "device_class": "battery",
     "state_class": "measurement",
     "attributes": {},
-    "last_changed": "2026-10-24T18:09:27.941463+00:00",
-    "last_updated": "2026-10-24T18:09:27.941463+00:00",
-    "last_reported": "2026-10-24T18:09:27.941463+00:00"
+    "last_changed": "2026-10-30T14:13:33.875303+00:00",
+    "last_updated": "2026-10-30T14:13:33.875303+00:00",
+    "last_reported": "2026-10-30T14:13:39.265420+00:00"
   }
 ]
