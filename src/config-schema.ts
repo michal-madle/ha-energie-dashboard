@@ -117,7 +117,7 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     strip_from: range(6, 0, 23, "hour the hourly strips start at", true),
     strip_to: range(17, 1, 24, "hour the hourly strips end at (the hour itself is the last block)", true),
     evening_hour: range(22, 12, 23, "hour the evening battery level is estimated for", true),
-    morning_hour: range(6, 0, 11, "hour the night ends at (grid energy of the night)", true),
+    morning_hour: range(6, 0, 11, "hour the night ends at (the battery level in the morning)", true),
     car_start_soc: range(50, 0, 100, "% battery level from which the wallbox is started in the evening estimate"),
     car_stop_soc: range(30, 0, 100, "% battery level at which the wallbox is stopped in the evening estimate"),
     car_min_sun: range(2000, 0, 100000, "W of sun from which the wallbox is started in the evening estimate"),

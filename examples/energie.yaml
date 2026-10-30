@@ -121,7 +121,7 @@ forecast:
   strip_from: 6                                         # h začátek hodinových pruhů
   strip_to: 17                                          # h konec hodinových pruhů (tato hodina je poslední blok)
   evening_hour: 22                                      # h, pro kterou se odhaduje večerní nabití baterie
-  morning_hour: 6                                       # h, kterou končí noc (kWh ze sítě v noci)
+  morning_hour: 6                                       # h, kterou končí noc (baterie v tu hodinu)
   car_start_soc: 50                                     # % baterie, od které se v odhadu večera pustí wallbox
   car_stop_soc: 30                                      # % baterie, při které se wallbox v odhadu zastaví
   car_min_sun: 2000                                     # W slunce, od kterého se wallbox v odhadu pustí

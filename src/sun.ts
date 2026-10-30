@@ -2,10 +2,10 @@
 import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import type { FlowModel, Sink } from "./model";
-import { SINKS, isOn } from "./model";
+import { SINKS, carLink, isOn } from "./model";
 import type { Layout } from "./sankey";
 import type { HomeAssistant, Settings } from "./types";
-import { entityState, formatClock, formatDayName, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, readEnergy, readNumber } from "./utils";
+import { entityState, formatClock, formatDayName, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { CardBase } from "./base";
 import { NO_DATA, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
@@ -787,16 +787,16 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const result = simulateEvening({
         now: v.now, soc, capacity: s.num.battery.capacity, reserve: this.batteryReserve(s), sun: v.hours, house,
         efficiency: num.efficiency / 100, eveningHour: num.evening_hour, morningHour: num.morning_hour,
-        car: model.wallbox.power ? { startSoc: num.car_start_soc, stopSoc: num.car_stop_soc, minSun: num.car_min_sun, watts: s.num.wallbox.power_min } : undefined,
+        car: model.wallbox.power && carLink(readText(this.hass, model.wallbox.status)) !== "disconnected" ? { startSoc: num.car_start_soc, stopSoc: num.car_stop_soc, minSun: num.car_min_sun, watts: s.num.wallbox.power_min } : undefined,
       });
       const o = this.t.sun.outlook;
       const rows: Array<{ color: string; label: string; value: string }> = [];
       if (result.fullAt !== undefined) rows.push({ color: "--ed-battery", label: o.full, value: `≈ ${formatClock(result.fullAt)}` });
       if (result.socAtEvening !== undefined) rows.push({ color: "--ed-battery", label: o.batteryAt(formatClock(v.today + num.evening_hour * HOUR)), value: `≈ ${formatPercent(Math.round(result.socAtEvening))}` });
-      if (model.wallbox.power && result.carTotal > 0) {
+      if (result.carTotal > 0) {
         rows.push({ color: "--ed-car", label: o.carSun, value: `≈ ${formatKwh(result.carSun)} kWh · ${formatNumber(result.carSun / num.car_kwh_per_km)} km` });
       }
-      rows.push({ color: "--ed-grid", label: o.nightGrid, value: `≈ ${formatKwh(result.nightGrid)} kWh` });
+      if (result.socAtMorning !== undefined) rows.push({ color: "--ed-battery", label: o.batteryAt(formatClock(addDays(v.today, 1) + num.morning_hour * HOUR)), value: `≈ ${formatPercent(Math.round(result.socAtMorning))}` });
       return rows;
     }
   };

@@ -386,7 +386,6 @@ export const cs = {
       full: "Baterie plná",
       batteryAt: (time: string) => `Baterie v ${time}`,
       carSun: "Auto ze slunce",
-      nightGrid: "Ze sítě v noci",
       dayLength: "Den",
       dayChange: (minutes: number) => `${minutes < 0 ? "−" : "+"}${Math.abs(minutes)} min za den`,
       bestDay: "Nejlepší den",

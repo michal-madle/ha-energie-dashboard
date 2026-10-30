@@ -362,7 +362,6 @@ export const en: Texts = {
       full: "Battery full",
       batteryAt: (time: string) => `Battery at ${time}`,
       carSun: "Car from the sun",
-      nightGrid: "From the grid at night",
       dayLength: "Day",
       dayChange: (minutes: number) => `${minutes < 0 ? "−" : "+"}${Math.abs(minutes)} min a day`,
       bestDay: "Best day",

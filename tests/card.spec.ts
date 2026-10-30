@@ -1638,7 +1638,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(detail.locator(".sun-five-row").nth(4)).toContainText("10–14 h");
       await expect(detail.locator(".sun-five-row").first().locator(".strip i.now")).toHaveCount(1);
       await expect(detail).toContainText("Dnes do večera");
-      await expect(detail).toContainText("Ze sítě v noci");
+      await expect(detail).toContainText("Baterie v 06:00");
       const tiles = await kpis(page);
       expect(tiles.map((item) => item[0])).toEqual(["Den", "Nejlepší den"]);
       expect(tiles[1][1]).toMatch(/^(Dnes|Sobota|Neděle|Pondělí|Úterý)$/);

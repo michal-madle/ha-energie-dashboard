@@ -362,7 +362,6 @@ export const sv: Texts = {
       full: "Batteriet fullt",
       batteryAt: (time: string) => `Batteri kl. ${time}`,
       carSun: "Bil från solen",
-      nightGrid: "Från nätet på natten",
       dayLength: "Dag",
       dayChange: (minutes: number) => `${minutes < 0 ? "−" : "+"}${Math.abs(minutes)} min per dag`,
       bestDay: "Bästa dag",
