@@ -22,6 +22,7 @@ titles:
 # ------------------------------------------------------------ entity: toky energie
 pv:
   power: sensor.goodwe_pv_power                         # výkon FVE (W)
+  total_generation: sensor.goodwe_total_pv_generation   # čítač výroby za celou dobu (kWh, total_increasing); z jeho statistik je historie a učená křivka Slunce
 battery:
   power: sensor.goodwe_battery_power                    # výkon baterie (W), kladné = vybíjení
   state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
@@ -99,6 +100,33 @@ tank:
 mixing:
   valve_c1: switch.technicka_mistnost_ventil_c1         # ventil C1 (switch.…)
   valve_c2: switch.technicka_mistnost_ventil_c2         # ventil C2 (switch.…); mísí = C1 vypnutý a C2 zapnutý; karta spíná oba ventily přímo
+
+# --------------------------------------------- předpověď slunce (Detail slunce → Výhled)
+# Vše je volitelné. Bez předpovědi karta odhaduje den z tempa výroby a z učené křivky „možné“.
+# Kilowatthodiny dne dává integrace Open-Meteo Solar Forecast, Forecast.Solar nebo Solcast;
+# názvy entit podle vaší instalace (Nástroje pro vývojáře → Stavy).
+forecast:
+  energy_today:                                         # odhad výroby dnes (kWh)
+  energy_tomorrow:                                      # odhad výroby zítra (kWh)
+  energy_day_2:                                         # odhad za 2 dny (kWh)
+  energy_day_3:                                         # odhad za 3 dny (kWh)
+  energy_day_4:                                         # odhad za 4 dny (kWh)
+  weather:                                              # entita počasí (weather.…), z ní je ikona a popis dne
+  default_range: 7d                                     # s jakým obdobím se otevře Historie slunce: 7d nebo 30d (poslední volba se pamatuje)
+  good_power: 2000                                      # W slunce, od kterého je hodina silná (plná žlutá v pětidenním pruhu, okno)
+  good_day: 10                                          # kWh za den, od kterých je den dobrý (Historie)
+  learn_days: 14                                        # dní, z kterých se učí křivka „možné“ a typická odchylka předpovědi
+  possible_percentile: 90                               # % percentil dní, který dává „možné“ v dané hodině
+  typical_deviation: 20                                 # % odchylka předpovědi, než karta uvidí dost dní
+  strip_from: 6                                         # h začátek hodinových pruhů
+  strip_to: 17                                          # h konec hodinových pruhů (tato hodina je poslední blok)
+  evening_hour: 22                                      # h, pro kterou se odhaduje večerní nabití baterie
+  morning_hour: 6                                       # h, kterou končí noc (kWh ze sítě v noci)
+  car_start_soc: 50                                     # % baterie, od které se v odhadu večera pustí wallbox
+  car_stop_soc: 30                                      # % baterie, při které se wallbox v odhadu zastaví
+  car_min_sun: 2000                                     # W slunce, od kterého se wallbox v odhadu pustí
+  car_kwh_per_km: 0.34                                  # kWh na km, které auto bere z wallboxu (BMW i3: 58,6 kWh / 169,7 km)
+  efficiency: 95                                        # % účinnost baterie v jednom směru
 
 # ------------------------------------------------ dnešní součty (jen v popupech, kWh)
 # Čítače, které se o půlnoci vynulují. Ze střídačových čítačů je udělá utility_meter,

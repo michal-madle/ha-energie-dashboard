@@ -9,7 +9,7 @@ import type { Settings } from "./types";
 import { formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { ICON } from "./icons";
-import type { Batteried } from "./battery";
+import type { Sunned } from "./sun";
 import { NO_DATA, SOURCE_VAR, TILE_VAR, clamp, mix, segments, tint } from "./view";
 import type { Alert, Constructor, Level, PopInfo, Tile, TileKey } from "./view";
 
@@ -17,11 +17,13 @@ import type { Alert, Constructor, Level, PopInfo, Tile, TileKey } from "./view";
 const TINT_MIN = 42;
 const TINT_RANGE = 10;
 
-export const withElectricity = <T extends Constructor<Batteried>>(Base: T) =>
+export const withElectricity = <T extends Constructor<Sunned>>(Base: T) =>
   class extends Base {
     onKey(event: KeyboardEvent): void {
       if (event.key === "Escape" && this._batDetail) {
         this.closeBatteryDetail(true);
+      } else if (event.key === "Escape" && this._sunDetail) {
+        this.closeSunDetail();
       } else if (event.key === "Escape" && (this._pop || this._all)) {
         this._pop = undefined;
         this._all = false;
@@ -255,6 +257,8 @@ export const withElectricity = <T extends Constructor<Batteried>>(Base: T) =>
     renderTilePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
       // The battery has a popup of its own with the gauge, the estimate and the trend (CURRENT_SPEC.md, Baterie).
       if (tile.key === "bat" || tile.key === "batIn") return this.renderBatteryPopup(tile, lay, s, model, unit);
+      // The sun has one too, with the day so far and the detail (CURRENT_SPEC.md, Slunce).
+      if (tile.key === "sun") return this.renderSunPopup(tile, lay, s, model, unit);
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const day = this.today(s);

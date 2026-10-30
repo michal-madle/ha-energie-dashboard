@@ -193,6 +193,8 @@ Doporučené pořadí: (1) popisky podle normy (N33) – nepotřebují žádná 
 
 ## 8. Slunce: popup a detail (návrh 30. 10.)
 
+**Implementováno 30. 10.** (`src/sun.ts`, `src/sun-data.ts`; specifikace v `CURRENT_SPEC.md`, oddíl Slunce). Oproti konceptu výše karta nepočítá fyziku z panelů (`forecast.planes` se nepoužívá): kWh dne čte z entit integrace předpovědi, tvar dne bere z učené křivky a bez předpovědi odhaduje z tempa. Popup nemá legendu toku (uživatel 30. 10.).
+
 Návrh je v Design artefaktu (boardy 5 až 8). Rozhodnutí z komentářů uživatele (30. 10.):
 
 - **Popup:** jen výkon teď, „kam teď slunce jde“ (dům, baterie, auto, bojler) a tři řádky (dnes zatím, odhad dne, začátek a konec výroby). **Žádné „% možného“:** je nepřesné (záleží na špíně a zahřátí panelů) a uživatel s ním nic neudělá; procento zůstává jen jako malá informace v detailu (Historie).

@@ -98,6 +98,33 @@ const GRID = {
   "switch.tuv_boost": state("on"),
 };
 
+/** The power of the sun in W at a moment: a bell between 6:48 and 16:42 with a different strength every day (the made-up days of the history). */
+const SUN_DAYS = [0.9, 0.55, 0.8, 0.3, 0.95, 0.85, 0.7];
+function sunWatts(time) {
+  const date = new Date(time);
+  const hour = date.getHours() + date.getMinutes() / 60;
+  const x = (hour - 6.8) / (16.7 - 6.8);
+  if (x <= 0 || x >= 1) return 0;
+  return 3300 * SUN_DAYS[Math.floor(time / 86400000) % 7] * Math.sin(Math.PI * x) ** 1.4;
+}
+/** The made-up house: a basic load with the evening higher. */
+function houseWatts(time) {
+  const hour = new Date(time).getHours();
+  return 500 + (hour >= 17 && hour <= 22 ? 700 : 0);
+}
+/** The mean and the maximum of a curve over the bin of a statistic (sampled every 5 minutes). */
+function sampled(curve, time, step) {
+  const points = Math.max(1, Math.round(step / 300000));
+  let sum = 0;
+  let max = 0;
+  for (let i = 0; i < points; i++) {
+    const value = curve(time + i * 300000 + 150000);
+    sum += value;
+    max = Math.max(max, value);
+  }
+  return { mean: sum / points, max };
+}
+
 /**
  * The long-term statistics of Home Assistant (websocket `recorder/statistics_during_period`):
  * smooth made-up curves for the battery entities. ?stats=none answers with nothing, ?stats=error refuses.
@@ -123,8 +150,20 @@ function fakeStatistics(message) {
         "sensor.goodwe_battery_min_cell_temperature": 21 + 2 * wave,
         "sensor.goodwe_battery_max_cell_temperature": 25 + 2 * wave,
         "sensor.goodwe_battery_temperature": 23 + 2 * wave,
+        "sensor.energy_production_today": 12 + 4 * SUN_DAYS[Math.floor(time / 86400000) % 7],
       }[id];
       const row = { start: time, end: time + step };
+      const curve = id === "sensor.goodwe_pv_power" || id === "sensor.goodwe_total_pv_generation" ? sunWatts : id === "sensor.goodwe_house_consumption" ? houseWatts : undefined;
+      if (curve) {
+        const { mean: w, max } = sampled(curve, time, step);
+        for (const type of message.types) {
+          if (type === "mean") row.mean = w;
+          else if (type === "max") row.max = max;
+          else if (type === "change") row.change = (w / 1000) * (step / 3600000);
+        }
+        rows.push(row);
+        continue;
+      }
       for (const type of message.types) {
         if (type === "change") row.change = ((id.endsWith("_discharge") ? 0.3 : 0.35) * step) / 3600000;
         else if (type === "state") row.state = 1980 + (time - start) / 3600000 / 24;
@@ -151,6 +190,22 @@ if (scenario === "full") {
   });
 }
 
+// ?forecast=1: the forecast of the sun (examples/energie.yaml, forecast.*) with its entities and a weather entity.
+if (params.get("forecast") === "1") {
+  Object.assign(config.forecast, {
+    energy_today: "sensor.energy_production_today", energy_tomorrow: "sensor.energy_production_tomorrow", energy_day_2: "sensor.energy_production_d2",
+    energy_day_3: "sensor.energy_production_d3", energy_day_4: "sensor.energy_production_d4", weather: "weather.forecast_domov",
+  });
+  Object.assign(states, {
+    "sensor.energy_production_today": state("13.8", { unit_of_measurement: "kWh" }),
+    "sensor.energy_production_tomorrow": state("9.6", { unit_of_measurement: "kWh" }),
+    "sensor.energy_production_d2": state("5.1", { unit_of_measurement: "kWh" }),
+    "sensor.energy_production_d3": state("11.8", { unit_of_measurement: "kWh" }),
+    "sensor.energy_production_d4": state("14.9", { unit_of_measurement: "kWh" }),
+    "weather.forecast_domov": state("partlycloudy"),
+  });
+}
+
 const test = { states, config };
 window.__test = test;
 
@@ -170,8 +225,15 @@ test.calls = [];
 test.requests = [];
 // ?lang=sv|en|cs: the language of the Home Assistant profile (Czech by default, so the tests read Czech texts).
 const lang = params.get("lang") ?? "cs";
-let current = { states, themes: { darkMode: !light }, language: lang, locale: { language: lang }, callService: async (domain, service, data) => { test.calls.push({ domain, service, data }); },
-  callWS: async (message) => { test.requests.push(message); return fakeStatistics(message); } };
+let current = { states, config: { latitude: 50.16, longitude: 14.39 }, themes: { darkMode: !light }, language: lang, locale: { language: lang }, callService: async (domain, service, data) => { test.calls.push({ domain, service, data }); },
+  callWS: async (message) => {
+    test.requests.push(message);
+    if (message.type === "call_service" && message.service === "get_forecasts") {
+      const day = (offset, condition) => ({ datetime: new Date(new Date().setHours(12, 0, 0, 0) + offset * 86400000).toISOString(), condition });
+      return { response: { [message.target.entity_id]: { forecast: [day(0, "partlycloudy"), day(1, "rainy"), day(2, "cloudy"), day(3, "partlycloudy"), day(4, "sunny")] } } };
+    }
+    return fakeStatistics(message);
+  } };
 card.hass = current;
 test.card = card;
 document.querySelector("main").append(card);

@@ -12,7 +12,7 @@ import type { Colors, EntitySections, NumberSettings, SectionName, TempStop } fr
  * service on it or read a domain-specific attribute (undefined = any entity).
  */
 export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[Name], string | undefined> } = {
-  pv: { power: undefined },
+  pv: { power: undefined, total_generation: undefined },
   battery: {
     power: undefined, state_of_charge: undefined, depth_of_discharge: "number",
     state_of_health: undefined, voltage: undefined, current: undefined, temperature: undefined,
@@ -27,15 +27,20 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch" },
+  forecast: { energy_today: undefined, energy_tomorrow: undefined, energy_day_2: undefined, energy_day_3: undefined, energy_day_4: undefined, weather: "weather" },
   daily: { pv_generation: undefined, battery_charge: undefined, battery_discharge: undefined, grid_import: undefined, grid_export: undefined, car: undefined, boiler: undefined },
 };
 
 /** Non-numeric, non-entity keys inside sections that also hold numbers (boiler.show). */
-export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"], flows: ["decimals"], battery: ["default_range"] };
+export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { boiler: ["show"], car: ["link"], flows: ["decimals"], battery: ["default_range"], forecast: ["default_range"] };
 
 /** battery.default_range: the history range the battery detail opens with. */
 export const BATTERY_RANGES = ["1d", "7d", "30d"] as const;
 export const DEFAULT_BATTERY_RANGE = "1d";
+
+/** forecast.default_range: the history range the sun detail opens with. */
+export const SUN_RANGES = ["7d", "30d"] as const;
+export const DEFAULT_SUN_RANGE = "7d";
 
 export const BOILER_SHOW = ["always", "heating"] as const;
 export const DEFAULT_BOILER_SHOW = "heating";
@@ -103,6 +108,22 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     band_max_px_per_kw: range(10, 0.5, 50, "px per kW, thickness of the bands"),
     band_min_px: range(1.6, 0.5, 10, "px, thinnest band"),
   },
+  forecast: {
+    good_power: range(2000, 100, 100000, "W of sun from which an hour counts as strong (the filled blocks of the five days, the window)"),
+    good_day: range(10, 0.1, 1000, "kWh a day from which a day counts as good (Historie)"),
+    learn_days: range(14, 3, 90, "days the curve of what is possible and the typical deviation of the forecast are learned from", true),
+    possible_percentile: range(90, 50, 100, "% percentile of the days that sets what is possible in an hour"),
+    typical_deviation: range(20, 1, 100, "% deviation of the forecast assumed until the card has seen enough days"),
+    strip_from: range(6, 0, 23, "hour the hourly strips start at", true),
+    strip_to: range(17, 1, 24, "hour the hourly strips end at (the hour itself is the last block)", true),
+    evening_hour: range(22, 12, 23, "hour the evening battery level is estimated for", true),
+    morning_hour: range(6, 0, 11, "hour the night ends at (grid energy of the night)", true),
+    car_start_soc: range(50, 0, 100, "% battery level from which the wallbox is started in the evening estimate"),
+    car_stop_soc: range(30, 0, 100, "% battery level at which the wallbox is stopped in the evening estimate"),
+    car_min_sun: range(2000, 0, 100000, "W of sun from which the wallbox is started in the evening estimate"),
+    car_kwh_per_km: range(0.34, 0.01, 10, "kWh per km the car takes from the wallbox (the km of the sun are counted with it)"),
+    efficiency: range(95, 50, 100, "% efficiency of the battery in one direction"),
+  },
   scale: {
     sun: range(10000, 100, 1000000, "W, full strength of the sun tile"),
     battery: range(5000, 100, 1000000, "W, full strength of the battery tiles"),
@@ -161,4 +182,5 @@ export const CONFIG_KEYS: string[] = [
   "flows.decimals",
   "car.link",
   "battery.default_range",
+  "forecast.default_range",
 ];

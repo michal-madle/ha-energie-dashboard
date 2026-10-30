@@ -69,6 +69,12 @@ export function formatWeekday(ms: number): string {
   return `${new Intl.DateTimeFormat(format.locale, { weekday: "short" }).format(ms)} ${format.day(ms)}`;
 }
 
+/** The long name of the weekday of a moment ("Sobota"), with a capital letter. */
+export function formatDayName(ms: number): string {
+  const name = new Intl.DateTimeFormat(format.locale, { weekday: "long" }).format(ms);
+  return name.charAt(0).toLocaleUpperCase(format.locale) + name.slice(1);
+}
+
 /** The clock time of a moment ("14:00") in the time format of the profile. */
 export function formatClock(ms: number): string {
   return format.time(ms);

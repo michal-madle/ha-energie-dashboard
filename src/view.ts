@@ -68,6 +68,9 @@ export type Panel = "wallbox" | "targets" | "tank";
 export type BatTab = "now" | "hist" | "health";
 export type BatRow = "gap" | "temp" | "life";
 
+/** Parts of the sun detail (CURRENT_SPEC.md, Slunce). */
+export type SunTab = "today" | "hist" | "outlook";
+
 /** The history of one view of the battery detail: loading, ready or failed (then retried later). */
 export interface BatEntry {
   status: "loading" | "ready" | "error";
@@ -78,6 +81,9 @@ export interface BatEntry {
 
 /** Where the last history range chosen in the battery detail is kept in the browser. */
 export const BATTERY_RANGE_KEY = "ha-energie-dashboard:battery-range";
+
+/** Where the last history range chosen in the sun detail is kept in the browser. */
+export const SUN_RANGE_KEY = "ha-energie-dashboard:sun-range";
 
 /** A number from an entity attribute, undefined when it is not one. */
 export function attribute(entity: HassEntity | undefined, key: string): number | undefined {

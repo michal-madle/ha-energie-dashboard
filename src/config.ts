@@ -1,5 +1,5 @@
 import { checkKeys, entityId, fail, isRecord, languageSetting, section, withCardName } from "ha-dashboard-kit/config";
-import { BATTERY_RANGES, BOILER_SHOW, COLORS, DEFAULT_BATTERY_RANGE, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
+import { BATTERY_RANGES, BOILER_SHOW, DEFAULT_SUN_RANGE, SUN_RANGES, COLORS, DEFAULT_BATTERY_RANGE, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
 import type { Range } from "./config-schema";
 import type { Colors, DashboardConfig, EntitySections, NumberSettings, SectionName, Settings, TempStop, Titles } from "./types";
 
@@ -127,6 +127,18 @@ function batteryRange(config: DashboardConfig): "1d" | "7d" | "30d" {
   return raw as "1d" | "7d" | "30d";
 }
 
+/** forecast.default_range: 7d or 30d. */
+function sunRange(config: DashboardConfig): "7d" | "30d" {
+  const raw = section(config.forecast, "forecast").default_range;
+  if (raw === undefined || raw === null) {
+    return DEFAULT_SUN_RANGE;
+  }
+  if (typeof raw !== "string" || !(SUN_RANGES as readonly string[]).includes(raw)) {
+    fail(`forecast.default_range must be one of ${SUN_RANGES.join(", ")}, not ${JSON.stringify(raw)}.`);
+  }
+  return raw as "7d" | "30d";
+}
+
 /** flows.decimals: "auto" (default, at least three digits), 1 or 2. */
 function powerDecimals(config: DashboardConfig): 1 | 2 | "auto" {
   const raw = section(config.flows, "flows").decimals;
@@ -176,6 +188,9 @@ function checkOrder(num: NumberSettings): void {
     [num.boiler.target_min, num.boiler.target_max, "boiler.target_min", "boiler.target_max", true],
     [num.water.gauge_min, num.water.gauge_max, "water.gauge_min", "water.gauge_max", true],
     [num.tank.temp_min, num.tank.temp_max, "tank.temp_min", "tank.temp_max", true],
+    [num.forecast.strip_from, num.forecast.strip_to, "forecast.strip_from", "forecast.strip_to", true],
+    [num.forecast.car_stop_soc, num.forecast.car_start_soc, "forecast.car_stop_soc", "forecast.car_start_soc", true],
+    [num.forecast.morning_hour, num.forecast.evening_hour, "forecast.morning_hour", "forecast.evening_hour", true],
     [num.battery.imbalance_good, num.battery.imbalance_warn, "battery.imbalance_good", "battery.imbalance_warn", false],
     [num.battery.imbalance_warn, num.battery.imbalance_fault, "battery.imbalance_warn", "battery.imbalance_fault", false],
   ];
@@ -205,5 +220,5 @@ function normalize(config: DashboardConfig): Settings {
   const num = numbers(config);
   checkOrder(num);
   const language = languageSetting(config.language);
-  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config), batteryRange: batteryRange(config) };
+  return { title: config.title ?? undefined, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config), batteryRange: batteryRange(config), sunRange: sunRange(config) };
 }

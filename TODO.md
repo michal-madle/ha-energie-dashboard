@@ -34,6 +34,7 @@ Konsolidace 28. 10.: čísla přepsána od E1. Smazáno: popisné body bez otáz
 | [E19](#e19) | Ověření | Přednost před bojlerem: spínač neodpovídá AZ Routeru |
 | [E20](#e20) | Rozhodnutí | Detail baterie: prahy rozbalancování a odhad času |
 | [E21](#e21) | Ověření | Detail baterie: znaménko proudu, hodnoty režimu, statistiky, vzhled na zařízení |
+| [E22](#e22) | Ověření | Detail slunce: entity předpovědi, statistiky, konec výroby, simulace večera |
 
 <a id="e1"></a>
 ## E1 Kdy jsou data zastaralá · Rozhodnutí
@@ -139,3 +140,8 @@ Moje návrhy, které uživatel nepotvrdil: slova u rozbalancování článků (V
 ## E21 Detail baterie: znaménko proudu, hodnoty režimu, statistiky, vzhled na zařízení · Ověření
 
 (1) Znaménko `battery_current` a hodnoty `battery_mode`/`battery_error` nejsou v exportu potvrzené (`ENTITY_MAP.md`, „k ověření“); karta ukazuje velikost proudu a směr podle výkonu. (2) Historie vyžaduje `state_class` u entit a statistiky po 5 minutách se v Home Assistantu ve výchozím nastavení drží asi 10 dní, hodinové bez omezení; 7denní a 30denní grafy zdraví proto používají hodinové. Ověřit u skutečné instalace. (3) Grafy a posouvání prstem v iPhonu (aplikace Home Assistant) nebyly ověřeny na zařízení, jen v Chromiu s testovacími daty.
+
+<a id="e22"></a>
+## E22 Detail slunce: entity předpovědi, statistiky, konec výroby, simulace večera · Ověření
+
+(1) Doplnit do `forecast.*` entity integrace předpovědi (Open-Meteo Solar Forecast, Forecast.Solar nebo Solcast) a `forecast.weather`; názvy a jednotky ověřit v Nástroje pro vývojáře → Stavy. Bez nich karta odhaduje den z tempa a nekreslí dalších pět dní. (2) `sensor.goodwe_total_pv_generation` (`pv.total_generation`) musí mít dlouhodobé statistiky (`state_class: total_increasing`), jinak se historie čte z `pv.power`. (3) „Skončí asi“ a „Začala“ čtou pětiminutové statistiky `pv.power` (drží se asi 10 dní). (4) „Dnes do večera“ používá medián spotřeby domu, ve které je wallbox; zkontrolovat proti skutečnému večeru a upravit `forecast.car_*`, `car_kwh_per_km` (0,34 je z exportu 58,6 kWh / 169,7 km).

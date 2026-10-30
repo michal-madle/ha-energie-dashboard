@@ -432,7 +432,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await sun.click();
       const pop = page.getByRole("dialog", { name: "Slunce" });
       await expect(pop).toBeVisible();
-      await expect(pop).toContainText("Dnes vyrobeno");
+      await expect(pop).toContainText("Dnes zatím");
       await expect(pop).toContainText("18,4 kWh");
       await expect(sun).toHaveAttribute("aria-expanded", "true");
       await page.keyboard.press("Escape");
@@ -1520,5 +1520,210 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
         expect(text, `${lang} ${index}`).not.toMatch(/[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/);
       }
     }
+  });
+
+  // ---------------------------------------------------------------- slunce
+
+  test.describe("slunce (CURRENT_SPEC.md, Slunce)", () => {
+    const openSun = async (page: Page, scenario = "day", width = 393, theme: "dark" | "light" = "dark", lang = "cs") => {
+      await open(page, scenario, width, 852, theme, lang);
+      await page.locator('.tile[data-tile="sun"]').click();
+      await page.locator(".sun-pop .bat-open").click();
+      await page.locator(".sun-detail").waitFor();
+    };
+
+    test("popup: výkon teď, kam slunce jde, dnes zatím s kolečkem, začátek a konec výroby; bez „% možného“", async ({ page }) => {
+      await open(page, "day");
+      await page.locator('.tile[data-tile="sun"]').click();
+      const pop = page.getByRole("dialog", { name: "Slunce" });
+      await expect(pop).toContainText("Vyrábí");
+      await expect(pop.locator(".pop-big")).toHaveText("6,80 kW");
+      // Kam teď slunce jde: jen pruh v barvách dlaždic (dům, auto, bojler, baterie, síť), bez legendy, aby popup nebyl roztažený.
+      await expect(pop.locator(".sun-legend")).toHaveCount(0);
+      await expect(pop.getByRole("img", { name: "Dům 0,50 kW, Auto 4,10 kW, Bojler 1,20 kW, Baterie 0,80 kW, Do sítě 0,20 kW" })).toBeVisible();
+      await expect(pop.locator(".sun-sofar")).toContainText("Dnes zatím");
+      await expect(pop.locator(".sun-sofar")).toContainText("18,4 kWh");
+      await expect(pop.locator(".sun-sofar .sun-ring")).toBeVisible();
+      await expect(pop.locator(".pop-row").first()).toContainText("Začala");
+      await expect(pop.locator(".pop-row").nth(1)).toContainText("Skončí asi");
+      await expect(pop).not.toContainText("možného");
+      // Escape zavře popup, Detail slunce otevře detail a Escape ho zavře.
+      await page.keyboard.press("Escape");
+      await expect(pop).toHaveCount(0);
+      await page.locator('.tile[data-tile="sun"]').click();
+      await page.getByRole("button", { name: "Detail slunce" }).click();
+      await expect(page.locator(".sun-detail")).toBeVisible();
+      await expect(page.locator(".tile")).toHaveCount(0);
+      await page.keyboard.press("Escape");
+      await expect(page.locator(".sun-detail")).toHaveCount(0);
+      await expect(page.locator(".tile").first()).toBeVisible();
+      // Večer bez výroby: „bez výroby“, žádný tok.
+      await open(page, "full");
+      await page.locator('.tile[data-tile="sun"]').click();
+      await expect(page.getByRole("dialog", { name: "Slunce" })).toContainText("bez výroby");
+    });
+
+    test("detail Dnes: výkon teď, graf s křivkou možného, dlaždice, kam slunce šlo, ⓘ otevře a zavře bublinu; Zpět a Hotovo", async ({ page }) => {
+      await openSun(page);
+      const detail = page.locator(".sun-detail");
+      await expect(tab(page, "Dnes")).toHaveAttribute("aria-checked", "true");
+      await expect(detail.locator(".bat-huge")).toHaveText("6,80 kW");
+      await expect(detail.locator(".bat-chart")).toBeVisible();
+      await expect(detail.locator(".bat-legend").first()).toContainText("Výroba");
+      await expect(detail.locator(".bat-legend").first()).toContainText("Možné");
+      await expect(detail.locator(".bat-legend").first()).toContainText("Předpověď");
+      // Čtení pod prstem: čas, výkon a možné.
+      await expect(detail.locator(".bat-read").first()).toContainText(/\d+:\d\d · .*kW/);
+      const tiles = await kpis(page);
+      expect(tiles.map((item) => item[0])).toEqual(["Dnes zatím", "Špička dnes", "Výroba začala", "Skončí asi"]);
+      // Kam dnes slunce šlo: dům, baterie a síť z denních součtů (18,4 − 5,2 − 4,9 = 8,3 kWh do domu).
+      await expect(detail.locator(".sun-legend").last()).toContainText("Dům8,30");
+      await expect(detail.locator(".sun-legend").last()).toContainText("Baterie5,20");
+      // Nápověda jen po klepnutí, druhé klepnutí ji zavře, nic neposune.
+      const before = await detail.evaluate((el) => el.getBoundingClientRect().height);
+      await detail.locator(".sun-hint").first().click();
+      await expect(detail.locator(".sun-note")).toContainText("Křivka „možné“");
+      expect(await detail.evaluate((el) => el.getBoundingClientRect().height)).toBe(before);
+      await detail.locator(".sun-hint").first().click();
+      await expect(detail.locator(".sun-note")).toHaveCount(0);
+      await page.getByRole("button", { name: "‹ Zpět" }).click();
+      await expect(page.locator(".sun-detail")).toHaveCount(0);
+      await openSun(page);
+      await page.getByRole("button", { name: "Hotovo" }).click();
+      await expect(page.locator(".sun-detail")).toHaveCount(0);
+      await expect(page.locator(".sun-pop")).toHaveCount(0);
+    });
+
+    test("detail Historie: 7 a 30 dní se pamatuje, Celkem a Denní doba mají stejnou výšku, pět bloků dne, dobré dny", async ({ page }) => {
+      await openSun(page);
+      await tab(page, "Historie").click();
+      const detail = page.locator(".sun-detail");
+      await expect(tab(page, "7 dní")).toHaveAttribute("aria-checked", "true");
+      await expect(detail.locator(".bat-huge")).toContainText("kWh");
+      await expect(detail).toContainText("Posledních 7 dní");
+      await expect(detail).toContainText("možného");
+      // Celkem: sloupce po dnech a možné; Denní doba: plošný graf o pěti blocích a klíč.
+      const card = detail.locator(".bat-card").filter({ hasText: "Výroba po dnech" });
+      await expect(card.locator("svg rect[style*='--ed-sun']").first()).toBeVisible();
+      const heightTotal = await card.evaluate((el) => el.getBoundingClientRect().height);
+      await card.getByRole("radio", { name: "Denní doba" }).click();
+      await expect(card.locator("svg polygon")).toHaveCount(5);
+      await expect(card.locator(".sun-blocks > span")).toHaveCount(5);
+      expect(await card.evaluate((el) => el.getBoundingClientRect().height)).toBe(heightTotal);
+      expect((await detail.locator(".bat-kpi .sub").allTextContents()).join(" ")).toMatch(/Nejlepší den[\s\S]*Nejhorší den[\s\S]*Špička[\s\S]*Délka výroby/);
+      await expect(detail.locator(".sun-two")).toContainText("Východ a západ");
+      await expect(detail.locator(".sun-two")).toContainText("Dobré dny");
+      // 30 dní, zapamatované po novém otevření.
+      await tab(page, "30 dní").click();
+      await expect(detail).toContainText("Posledních 30 dní");
+      await page.getByRole("button", { name: "Hotovo" }).click();
+      await openSun(page);
+      await tab(page, "Historie").click();
+      await expect(tab(page, "30 dní")).toHaveAttribute("aria-checked", "true");
+      // Bez předpovědi nejsou data pro kartu „Jak se předpověď trefovala“.
+      await expect(detail).not.toContainText("Jak se předpověď trefovala");
+    });
+
+    test("detail Výhled: odhad s ≈, rozsahem a jistotou, pět dní, dnes do večera a dlaždice; bez předpovědi jen odhad z tempa", async ({ page }) => {
+      await openSun(page, "day&forecast=1");
+      await tab(page, "Výhled").click();
+      const detail = page.locator(".sun-detail");
+      await expect(detail.locator(".sun-est")).toContainText("≈");
+      await expect(detail).toContainText("pravděpodobně");
+      await expect(detail.locator(".sun-conf")).toContainText(/Jistota (nízká|střední|vysoká)/);
+      await expect(detail.locator(".sun-five-row")).toHaveCount(5);
+      await expect(detail.locator(".sun-five-row").nth(1)).toContainText("≈ 9,60");
+      await expect(detail.locator(".sun-five-row").nth(1)).toContainText("déšť");
+      await expect(detail.locator(".sun-five-row").nth(4)).toContainText("≈ 14,9");
+      await expect(detail.locator(".sun-five-row").nth(4)).toContainText("10–14 h");
+      await expect(detail.locator(".sun-five-row").first().locator(".strip i.now")).toHaveCount(1);
+      await expect(detail).toContainText("Dnes do večera");
+      await expect(detail).toContainText("Ze sítě v noci");
+      const tiles = await kpis(page);
+      expect(tiles.map((item) => item[0])).toEqual(["Den", "Nejlepší den"]);
+      expect(tiles[1][1]).toMatch(/^(Dnes|Sobota|Neděle|Pondělí|Úterý)$/);
+      // Předpověď má v historii kartu přesnosti.
+      await tab(page, "Historie").click();
+      await expect(detail).toContainText("Jak se předpověď trefovala");
+      // Bez předpovědi: odhad z tempa, žádné další dny a žádný vymyšlený den.
+      await openSun(page, "day");
+      await tab(page, "Výhled").click();
+      await expect(page.locator(".sun-detail .sun-est")).toContainText("≈");
+      await expect(page.locator(".sun-detail .sun-five-row")).toHaveCount(0);
+    });
+
+    test("bez statistik a bez entit je „––“, nikdy vymyšlená křivka", async ({ page }) => {
+      for (const stats of ["none", "error"]) {
+        await page.setViewportSize({ width: 393, height: 852 });
+        await page.goto(`/tests/harness.html?s=day&stats=${stats}`);
+        await page.locator(".tile").first().waitFor();
+        await page.locator('.tile[data-tile="sun"]').click();
+        await page.locator(".sun-pop .bat-open").click();
+        await expect(page.locator(".sun-detail .bat-nodata")).toContainText("–– bez dat");
+        await expect(page.locator(".sun-detail .bat-chart")).toHaveCount(0);
+        await tab(page, "Historie").click();
+        await expect(page.locator(".sun-detail .bat-huge")).toHaveText("––");
+        await expect(page.locator(".sun-detail .bat-nodata").first()).toContainText("–– bez dat");
+        await tab(page, "Výhled").click();
+        await expect(page.locator(".sun-detail .sun-five-row")).toHaveCount(0);
+      }
+      await open(page, "unavailable");
+      await page.locator('.tile[data-tile="sun"]').click();
+      const pop = page.getByRole("dialog", { name: "Slunce" });
+      await expect(pop.locator(".pop-big")).toHaveText("––");
+    });
+
+    test("konfigurace: forecast.* má výchozí hodnoty a špatná hodnota pojmenuje klíč", async ({ page }) => {
+      await open(page, "day");
+      expect(await configError(page, { forecast: { default_range: "1d" } })).toMatch(/forecast\.default_range must be one of 7d, 30d/);
+      expect(await configError(page, { forecast: { learn_days: 2 } })).toMatch(/forecast\.learn_days must be a whole number from 3 to 90/);
+      expect(await configError(page, { forecast: { strip_from: 17, strip_to: 6 } })).toMatch(/forecast\.strip_from \(17\) must be below forecast\.strip_to \(6\)/);
+      expect(await configError(page, { forecast: { car_start_soc: 20, car_stop_soc: 30 } })).toMatch(/forecast\.car_stop_soc \(30\) must be below forecast\.car_start_soc \(20\)/);
+      expect(await configError(page, { forecast: { weather: "sensor.x" } })).toMatch(/forecast\.weather/);
+      expect(await configError(page, { forecast: { energy_today: "sensor.energy_production_today", weather: "weather.home" } })).toBe("");
+    });
+
+    test("en a sv: žádný český text v popupu ani v detailu", async ({ page }) => {
+      for (const lang of ["en", "sv"]) {
+        await open(page, "day&forecast=1", 393, 852, "dark", lang);
+        await page.locator('.tile[data-tile="sun"]').click();
+        const popText = await page.locator(".sun-pop").evaluate((el) => el.textContent ?? "");
+        expect(popText, lang).not.toMatch(/[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/);
+        await page.locator(".sun-pop .bat-open").click();
+        for (const index of [0, 1, 2]) {
+          await page.locator("ed-segmented").first().getByRole("radio").nth(index).click();
+          await page.locator(".sun-hint").first().click();
+          await settle(page);
+          const text = await page.locator(".sun-detail").evaluate((el) => el.textContent ?? "");
+          expect(text, `${lang} ${index}`).not.toMatch(/[áčďéěíňóřšťúůýžÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]/);
+        }
+      }
+    });
+
+    test("rozložení od 320 px bez posouvání, cíle aspoň 44 px a přístupnost (tmavý i světlý režim, všechny záložky)", async ({ page }) => {
+      test.setTimeout(240000);
+      for (const theme of ["dark", "light"] as const) {
+        for (const width of [320, 393, 768]) {
+          await openSun(page, "day&forecast=1", width, theme);
+          for (const name of ["Dnes", "Historie", "Výhled"]) {
+            await tab(page, name).click();
+            await page.locator(".sun-hint").first().click();
+            await settle(page);
+            const at = `${theme} ${width} ${name}`;
+            const layout = await page.evaluate((tag) => {
+              const root = document.querySelector(tag)!.shadowRoot!;
+              const page = root.querySelector(".page")!.getBoundingClientRect();
+              const over = [...root.querySelectorAll<HTMLElement>(".sun-detail *")].filter((el) => !el.closest("svg") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > page.right + 0.5 || el.getBoundingClientRect().left < page.left - 0.5)).length;
+              const targets = [...root.querySelectorAll<HTMLElement>(".bat-link, .sun-hint")].map((el) => el.getBoundingClientRect().height);
+              return { scrollWidth: document.documentElement.scrollWidth, over, targets };
+            }, CARD);
+            expect(layout.scrollWidth, at).toBeLessThanOrEqual(width);
+            expect(layout.over, at).toBe(0);
+            for (const height of layout.targets) expect(height, at).toBeGreaterThanOrEqual(44);
+            if (width === 393) expect(await axeViolations(page), at).toEqual([]);
+          }
+        }
+      }
+    });
   });
 });

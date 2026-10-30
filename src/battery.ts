@@ -22,7 +22,7 @@ const HEALTH_BINS = 60;
 const FADE = 90;
 
 /** One chart of the detail: the geometry in viewBox units, what lies under the cursor and the labels. */
-interface Chart {
+export interface Chart {
   id: string;
   h: number;
   /** Horizontal lines of the grid; `strong` is the zero axis. */
@@ -37,6 +37,10 @@ interface Chart {
   from: string;
   to: string;
   legend?: TemplateResult;
+  /** Width of the fade-in on the left in the viewBox units (default FADE, 0 = none). */
+  fade?: number;
+  /** Where the cursor starts (0–100, default the right end). */
+  start?: number;
 }
 
 /** A request for the statistics (the parts of one view of the detail). */
@@ -279,7 +283,8 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
     /** One chart with its readout, finger scrubbing (a slider with no look of its own), the vertical axis and the fade on the left. */
     renderChart(c: Chart): TemplateResult {
       const t = this.t;
-      const position = this._batScrub[c.id] ?? 100;
+      const position = this._batScrub[c.id] ?? c.start ?? 100;
+      const fade = c.fade ?? FADE;
       const index = Math.round((position / 100) * (c.n - 1));
       const x = c.x(index);
       const dot = c.dot?.(index);
@@ -289,11 +294,11 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         <div class="bat-chart" style="aspect-ratio:${W} / ${c.h}">
           <svg viewBox="0 0 ${W} ${c.h}" aria-hidden="true">
             <defs>
-              <linearGradient id="bf-${c.id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2=${FADE} y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="1" stop-color="#fff" stop-opacity="1"></stop></linearGradient>
+              <linearGradient id="bf-${c.id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2=${fade} y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="1" stop-color="#fff" stop-opacity="1"></stop></linearGradient>
               <mask id="bm-${c.id}" maskUnits="userSpaceOnUse" x="0" y="0" width=${W} height=${c.h}><rect width=${W} height=${c.h} fill="url(#bf-${c.id})"></rect></mask>
             </defs>
             ${c.grid.map((line) => svg`<line x1="0" y1=${line.y} x2=${W} y2=${line.y} class=${line.strong ? "axis" : "grid"}></line>`)}
-            <g mask="url(#bm-${c.id})">${c.body}</g>
+            <g mask=${fade > 0 ? `url(#bm-${c.id})` : nothing}>${c.body}</g>
             <line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>
             ${dot ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
           </svg>

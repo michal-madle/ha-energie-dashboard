@@ -12,7 +12,7 @@ import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
 import { HEATING_KEY, NO_DATA, SOURCE_VAR, attribute } from "./view";
-import type { BatEntry, BatRow, BatTab, Panel, TileKey } from "./view";
+import type { BatEntry, BatRow, BatTab, Panel, SunTab, TileKey } from "./view";
 import type { Range } from "./battery-data";
 
 export class CardBase extends LitElement {
@@ -40,6 +40,14 @@ export class CardBase extends LitElement {
   @state() _batScrub: Record<string, number> = {};
   /** History by view ("trend", "day:24h", "hist:7d" …). */
   @state() _batData: Record<string, BatEntry> = {};
+  /** The sun detail (a page of its own inside the card), its part, history range, chart view and the hint that is open. */
+  @state() _sunDetail = false;
+  @state() _sunTab: SunTab = "today";
+  @state() _sunRange?: "7d" | "30d";
+  @state() _sunMode: "total" | "parts" = "total";
+  @state() _sunHint?: string;
+  /** The daily forecast of the weather entity (condition by day), asked for when the outlook is open. */
+  @state() _sunWeather?: { at: number; days: Array<{ day: number; condition?: string }> };
   /** Texts and number formats of the card language (CURRENT_SPEC.md, Jazyky); set in willUpdate. */
   _i18n: I18n = getI18n("cs");
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */

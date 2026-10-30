@@ -1839,4 +1839,502 @@ export const styles = css`
       transition: none;
     }
   }
+
+  /* The sun: popup and detail (CURRENT_SPEC.md, Slunce). They reuse the battery pieces above (bat-*, mix-bar, segs). */
+  .sun-pop {
+    --sun-track: var(--ed-pop-line);
+    --sun-sub: var(--ed-pop-sec);
+  }
+
+  .sun-detail {
+    --sun-track: var(--ed-tile);
+    --sun-sub: var(--ed-secondary);
+  }
+
+  .bat-card.rel {
+    position: relative;
+  }
+
+  .sun-bar {
+    height: 12px;
+    border-radius: 6px;
+  }
+
+  .sun-bar.large {
+    height: 16px;
+    border-radius: 8px;
+  }
+
+  .sun-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+
+  .sun-legend > span {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .sun-legend .name {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--sun-sub);
+    font-size: 13px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  .sun-legend .name i {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .sun-legend b {
+    white-space: nowrap;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 22px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sun-title {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .sun-unit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--ed-secondary);
+    font-size: 13px;
+  }
+
+  /* The small (i) that opens a bubble over the card: a hint never takes room in a panel. */
+  .sun-hint {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    margin: -13px -13px -13px 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+
+  .sun-hint svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--ed-secondary);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+
+  .sun-hint circle:last-child {
+    fill: var(--ed-secondary);
+    stroke: none;
+  }
+
+  .sun-note {
+    position: absolute;
+    z-index: 5;
+    inset: 48px 12px auto;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: var(--ed-bubble);
+    box-shadow: 0 8px 24px var(--ed-pop-shadow);
+    color: var(--ed-bubble-text);
+    font-size: 13px;
+    line-height: 19px;
+    cursor: pointer;
+  }
+
+  .sun-ring {
+    position: relative;
+    flex: none;
+  }
+
+  .sun-ring svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .sun-ring .track {
+    stroke: var(--sun-track, var(--ed-tile));
+  }
+
+  .sun-ring .fill {
+    stroke: var(--ed-sun);
+  }
+
+  .sun-ring .num {
+    position: absolute;
+    inset: 50% 0 auto;
+    transform: translateY(-62%);
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sun-ring .unit {
+    position: absolute;
+    inset: 50% 0 auto;
+    margin-top: 8px;
+    color: var(--sun-sub, var(--ed-secondary));
+    font-size: 10px;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .sun-sofar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .sun-sofar .text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .sun-sofar .sub {
+    color: var(--sun-sub, var(--ed-secondary));
+    font-size: 13px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+
+  .sun-sofar .val {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 28px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .sun-kpi-ring {
+    justify-content: center;
+  }
+
+  .sun-yellow {
+    /* Yellow text alone is 1.4:1 on the light page; mixed with the text colour it passes in both themes. */
+    color: color-mix(in srgb, var(--ed-sun) 45%, var(--ed-text));
+    font-weight: 600;
+  }
+
+  .sun-mode ed-segmented {
+    width: 188px;
+    flex: none;
+  }
+
+  .sun-blocks {
+    display: flex;
+    gap: 2px;
+    min-height: 23px;
+  }
+
+  .sun-blocks > span {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+    color: var(--ed-secondary);
+    font-size: 11px;
+    line-height: 13px;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .sun-blocks i {
+    height: 5px;
+    margin: 0 2px;
+    border-radius: 3px;
+  }
+
+  .sun-legend-row {
+    justify-content: flex-start;
+    gap: 16px;
+    min-height: 23px;
+    align-items: flex-start;
+  }
+
+  .bat-legend .dots {
+    width: 16px;
+    height: 0;
+    border-top: 2px dotted var(--ed-secondary);
+  }
+
+  .sun-two {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .sun-two .bat-card {
+    gap: 6px;
+  }
+
+  .sun-two .val.big {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 34px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sun-half {
+    display: block;
+    width: 124px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .sun-half-text {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .sun-dots {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 1.5px;
+    margin-top: 4px;
+  }
+
+  .sun-dots i {
+    flex: 1 1 0;
+    max-width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    background: var(--ed-tile);
+  }
+
+  .sun-dots i.on {
+    background: var(--ed-sun);
+  }
+
+  .sun-acc {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .sun-acc b {
+    font-size: 28px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .sun-pairs {
+    display: block;
+    width: 100%;
+  }
+
+  .sun-pairs .axis {
+    stroke: var(--ed-tick);
+    stroke-width: 1;
+  }
+
+  .sun-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .sun-hero .text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .sun-est {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    line-height: 44px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sun-est .approx {
+    color: var(--ed-secondary);
+  }
+
+  .sun-conf {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+    font-size: 15px;
+  }
+
+  .sun-conf .level {
+    display: flex;
+    gap: 2px;
+    width: 84px;
+    height: 8px;
+  }
+
+  .sun-conf .level i {
+    flex: 1;
+    background: var(--ed-tile);
+  }
+
+  .sun-conf .level i.on {
+    background: var(--ed-sun);
+  }
+
+  .sun-conf .level i:first-child {
+    border-radius: 4px 0 0 4px;
+  }
+
+  .sun-conf .level i:last-child {
+    border-radius: 0 4px 4px 0;
+  }
+
+  .sun-five {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sun-five-head,
+  .sun-five-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .sun-five-row {
+    padding: 9px 0;
+    border-top: 1px solid var(--ed-sep);
+  }
+
+  .sun-five .day {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    width: 84px;
+    min-width: 0;
+  }
+
+  .sun-five .day b {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 18px;
+  }
+
+  .sun-five .day span {
+    overflow: hidden;
+    color: var(--ed-secondary);
+    font-size: 12px;
+    line-height: 15px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .sun-five .strip {
+    display: flex;
+    flex: 1 1 0;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .sun-five-head .strip span {
+    flex: 1 1 0;
+    min-width: 0;
+    color: var(--ed-secondary);
+    font-size: 11px;
+    line-height: 14px;
+  }
+
+  .sun-five .strip i {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 24px;
+    border-radius: 4px;
+    background: var(--ed-tile);
+  }
+
+  .sun-five .strip i.faint {
+    background: color-mix(in srgb, var(--ed-sun) 14%, var(--ed-tile));
+  }
+
+  .sun-five .strip i.mid {
+    background: color-mix(in srgb, var(--ed-sun) 38%, var(--ed-tile));
+  }
+
+  .sun-five .strip i.strong {
+    background: var(--ed-sun);
+  }
+
+  .sun-five .strip i.now {
+    box-shadow: 0 0 0 1.5px var(--ed-text);
+  }
+
+  .sun-five .end {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: flex-end;
+    min-width: 64px;
+    color: var(--ed-secondary);
+    font-size: 11px;
+    text-align: right;
+  }
+
+  .sun-five-row .end b {
+    color: var(--ed-text);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 18px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sun-five-row .end span {
+    font-size: 12px;
+    line-height: 15px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .sun-five-row .end span.off {
+    color: var(--ed-secondary);
+  }
+
+  .sun-line > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sun-line > span i {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .sun-line b {
+    color: var(--ed-text);
+    font-weight: 700;
+    white-space: nowrap;
+  }
 `;

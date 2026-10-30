@@ -11,7 +11,7 @@ export { LANGUAGES } from "ha-dashboard-kit/types";
  * entity key is optional; an entity that is not configured is missing data ("––").
  */
 export interface EntitySections {
-  pv: { power?: EntityId };
+  pv: { power?: EntityId; /** Counter of the whole production in kWh (total_increasing); the history of the sun detail is read from its statistics. */ total_generation?: EntityId };
   battery: {
     power?: EntityId;
     state_of_charge?: EntityId;
@@ -49,6 +49,15 @@ export interface EntitySections {
   boiler: { power?: EntityId; temperature?: EntityId; boost?: EntityId; target_temperature?: EntityId; boost_target_temperature?: EntityId };
   tank: { water_heater?: EntityId };
   mixing: { valve_c1?: EntityId; valve_c2?: EntityId };
+  /** Forecast of the sun (CURRENT_SPEC.md, Slunce): the energy of the day in kWh from Open-Meteo Solar Forecast, Forecast.Solar or Solcast, and a weather entity for the days; all optional. */
+  forecast: {
+    energy_today?: EntityId;
+    energy_tomorrow?: EntityId;
+    energy_day_2?: EntityId;
+    energy_day_3?: EntityId;
+    energy_day_4?: EntityId;
+    weather?: EntityId;
+  };
   /** Energy of today in kWh (counters that restart at midnight, e.g. utility_meter); shown only in the popups. */
   daily: {
     pv_generation?: EntityId;
@@ -79,6 +88,11 @@ export interface NumberSettings {
     grid_deviation_share: number;
     band_max_px_per_kw: number;
     band_min_px: number;
+  };
+  forecast: {
+    good_power: number; good_day: number; learn_days: number; possible_percentile: number; typical_deviation: number;
+    strip_from: number; strip_to: number; evening_hour: number; morning_hour: number;
+    car_start_soc: number; car_stop_soc: number; car_min_sun: number; car_kwh_per_km: number; efficiency: number;
   };
   scale: { sun: number; battery: number; grid: number; house: number; car: number; boiler: number };
   ui: { revert_after: number; hold_ms: number; double_tap_ms: number; hint_seconds: number };
@@ -145,6 +159,8 @@ export interface Settings {
   carLink: string;
   /** The history range the battery detail opens with (battery.default_range); the last choice of the user wins. */
   batteryRange: "1d" | "7d" | "30d";
+  /** The history range the sun detail opens with (forecast.default_range). */
+  sunRange: "7d" | "30d";
 }
 
 declare global {
