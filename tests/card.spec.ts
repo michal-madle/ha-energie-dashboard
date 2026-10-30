@@ -176,7 +176,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
         [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
         [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
-        [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, image, charge_limit, image_scale, link\)/],
+        [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, charge_limit, image_scale, battery_capacity, link\)/],
         [{ car: { image_scale: 5 } }, /car\.image_scale must be a number from 0\.5 to 3/],
         [{ title: 5 }, /title must be a text/],
         [{ titles: { car: "" } }, /titles\.car must be a non-empty text/],

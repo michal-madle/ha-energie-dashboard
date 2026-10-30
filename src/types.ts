@@ -37,7 +37,7 @@ export interface EntitySections {
   };
   grid: { power?: EntityId };
   house: { power?: EntityId };
-  car: { state_of_charge?: EntityId; range?: EntityId; image?: EntityId };
+  car: { state_of_charge?: EntityId; range?: EntityId; capacity?: EntityId; image?: EntityId };
   wallbox: {
     power?: EntityId;
     status?: EntityId;
@@ -75,7 +75,7 @@ export type SectionName = keyof EntitySections;
 /** Numeric settings (limits, thresholds, scales); every one has a default (config.ts, NUMBERS). */
 export interface NumberSettings {
   battery: { reserve: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
-  car: { charge_limit: number; image_scale: number };
+  car: { charge_limit: number; image_scale: number; battery_capacity: number };
   wallbox: { phases: number; power_min: number; power_max: number; power_step: number; priority_min_sun: number };
   boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
   water: { gauge_min: number; gauge_max: number };
