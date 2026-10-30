@@ -433,6 +433,9 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const actual = bin(v.fiveRows, "mean", start, end, n).map((value) => (value === undefined ? undefined : value / 1000));
       const hourAt = (i: number) => h0 + (i + 0.5) / PER_HOUR;
       const nowIndex = Math.floor(((v.now - start) / (end - start)) * n);
+      // The bin of the present holds the live power, so the reading at the cursor is the same as "Výkon teď".
+      const livePower = readNumber(this.hass, s.entities.pv.power);
+      if (livePower !== undefined && actual.some((value) => value !== undefined) && nowIndex >= 0 && nowIndex < n) actual[nowIndex] = Math.max(0, livePower) / 1000;
       // A value read between the centres of the hours.
       const between = (hours: Array<number | undefined>, at: number): number | undefined => {
         const f = at - 0.5;

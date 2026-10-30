@@ -327,7 +327,12 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const start = end - hours * HOUR;
       const soc = bin(this.batRows(key, "level", b.state_of_charge), "mean", start, end, LEVEL_BINS);
       const power = bin(this.batRows(key, "level", b.power), "mean", start, end, LEVEL_BINS).map((value) => (value === undefined ? undefined : -value / 1000));
+      // The last point is the present: the live values, so the reading at "teď" is the same as the headline above.
       if (!soc.some((v) => v !== undefined) && !power.some((v) => v !== undefined)) return undefined;
+      const liveSoc = readNumber(this.hass, b.state_of_charge);
+      const livePower = readNumber(this.hass, b.power);
+      if (liveSoc !== undefined) soc[LEVEL_BINS - 1] = liveSoc;
+      if (livePower !== undefined) power[LEVEL_BINS - 1] = -livePower / 1000;
       const n = LEVEL_BINS;
       const x = (i: number) => round1((i / (n - 1)) * W);
       const sy = (v: number) => round1(98 - (clamp(v, 0, 100) / 100) * 90);

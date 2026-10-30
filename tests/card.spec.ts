@@ -1525,6 +1525,10 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
   // ---------------------------------------------------------------- slunce
 
   test.describe("slunce (CURRENT_SPEC.md, Slunce)", () => {
+    // Slunce závisí na hodině dne (před západem a po něm), proto je čas pevný: čtvrtek 30. 10. 2026 ve 13:20.
+    test.beforeEach(async ({ page }) => {
+      await page.clock.setFixedTime(new Date("2026-10-30T13:20:00+01:00"));
+    });
     const openSun = async (page: Page, scenario = "day", width = 393, theme: "dark" | "light" = "dark", lang = "cs") => {
       await open(page, scenario, width, 852, theme, lang);
       await page.locator('.tile[data-tile="sun"]').click();

@@ -126,6 +126,8 @@ Zadání (stav k 17. 10. 2026) a YAML dnešního dashboardu, potvrzené exportem
 
 ## Slunce
 
+**Živý poslední bod grafů (30. 10.):** poslední bod grafu Nabití a výkon (baterie) a Výkon dnes (slunce) je živá hodnota z entity, ne poslední pětiminutový průměr, takže údaj u „teď“ je stejný jako hlavní číslo nahoře (uživatel: nahoře 40 % a 0,17 kW, v grafu 41 % a 0,29 kW). Bez statistik se kvůli jednomu živému bodu křivka nekreslí.
+
 Návrh: Design artefakt „Energie – Výhled dne, km ze slunce, popisky“, boardy 5 až 8; rozhodnutí z komentářů uživatele (30. 10.) jsou v `FORECAST.md`, oddíly 8 a 8b. Kód: `src/sun.ts` (popup a detail, mixin `withSun`), `src/sun-data.ts` (čisté výpočty). Staví na dílech detailu baterie (záložky `ed-segmented`, karty `bat-card`, dlaždice `bat-kpi`, graf `renderChart` s posunem prstu, `fetchStatistics`, „––“ místo vymyšlených dat), aby se chovaly stejně.
 
 - **Popup Slunce** (stejný popover se šipkou jako u baterie): „Vyrábí“ a počasí z `forecast.weather`, výkon teď, pruh „kam slunce jde“ (dům, auto, bojler, baterie, síť z toků karty; bez legendy, uživatel 30. 10.: „Je to moc roztahaný“), panel **Dnes zatím X kWh, z odhadu ≈ Y** s kolečkem (jedna definice pro popup i detail), řádky **Začala** a **Skončí asi** (po skončení výroby **Skončila**) a tlačítko Detail slunce. Žádné „% možného“.
