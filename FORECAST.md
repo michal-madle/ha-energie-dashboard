@@ -191,6 +191,16 @@ Co pak: z CSV hodinu po hodině vypíšu, co by karta napsala a kde (hlavní kar
 
 Doporučené pořadí: (1) popisky podle normy (N33) – nepotřebují žádná nová data; (2) úroveň 0 výhledu (N31) s kartou „co když“ (N32); (3) Open-Meteo Solar Forecast jako úroveň 1; (4) km ze slunce (N9); (5) Claude jen k vysvětlení (N34).
 
+## 8. Slunce: popup a detail (návrh 30. 10.)
+
+Návrh je v Design artefaktu (boardy 5 až 8). Rozhodnutí z komentářů uživatele (30. 10.):
+
+- **Popup:** jen výkon teď, „kam teď slunce jde“ (dům, baterie, auto, bojler) a tři řádky (dnes zatím, odhad dne, začátek a konec výroby). **Žádné „% možného“:** je nepřesné (záleží na špíně a zahřátí panelů) a uživatel s ním nic neudělá; procento zůstává jen jako malá informace v detailu (Historie).
+- **Odhad vždy s „≈“, rozsahem a jistotou.** Ráno je odhad hodně nepřesný, odpoledne téměř jistý; jistota (nízká, střední, vysoká) se počítá z podílu dne, který už proběhl, a z rozptylu odchylek předpovědi za posledních 14 dní. Velké číslo bez znaménka vypadá jako jistota, proto se nikdy neukazuje samotné.
+- **Křivka „možné“ se učí z historie:** pro každou hodinu a roční dobu je to horní kvantil (kolem 90 %) výroby z posledních dní, bez hodin, kdy střídač omezoval, spojený s fyzikou (poloha slunce) pro dny bez dat. S podzimem **klesá** (kratší dny, nižší slunce): v říjnu asi o 0,15 až 0,2 kWh denně. Stejná křivka se používá v grafu dne, v „podílu možného“ v Historii a v předpovědi dalších dnů.
+- **„Nevyužité slunce“** (dřív „střídač omezil“): výroba, která se zbrzdila, protože baterie byla plná a dům bral málo (26. a 27. 10. kolem poledne). Počítá se z hodin, kdy výroba klesla pod učenou křivku možného při plné baterii a nulovém vývozu.
+- **Poměr východ/západ** jen jako malá informace (půlkruh), ozve se až při vychýlení; vedle ní další malá zajímavost (nejsilnější hodina).
+
 ## Zdroje
 
 - [Open-Meteo Solar Forecast (HACS)](https://github.153394839.workers.dev/rany2/ha-open-meteo-solar-forecast), [Forecast.Solar v HA](https://www.home-assistant.io/components/forecast_solar), [evcc + Open-Meteo](https://docs.evcc.io/en/nightly/tariffs/open-meteo)
