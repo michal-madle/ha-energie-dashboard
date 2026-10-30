@@ -128,13 +128,23 @@ export interface Estimate {
   source: "forecast" | "pace";
 }
 
+/** The kWh the learned curve still has from `now` to the end of the day (the present hour only for the part of it that is left). */
+export function curveLeft(curve: Array<number | undefined>, now: number): number {
+  const date = new Date(now);
+  const hour = date.getHours();
+  const left = 1 - (date.getMinutes() * 60 + date.getSeconds()) / 3600;
+  return curve.reduce<number>((sum, value, h) => sum + (h < hour ? 0 : h === hour ? (value ?? 0) * left : value ?? 0), 0);
+}
+
 /**
- * The estimate of the whole day. With a forecast it is the forecast (never below what is already produced); without one it is
+ * The estimate of the whole day. With a forecast it is the forecast (never below what is already produced), but what is still to
+ * come is held to what the sun can still give: never above what the learned curve has left, and scaled by how the last hour went
+ * against the curve (`recent`: kWh produced and kWh the curve had in it). Without a forecast it is
  * the pace: what is produced plus what the learned curve still has, scaled by how the day went so far against the curve.
  * The range narrows through the day (what is done is certain) by the typical deviation of the forecast (`deviation`, 0–1);
  * the certainty rises with the share of the day that is done and falls when the forecast is usually far off.
  */
-export function estimateDay(done: number | undefined, forecast: number | undefined, curve: Array<number | undefined>, now: number, deviation: number): Estimate | undefined {
+export function estimateDay(done: number | undefined, forecast: number | undefined, curve: Array<number | undefined>, now: number, deviation: number, recent?: { actual: number; possible: number }): Estimate | undefined {
   if (done === undefined) return undefined;
   const date = new Date(now);
   const hour = date.getHours() + date.getMinutes() / 60;
@@ -143,7 +153,11 @@ export function estimateDay(done: number | undefined, forecast: number | undefin
   let value: number | undefined;
   let source: Estimate["source"] = "forecast";
   if (forecast !== undefined) {
-    value = Math.max(forecast, done);
+    const possibleRest = curveLeft(curve, now);
+    let rest = Math.min(Math.max(forecast - done, 0), possibleRest);
+    // The last hour says how the sky is now; with too little in it (morning, evening) it says nothing.
+    if (recent && recent.possible >= 0.3) rest = Math.min(rest, possibleRest * Math.min(1, Math.max(0, recent.actual / recent.possible)));
+    value = done + rest;
   } else if (curveTotal > 0 && curveBefore >= 0.5) {
     // The pace is trusted only after the curve has had something to say (half a kWh); before it there is no estimate.
     const rest = curveTotal - curveBefore;
@@ -154,9 +168,10 @@ export function estimateDay(done: number | undefined, forecast: number | undefin
   const share = value > 0 ? Math.min(1, done / value) : 1;
   const k = Math.min(0.6, deviation * (1 + (1 - share)));
   const rest = Math.max(0, value - done);
+  const possibleLeft = curveTotal > 0 ? curveLeft(curve, now) : Infinity;
   let certainty: Certainty = share < 0.35 ? "low" : share < 0.7 ? "medium" : "high";
   if (deviation > 0.3 && certainty !== "low") certainty = certainty === "high" ? "medium" : "low";
-  return { value, low: done + rest * (1 - k), high: done + rest * (1 + k), done: share, certainty, source };
+  return { value, low: done + rest * (1 - k), high: done + Math.min(rest * (1 + k), possibleLeft), done: share, certainty, source };
 }
 
 /** The typical relative deviation of the forecast (0–1) from pairs of (forecast, produced); undefined with fewer than three pairs. */

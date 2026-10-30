@@ -246,7 +246,19 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const done = counter ?? (actual && actual.some((v) => v !== undefined) ? actual.reduce<number>((sum, v) => sum + (v ?? 0), 0) : undefined);
       const forecastToday = readEnergy(this.hass, e.forecast.energy_today);
       const deviation = typicalDeviation(pairs) ?? num.typical_deviation / 100;
-      const estimate = estimateDay(done, forecastToday, learned.curve, now, deviation);
+      // The last hour against what the curve had in it: how the sky is now.
+      let recent: { actual: number; possible: number } | undefined;
+      if (fiveRows?.length) {
+        let actualKwh = 0;
+        let possibleKwh = 0;
+        for (const row of fiveRows) {
+          if (row.start < now - HOUR || row.start >= now || typeof row.mean !== "number") continue;
+          actualKwh += Math.max(0, row.mean) / 1000 / PER_HOUR;
+          possibleKwh += (learned.curve[new Date(row.start).getHours()] ?? 0) / PER_HOUR;
+        }
+        recent = { actual: actualKwh, possible: possibleKwh };
+      }
+      const estimate = estimateDay(done, forecastToday, learned.curve, now, deviation, recent);
       const rest = estimate ? Math.max(0, estimate.value - (done ?? 0)) : 0;
       const hours = todayHours(actual, estimate ? rest : 0, learned.curve, now);
       if (!estimate) for (let h = new Date(now).getHours(); h < 24; h++) hours[h] = undefined;
@@ -440,7 +452,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const future = (i: number) => i >= nowIndex;
       const fc = Array.from({ length: n }, (_, i) => (est && future(i) ? between(v.hours.map((value, h) => (h >= new Date(v.now).getHours() ? value : undefined)), hourAt(i)) : undefined));
       const low = fc.map((value) => (value === undefined ? undefined : value * lowRatio));
-      const high = fc.map((value) => (value === undefined ? undefined : value * highRatio));
+      const high = fc.map((value, i) => (value === undefined ? undefined : Math.min(value * highRatio, Math.max(value, possible[i] ?? Infinity))));
       const peak = Math.max(1, ...actual.map((value) => value ?? 0), ...possible.map((value) => value ?? 0), ...high.map((value) => value ?? 0));
       // Guide lines every 1 kW, every 2 kW when that would be more than 7 lines.
       const step = Math.ceil(peak) > 7 ? 2 : 1;
