@@ -201,9 +201,31 @@ Návrh je v Design artefaktu (boardy 5 až 8). Rozhodnutí z komentářů uživa
 - **Žádné „nevyužité slunce“ ani komentář k omezení výkonu** (uživatel 30. 10.): střídač drží vývoz na 5 kW, ale jen v létě, když je vše nabité a nahřáté a odpoledne svítí přes 5,5 kW; jindy se to neděje a za přetoky skoro nic nedostává. Karta to nikde nekomentuje (v létě se jen vynechají tyto hodiny z učení křivky možného). Dřívější domněnka o ořezu 26. a 27. 10. byla chybná.
 - **Texty a hinty nepatří do panelů.** Vysvětlivky jsou za malým ⓘ, které se ukáže až po klepnutí (bublina přes kartu, druhé klepnutí ji zavře): jistota odhadu, pruh „podíl z možného dne“, zdroj předpovědi, čára možného a barvy bloků dne.
 - **Záložky detailu: Dnes, Historie, Výhled** (v tomto pořadí). Historie má přepínač rozsahu **7 dní / 30 dní** (bez „1 den“, ten je Dnes). V Dnes je graf výkonu hned pod číslem „výkon teď“.
-- **Historie, graf po dnech:** přepínač **Celkem / Denní doba**. Denní doba dělí sloupec na pět bloků (do 9, 9–11, 11–13, 13–15, od 15 h), bez černého dělení, jen tenká světlá linka; barvy od východu k západu: korálová, oranžová, žlutá (poledne), světle citronová, krémová. Čára „možné“ je čárkovaná, šedá, od kraje ke kraji, bez legendy. Dlaždice: nejlepší den, nejhorší den, špička týdne/měsíce, délka výroby (podzim zkracuje: 9,7 h proti 10,7 h před týdnem), dobré dny (nad 10 kWh) a malý půlkruh východ/západ.
+- **Historie, graf po dnech:** přepínač **Celkem / Denní doba**. Denní doba dělí sloupec na pět bloků (do 9, 9–11, 11–13, 13–15, od 15 h), bez černého dělení, jen tenká světlá linka; barvy od východu k západu: korálová, oranžová, žlutá (poledne), světle citronová, krémová. Možné množství za den je šedá stopa za každým sloupcem (hodnoty kWh nad sloupci), vysvětlení je za ⓘ. Dlaždice: nejlepší den, nejhorší den, špička týdne/měsíce, délka výroby (podzim zkracuje: 9,7 h proti 10,7 h před týdnem), dobré dny (nad 10 kWh) a malý půlkruh východ/západ.
 - **Popup a detail Dnes sdílejí jeden panel „Dnes zatím 8,5 kWh, z odhadu ≈ 13,8“** s malým kolečkem; vedle něj v popupu časy „Začala 7:08“ a „Skončí asi 16:50“ v jedné dlaždici, obě stejně vysoké.
 - **Poměr východ/západ** jen jako malá informace (půlkruh), ozve se až při vychýlení.
+
+### 8b. Výhled: co zobrazit (výběr z dat, 30. 10.)
+
+Zadání uživatele: projít jiné dashboardy, `IDEAS.md` a všechny senzory a data, která máme nebo můžeme získat, a vybrat, co patří do Výhledu. Rozhodnutí z komentářů: **jeden panel „Pět dní dopředu“** (každý den jeden řádek: počasí, hodinový pruh od 6 do 17 h, kde plná žlutá je výkon aspoň 2 kW, vpravo kWh a hodiny nad 2 kW; „kompaktně, jeden řádek na položku“), karta „Jak se předpověď trefovala“ je v **Historii** (pod grafem).
+
+**Jak to dělají jiní:** integrace Forecast.Solar a Solcast pro HA dávají energii dnes a zítra, výkon teď a v příští hodině, čas a výšku špičky dnes, zbývající energii dneška a pásmo 10/90 %; evcc používá předpověď pro plán nabíjení a „nejlevnější okno“; Predbat a EMHASS z ní skládají plán baterie a ceny; Solariance nabízí akci „nejlepší čas pro spotřebič na solár“.
+
+| Data | Zdroj | Ve Výhledu |
+|---|---|---|
+| Odhad dneška, rozsah, jistota, dosud vyrobeno | předpověď + `sensor.goodwe_today_s_pv_generation` ✔ | **ano** (hero) |
+| Pět dní: kWh, počasí, hodinový tvar | Open-Meteo / `weather` entita ＋ | **ano** (panel) |
+| Baterie plná v…, SOC ve 22:00, auto ze slunce (kWh a km), ze sítě v noci | simulace z N32: předpověď + běžná spotřeba + vaše metoda; `sensor.goodwe_battery_state_of_charge`, kapacita 11,2 kWh, rezerva 20 % ✔, spotřeba auta 0,34 kWh/km z `…nabita_energie_tento_mesic` a `…driving_distance_this_month` ✔ | **ano** („Dnes do večera“) |
+| Délka dne a její změna | `sun.sun` (východ, západ) ✔ | **ano** (dlaždice „Den“) |
+| Nejlepší den týdne (kWh a hodiny) | z pětidenní předpovědi | **ano** (dlaždice) |
+| Sezóna: odhad výroby dalších měsíců | model + historie; po roce provozu skutečná data z `sensor.goodwe_total_pv_generation` | později (po prvním roce) |
+| Kdy zítra začít nabíjet auto (okno nad 2 kW) | pruh dne už to ukazuje | v pruhu, ne zvlášť |
+| Spotová cena a nejlevnější hodiny, HDO | HACS Czech Energy Spot Prices ＋, `sensor.master_hdo` ✔ | ne do Slunce; patří do N6, N7, N22 |
+| Teplota panelů, sníh, vlhkost, déšť | Open-Meteo ＋ | ne (zbytečný detail); sníh jen jako varování, pokud se ukáže, že kryje panely |
+| Střídač: napětí sítě, stringy PV1/PV2, teploty | GoodWe ✔ | ne do Výhledu; N12, N16, N17 |
+| Bojler: teplota, cíl | `sensor.tuv_temperature`, `number.tuv_2_1_target_temperature` ✔ | ne; patří k bojleru |
+
+Pravidlo výběru: do Výhledu jen to, co odpovídá na „co dnes a v příštích dnech udělám“ (kdy svítí, kolik z toho půjde do baterie a auta, kdy pustit velké spotřebiče). Čísla v návrhu jsou ilustrační.
 
 ## Zdroje
 
