@@ -84,7 +84,6 @@ export const BATTERY_RANGE_KEY = "ha-energie-dashboard:battery-range";
 
 /** Where the last history range chosen in the sun detail is kept in the browser. */
 export const SUN_RANGE_KEY = "ha-energie-dashboard:sun-range";
-export const SUN_CAR_KEY = "ha-energie-dashboard:sun-car";
 
 /** A number from an entity attribute, undefined when it is not one. */
 export function attribute(entity: HassEntity | undefined, key: string): number | undefined {

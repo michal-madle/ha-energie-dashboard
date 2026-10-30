@@ -1642,9 +1642,8 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(detail).toContainText("Baterie teď");
       await expect(detail).toContainText("Slunce do 22:00");
       await expect(detail).toContainText("Dům do 22:00");
-      // Auto se nenabíjí, dokud si to člověk nezapne (pamatuje se).
-      const carMode = detail.locator("ed-segmented[label='Nabíjení auta ve výpočtu']");
-      await expect(carMode).toHaveCount(1);
+      // Žádný přepínač auta: auto se počítá samo podle pravidla wallboxu, když není odpojené.
+      await expect(detail.locator(".sun-line ed-segmented")).toHaveCount(0);
       const tiles = await kpis(page);
       expect(tiles.map((item) => item[0])).toEqual(["Den", "Nejlepší den"]);
       expect(tiles[1][1]).toMatch(/^(Dnes|Sobota|Neděle|Pondělí|Úterý)$/);

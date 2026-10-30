@@ -8,7 +8,7 @@ import type { HomeAssistant, Settings } from "./types";
 import { entityState, formatClock, formatDayName, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { CardBase } from "./base";
-import { NO_DATA, SUN_CAR_KEY, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
+import { NO_DATA, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
 import type { BatEntry, Constructor, SunTab, Tile } from "./view";
 import { DAY, HOUR, W, areaPath, bandPath, bin, fetchStatistics, linePath, midnight, niceCeil, round1 } from "./battery-data";
 import type { Period, StatRow, StatType, Stats } from "./battery-data";
@@ -86,26 +86,6 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       this._batScrub = {};
       try {
         localStorage.setItem(SUN_RANGE_KEY, range);
-      } catch {
-        /* no storage: the choice lasts until the page is closed */
-      }
-    }
-
-    /** The car in "Dnes do večera": by default not charged (the person plans no charging), or by the rule of the wallbox. */
-    sunCar(): "off" | "rule" {
-      if (this._sunCar) return this._sunCar;
-      try {
-        if (localStorage.getItem(SUN_CAR_KEY) === "rule") return "rule";
-      } catch {
-        /* no storage: not charged */
-      }
-      return "off";
-    }
-
-    setSunCar(mode: "off" | "rule"): void {
-      this._sunCar = mode;
-      try {
-        localStorage.setItem(SUN_CAR_KEY, mode);
       } catch {
         /* no storage: the choice lasts until the page is closed */
       }
@@ -791,7 +771,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         ${evening
           ? html`<div class="bat-card rel">
               <div class="bat-card-bar"><span class="bat-cap">${o.eveningTitle}</span>${this.hint("eve", t.hints.eve)}</div>
-              <div class="bat-list">${evening.map((row) => html`<div class="bat-line sun-line"><span><i style="background:var(${row.color})"></i>${row.label}</span><b>${row.value}</b></div>${row.color === "--ed-house" ? this.carChoice(s) : nothing}`)}
+              <div class="bat-list">${evening.map((row) => html`<div class="bat-line sun-line"><span><i style="background:var(${row.color})"></i>${row.label}</span><b>${row.value}</b></div>`)}
               </div>
             </div>`
           : nothing}
@@ -799,13 +779,6 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
           <div class="bat-kpi"><span class="sub">${o.dayLength}</span><span class="val">${length === undefined ? NO_DATA : o.hoursMinutes(Math.floor(length / 60), length % 60)}</span><span class="sub">${change === undefined ? "" : o.dayChange(change)}</span></div>
           <div class="bat-kpi"><span class="sub">${o.bestDay}</span><span class="val">${best ? (best.i === 0 ? o.today : formatDayName(best.day)) : NO_DATA}</span><span class="sub">${best ? o.bestSub(formatKwh(best.kwh!), bestWindow ? o.window(bestWindow[0], bestWindow[1]) : "") : ""}</span></div>
         </div>`;
-    }
-
-    /** The row with the choice whether the estimate counts the car (only with a wallbox). */
-    carChoice(s: Settings): TemplateResult | typeof nothing {
-      const o = this.t.sun.outlook;
-      if (!s.entities.wallbox.power) return nothing;
-      return html`<div class="bat-line sun-line"><span><i style="background:var(--ed-car)"></i>${o.car}</span><ed-segmented compact .options=${[{ value: "off", label: o.carOff }, { value: "rule", label: o.carRule }]} .value=${this.sunCar()} label=${o.carLabel} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setSunCar(event.detail.value as "off" | "rule")}></ed-segmented></div>`;
     }
 
     /** The rows of "Dnes do večera": the battery full, its level in the evening, the car from the sun, the grid at night; none without the data it needs. */
@@ -818,7 +791,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const result = simulateEvening({
         now: v.now, soc, capacity: s.num.battery.capacity, reserve: this.batteryReserve(s), sun: v.hours, house,
         efficiency: num.efficiency / 100, eveningHour: num.evening_hour, morningHour: num.morning_hour,
-        car: this.sunCar() === "rule" && model.wallbox.power && carLink(readText(this.hass, model.wallbox.status)) !== "disconnected" ? { startSoc: num.car_start_soc, stopSoc: num.car_stop_soc, minSun: num.car_min_sun, watts: s.num.wallbox.power_min } : undefined,
+        car: model.wallbox.power && carLink(readText(this.hass, model.wallbox.status)) !== "disconnected" ? { startSoc: num.car_start_soc, stopSoc: num.car_stop_soc, minSun: num.car_min_sun, watts: s.num.wallbox.power_min } : undefined,
       });
       const o = this.t.sun.outlook;
       const rows: Array<{ color: string; label: string; value: string }> = [];
