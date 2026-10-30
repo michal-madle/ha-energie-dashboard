@@ -32,6 +32,11 @@ Důsledek pro kartu: místo okamžitého prahu „kolik dá slunce“ se počít
 
 28. 10. odběr ze sítě 9,8 kWh při baterii na rezervě: vysvětleno (dlouho jela pračka se sušičkou a 2 h se vařil oběd, tedy všechno dohromady). Žádná otevřená otázka z prvního týdne.
 
+## Odpovědi z 30. 10.
+
+- **Omezení vývozu střídačem (5 kW) nastává jen v létě**, když je vše nabité a nahřáté a odpoledne svítí přes 5,5 kW. Jindy ne. **V kartě se nekomentuje** a v návrzích se nemá objevit „nevyužité slunce“. Za přetoky skoro nic nemáte, takže to netrápí. (Moje dřívější domněnka o ořezu 26. a 27. 10. byla chybná.)
+- **Texty a hinty do panelů nepatří**, vysvětlivky jen za ⓘ po klepnutí.
+
 ## Jak se měří, že to funguje
 
 - Chyba předpovědi výroby na den (cíl pod 15 %, po týdnu učení).

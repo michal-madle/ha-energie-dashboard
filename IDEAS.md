@@ -166,8 +166,8 @@ Dřívější znění („baterie krmí auto je problém, zablokuj“) bylo špa
 
 <a id="n15"></a>
 ### N15 Ořez výroby exportním limitem
-Kdy střídač zahazuje energii: dodávka se drží u `number.goodwe_grid_export_limit` (5000 W), baterie je plná a výroba stringů (`pv1` + `pv2`) leží pod tím, co by slunce dalo (rostoucí napětí stringu, klesající proud). Karta by řekla „Výroba omezena limitem 5 kW od 12:10 do 14:40“ a spočítala ztrátu v kWh. Řešení: přesměrovat přebytek do bojleru nebo auta dřív, než se oříznou (router to dělá, když je jeho práh nastaven nízko).
-**Přínos** ★★★ · **Náročnost** M · **Data** ✔ (odhad ztráty je odhad)
+Poznámka uživatele 30. 10.: střídač omezuje vývoz na 5 kW jen v létě (vše nabité a nahřáté, odpoledne přes 5,5 kW), jindy se to neděje a za přetoky skoro nic nedostává, takže to uživatele netrápí; v kartě to **nekomentovat**. Nápad zůstává jen jako letní nice-to-have s nízkou prioritou. Kdy střídač zahazuje energii: dodávka se drží u `number.goodwe_grid_export_limit` (5000 W), baterie je plná a výroba stringů (`pv1` + `pv2`) leží pod tím, co by slunce dalo (rostoucí napětí stringu, klesající proud). Karta by řekla „Výroba omezena limitem 5 kW od 12:10 do 14:40“ a spočítala ztrátu v kWh. Řešení: přesměrovat přebytek do bojleru nebo auta dřív, než se oříznou (router to dělá, když je jeho práh nastaven nízko).
+**Přínos** ★ (jen v létě) · **Náročnost** M · **Data** ✔ (odhad ztráty je odhad)
 
 <a id="n16"></a>
 ### N16 Napětí v síti a frekvence
