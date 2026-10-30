@@ -1641,6 +1641,16 @@ export const styles = css`
     line-height: 18px;
   }
 
+  .bat-axis.ticks {
+    position: relative;
+    height: 18px;
+  }
+  .bat-axis.ticks span {
+    position: absolute;
+    top: 0;
+    white-space: nowrap;
+  }
+
   .bat-nodata {
     display: flex;
     align-items: center;

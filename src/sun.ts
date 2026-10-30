@@ -480,6 +480,11 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
           if (possible[i] !== undefined) parts.push(`${t.possibleShort} ${kw(possible[i]!)}`);
           return `${clock} · ${parts.join(" · ")}`;
         },
+        // Guide lines every two hours, like the kW lines, labelled with the hour.
+        ticks: Array.from({ length: Math.floor(h1 / 2) - Math.ceil(h0 / 2) + 1 }, (_, k) => (Math.ceil(h0 / 2) + k) * 2).map((hour) => ({
+          x: x(clamp(((hour - h0) / (h1 - h0)) * n - 0.5, 0, n - 1)),
+          text: String(hour),
+        })),
         from: formatClock(start), to: formatClock(end),
         legend: html`<div class="bat-legend wrap"><span><i class="bar" style="background:var(--ed-sun)"></i>${t.chartLegend.production}</span><span><i class="dots" aria-hidden="true"></i>${t.chartLegend.possible}</span><span><i class="swatch" style="background:var(--ed-sun);opacity:.3"></i>${t.chartLegend.forecast}</span></div>`,
       };

@@ -41,6 +41,8 @@ export interface Chart {
   fade?: number;
   /** Where the cursor starts (0–100, default the right end). */
   start?: number;
+  /** Vertical guide lines with their labels under the chart (the x position in the viewBox units); without them only `from` and `to`. */
+  ticks?: Array<{ x: number; text: string }>;
 }
 
 /** A request for the statistics (the parts of one view of the detail). */
@@ -298,6 +300,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
               <mask id="bm-${c.id}" maskUnits="userSpaceOnUse" x="0" y="0" width=${W} height=${c.h}><rect width=${W} height=${c.h} fill="url(#bf-${c.id})"></rect></mask>
             </defs>
             ${c.grid.map((line) => svg`<line x1="0" y1=${line.y} x2=${W} y2=${line.y} class=${line.strong ? "axis" : "grid"}></line>`)}
+            ${(c.ticks ?? []).map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${c.h} class="grid"></line>`)}
             <g mask=${fade > 0 ? `url(#bm-${c.id})` : nothing}>${c.body}</g>
             <line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>
             ${dot ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
@@ -306,7 +309,9 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
           <input type="range" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
             @input=${(event: Event) => { this._batScrub = { ...this._batScrub, [c.id]: Number((event.target as HTMLInputElement).value) }; }} />
         </div>
-        <div class="bat-axis"><span>${c.from}</span><span>${c.to}</span></div>
+        ${c.ticks
+          ? html`<div class="bat-axis ticks">${c.ticks.map((tick) => html`<span style="left:${((tick.x / W) * 100).toFixed(2)}%;transform:translateX(-50%)">${tick.text}</span>`)}</div>`
+          : html`<div class="bat-axis"><span>${c.from}</span><span>${c.to}</span></div>`}
         ${c.legend ?? nothing}`;
     }
 

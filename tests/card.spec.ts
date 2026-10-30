@@ -1578,6 +1578,8 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(detail.locator(".bat-legend").first()).toContainText("Předpověď");
       // Čtení pod prstem: čas, výkon a možné.
       await expect(detail.locator(".bat-read").first()).toContainText(/\d+:\d\d · .*kW/);
+      // Svislé vodicí linky po 2 h od 6 do 18 h, popsané číslem hodiny.
+      await expect(detail.locator(".bat-axis.ticks span")).toHaveText(["6", "8", "10", "12", "14", "16", "18"]);
       const tiles = await kpis(page);
       expect(tiles.map((item) => item[0])).toEqual(["Dnes zatím", "Špička dnes", "Výroba začala", "Skončí asi"]);
       // Kam dnes slunce šlo: dům, baterie a síť z denních součtů (18,4 − 5,2 − 4,9 = 8,3 kWh do domu).
