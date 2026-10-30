@@ -106,12 +106,12 @@ mixing:
 # Kilowatthodiny dne dává integrace Open-Meteo Solar Forecast, Forecast.Solar nebo Solcast;
 # názvy entit podle vaší instalace (Nástroje pro vývojáře → Stavy).
 forecast:
-  energy_today:                                         # odhad výroby dnes (kWh)
-  energy_tomorrow:                                      # odhad výroby zítra (kWh)
-  energy_day_2:                                         # odhad za 2 dny (kWh)
-  energy_day_3:                                         # odhad za 3 dny (kWh)
-  energy_day_4:                                         # odhad za 4 dny (kWh)
-  weather:                                              # entita počasí (weather.…), z ní je ikona a popis dne
+  energy_today: sensor.solar_forecast_energy_production_today   # odhad výroby dnes (kWh)
+  energy_tomorrow: sensor.solar_forecast_energy_production_tomorrow  # odhad výroby zítra (kWh)
+  energy_day_2: sensor.solar_forecast_energy_production_d2      # odhad za 2 dny (kWh)
+  energy_day_3: sensor.solar_forecast_energy_production_d3      # odhad za 3 dny (kWh)
+  energy_day_4: sensor.solar_forecast_energy_production_d4      # odhad za 4 dny (kWh)
+  weather: weather.forecast_domov                       # entita počasí (weather.…), z ní je ikona a popis dne; název ověřte ve Stavech (filtr weather.)
   default_range: 7d                                     # s jakým obdobím se otevře Historie slunce: 7d nebo 30d (poslední volba se pamatuje)
   good_power: 2000                                      # W slunce, od kterého je hodina silná (plná žlutá v pětidenním pruhu, okno)
   good_day: 10                                          # kWh za den, od kterých je den dobrý (Historie)
