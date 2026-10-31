@@ -22,7 +22,7 @@ const EVENING = {
   "sensor.goodwe_battery_state_of_charge": state("65", { unit_of_measurement: "%" }),
   "sensor.goodwe_meter_active_power_total": state("-148", { unit_of_measurement: "W" }),
   "sensor.goodwe_house_consumption": state("459", { unit_of_measurement: "W" }),
-  "sensor.parkovani_bmw_i3_soc": state("50.2", { unit_of_measurement: "%" }),
+  "sensor.vin_stav_nabiti_predikce_integrace": state("50.2", { unit_of_measurement: "%" }),
   "sensor.i3_120_range_ev_remaining_range": state("95", { unit_of_measurement: "km" }),
   "sensor.wallbox_total_power": state("0", { unit_of_measurement: "W" }),
   "sensor.wallbox_charge_status": state("Waiting"),
@@ -38,7 +38,7 @@ const EVENING = {
   "switch.technicka_mistnost_ventil_c1": state("on"),
   "switch.technicka_mistnost_ventil_c2": state("off"),
   "number.goodwe_depth_of_discharge_on_grid": state("80"),
-  "image.bmw_i3_vin_image": state("2026-10-24T10:00:00", { entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='83'%3E%3Crect width='168' height='83' rx='20' fill='%23888'/%3E%3C/svg%3E" }),
+  "image.vin": state("2026-10-24T10:00:00", { entity_picture: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='168' height='83'%3E%3Crect width='168' height='83' rx='20' fill='%23888'/%3E%3C/svg%3E" }),
   "number.wallbox_7_1_manual_charging_power": state("1400", { min: 1400, max: 3700, step: 100, unit_of_measurement: "W" }),
   // The battery detail (examples/energie.yaml, battery.*): values of the export of 24. 10.
   "sensor.goodwe_battery_state_of_health": state("98", { unit_of_measurement: "%" }),
@@ -76,7 +76,7 @@ const DAY = {
   "sensor.goodwe_battery_state_of_charge": state("88", { unit_of_measurement: "%" }),
   "sensor.goodwe_meter_active_power_total": state("200", { unit_of_measurement: "W" }),
   "sensor.goodwe_house_consumption": state("5800", { unit_of_measurement: "W" }),
-  "sensor.parkovani_bmw_i3_soc": state("62", { unit_of_measurement: "%" }),
+  "sensor.vin_stav_nabiti_predikce_integrace": state("62", { unit_of_measurement: "%" }),
   "sensor.wallbox_total_power": state("4100", { unit_of_measurement: "W" }),
   "sensor.wallbox_charge_status": state("Charging"),
   "sensor.tuv_power_total": state("1200", { unit_of_measurement: "W" }),
@@ -184,6 +184,16 @@ if (scenario === "full") {
   Object.assign(states, structuredClone(DAY));
 } else if (scenario === "grid") {
   Object.assign(states, structuredClone(GRID));
+} else if (scenario === "mix") {
+  // The sun feeds the house and charges the battery, the grid adds to the house, no car: without a new order the bands would cross.
+  Object.assign(states, structuredClone(EVENING), {
+    "sensor.goodwe_pv_power": state("1400", { unit_of_measurement: "W" }),
+    "sensor.goodwe_battery_power": state("-800", { unit_of_measurement: "W" }),
+    "sensor.goodwe_meter_active_power_total": state("-200", { unit_of_measurement: "W" }),
+    "sensor.goodwe_house_consumption": state("800", { unit_of_measurement: "W" }),
+    "sensor.wallbox_charge_status": state("Disconnected"),
+    "sensor.wallbox_total_power": state("0", { unit_of_measurement: "W" }),
+  });
 } else if (scenario === "unavailable") {
   Object.keys(EVENING).forEach((id, index) => {
     states[id] = state(index % 2 ? "unknown" : "unavailable");

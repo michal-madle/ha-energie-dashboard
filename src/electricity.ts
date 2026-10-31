@@ -3,7 +3,7 @@ import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import { SOURCES, isOn } from "./model";
 import type { FlowModel, Sink, Source } from "./model";
-import { bands, layout } from "./sankey";
+import { bands, layout, order } from "./sankey";
 import type { Layout } from "./sankey";
 import type { Settings } from "./types";
 import { formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
@@ -155,7 +155,9 @@ export const withElectricity = <T extends Constructor<Sunned>>(Base: T) =>
         s.num.flows.kw_from,
       );
       const tiles = this.tiles(s, model, unit);
-      const lay = layout(this._width, tiles.filter((tile) => tile.side === "R").map((tile) => tile.key as Sink));
+      // The tiles stand in the order in which the bands cross the least (CURRENT_SPEC.md, Toky energie).
+      const arranged = order(model.flows, tiles.filter((tile) => tile.side === "R").map((tile) => tile.key as Sink));
+      const lay = layout(this._width, arranged.sinks, arranged.sources);
       const band = bands(model.flows, lay, { maxPxPerKw: s.num.flows.band_max_px_per_kw, minPx: s.num.flows.band_min_px });
       const stops = (source: Source) =>
         svg`<linearGradient id="rg-${source}" x1="0" x2="1" y1="0" y2="0">

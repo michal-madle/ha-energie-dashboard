@@ -176,7 +176,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
         [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
         [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
-        [{ car: { soc: "sensor.parkovani_bmw_i3_soc" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, charge_limit, image_scale, link\)/],
+        [{ car: { soc: "sensor.vin_stav_nabiti_predikce_integrace" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, charge_limit, image_scale, link\)/],
         [{ car: { image_scale: 5 } }, /car\.image_scale must be a number from 0\.5 to 3/],
         [{ title: 5 }, /title must be a text/],
         [{ titles: { car: "" } }, /titles\.car must be a non-empty text/],
@@ -272,6 +272,14 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
 // ------------------------------------------------------------------ flows
 
 test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () => {
+  test("pásy se nekříží: dlaždice stojí v pořadí s nejméně křížením", async ({ page }) => {
+    await open(page, "mix");
+    const tops = Object.fromEntries((await readTiles(page)).map((item) => [item.key, Number(/top:([\d.]+)px/.exec(item.style)?.[1])]));
+    // Slunce → Dům, Slunce → Baterie, Síť → Dům: Baterie (nabíjí) je nad Domem, jinak by se pásy křížily.
+    expect(tops.batIn).toBeLessThan(tops.house);
+    expect(tops.sun).toBeLessThan(tops.grid);
+    await expect(page.locator(".flow svg path.dots")).toHaveCount(3);
+  });
   test("toky: poledne, večer, boost ze sítě a šum pod prahem", async ({ page }) => {
     test.setTimeout(120000);
     await test.step("poledne: hodnoty ve všech dlaždicích v jedné jednotce, pásy podle zdrojů, věta o stavu", async () => {
