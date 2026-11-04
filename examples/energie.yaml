@@ -87,10 +87,13 @@ house:
           energy: sensor.kuchyne_digestor_energy
         - name: {cs: Lednice, en: Fridge, sv: Kylskåp}
           power: sensor.kuchyne_lednice_power
+          energy: sensor.kuchyne_lednice_energie
         - name: {cs: Trouba, en: Oven, sv: Ugn}
           power: sensor.kuchyne_trouba_power
+          energy: sensor.kuchyne_trouba_energie
         - name: {cs: Mikrovlnka, en: Microwave, sv: Mikrovågsugn}
           power: sensor.kuchyne_mikrovlnka_power
+          energy: sensor.kuchyne_mikrovlnka_energie
     - name: {cs: Klimatizace, en: Air conditioning, sv: Luftkonditionering}
       icon: mdi:air-conditioner
       appliances:
