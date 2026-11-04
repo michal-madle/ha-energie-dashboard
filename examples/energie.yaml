@@ -10,14 +10,14 @@
 type: custom:ha-energie-dashboard
 
 language: auto                  # jazyk karty: auto (podle Home Assistantu: čeština, švédština, jinak angličtina), cs, sv, en
-title:                          # nadpis nad kartami: text, nebo podle jazyka {cs: Energie dům, en: Energy house, sv: Energi hus}; bez hodnoty podle jazyka karty (Energie / Energi / Energy), "" ho vynechá
+title: {cs: Energie, en: Energy, sv: Energi}   # nadpis nad kartami: text, nebo podle jazyka; bez hodnoty podle jazyka karty (Energie / Energi / Energy), "" ho vynechá
 
 # ----------------------------------------------------------------- nadpisy panelů
-# Bez hodnoty se panely jmenují podle jazyka karty. Každý nadpis je text, nebo podle jazyka {cs: Elektřina, en: Electricity, sv: El}; bez jazyka karty se vezme angličtina, pak první uvedený.
+# Bez hodnoty se panely jmenují podle jazyka karty. Každý nadpis je text, nebo podle jazyka {cs, en, sv}; bez jazyka karty se vezme angličtina, pak první uvedený.
 titles:
-  electricity:                  # panel s toky energie (Elektřina / El / Electricity)
-  car:                          # panel auta (BMW i3)
-  water:                        # panel bojleru, zásobníku a mísení (Teplá voda / Varmvatten / Hot water)
+  electricity: {cs: Elektřina, en: Electricity, sv: El}   # panel s toky energie
+  car: {cs: BMW i3, en: BMW i3, sv: BMW i3}               # panel auta
+  water: {cs: Teplá voda, en: Hot water, sv: Varmvatten}  # panel bojleru, zásobníku a mísení
 
 # ------------------------------------------------------------ entity: toky energie
 pv:

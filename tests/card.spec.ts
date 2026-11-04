@@ -120,8 +120,10 @@ const alertTitles = (page: Page) => page.locator(".alert .row-title").allTextCon
 
 test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
   test("příklad YAML obsahuje úplně všechna nastavení a výchozí hodnoty jsou přesně ty v příkladu", async ({ page }) => {
+    // A text by language ({cs, en, sv}) is one setting, not three.
+    const isTexts = (value: object) => Object.keys(value).length > 0 && Object.keys(value).every((key) => ["cs", "en", "sv"].includes(key));
     const leaves = (value: unknown, path = ""): string[] =>
-      value && typeof value === "object" && !Array.isArray(value)
+      value && typeof value === "object" && !Array.isArray(value) && !isTexts(value)
         ? Object.entries(value).flatMap(([key, item]) => leaves(item, path ? `${path}.${key}` : key))
         : [path];
     const found = leaves(example());
@@ -129,7 +131,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(found.filter((key) => !CONFIG_KEYS.includes(key)), "neznámé klíče").toEqual([]);
 
     await open(page, "full");
-    const [explicit, implicit] = await page.evaluate((config) => {
+    const [explicit, implicit, titleLanguages] = await page.evaluate((config) => {
       const normalized = (value: unknown) => {
         const card = document.createElement("ha-energie-dashboard") as unknown as { setConfig(value: unknown): void; _config: unknown };
         card.setConfig(value);
@@ -144,9 +146,16 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes"],
         tank: ["temp_min", "temp_max", "temp_step"],
       })) for (const key of keys) delete bare[section][key];
-      return [normalized(config), normalized(bare)];
+      // The title and the headings of the panels are in the example in all three languages (uživatel 4. 11. 2026); without them the card
+      // names the panels by its language, so they are compared apart from the rest.
+      const plain = structuredClone(config);
+      const languages = [plain.title, ...Object.values(plain.titles ?? {})].map((texts) => Object.keys((texts as object) ?? {}));
+      delete plain.title;
+      delete plain.titles;
+      return [normalized(plain), normalized(bare), languages];
     }, example());
     expect(explicit).toEqual(implicit);
+    expect(titleLanguages).toEqual([["cs", "en", "sv"], ["cs", "en", "sv"], ["cs", "en", "sv"], ["cs", "en", "sv"]]);
     const settings = JSON.parse(explicit);
     expect(settings.entities.boiler.boost_target_temperature).toBe("number.tuv_2_2_boost_target_temperature");
     expect(settings.entities.daily.pv_generation).toBe("sensor.energie_fve_dnes");

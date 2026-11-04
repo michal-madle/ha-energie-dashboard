@@ -24,6 +24,12 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 - Uživatel 4. 11. 2026: „entity map taky přesun. V dashboardu budou jen veřejné věci. Private budou v ha-config. Tvrdé pravidlo“ (pravidlo 12 v `AGENTS.md` kitu). `ENTITY_MAP.md` je v `ha-config` jako `energie/entity/ENTITY_MAP.md`; z `README.md` odstraněny oddíly „Export entit z Home Assistantu“ a „Týdenní ladění předpovědi“. Přeodvození mapy z exportů z 3. 11. až po novém exportu (uživatel: „zatím ne, az po novem exportu“).
 - Zjištěno: `energie.json` a `spotrebice_helpery.json` v `ha-config` jsou z 3. 11. 2026 (374 a 21 entit), `ENTITY_MAP.md` vychází z exportů z 30. 10. a 2. 11.
 
+### 2026-11-04 · Multilanguage všude, čítače energie kuchyně v YAML (potvrzeno uživatelem)
+
+- Uživatel (k úkolům po přejmenování skupiny): „1 ok. 2 co? nemas config? 3 chci multilanguage vsude“.
+- Multilanguage všude: i `title` a `titles.*` v `examples/energie.yaml` mají `{cs, en, sv}` (texty stejné jako výchozí texty karty; dříve prázdné s popisem v komentáři); v Klimatu `title: Domov` v `README.md`. Klíče, které jsou hodnotami entit (například `house_modes` Zima / Léto, které se porovnávají se stavem `input_select`), se nepřekládají. Test úplnosti příkladu bere `{cs, en, sv}` jako jedno nastavení a texty nadpisů ověřuje zvlášť.
+- Čítače energie lednice, trouby a mikrovlnky (entity `_energy` jsou v Home Assistantu vypnuté): v soukromém `ha-config`, `yaml/configuration.yaml`, nové senzory `platform: integration` z výkonu (`sensor.kuchyne_lednice_energie`, `…_trouba_energie`, `…_mikrovlnka_energie`). Neověřeno v běžícím Home Assistantu (YAML je jen v repozitáři). Do příkladu karty se `energy:` doplní, až budou entity v obrazu HA.
+
 ### 2026-11-04 · Skupina Kuchyně a všechny názvy v příkladu vícejazyčně (potvrzeno uživatelem)
 
 - Uživatel: „aktuální group Vaření přejmenuj na Kuchyně/Kitchen/Kök … Digestoř, Lednice, Trouba, Mikrovlnka.“ „Předělej všechny name a description na multilanguage.“ „Klidně cokoliv uprav, nebo mi řekni. Pak napiš co mám udělat já.“
