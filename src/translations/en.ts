@@ -229,7 +229,7 @@ export const en: Texts = {
     plug: "Socket",
     plugOff: "off",
     rangeLabel: "Period",
-    houseRest: "House (not measured)",
+    houseRest: "Other",
     houseTotal: "House (total)",
     dataFrom: (date: string) => `Data from ${date}`,
     axisFrom: { "1d": "−24 h", "7d": "−7 d", "30d": "−30 d" } as Record<string, string>,
