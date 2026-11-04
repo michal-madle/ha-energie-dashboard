@@ -1571,7 +1571,7 @@ const en = {
     plug: "Zásuvka",
     plugOff: "vypnuta",
     rangeLabel: "Období",
-    houseRest: "Dům (neměřeno)",
+    houseRest: "Ostatní",
     houseTotal: "Dům (celkem)",
     dataFrom: (a) => `Data od ${a}`,
     axisFrom: { "1d": "−24 h", "7d": "−7 d", "30d": "−30 d" },
@@ -1976,7 +1976,7 @@ const en = {
     plug: "Socket",
     plugOff: "off",
     rangeLabel: "Period",
-    houseRest: "House (not measured)",
+    houseRest: "Other",
     houseTotal: "House (total)",
     dataFrom: (a) => `Data from ${a}`,
     axisFrom: { "1d": "−24 h", "7d": "−7 d", "30d": "−30 d" },
@@ -2380,7 +2380,7 @@ const en = {
     plug: "Uttag",
     plugOff: "av",
     rangeLabel: "Period",
-    houseRest: "Hus (ej mätt)",
+    houseRest: "Övrigt",
     houseTotal: "Hus (totalt)",
     dataFrom: (a) => `Data från ${a}`,
     axisFrom: { "1d": "−24 h", "7d": "−7 d", "30d": "−30 d" },
@@ -8222,4 +8222,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: De(Ks()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-04 18:15 UTC · po 25be88f ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-04 19:29 UTC · po 9461126 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

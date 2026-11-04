@@ -253,7 +253,7 @@ export const cs = {
     plug: "Zásuvka",
     plugOff: "vypnuta",
     rangeLabel: "Období",
-    houseRest: "Dům (neměřeno)",
+    houseRest: "Ostatní",
     houseTotal: "Dům (celkem)",
     dataFrom: (date: string) => `Data od ${date}`,
     axisFrom: { "1d": "−24 h", "7d": "−7 d", "30d": "−30 d" } as Record<string, string>,

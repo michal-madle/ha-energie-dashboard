@@ -24,6 +24,11 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 - Uživatel 4. 11. 2026: „entity map taky přesun. V dashboardu budou jen veřejné věci. Private budou v ha-config. Tvrdé pravidlo“ (pravidlo 12 v `AGENTS.md` kitu). `ENTITY_MAP.md` je v `ha-config` jako `energie/entity/ENTITY_MAP.md`; z `README.md` odstraněny oddíly „Export entit z Home Assistantu“ a „Týdenní ladění předpovědi“. Přeodvození mapy z exportů z 3. 11. až po novém exportu (uživatel: „zatím ne, az po novem exportu“).
 - Zjištěno: `energie.json` a `spotrebice_helpery.json` v `ha-config` jsou z 3. 11. 2026 (374 a 21 entit), `ENTITY_MAP.md` vychází z exportů z 30. 10. a 2. 11.
 
+### 2026-11-04 · „Dům (neměřeno)“ přejmenováno na „Ostatní“ (potvrzeno uživatelem)
+
+- Uživatel (screenshot Historie Dům, legenda): „Dům neměřeno přejmenovat na Ostatní nebo podobně. `neměřeno` je shit.“ a „Přejmenovat všude“.
+- Nahrazeno: popisek zbytku spotřeby domu v grafu, legendě a čtení Historie Dům (`t.house.houseRest`) „Dům (neměřeno)“ / „House (not measured)“ / „Hus (ej mätt)“ → „Ostatní“ / „Other“ / „Övrigt“. Jiné místo s tímto textem v kartách ani v kitu není.
+
 ### 2026-11-04 · Čítače energie kuchyně v příkladu (potvrzeno obrazem HA)
 
 - Uživatel: „sensor mam, kuchyne taky. snapshot v gitu“ a po prvním exportu bez nich: „restart Ha, aktualizace aplikaci a integraci. pak znovu git push“. Druhý export (`ha-config`, 4. 11. 20:25) obsahuje `sensor.kuchyne_lednice_energie`, `sensor.kuchyne_trouba_energie` a `sensor.kuchyne_mikrovlnka_energie` (kWh, `energy`, `state_class: total`, zapnuté).

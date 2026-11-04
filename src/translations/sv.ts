@@ -229,7 +229,7 @@ export const sv: Texts = {
     plug: "Uttag",
     plugOff: "av",
     rangeLabel: "Period",
-    houseRest: "Hus (ej mätt)",
+    houseRest: "Övrigt",
     houseTotal: "Hus (totalt)",
     dataFrom: (date: string) => `Data från ${date}`,
     axisFrom: { "1d": "−24 h", "7d": "−7 d", "30d": "−30 d" } as Record<string, string>,
