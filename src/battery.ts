@@ -12,7 +12,7 @@ import { BATTERY_RANGE_KEY, NO_DATA, clamp, mix } from "./view";
 import type { BatEntry, BatRow, BatTab, Constructor, Tile } from "./view";
 import { DAY, HOUR, RANGES, RANGE_DAYS, W, areaPath, bandPath, bin, domain, fetchStatistics, formatDuration, hasValues, linePath, minutesLeft, niceCeil, round1 } from "./battery-data";
 import type { Period, Range, StatType, Stats } from "./battery-data";
-import { GUTTER, fillGrid, tickPitch, timeTicks } from "./chart-grid";
+import { GUTTER, fillGrid, niceStep, tickPitch, timeTicks } from "./chart-grid";
 import type { TimeAxis } from "./chart-grid";
 
 /** How long a loaded history is used before it is fetched again (ms). */
@@ -329,7 +329,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
             <line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>
             ${dot ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
           </svg>
-          ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 7px);left:calc(${((W / (W + GUTTER)) * 100).toFixed(2)}% + 4px)">${label.text}</span>`)}
+          ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 7px);left:calc(${((W / (W + GUTTER)) * 100).toFixed(2)}% + 8px)">${label.text}</span>`)}
           <input type="range" style="width:${((W / (W + GUTTER)) * 100).toFixed(2)}%" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
             @input=${(event: Event) => { this._batScrub = { ...this._batScrub, [c.id]: Number((event.target as HTMLInputElement).value) }; }} @keydown=${step} />
         </div>
@@ -366,7 +366,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const x = (i: number) => round1((i / (n - 1)) * W);
       const sy = (v: number) => round1(98 - (clamp(v, 0, 100) / 100) * 90);
       const peak = niceCeil(Math.max(1, ...power.map((v) => Math.abs(v ?? 0))));
-      const axis = 160;
+      const axis = 172;
       const py = (v: number) => round1(axis - (clamp(v, -peak, peak) / peak) * 44);
       const barW = 4.2;
       const bars = power.map((v, i) => {
@@ -379,7 +379,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const area = areaPath(soc, x, sy, 98);
       const kw = (v: number) => `${formatFixed(v, v % 1 === 0 ? 0 : 1)} kW`;
       return {
-        id: "level", h: 210, n, x,
+        id: "level", h: 224, n, x,
         grid: [{ y: 8 }, { y: 53 }, { y: 98, strong: true }, { y: axis - 44 }, { y: axis, strong: true }, { y: axis + 44 }],
         time: { start, end },
         labels: [
@@ -554,8 +554,14 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
           read: (i) => `${clock(i)} · ${cycles[i] === undefined ? NO_DATA : this.t.bat.health.cycles(formatFixed(cycles[i]!, 1))}`,
         };
       }
-      const dom = domain([...spec.low, ...spec.high], spec.minSpan);
-      if (!dom) return undefined;
+      const raw = domain([...spec.low, ...spec.high], spec.minSpan);
+      if (!raw) return undefined;
+      // Round limits and an even number of parts, so the lines (and the middle one) lie on round values (chart-grid.ts, niceStep).
+      const step = niceStep(raw.hi - raw.lo, 4);
+      const lo = Math.floor(raw.lo / step + 1e-9) * step;
+      let hi = Math.ceil(raw.hi / step - 1e-9) * step;
+      if (Math.round((hi - lo) / step) % 2 === 1) hi += step;
+      const dom = { lo, hi };
       const y = (v: number) => round1(130 - ((clamp(v, dom.lo, dom.hi) - dom.lo) / (dom.hi - dom.lo)) * 120);
       const band = id === "life" ? "" : bandPath(spec.low, spec.high, x, y);
       const line = spec.line ? linePath(spec.line, x, y) : "";
