@@ -95,7 +95,10 @@ export function timeTicks(axis: TimeAxis): Tick[] {
     const x = Math.round(at(ms) * 10) / 10;
     if (axis.slot) {
       const labelX = Math.round(at(ms + axis.slot / 2) * 10) / 10;
-      return { x, text: labelX > x1 + 1 ? "" : label(ms), labelX };
+      const text = label(ms);
+      // A label that would stick out over the edge of the plot is left out (the neighbours give the scale).
+      const half = text.length * 3.3;
+      return { x, text: labelX - half < x0 || labelX + half > x1 ? "" : text, labelX };
     }
     return { x, text: x < x0 + 6 || x > x1 - 6 ? "" : label(ms) };
   });

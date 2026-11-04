@@ -663,7 +663,9 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       for (let i = 0; i < n; i++) peak = Math.max(peak, items.reduce((sum, item) => sum + val(item.list, i), 0));
       const h = 44;
       const base = 42;
-      const scale = peak > 0 ? 38 / peak : 0;
+      // The top line stands for a round value (the label), the bars use the scale below it.
+      const top = peak > 0 ? niceCeil(peak) : 0;
+      const scale = top > 0 ? 36 / top : 0;
       // The guide lines of the day by 3 hours (8 parts), the top and the bottom line of the bars (chart-grid.ts).
       const midnight = new Date();
       midnight.setHours(0, 0, 0, 0);
@@ -685,11 +687,11 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         <span class="house-micro-cap">${t.house.chartToday} · kWh</span>
         <svg viewBox="0 0 ${W + GUTTER} ${h}" role="img" aria-label=${t.house.chartToday}>
           ${ticks.map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${base} style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>`)}
-          <line x1="0" y1="3" x2=${W} y2="3" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>
+          <line x1="0" y1="6" x2=${W} y2="6" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>
           <line x1="0" y1=${base} x2=${W} y2=${base} style="stroke:var(--ed-tick);stroke-width:1.5"></line>
           ${bars}
-          <text x=${W + 5} y="7" style="fill:var(--ed-secondary)" font-size="12">${peak > 0 ? formatKwh(peak) : ""}</text>
-          <text x=${W + 5} y=${base + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
+          <text x=${W + 9} y="10" style="fill:var(--ed-secondary)" font-size="12">${top > 0 ? formatNumber(top, top % 1 ? 1 : 0) : ""}</text>
+          <text x=${W + 9} y=${base + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
         </svg>
         <div class="bat-axis ticks" aria-hidden="true">${ticks.map((tick) => html`<span style="left:${((tick.x / (W + GUTTER)) * 100).toFixed(1)}%;transform:translateX(${tick.x < 8 ? "0" : tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>
         ${items.length > 1 ? html`<div class="house-micro-legend">${items.map((item) => html`<span><i style="background:${item.color}"></i>${item.name}</span>`)}</div>` : nothing}
