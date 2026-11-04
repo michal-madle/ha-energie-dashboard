@@ -68,8 +68,8 @@ house:
       start_energy: input_number.technicka_mistnost_pracka_power_start
     - name: Sušička
       icon: mdi:tumble-dryer
-      power: sensor.technicka_mistnost_susicka_power
-      energy: sensor.technicka_mistnost_susicka_energy
+      power: sensor.technicka_mistnost_susicka_susicka_power
+      energy: sensor.technicka_mistnost_susicka_susicka_energy
       running: input_boolean.technicka_mistnost_susicka_bezi
       start_energy: input_number.technicka_mistnost_susicka_power_start
     - name: Myčka

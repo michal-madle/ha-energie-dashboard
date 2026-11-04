@@ -154,7 +154,7 @@ function fakeStatistics(message) {
         "sensor.wallbox_total_power": 800,
         "sensor.tuv_power_total": 300,
         "sensor.technicka_mistnost_pracka_power": 600,
-        "sensor.technicka_mistnost_susicka_power": 900,
+        "sensor.technicka_mistnost_susicka_susicka_power": 900,
         "sensor.kuchyne_mycka_power": 0,
         "sensor.kuchyne_kavovar_power": 60,
         "sensor.obyvak_klimatizace_power": 0,
@@ -238,7 +238,7 @@ if (params.get("appliances") === "1") {
     }
   };
   add("dev_pracka", "Pračka", "technicka_mistnost_pracka", "technicka_mistnost_pracka_bezi", "technicka_mistnost_pracka_power_start", true, 31, 112, "mdi:washing-machine");
-  add("dev_susicka", "Sušička", "technicka_mistnost_susicka", "technicka_mistnost_susicka_bezi", "technicka_mistnost_susicka_power_start", false, 40, 0, "mdi:tumble-dryer");
+  add("dev_susicka", "Sušička", "technicka_mistnost_susicka_susicka", "technicka_mistnost_susicka_bezi", "technicka_mistnost_susicka_power_start", false, 40, 0, "mdi:tumble-dryer");
   add("dev_mycka", "Myčka", "kuchyne_mycka", "kuchyne_mycka_bezi", "kuchyne_mycka_start_energie", false, 900, 0, "mdi:dishwasher");
   // The groups of the example (house.groups): cooking with a counter for the oven and the refrigerator, only the power for the coffee machine; air conditioning: a counter for the oven and the refrigerator, only the power for the coffee machine.
   Object.assign(states, {
@@ -253,7 +253,7 @@ if (params.get("appliances") === "1") {
   registry.devices.dev_vacuum = { name: "Roborock", name_by_user: null, labels: ["appliances"] };
   registry.entities["vacuum.roborock"] = { device_id: "dev_vacuum", labels: [] };
   states["vacuum.roborock"] = state("docked");
-  if (params.get("fault") === "1") states["binary_sensor.technicka_mistnost_susicka_overheating"] = state("on", { device_class: "problem" });
+  if (params.get("fault") === "1") states["binary_sensor.technicka_mistnost_susicka_susicka_overheating"] = state("on", { device_class: "problem" });
 }
 
 // ?forecast=1: the forecast of the sun (examples/energie.yaml, forecast.*) with its entities and a weather entity.
