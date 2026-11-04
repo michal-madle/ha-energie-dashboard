@@ -58,7 +58,7 @@ Zadání (stav k 17. 10. 2026) a YAML dnešního dashboardu, potvrzené exportem
 | Boost bojleru | `switch.tuv_boost` (`boiler.boost`) | – | `on` / `off` | AZ Router |
 | Bojler – cíl z přebytku | `number.tuv_2_1_target_temperature` (`boiler.target_temperature`) | °C | 20–85 | AZ Router |
 | Bojler – cíl v boostu | `number.tuv_2_2_boost_target_temperature` (`boiler.boost_target_temperature`) | °C | 20–85 | AZ Router |
-| Zásobník (Plyn) – nastavená teplota | `water_heater.…` zásobníku (`tank.water_heater`; od 3. 11. integrace Tado CE, ID viz `ENTITY_MAP.md` po novém exportu), atribut `temperature` | °C | jen nastavená, naměřená teplota není | Tado |
+| Zásobník (Plyn) – nastavená teplota | `water_heater.…` zásobníku (`tank.water_heater`; od 3. 11. integrace Tado CE, ID viz `ENTITY_MAP.md`), atribut `temperature` | °C | jen nastavená, naměřená teplota není | Tado |
 | Zásobník (Plyn) – režim | totéž, stav entity | – | `auto`, `heat`, `off`; v0 ukazuje hodnotu tak, jak je (např. „režim auto“) | Tado |
 | Mísení vody – ventil C1 | `switch.technicka_mistnost_ventil_c1` (`mixing.valve_c1`) | – | `on` / `off` | Nous L3 (Tuya) |
 | Mísení vody – ventil C2 | `switch.technicka_mistnost_ventil_c2` (`mixing.valve_c2`) | – | `on` / `off` | Nous L3 (Tuya) |

@@ -8,6 +8,7 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 
 - `ENTITY_MAP.md` je v `ha-config` jako `energie/ENTITY_MAP.md`, entity ověřuje jeden obraz `ha/entities.json` (místo exportů `energie.json`, `spotrebice.json`, `spotrebice_helpery.json` a šablon). `FORECAST.md` je sloučen do `TYDEN.md`, `spotrebice.txt` odstraněn. Podrobnosti a slova uživatele: `DESIGN_HISTORY.md` kitu, záznam z 4. 11. (ha-config jako obraz HA).
 - `package.json` a `package-lock.json`: kit připnut na `79c0d626…` místo `e96c781…`, který zmizel při squash `main` kitu.
+- Po prvním skutečném obrazu (4. 11., 1815 entit): zásobník je `water_heater.technicka_mistnost_tado_ce_tepla_voda` (Tado CE), příklad `examples/energie.yaml` a testy používají toto ID místo zakázané entity integrace `tado`; `CURRENT_SPEC.md` už neodkazuje na „nový export“. Podrobnosti: `DESIGN_HISTORY.md` kitu, záznam z 4. 11. (práce na `main`).
 
 ### 2026-11-04 · Soukromá data a týdenní ladění přesunuty do `ha-config` (potvrzeno uživatelem)
 

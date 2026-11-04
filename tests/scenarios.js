@@ -34,7 +34,7 @@ const EVENING = {
   "switch.tuv_boost": state("off"),
   "number.tuv_2_1_target_temperature": state("60", { min: 20, max: 85, step: 5 }),
   "number.tuv_2_2_boost_target_temperature": state("55", { min: 20, max: 85, step: 5 }),
-  "water_heater.technicka_mistnost_tado_tepla_voda": state("auto", { temperature: 40, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] }),
+  "water_heater.technicka_mistnost_tado_ce_tepla_voda": state("auto", { temperature: 40, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] }),
   "switch.technicka_mistnost_ventil_c1": state("on"),
   "switch.technicka_mistnost_ventil_c2": state("off"),
   "number.goodwe_depth_of_discharge_on_grid": state("80"),

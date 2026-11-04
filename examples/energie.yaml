@@ -134,7 +134,7 @@ water:
   gauge_min: 15                                         # °C začátek obou obloukových měřičů a výplně dlaždice Bojler
   gauge_max: 65                                         # °C konec měřičů (platí vyšší z této hodnoty a cíle Přetoky)
 tank:
-  water_heater: water_heater.technicka_mistnost_tado_tepla_voda  # zásobník (water_heater.…)
+  water_heater: water_heater.technicka_mistnost_tado_ce_tepla_voda  # zásobník (water_heater.…)
   temp_min: 38                                          # °C nejnižší teplota zásobníku (v Off drží kotel toto minimum)
   temp_max: 65                                          # °C nejvyšší teplota zásobníku
   temp_step: 1                                          # °C krok teploty zásobníku
