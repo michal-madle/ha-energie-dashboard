@@ -24,6 +24,13 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 - Uživatel 4. 11. 2026: „entity map taky přesun. V dashboardu budou jen veřejné věci. Private budou v ha-config. Tvrdé pravidlo“ (pravidlo 12 v `AGENTS.md` kitu). `ENTITY_MAP.md` je v `ha-config` jako `energie/entity/ENTITY_MAP.md`; z `README.md` odstraněny oddíly „Export entit z Home Assistantu“ a „Týdenní ladění předpovědi“. Přeodvození mapy z exportů z 3. 11. až po novém exportu (uživatel: „zatím ne, az po novem exportu“).
 - Zjištěno: `energie.json` a `spotrebice_helpery.json` v `ha-config` jsou z 3. 11. 2026 (374 a 21 entit), `ENTITY_MAP.md` vychází z exportů z 30. 10. a 2. 11.
 
+### 2026-11-04 · Skupina Kuchyně a všechny názvy v příkladu vícejazyčně (potvrzeno uživatelem)
+
+- Uživatel: „aktuální group Vaření přejmenuj na Kuchyně/Kitchen/Kök … Digestoř, Lednice, Trouba, Mikrovlnka.“ „Předělej všechny name a description na multilanguage.“ „Klidně cokoliv uprav, nebo mi řekni. Pak napiš co mám udělat já.“
+- Nahrazeno v `examples/energie.yaml`: skupina Vaření (Trouba, Lednice, Kávovar) → Kuchyně / Kitchen / Kök se zařízeními Digestoř (výkon + čítač), Lednice, Trouba, Mikrovlnka (jen výkon). Entity podle obrazu HA v `ha-config` (4. 11. 2026): čítače energie lednice, trouby a mikrovlnky jsou v HA vypnuté, proto se z výkonu počítá energie; digestoř má zapnutý `sensor.kuchyne_digestor_energy`. Kávovar v obrazu není.
+- Všechny `name` v příkladu mají podobu `{cs, en, sv}` (pračka, sušička, myčka, zařízení skupin, skupiny). Překlady (Tumble dryer / Torktumlare, Dishwasher / Diskmaskin, Cooker hood / Spisfläkt, Fridge / Kylskåp, Oven / Ugn, Microwave / Mikrovågsugn, Living room / Vardagsrum) jsou moje, uživatel je neschvaloval.
+- Testy a fixtury: skupina Kuchyně, čtyři zařízení, překlady Kitchen a Kök.
+
 ### 2026-11-03 · Slovo stavu na šedé výplni v barvě textu, Bojler potvrzen (potvrzeno uživatelem)
 
 - Uživatel (odpovědi): „1 výkon max je 4kW víc nemůže takže 4kW je 100% výkonu, 2 ano přepiš, 3 v HA už mám 14“.

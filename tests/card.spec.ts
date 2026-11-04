@@ -649,13 +649,11 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail).not.toContainText(/Za 1 den/);
       await expect(detail).toContainText(/cykl/);
       // A group (house.groups) sums its appliances: the power now and the energy of today; opened, each appliance has both.
-      const cooking = detail.getByRole("button", { name: /Vaření/ });
+      const cooking = detail.getByRole("button", { name: /Kuchyně/ });
       await expect(cooking).toContainText("Dnes");
       await expect(cooking).toContainText("1,18 kW");
       await cooking.click();
-      await expect(detail.locator(".house-cook")).toContainText("Trouba");
-      await expect(detail.locator(".house-cook")).toContainText("Lednice");
-      await expect(detail.locator(".house-cook")).toContainText("Kávovar");
+      for (const name of ["Digestoř", "Lednice", "Trouba", "Mikrovlnka"]) await expect(detail.locator(".house-cook")).toContainText(name);
       await expect(detail.locator(".house-cook")).toContainText("Teď");
       await expect(detail.locator(".house-cook")).toContainText("Celkem dnes");
       await expect(detail.locator(".house-cook")).toContainText("1,10 kW");
@@ -668,7 +666,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // The second group has a translated name and its own icon.
       await expect(detail.getByRole("button", { name: /Klimatizace/ })).toContainText("0 W");
       // The group has the trend too (its appliances stacked, a legend names them).
-      await expect(detail.locator(".house-micro-legend span")).toHaveCount(3);
+      await expect(detail.locator(".house-micro-legend span")).toHaveCount(4);
       await detail.getByRole("radio", { name: "Historie" }).click();
       await expect(detail.locator(".bat-chart")).toBeVisible();
       // A click lands on the bar it touches, not on its neighbour (the bars start to the right of the labels of the axis).
@@ -685,15 +683,15 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".house-panel-head")).toContainText("Celkem");
       await expect(detail.locator(".house-panel-row")).not.toHaveCount(0);
       await expect(detail.locator(".bat-read")).toHaveCount(0);
-      // Groups are in the chart too: the group Vaření is a row of the reading.
-      await expect(detail.locator(".house-panel-row").filter({ hasText: "Vaření" })).toHaveCount(1);
+      // Groups are in the chart too: the group Kuchyně is a row of the reading.
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).toHaveCount(1);
       await detail.getByRole("radio", { name: "7 dní" }).click();
       await expect(detail.locator(".bat-chart")).toBeVisible();
       await page.keyboard.press("Escape");
       await expect(page.getByRole("dialog", { name: "Detail domu" })).toHaveCount(0);
     });
     await test.step("názvy skupin se překládají podle jazyka karty", async () => {
-      for (const [lang, name] of [["en", "Cooking"], ["sv", "Matlagning"]]) {
+      for (const [lang, name] of [["en", "Kitchen"], ["sv", "Kök"]]) {
         await open(page, "full", 393, 852, "dark", lang, "&appliances=1");
         await page.locator('.tile[data-tile="house"]').click();
         await page.locator(".house-pop .bat-open").click();
