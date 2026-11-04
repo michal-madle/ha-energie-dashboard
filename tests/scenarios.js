@@ -247,6 +247,9 @@ if (params.get("appliances") === "1") {
   Object.assign(states, {
     "sensor.kuchyne_digestor_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
     "sensor.kuchyne_digestor_energy": state("3", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
+    "sensor.kuchyne_lednice_energie": state("9", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
+    "sensor.kuchyne_trouba_energie": state("5", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
+    "sensor.kuchyne_mikrovlnka_energie": state("1", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
     "sensor.kuchyne_lednice_power": state("80", { unit_of_measurement: "W", device_class: "power" }),
     "sensor.kuchyne_trouba_power": state("1100", { unit_of_measurement: "W", device_class: "power" }),
     "sensor.kuchyne_mikrovlnka_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
