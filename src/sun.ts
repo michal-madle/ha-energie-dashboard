@@ -10,6 +10,7 @@ import type { PowerUnit } from "./utils";
 import { NO_DATA, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
 import type { BatEntry, Constructor, SunTab, Tile } from "./view";
 import { DAY, HOUR, W, areaPath, bandPath, bin, fetchStatistics, linePath, midnight, niceCeil, round1 } from "./battery-data";
+import { niceStep, tickPitch, timeTicks } from "./chart-grid";
 import type { Period, StatRow, StatType, Stats } from "./battery-data";
 import type { Batteried, Chart } from "./battery";
 import {
@@ -456,17 +457,18 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const low = fc.map((value) => (value === undefined ? undefined : value * lowRatio));
       const high = fc.map((value, i) => (value === undefined ? undefined : Math.min(value * highRatio, Math.max(value, possible[i] ?? Infinity))));
       const peak = Math.max(1, ...actual.map((value) => value ?? 0), ...possible.map((value) => value ?? 0), ...high.map((value) => value ?? 0));
-      // Guide lines every 1 kW, every 2 kW when that would be more than 7 lines.
-      const step = Math.ceil(peak) > 7 ? 2 : 1;
-      const top = Math.ceil(peak / step) * step;
+      // The guide lines of kW about as far apart as the lines of the time (chart-grid.ts), at round values.
+      const timeAxis = { start, end, x0: PAD, x1: W };
       const hy = 150;
+      const step = niceStep(peak, Math.round((hy - 12) / tickPitch(timeTicks(timeAxis))));
+      const top = Math.ceil(peak / step) * step;
       const y = (value: number) => round1(hy - (clamp(value, 0, top) / top) * (hy - 12));
       const kw = (value: number) => formatPower(value * 1000, "kW");
-      const levels = Array.from({ length: top / step }, (_, k) => (k + 1) * step);
+      const levels = Array.from({ length: Math.round(top / step) }, (_, k) => (k + 1) * step);
       return {
         id: "sun-today", h: 170, n, x, fade: 0, start: clamp((nowIndex / (n - 1)) * 100, 0, 100),
         grid: [{ y: hy, strong: true }, ...levels.map((level) => ({ y: y(level) }))],
-        labels: [...levels.map((level) => ({ y: y(level), text: formatNumber(level) })), { y: hy, text: "0" }],
+        labels: [...levels.map((level) => ({ y: y(level), text: formatNumber(level, level % 1 ? 1 : 0) })), { y: hy, text: "0" }],
         body: svg`<defs><linearGradient id="sun-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ed-sun)" stop-opacity="0.28"></stop><stop offset="1" style="stop-color:var(--ed-sun)" stop-opacity="0"></stop></linearGradient></defs>
           <path d=${bandPath(low, high, x, y)} style="fill:var(--ed-sun);fill-opacity:0.24"></path>
           <path d=${linePath(possible, x, y)} fill="none" style="stroke:var(--ed-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path>
@@ -479,11 +481,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
           if (possible[i] !== undefined) parts.push(`${t.possibleShort} ${kw(possible[i]!)}`);
           return `${clock} · ${parts.join(" · ")}`;
         },
-        // Guide lines every two hours, like the kW lines, labelled with the hour.
-        ticks: Array.from({ length: Math.floor(h1 / 2) - Math.ceil(h0 / 2) + 1 }, (_, k) => (Math.ceil(h0 / 2) + k) * 2).map((hour) => ({
-          x: x(clamp(((hour - h0) / (h1 - h0)) * n - 0.5, 0, n - 1)),
-          text: String(hour),
-        })),
+        time: timeAxis,
         from: formatClock(start), to: formatClock(end),
         legend: html`<div class="bat-legend wrap"><span><i class="bar" style="background:var(--ed-sun)"></i>${t.chartLegend.production}</span><span><i class="dots" aria-hidden="true"></i>${t.chartLegend.possible}</span><span><i class="swatch" style="background:var(--ed-sun);opacity:.3"></i>${t.chartLegend.forecast}</span></div>`,
       };
@@ -574,7 +572,6 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const hy = 150;
       const y = (value: number) => round1(hy - (clamp(value, 0, top) / top) * (hy - 14));
       const parts = this._sunMode === "parts";
-      const label = (i: number) => (range === "7d" ? new Intl.DateTimeFormat(this._i18n.locale, { weekday: "short" }).format(data[i].day) : formatWeekday(data[i].day).replace(/^\S+\s/, ""));
       let body: TemplateResult;
       if (parts) {
         const xs = data.map((_, i) => x(i));
@@ -596,7 +593,6 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
           ${d.total === undefined ? nothing : svg`<rect x=${round1(x(i) - bw / 2)} y=${y(d.total)} width=${bw} height=${round1(Math.max(1, hy - y(d.total)))} rx=${range === "7d" ? 5 : 2} style="fill:var(--ed-sun)"></rect>`}
           ${d.total !== undefined && range === "7d" ? svg`<text x=${x(i)} y=${y(d.total) - 5} text-anchor="middle" style="fill:var(--ed-text)" font-size="11" font-weight="600">${formatFixed(d.total, 1)}</text>` : nothing}`)}`;
       }
-      const ticks = range === "7d" ? data.map((_, i) => i) : [0, 7, 14, 21, n - 1];
       const legend = parts
         ? html`<div class="sun-blocks" role="group">${t.blocks.map((name, k) => html`<span><i style="background:${BLOCK_COLORS[k]}"></i><span>${name}</span></span>`)}</div>`
         : html`<div class="bat-legend sun-legend-row"><span><i class="dot" style="background:var(--ed-sun)"></i>${t.production}</span><span><i class="dot" style="background:var(--ed-tile)"></i>${t.possible}</span></div>`;
@@ -604,7 +600,10 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         id: `sun-hist-${parts ? "parts" : "total"}`, h: 170, n, x, fade: 0,
         grid: [{ y: hy, strong: true }, { y: y(top / 2) }, { y: y(top) }],
         labels: [{ y: y(top), text: formatNumber(top) }, { y: y(top / 2), text: formatNumber(top / 2, top / 2 % 1 ? 1 : 0) }, { y: hy, text: "0" }],
-        body: svg`${body}${ticks.map((i) => svg`<text x=${x(i)} y=${hy + 16} text-anchor="middle" style="fill:var(--ed-secondary)" font-size="11">${label(i)}</text>`)}`,
+        time: { start: data[0].day, end: data[n - 1].day + DAY, x0: PAD, x1: W, slot: DAY },
+        valueNum: (yy) => ((hy - yy) / (hy - 14)) * top,
+        valueAt: (yy) => formatNumber(((hy - yy) / (hy - 14)) * top, ((hy - yy) / (hy - 14)) * top % 1 ? 1 : 0),
+        body,
         dot: (i) => (data[i].total === undefined ? undefined : { y: y(data[i].total!), color: "var(--ed-sun)" }),
         read: (i) => {
           const d = data[i];
@@ -707,6 +706,11 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         <div class="bat-card-bar"><span class="bat-cap">${t.hist.accuracyTitle}</span>${this.hint("acc", t.hints.acc)}</div>
         <div class="sun-acc"><b>±${formatPercent(Math.round(v.deviation * 100))}</b><span class="bat-sub">${t.hist.accuracyAverage(v.pairs.length)}</span></div>
         <svg viewBox="0 0 ${width} 80" class="sun-pairs" role="img" aria-label=${t.hist.accuracyLabel}>
+          ${Array.from({ length: pairs.length + 1 }, (_, i) => svg`<line x1=${round1(i * step)} y1="0" x2=${round1(i * step)} y2=${base} class="grid"></line>`)}
+          <line x1="0" y1=${base - 25} x2=${width} y2=${base - 25} class="grid"></line>
+          <line x1="0" y1=${base - 50} x2=${width} y2=${base - 50} class="grid"></line>
+          <text x="2" y=${base - 52} style="fill:var(--ed-secondary)" font-size="10">${formatNumber(top)} kWh</text>
+          <text x="2" y=${base - 27} style="fill:var(--ed-secondary)" font-size="10">${formatNumber(top / 2, (top / 2) % 1 ? 1 : 0)}</text>
           <line x1="0" y1=${base} x2=${width} y2=${base} class="axis"></line>
           ${pairs.map((pair, i) => {
             const x = i * step + (step - 2 * bw - 2) / 2;

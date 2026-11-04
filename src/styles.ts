@@ -1664,8 +1664,9 @@ export const styles = css`
     height: 100%;
   }
 
-  .bat-chart .grid {
-    stroke: var(--ed-tile);
+  .bat-chart .grid,
+  .sun-pairs .grid {
+    stroke: var(--ed-bar);
     stroke-width: 1;
   }
 
@@ -1683,6 +1684,8 @@ export const styles = css`
     line-height: 14px;
     pointer-events: none;
     font-variant-numeric: tabular-nums;
+    /* A label stands over the bars: the colour of the card around the figures keeps it readable. */
+    text-shadow: 0 0 3px var(--ed-card), 0 0 3px var(--ed-card), 0 0 2px var(--ed-card);
   }
 
   .bat-chart input[type="range"] {
@@ -1729,6 +1732,7 @@ export const styles = css`
   .bat-axis.ticks {
     position: relative;
     height: 18px;
+    font-size: 12px;
   }
   .bat-axis.ticks span {
     position: absolute;

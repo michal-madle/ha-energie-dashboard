@@ -12,6 +12,8 @@ import { BATTERY_RANGE_KEY, NO_DATA, clamp, mix } from "./view";
 import type { BatEntry, BatRow, BatTab, Constructor, Tile } from "./view";
 import { DAY, HOUR, RANGES, RANGE_DAYS, W, areaPath, bandPath, bin, domain, fetchStatistics, formatDuration, hasValues, linePath, minutesLeft, niceCeil, round1 } from "./battery-data";
 import type { Period, Range, StatType, Stats } from "./battery-data";
+import { fillGrid, tickPitch, timeTicks } from "./chart-grid";
+import type { TimeAxis } from "./chart-grid";
 
 /** How long a loaded history is used before it is fetched again (ms). */
 const REFRESH = 5 * 60000;
@@ -43,8 +45,14 @@ export interface Chart {
   fade?: number;
   /** Where the cursor starts (0–100, default the right end). */
   start?: number;
-  /** Vertical guide lines with their labels under the chart (the x position in the viewBox units); without them only `from` and `to`. */
-  ticks?: Array<{ x: number; text: string }>;
+  /** Vertical guide lines with their labels under the chart (the x position in the viewBox units); without them `time` or only `from` and `to`. */
+  ticks?: Array<{ x: number; text: string; labelX?: number }>;
+  /** What the width of the plot stands for: 6 to 10 guide lines with the time under them (chart-grid.ts); `ticks` replaces it. */
+  time?: TimeAxis;
+  /** The value of a line of the grid that the chart did not name (its label), for the lines that fill the grid up. */
+  valueAt?: (y: number) => string | undefined;
+  /** The value at a height as a number, so the lines that fill the grid up fall on round values (never 12,5 of 50). */
+  valueNum?: (y: number) => number;
 }
 
 /** A request for the statistics (the parts of one view of the detail). */
@@ -304,6 +312,10 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const dot = c.dot?.(index);
       const text = c.read(index);
       const pct = (y: number) => `${((y / c.h) * 100).toFixed(2)}%`;
+      // The grid (chart-grid.ts): 6 to 10 vertical lines with the time, the horizontal ones about the same distance apart.
+      const ticks = c.ticks ?? (c.time ? timeTicks(c.time) : undefined);
+      const filled = fillGrid(c.grid, tickPitch(ticks), c.valueAt, c.valueNum);
+      const labels = [...c.labels, ...filled.labels.filter((added) => c.labels.every((own) => Math.abs(own.y - added.y) > 13))];
       return html`${c.panel ? nothing : html`<div class="bat-read">${text}</div>`}
         <div class="bat-chart" style="aspect-ratio:${W} / ${c.h}">
           <svg viewBox="0 0 ${W} ${c.h}" aria-hidden="true">
@@ -311,18 +323,18 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
               <linearGradient id="bf-${c.id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2=${fade} y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="1" stop-color="#fff" stop-opacity="1"></stop></linearGradient>
               <mask id="bm-${c.id}" maskUnits="userSpaceOnUse" x="0" y="0" width=${W} height=${c.h}><rect width=${W} height=${c.h} fill="url(#bf-${c.id})"></rect></mask>
             </defs>
-            ${c.grid.map((line) => svg`<line x1="0" y1=${line.y} x2=${W} y2=${line.y} class=${line.strong ? "axis" : "grid"}></line>`)}
-            ${(c.ticks ?? []).map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${c.h} class="grid"></line>`)}
+            ${filled.grid.map((line) => svg`<line x1="0" y1=${line.y} x2=${W} y2=${line.y} class=${line.strong ? "axis" : "grid"}></line>`)}
+            ${(ticks ?? []).map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${c.h} class="grid"></line>`)}
             <g mask=${fade > 0 ? `url(#bm-${c.id})` : nothing}>${c.body}</g>
             <line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>
             ${dot ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
           </svg>
-          ${c.labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 16px)">${label.text}</span>`)}
+          ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 16px)">${label.text}</span>`)}
           <input type="range" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
             @input=${(event: Event) => { this._batScrub = { ...this._batScrub, [c.id]: Number((event.target as HTMLInputElement).value) }; }} @keydown=${step} />
         </div>
-        ${c.ticks
-          ? html`<div class="bat-axis ticks">${c.ticks.map((tick) => html`<span style="left:${((tick.x / W) * 100).toFixed(2)}%;transform:translateX(-50%)">${tick.text}</span>`)}</div>`
+        ${ticks
+          ? html`<div class="bat-axis ticks">${ticks.map((tick) => html`<span style="left:${(((tick.labelX ?? tick.x) / W) * 100).toFixed(2)}%;transform:translateX(${tick.labelX === undefined && tick.x < 8 ? "0" : tick.labelX === undefined && tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>`
           : html`<div class="bat-axis"><span>${c.from}</span><span>${c.to}</span></div>`}
         ${c.panel ? c.panel(index) : c.legend ?? nothing}`;
     }
@@ -368,7 +380,8 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const kw = (v: number) => `${formatFixed(v, v % 1 === 0 ? 0 : 1)} kW`;
       return {
         id: "level", h: 210, n, x,
-        grid: [{ y: 8 }, { y: 53 }, { y: 98, strong: true }, { y: axis, strong: true }],
+        grid: [{ y: 8 }, { y: 53 }, { y: 98, strong: true }, { y: axis - 44 }, { y: axis, strong: true }, { y: axis + 44 }],
+        time: { start, end },
         labels: [
           { y: 8, text: formatPercent(100) }, { y: 53, text: formatPercent(50) }, { y: 98, text: formatPercent(0) },
           { y: axis - 44, text: `+${kw(peak)}` }, { y: axis, text: "0" }, { y: axis + 44, text: `−${kw(peak)}` },
@@ -432,6 +445,12 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
           id: "energy", h: 200, n, x,
           grid: [{ y: axis, strong: true }, { y: 8 }, { y: 192 }],
           labels: [{ y: 8, text: `+${kwh(peak)}` }, { y: axis, text: "0" }, { y: 192, text: `−${kwh(peak)}` }],
+          time: { start: w.start, end, slot: width },
+          valueNum: (y) => ((axis - y) / 92) * peak,
+          valueAt: (y) => {
+            const v = ((axis - y) / 92) * peak;
+            return Math.abs(v) < 1e-9 ? undefined : `${v > 0 ? "+" : "−"}${formatFixed(Math.abs(v), Math.abs(v) % 1 === 0 ? 0 : Math.abs(v * 10) % 1 < 1e-6 ? 1 : 2)}`;
+          },
           body: svg`${bars}<path d=${linePath(net, x, netY)} fill="none" style="stroke:var(--ed-text)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>`,
           dot: (i) => ({ y: netY(net[i]), color: "var(--ed-text)" }),
           read: (i) => `${when(i)} · ${sign(charged[i])} / ${sign(-discharged[i])} · ${this.t.bat.net} ${sign(net[i])} kWh`,
@@ -475,6 +494,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const limitOffset = clamp(1 - (130 - y(warn)) / (130 - 10), 0, 1);
       return {
         id: "health-gap", h: 140, n, x,
+        time: { start, end },
         grid: [{ y: 10 }, { y: y(good) }, { y: 130, strong: true }],
         labels: [{ y: 10, text: `${formatNumber(top)} mV` }, { y: y(good), text: `${formatNumber(good)} mV` }, { y: 130, text: "0" }],
         body: svg`<defs>
@@ -530,7 +550,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         const cycles = bin(rows(b.total_discharge), "state", start, end, n, "last").map((v) => (v === undefined ? undefined : v / s.num.battery.capacity));
         spec = {
           low: cycles, high: cycles, line: cycles, minSpan: 1, colour: "var(--ed-battery)",
-          text: (v) => formatNumber(v), mid: (v) => formatNumber(v),
+          text: (v) => formatNumber(v, 1), mid: (v) => formatNumber(v, 1),
           read: (i) => `${clock(i)} · ${cycles[i] === undefined ? NO_DATA : this.t.bat.health.cycles(formatFixed(cycles[i]!, 1))}`,
         };
       }
@@ -542,6 +562,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const colour = spec.colour;
       return {
         id: `health-${id}`, h: 140, n, x,
+        time: { start, end },
         grid: [{ y: 10 }, { y: 70 }, { y: 130 }],
         labels: [{ y: 10, text: spec.text(dom.hi) }, { y: 70, text: spec.mid((dom.hi + dom.lo) / 2) }, { y: 130, text: spec.text(dom.lo) }],
         body: svg`<path d=${band} style="fill:${colour};fill-opacity:0.22"></path><path d=${line} fill="none" style="stroke:${colour}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,

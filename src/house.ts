@@ -11,6 +11,7 @@ import { allTexts } from "ha-dashboard-kit/config";
 import type { LocalizedText } from "ha-dashboard-kit/config";
 import { DAY, HOUR, RANGES, W, bin, fetchStatistics, formatDuration, hasValues, niceCeil } from "./battery-data";
 import type { Period, Range, StatRow, Stats } from "./battery-data";
+import { timeTicks } from "./chart-grid";
 import { formatClock, formatDayName, formatKwh, formatNumber, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { NO_DATA, clamp } from "./view";
@@ -663,6 +664,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const h = 44;
       const base = 42;
       const scale = peak > 0 ? 38 / peak : 0;
+      // The guide lines of the day by 3 hours (8 parts), the top and the bottom line of the bars (chart-grid.ts).
+      const midnight = new Date();
+      midnight.setHours(0, 0, 0, 0);
+      const ticks = timeTicks({ start: midnight.getTime(), end: midnight.getTime() + 24 * HOUR });
       const slot = W / n;
       const barW = slot * 0.72;
       const bars = Array.from({ length: n }, (_, i) => {
@@ -679,10 +684,13 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       return html`<div class="house-micro">
         <span class="house-micro-cap">${t.house.chartToday}</span>
         <svg viewBox="0 0 ${W} ${h}" role="img" aria-label=${t.house.chartToday}>
+          ${ticks.map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${base} style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>`)}
+          <line x1="0" y1="3" x2=${W} y2="3" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>
           <line x1="0" y1=${base} x2=${W} y2=${base} style="stroke:var(--ed-tick);stroke-width:1.5"></line>
           ${bars}
+          <text x=${W - 2} y="14" text-anchor="end" style="fill:var(--ed-secondary);stroke:var(--ed-tile);stroke-width:3px;paint-order:stroke" font-size="10">${peak > 0 ? `${formatKwh(peak)} kWh` : ""}</text>
         </svg>
-        <div class="bat-axis ticks" aria-hidden="true">${[0, 6, 12, 18, 24].map((hour) => html`<span style="left:${((hour / 24) * 100).toFixed(1)}%;transform:translateX(${hour === 0 ? "0" : hour === 24 ? "-100%" : "-50%"})">${hour}</span>`)}</div>
+        <div class="bat-axis ticks" aria-hidden="true">${ticks.map((tick) => html`<span style="left:${((tick.x / W) * 100).toFixed(1)}%;transform:translateX(${tick.x < 8 ? "0" : tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>
         ${items.length > 1 ? html`<div class="house-micro-legend">${items.map((item) => html`<span><i style="background:${item.color}"></i>${item.name}</span>`)}</div>` : nothing}
       </div>`;
     }
@@ -761,8 +769,12 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       return {
         id: `house-${range}`,
         h,
-        grid: [{ y: 10 }, { y: base, strong: true }],
-        labels: [{ y: 10, text: `${max} kWh` }, { y: base, text: "0" }],
+        // The top line is the value `max` exactly (the bars are drawn on the scale of 180 above the base).
+        grid: [{ y: base - 180 }, { y: base, strong: true }],
+        labels: [{ y: base - 180, text: `${max} kWh` }, { y: base, text: "0" }],
+        time: { start: w.start, end: w.start + n * w.step, x0: lead, x1: W, slot: w.step },
+        valueNum: (y) => ((base - y) / 180) * max,
+        valueAt: (y) => { const v = ((base - y) / 180) * max; return v % 1 ? formatKwh(v) : formatNumber(v); },
         body: svg`${bars}`,
         n,
         x,
