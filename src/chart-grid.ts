@@ -8,6 +8,9 @@ import { formatClock, formatDayShort, formatWeekdayShort } from "./utils";
  * about the same distance apart, so the cells of the grid are about square.
  */
 
+/** The strip to the right of every plot for the labels of the values (viewBox units; the plot itself is W wide): the labels never lie over the data. */
+export const GUTTER = 56;
+
 const MINUTE = 60000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
@@ -85,7 +88,8 @@ export function timeTicks(axis: TimeAxis): Tick[] {
   const x1 = axis.x1 ?? W;
   const at = axis.x ?? ((ms: number) => x0 + ((ms - start) / (end - start)) * (x1 - x0));
   const step = gridStep(end - start);
-  const label = (ms: number) => (step < DAY ? formatClock(ms) : step === DAY && end - start <= 8 * DAY ? formatWeekdayShort(ms) : formatDayShort(ms));
+  // Whole hours without the minutes ("18", "03"), so even ten labels do not touch; a 12 h clock keeps its text ("6:00 PM").
+  const label = (ms: number) => (step < DAY ? formatClock(ms).replace(/^(\d{1,2}):00$/, "$1") : step === DAY && end - start <= 8 * DAY ? formatWeekdayShort(ms) : formatDayShort(ms));
   // The line on the very edge of the plot has no label (the neighbour would touch it); the lines inside have.
   const list = moments(start, end, step).map((ms) => {
     const x = Math.round(at(ms) * 10) / 10;
@@ -95,8 +99,9 @@ export function timeTicks(axis: TimeAxis): Tick[] {
     }
     return { x, text: x < x0 + 6 || x > x1 - 6 ? "" : label(ms) };
   });
-  // More than 8 parts: every other label, so the labels do not touch.
-  return list.length - 1 > 8 ? list.map((tick, i) => (i % 2 === 1 ? tick : { ...tick, text: "" })) : list;
+  // Long labels (a date, a 12 h clock) on a dense axis: every other label, so the labels do not touch.
+  const longest = Math.max(0, ...list.map((tick) => tick.text.length));
+  return longest > 5 && list.length - 1 > 7 ? list.map((tick, i) => (i % 2 === 1 ? tick : { ...tick, text: "" })) : list;
 }
 
 /** The distance of the guide lines of the time (the pitch of the grid), viewBox units. */

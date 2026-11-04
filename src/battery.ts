@@ -12,7 +12,7 @@ import { BATTERY_RANGE_KEY, NO_DATA, clamp, mix } from "./view";
 import type { BatEntry, BatRow, BatTab, Constructor, Tile } from "./view";
 import { DAY, HOUR, RANGES, RANGE_DAYS, W, areaPath, bandPath, bin, domain, fetchStatistics, formatDuration, hasValues, linePath, minutesLeft, niceCeil, round1 } from "./battery-data";
 import type { Period, Range, StatType, Stats } from "./battery-data";
-import { fillGrid, tickPitch, timeTicks } from "./chart-grid";
+import { GUTTER, fillGrid, tickPitch, timeTicks } from "./chart-grid";
 import type { TimeAxis } from "./chart-grid";
 
 /** How long a loaded history is used before it is fetched again (ms). */
@@ -21,7 +21,7 @@ const REFRESH = 5 * 60000;
 const LEVEL_BINS = 48;
 const HEALTH_BINS = 60;
 /** The width of the fade-in on the left of the charts, in the units of the viewBox. */
-const FADE = 90;
+const FADE = 0;
 
 /** One chart of the detail: the geometry in viewBox units, what lies under the cursor and the labels. */
 export interface Chart {
@@ -317,8 +317,8 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const filled = fillGrid(c.grid, tickPitch(ticks), c.valueAt, c.valueNum);
       const labels = [...c.labels, ...filled.labels.filter((added) => c.labels.every((own) => Math.abs(own.y - added.y) > 13))];
       return html`${c.panel ? nothing : html`<div class="bat-read">${text}</div>`}
-        <div class="bat-chart" style="aspect-ratio:${W} / ${c.h}">
-          <svg viewBox="0 0 ${W} ${c.h}" aria-hidden="true">
+        <div class="bat-chart" style="aspect-ratio:${W + GUTTER} / ${c.h}">
+          <svg viewBox="0 0 ${W + GUTTER} ${c.h}" aria-hidden="true">
             <defs>
               <linearGradient id="bf-${c.id}" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2=${fade} y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"></stop><stop offset="1" stop-color="#fff" stop-opacity="1"></stop></linearGradient>
               <mask id="bm-${c.id}" maskUnits="userSpaceOnUse" x="0" y="0" width=${W} height=${c.h}><rect width=${W} height=${c.h} fill="url(#bf-${c.id})"></rect></mask>
@@ -329,12 +329,12 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
             <line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>
             ${dot ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
           </svg>
-          ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 16px)">${label.text}</span>`)}
-          <input type="range" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
+          ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 7px);left:calc(${((W / (W + GUTTER)) * 100).toFixed(2)}% + 4px)">${label.text}</span>`)}
+          <input type="range" style="width:${((W / (W + GUTTER)) * 100).toFixed(2)}%" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
             @input=${(event: Event) => { this._batScrub = { ...this._batScrub, [c.id]: Number((event.target as HTMLInputElement).value) }; }} @keydown=${step} />
         </div>
         ${ticks
-          ? html`<div class="bat-axis ticks">${ticks.map((tick) => html`<span style="left:${(((tick.labelX ?? tick.x) / W) * 100).toFixed(2)}%;transform:translateX(${tick.labelX === undefined && tick.x < 8 ? "0" : tick.labelX === undefined && tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>`
+          ? html`<div class="bat-axis ticks">${ticks.map((tick) => html`<span style="left:${(((tick.labelX ?? tick.x) / (W + GUTTER)) * 100).toFixed(2)}%;transform:translateX(${tick.labelX === undefined && tick.x < 8 ? "0" : tick.labelX === undefined && tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>`
           : html`<div class="bat-axis"><span>${c.from}</span><span>${c.to}</span></div>`}
         ${c.panel ? c.panel(index) : c.legend ?? nothing}`;
     }
@@ -444,7 +444,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         chart: {
           id: "energy", h: 200, n, x,
           grid: [{ y: axis, strong: true }, { y: 8 }, { y: 192 }],
-          labels: [{ y: 8, text: `+${kwh(peak)}` }, { y: axis, text: "0" }, { y: 192, text: `−${kwh(peak)}` }],
+          labels: [{ y: 8, text: `+${formatFixed(peak, peak % 1 === 0 ? 0 : 1)}` }, { y: axis, text: "0" }, { y: 192, text: `−${formatFixed(peak, peak % 1 === 0 ? 0 : 1)}` }],
           time: { start: w.start, end, slot: width },
           valueNum: (y) => ((axis - y) / 92) * peak,
           valueAt: (y) => {
@@ -672,7 +672,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const edges = [0, 20, 40, 60, 80, 100];
       const shares = edges.slice(0, 5).map((lowEdge, i) => (known.length ? Math.round((known.filter((v) => (i === 4 ? v >= lowEdge : v >= lowEdge && v < edges[i + 1])).length / known.length) * 100) : undefined));
       return html`${this.renderRange(s)}
-        <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.bat.energyHours : t.bat.energyDays}</span>${this.renderChartOrEmpty(key, 200, energy?.chart)}</div>
+        <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.bat.energyHours : t.bat.energyDays} · kWh</span>${this.renderChartOrEmpty(key, 200, energy?.chart)}</div>
         <div class="bat-kpis">${kpis.map((k) => html`<div class="bat-kpi"><span class="sub">${k.label}</span><span class="val">${k.value}</span><span class="sub">${k.sub}</span></div>`)}</div>
         <div class="bat-card">
           <span class="bat-cap">${t.bat.bandsTitle}</span>

@@ -297,7 +297,8 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
         svgs.map((svg) => {
           const lines = [...svg.querySelectorAll("line")].filter((line) => /grid|axis/.test(line.getAttribute("class") ?? "") || line.getAttribute("style")?.includes("--ed-bar") || line.getAttribute("style")?.includes("--ed-tick"));
           // The edges of the plot count as lines: the first and the last cell may be cut by the edge.
-          const edge = (svg as SVGSVGElement).viewBox.baseVal.width;
+          // The plot ends where the horizontal lines end (the strip to the right of it holds the labels of the values).
+          const edge = Math.max(0, ...lines.filter((line) => line.getAttribute("y1") === line.getAttribute("y2")).map((line) => Number(line.getAttribute("x2"))));
           const xs = [...new Set([0, edge, ...lines.filter((line) => line.getAttribute("x1") === line.getAttribute("x2")).map((line) => Number(line.getAttribute("x1")))])].sort((a, b) => a - b);
           const ys = [...new Set(lines.filter((line) => line.getAttribute("y1") === line.getAttribute("y2")).map((line) => Number(line.getAttribute("y1"))))].sort((a, b) => a - b);
           const median = (values: number[]) => {
@@ -721,7 +722,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // without the length (uživatel 2. 11.), and a chart of today by hours instead of the strip of the cycles
       await expect(detail).not.toContainText("1 h 38 min");
       await expect(detail).toContainText("0,60\u00a0kWh");
-      await expect(detail.locator(".house-micro-cap").first()).toHaveText("Dnes od půlnoci po hodinách");
+      await expect(detail.locator(".house-micro-cap").first()).toHaveText("Dnes od půlnoci po hodinách · kWh");
       await expect(detail.locator(".house-micro svg").first()).toBeVisible();
       await expect(detail).toContainText(/Dnes/);
       await expect(detail).not.toContainText(/Za 1 den/);
@@ -1904,7 +1905,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       // Svislé vodicí linky po celých hodinách (6 až 10 dělení), popsané časem; krajní linky popisek nemají.
       const hourLabels = (await detail.locator(".bat-axis.ticks span").allTextContents()).filter(Boolean);
       expect(hourLabels.length).toBeGreaterThanOrEqual(4);
-      for (const label of hourLabels) expect(label).toMatch(/^\d{2}:00$/);
+      for (const label of hourLabels) expect(label).toMatch(/^\d{2}$/); // celé hodiny bez minut
       const tiles = await kpis(page);
       expect(tiles.map((item) => item[0])).toEqual(["Dnes zatím", "Špička dnes", "Výroba začala", "Skončí asi"]);
       // Kam dnes slunce šlo: dům, baterie a síť z denních součtů (18,4 − 5,2 − 4,9 = 8,3 kWh do domu).
