@@ -4,6 +4,11 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 
 ## Záznamy
 
+### 2026-11-04 · Obraz Home Assistantu v `ha-config`, vazba na kit (potvrzeno uživatelem)
+
+- `ENTITY_MAP.md` je v `ha-config` jako `energie/ENTITY_MAP.md`, entity ověřuje jeden obraz `ha/entities.json` (místo exportů `energie.json`, `spotrebice.json`, `spotrebice_helpery.json` a šablon). `FORECAST.md` je sloučen do `TYDEN.md`, `spotrebice.txt` odstraněn. Podrobnosti a slova uživatele: `DESIGN_HISTORY.md` kitu, záznam z 4. 11. (ha-config jako obraz HA).
+- `package.json` a `package-lock.json`: kit připnut na `79c0d626…` místo `e96c781…`, který zmizel při squash `main` kitu.
+
 ### 2026-11-04 · Soukromá data a týdenní ladění přesunuty do `ha-config` (potvrzeno uživatelem)
 
 - Uživatel 4. 11. 2026: „Udelal jsem uklid. adresare HA entities, tools a exporty jsem presunul do privatniho ha-config.“ a „Klidne cokoli uprav, smaz, presun - i mezi repository. Pokud bys nasel dalsi veci co patri jinam, uprav to.“ Kde to bude a jak se to bude jmenovat, je mu jedno; nesmí se nic ztratit.

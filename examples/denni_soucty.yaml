@@ -2,7 +2,7 @@
 # Vložte do configuration.yaml (nebo do balíčku) a znovu načtěte YAML / restartujte Home Assistant.
 # Každý utility_meter vezme ověřený celoživotní čítač střídače (ENTITY_MAP.md, total_increasing)
 # a o půlnoci ho vynuluje; vznikne senzor sensor.<název>, např. sensor.energie_fve_dnes.
-# Čítač energie auta (wallbox) a bojleru (AZ Router) v exportu entit není:
+# Čítač energie auta (wallbox) a bojleru (AZ Router) v obrazu entit není:
 # `daily.car` a `daily.boiler` zůstanou prázdné, popup tam ukáže „––“.
 utility_meter:
   energie_fve_dnes:
