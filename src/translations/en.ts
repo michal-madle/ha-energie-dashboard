@@ -341,6 +341,7 @@ export const en: Texts = {
     flowNone: "The sun goes nowhere",
     soFar: "Today so far",
     ofEstimate: (value: string) => `of ≈ ${value} expected`,
+    ofPossibleSoFar: (percent: string) => `${percent} of possible so far`,
     ringLabel: (percent: string) => `${percent} of the day's estimate done`,
     started: "Started",
     ends: "Ends about",

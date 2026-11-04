@@ -49,6 +49,8 @@ export interface SunView {
   learned: Learned;
   /** kWh produced today, from the counter of the configuration or from the history. */
   done?: number;
+  /** What the learned curve of the possible had from midnight until now (kWh): the production so far is compared with it. */
+  possibleSoFar?: number;
   forecastToday?: number;
   deviation: number;
   pairs: Array<{ day: number; forecast: number; actual: number }>;
@@ -245,6 +247,12 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const counter = readEnergy(this.hass, s.entities.daily.pv_generation);
       const done = counter ?? (actual && actual.some((v) => v !== undefined) ? actual.reduce<number>((sum, v) => sum + (v ?? 0), 0) : undefined);
       const forecastToday = readEnergy(this.hass, e.forecast.energy_today);
+      // The curve of the possible (kW by hour) from midnight to now: the whole hours before and the part of the present one.
+      const clock = new Date(now);
+      const hoursDone = clock.getHours() + clock.getMinutes() / 60;
+      const possibleSoFar = learned.curve.some((value) => value !== undefined)
+        ? learned.curve.reduce<number>((sum, value, hour) => sum + (value ?? 0) * clamp(hoursDone - hour, 0, 1), 0)
+        : undefined;
       const deviation = typicalDeviation(pairs) ?? num.typical_deviation / 100;
       // The last hour against what the curve had in it: how the sky is now.
       let recent: { actual: number; possible: number } | undefined;
@@ -284,7 +292,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         ends = over && lastNow !== undefined ? { at: lastNow, over: true } : { at: times.set - lag, over: false };
       }
       return {
-        now, today, ready: !!hist && hist.status !== "loading" || !!hist?.parts && Object.keys(hist.parts).length > 0, days, learned, done, forecastToday, deviation, pairs, estimate, hours,
+        now, today, ready: !!hist && hist.status !== "loading" || !!hist?.parts && Object.keys(hist.parts).length > 0, days, learned, done, possibleSoFar, forecastToday, deviation, pairs, estimate, hours,
         rise: times?.rise, set: times?.set, started, ends, fiveRows,
         peak: peakRow ? { kw: (peakRow.mean as number) / 1000, at: peakRow.start } : undefined,
         // Kept for the evening estimate.
@@ -326,8 +334,10 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const t = this.t.sun;
       const est = v.estimate;
       const percent = est && v.done !== undefined && est.value > 0 ? Math.min(100, Math.round((v.done / est.value) * 100)) : undefined;
+      // The share of what was possible until now (uživatel 4. 11. 2026): not for the whole day, which is not over yet.
+      const share = v.done !== undefined && v.possibleSoFar !== undefined && v.possibleSoFar >= 0.3 ? Math.round((v.done / v.possibleSoFar) * 100) : undefined;
       return html`<div class="sun-sofar">
-        <div class="text"><span class="sub">${t.soFar}</span><span class="val">${v.done === undefined ? NO_DATA : `${formatKwh(v.done)} kWh`}</span><span class="sub">${est ? t.ofEstimate(formatKwh(est.value)) : NO_DATA}</span></div>
+        <div class="text"><span class="sub">${t.soFar}</span><span class="val">${v.done === undefined ? NO_DATA : `${formatKwh(v.done)} kWh`}</span><span class="sub">${est ? t.ofEstimate(formatKwh(est.value)) : NO_DATA}</span>${share === undefined ? nothing : html`<span class="sub">${t.ofPossibleSoFar(formatPercent(share))}</span>`}</div>
         ${percent === undefined ? nothing : this.ring(percent / 100, 40, 6, String(percent), "%", t.ringLabel(formatPercent(percent)))}
       </div>`;
     }

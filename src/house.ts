@@ -487,7 +487,8 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const tabs = ((["now", "hist"] as const)).map((value) => ({ value, label: t.house.tabs[value] }));
       const all = this.appliances(s);
       // The same unit rule as in the popup: W while everything is below 1 kW.
-      const unit: PowerUnit = powerUnit([model.other, ...all.map((a) => readNumber(this.hass, a.power))]);
+      // Every power on the page in watts (uživatel 4. 11. 2026: "Všechno stejně. Klidně W."), not kW for one row and W for the next.
+      const unit: PowerUnit = "W";
       const order = [...(this._houseFrozen ?? [])];
       const rows = [...all].sort((a, b) => {
         const ia = order.indexOf(a.name);
@@ -527,8 +528,8 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const open = this._houseOpen.includes(key);
       const items = group.appliances.map((c) => ({ name: this.pickText(c.name) ?? "", watts: readNumber(this.hass, c.power), kwh: this._houseToday?.groups?.[c.power] }));
       const known = (list: Array<number | undefined>): number | undefined => (list.every((v) => v !== undefined) ? (list as number[]).reduce((sum, v) => sum + v, 0) : undefined);
-      // Every value has its own unit (W below 1 kW): a small draw of a standby appliance is never rounded to 0,00 kW.
-      const power = (watts: number | undefined) => (watts === undefined ? NO_DATA : formatPower(watts, powerUnit([watts])).replace(" ", "\u00a0"));
+      // Watts everywhere on the page: a small draw of a standby appliance is never rounded to 0,00 kW.
+      const power = (watts: number | undefined) => (watts === undefined ? NO_DATA : formatPower(watts, "W").replace(" ", "\u00a0"));
       const energy = (kwh: number | undefined) => (kwh === undefined ? NO_DATA : `${formatKwh(kwh)}\u00a0kWh`);
       const t = this.t;
       return html`<div class="bat-card flush house-item">
@@ -691,7 +692,6 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
           <line x1="0" y1=${base} x2=${W} y2=${base} style="stroke:var(--ed-tick);stroke-width:1.5"></line>
           ${bars}
           <text x=${W + 9} y="10" style="fill:var(--ed-secondary)" font-size="12">${top > 0 ? formatNumber(top, top % 1 ? 1 : 0) : ""}</text>
-          <text x=${W + 9} y=${base + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
         </svg>
         <div class="bat-axis ticks" aria-hidden="true">${ticks.map((tick) => html`<span style="left:${((tick.x / (W + GUTTER)) * 100).toFixed(1)}%;transform:translateX(${tick.x < 8 ? "0" : tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>
         ${items.length > 1 ? html`<div class="house-micro-legend">${items.map((item) => html`<span><i style="background:${item.color}"></i>${item.name}</span>`)}</div>` : nothing}

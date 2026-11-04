@@ -730,14 +730,16 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // A group (house.groups) sums its appliances: the power now and the energy of today; opened, each appliance has both.
       const cooking = detail.getByRole("button", { name: /Kuchyně/ });
       await expect(cooking).toContainText("Dnes");
-      await expect(cooking).toContainText("1,18 kW");
+      await expect(cooking).toContainText(/1\s180\sW/);
       await cooking.click();
       for (const name of ["Digestoř", "Lednice", "Trouba", "Mikrovlnka"]) await expect(detail.locator(".house-cook")).toContainText(name);
       await expect(detail.locator(".house-cook")).toContainText("Teď");
       await expect(detail.locator(".house-cook")).toContainText("Celkem dnes");
-      await expect(detail.locator(".house-cook")).toContainText("1,10 kW");
+      await expect(detail.locator(".house-cook")).toContainText(/1\s100\sW/);
       // No threshold and no power symbol: what the appliance draws is shown as it is.
       await expect(detail.locator(".house-cook")).toContainText("80 W");
+      // Všechny výkony na stránce ve W (uživatel 4. 11.), žádný kW: jen kWh u energií.
+      expect(await detail.innerText()).not.toMatch(/kW(?!h)/);
       await expect(detail.locator(".house-cook .house-idle")).toHaveCount(0);
       // The icons of the rows take the colour of the secondary text, never black (dark mode).
       const iconColors = await detail.locator("ha-icon.house-icon").evaluateAll((els) => els.map((el) => getComputedStyle(el).color));
@@ -1860,7 +1862,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await page.locator(".sun-detail").waitFor();
     };
 
-    test("popup: výkon teď, kam slunce jde, dnes zatím s kolečkem, začátek a konec výroby; bez „% možného“", async ({ page }) => {
+    test("popup: výkon teď, kam slunce jde, dnes zatím s kolečkem a podílem možného do teď, začátek a konec výroby", async ({ page }) => {
       await open(page, "day");
       await page.locator('.tile[data-tile="sun"]').click();
       const pop = page.getByRole("dialog", { name: "Slunce" });
@@ -1874,7 +1876,8 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(pop.locator(".sun-sofar .sun-ring")).toBeVisible();
       await expect(pop.locator(".pop-row").first()).toContainText("Začala");
       await expect(pop.locator(".pop-row").nth(1)).toContainText("Skončí asi");
-      await expect(pop).not.toContainText("možného");
+      // Podíl možného do teď (uživatel 4. 11.): produkce od půlnoci proti křivce možného od půlnoci do teď.
+      await expect(pop.locator(".sun-sofar")).toContainText(/\d+ % možného do teď/);
       // Escape zavře popup, Detail slunce otevře detail a Escape ho zavře.
       await page.keyboard.press("Escape");
       await expect(pop).toHaveCount(0);
