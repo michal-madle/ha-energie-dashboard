@@ -289,6 +289,75 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
     expect(tops.bat).toBeLessThan(tops.grid);
     await expect(page.locator(".flow > svg > path")).toHaveCount(3);
   });
+  test("grafy (uživatel 4. 11.): 6 až 10 svislých dělení s časem pod nimi a vodorovné čáry ve stejném rastru, všude", async ({ page }) => {
+    test.setTimeout(240000);
+    /** The guide lines of every chart of the open view: the divisions across, the lines across the height and the pitch of both. */
+    const grids = (name: string) =>
+      page.locator(".bat-chart svg, .house-micro svg, .sun-pairs").evaluateAll((svgs) =>
+        svgs.map((svg) => {
+          const lines = [...svg.querySelectorAll("line")].filter((line) => /grid|axis/.test(line.getAttribute("class") ?? "") || line.getAttribute("style")?.includes("--ed-bar") || line.getAttribute("style")?.includes("--ed-tick"));
+          // The edges of the plot count as lines: the first and the last cell may be cut by the edge.
+          const edge = (svg as SVGSVGElement).viewBox.baseVal.width;
+          const xs = [...new Set([0, edge, ...lines.filter((line) => line.getAttribute("x1") === line.getAttribute("x2")).map((line) => Number(line.getAttribute("x1")))])].sort((a, b) => a - b);
+          const ys = [...new Set(lines.filter((line) => line.getAttribute("y1") === line.getAttribute("y2")).map((line) => Number(line.getAttribute("y1"))))].sort((a, b) => a - b);
+          const median = (values: number[]) => {
+            const gaps = values.slice(1).map((value, i) => value - values[i]).sort((a, b) => a - b);
+            return gaps[Math.floor(gaps.length / 2)] ?? 0;
+          };
+          return { id: svg.closest(".bat-chart")?.getAttribute("style") ?? svg.getAttribute("class") ?? "", divisions: xs.length - 1, down: ys.length - 1, cell: [median(xs), median(ys)] };
+        }),
+      );
+    const check = async (name: string, minDivisions = 6) => {
+      await settle(page);
+      const list = await grids(name);
+      expect(list.length, `${name}: graf`).toBeGreaterThan(0);
+      for (const chart of list) {
+        expect(chart.divisions, `${name}: svislá dělení`).toBeGreaterThanOrEqual(minDivisions);
+        expect(chart.divisions, `${name}: svislá dělení`).toBeLessThanOrEqual(10);
+        // The cells are about square: the distance of the horizontal lines is 0,5 to 2,2 times the distance of the vertical ones.
+        if (chart.down >= 1) {
+          const ratio = chart.cell[1] / chart.cell[0];
+          expect(ratio, `${name}: poměr buňky ${JSON.stringify(chart)}`).toBeGreaterThan(0.5);
+          expect(ratio, `${name}: poměr buňky ${JSON.stringify(chart)}`).toBeLessThan(2.2);
+        }
+        expect(chart.down, `${name}: vodorovné čáry`).toBeGreaterThanOrEqual(1);
+      }
+    };
+    const segment = (index: number) => page.locator("ed-segmented").first().getByRole("radio").nth(index);
+    await open(page, "full");
+    await page.locator('.tile[data-tile="bat"]').click();
+    await page.locator(".bat-open").click();
+    await check("baterie Dnes 24 h");
+    await page.locator(".bat-detail ed-segmented").nth(1).getByRole("radio", { name: "6 h" }).click();
+    await check("baterie Dnes 6 h");
+    await segment(1).click();
+    for (const range of ["1 den", "7 dní", "30 dní"]) {
+      await page.getByRole("radio", { name: range, exact: true }).click();
+      await check(`baterie Historie ${range}`);
+    }
+    await segment(2).click();
+    for (const row of await page.locator(".bat-detail .bat-row:not([disabled])").all()) await row.click();
+    await check("baterie Zdraví");
+    await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
+    await page.locator('.tile[data-tile="house"]').click();
+    await page.locator(".house-pop .bat-open").click();
+    for (const row of await page.locator(".house-detail .house-item > button, .house-detail button.row-btn").all()) await row.click().catch(() => undefined);
+    await check("Dům Dnes (mikrograf)");
+    await page.getByRole("radio", { name: "Historie" }).click();
+    for (const range of ["1 den", "7 dní", "30 dní"]) {
+      await page.getByRole("radio", { name: range, exact: true }).click();
+      await check(`Dům Historie ${range}`);
+    }
+    await open(page, "day");
+    await page.locator('.tile[data-tile="sun"]').click();
+    await page.locator(".sun-pop .bat-open").click();
+    await check("Slunce Dnes", 5);
+    await segment(1).click();
+    for (const range of ["7 dní", "30 dní"]) {
+      await page.getByRole("radio", { name: range, exact: true }).click();
+      await check(`Slunce Historie ${range}`, 6);
+    }
+  });
   test("pásy (uživatel 3. 11.): bez teček a animace, šířka podle odmocniny výkonu, jednotka v dlaždici zvlášť", async ({ page }) => {
     await open(page, "day");
     // Tečky a animace jsou pryč: žádná cesta nemá animaci a nic nemá třídu .dots.
@@ -1832,8 +1901,10 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(detail.locator(".bat-legend").first()).toContainText("Předpověď");
       // Čtení pod prstem: čas, výkon a možné.
       await expect(detail.locator(".bat-read").first()).toContainText(/\d+:\d\d · .*kW/);
-      // Svislé vodicí linky po 2 h od 6 do 18 h, popsané číslem hodiny.
-      await expect(detail.locator(".bat-axis.ticks span")).toHaveText(["6", "8", "10", "12", "14", "16", "18"]);
+      // Svislé vodicí linky po celých hodinách (6 až 10 dělení), popsané časem; krajní linky popisek nemají.
+      const hourLabels = (await detail.locator(".bat-axis.ticks span").allTextContents()).filter(Boolean);
+      expect(hourLabels.length).toBeGreaterThanOrEqual(4);
+      for (const label of hourLabels) expect(label).toMatch(/^\d{2}:00$/);
       const tiles = await kpis(page);
       expect(tiles.map((item) => item[0])).toEqual(["Dnes zatím", "Špička dnes", "Výroba začala", "Skončí asi"]);
       // Kam dnes slunce šlo: dům, baterie a síť z denních součtů (18,4 − 5,2 − 4,9 = 8,3 kWh do domu).

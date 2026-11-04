@@ -69,6 +69,15 @@ export function formatWeekday(ms: number): string {
   return `${new Intl.DateTimeFormat(format.locale, { weekday: "short" }).format(ms)} ${format.day(ms)}`;
 }
 
+/** The short name of the weekday ("pá") and the day and the month of a moment ("23. 10."), for the labels of the charts. */
+export function formatWeekdayShort(ms: number): string {
+  return new Intl.DateTimeFormat(format.locale, { weekday: "short" }).format(ms);
+}
+
+export function formatDayShort(ms: number): string {
+  return format.day(ms);
+}
+
 /** The long name of the weekday of a moment ("Sobota"), with a capital letter. */
 export function formatDayName(ms: number): string {
   const name = new Intl.DateTimeFormat(format.locale, { weekday: "long" }).format(ms);
