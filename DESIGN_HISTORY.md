@@ -4,8 +4,9 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 
 ## Záznamy
 
-### 2026-11-04 · Sušička znovu přidána, nová ID (potvrzeno obrazem)
+### 2026-11-04 · Sušička znovu přidána, nová ID (nahrazeno: uživatel vrátil původní ID)
 
+- Nahrazeno: uživatel 4. 11. 2026: „susicka mela spatny id. vratil jsem to.“ Platí původní `technicka_mistnost_susicka_*`; příklad, testy a mapa jsou vráceny. Text níže je jen historie.
 - Zařízení Sušička bylo v Home Assistantu znovu přidáno: ID entit mají nově `susicka_susicka` (například `sensor.technicka_mistnost_susicka_susicka_power`). Přepsáno v `examples/energie.yaml`, `tests/scenarios.js` a `energie/ENTITY_MAP.md` v `ha-config`. Podrobnosti: `DESIGN_HISTORY.md` kitu, záznam z 4. 11. (nové zařízení).
 
 ### 2026-11-04 · Obraz Home Assistantu v `ha-config`, vazba na kit (potvrzeno uživatelem)
