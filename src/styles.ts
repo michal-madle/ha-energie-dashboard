@@ -1678,14 +1678,12 @@ export const styles = css`
 
   .bat-ylabel {
     position: absolute;
-    left: 0;
     color: var(--ed-secondary);
     font-size: 12px;
     line-height: 14px;
     pointer-events: none;
     font-variant-numeric: tabular-nums;
-    /* A label stands over the bars: the colour of the card around the figures keeps it readable. */
-    text-shadow: 0 0 3px var(--ed-card), 0 0 3px var(--ed-card), 0 0 2px var(--ed-card);
+    white-space: nowrap;
   }
 
   .bat-chart input[type="range"] {

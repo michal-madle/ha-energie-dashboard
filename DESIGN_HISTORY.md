@@ -24,6 +24,13 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 - Uživatel 4. 11. 2026: „entity map taky přesun. V dashboardu budou jen veřejné věci. Private budou v ha-config. Tvrdé pravidlo“ (pravidlo 12 v `AGENTS.md` kitu). `ENTITY_MAP.md` je v `ha-config` jako `energie/entity/ENTITY_MAP.md`; z `README.md` odstraněny oddíly „Export entit z Home Assistantu“ a „Týdenní ladění předpovědi“. Přeodvození mapy z exportů z 3. 11. až po novém exportu (uživatel: „zatím ne, az po novem exportu“).
 - Zjištěno: `energie.json` a `spotrebice_helpery.json` v `ha-config` jsou z 3. 11. 2026 (374 a 21 entit), `ENTITY_MAP.md` vychází z exportů z 30. 10. a 2. 11.
 
+### 2026-11-04 · Popisky hodnot grafů vpravo za grafem, všude stejně (potvrzeno uživatelem)
+
+- Uživatel (k otázkám o mřížce): „1 mikrotrendy bez osy jsou spravne. 2 udelej to aby to bylo citelne a vsude stejne. 3 nevim.“
+- Nahrazeno: popisky hodnot nad čárou uvnitř grafu vlevo (Energie) a vpravo vedle čáry (Klima) → jeden pruh vpravo za grafem (asi 15 % šířky) ve všech grafech obou karet, 12 px, sekundární barva, svisle na čáře; data se vlevo už nevytrácejí (zrušeno kvůli čitelnosti popisků; uživatel dřív: „Vlevo alpha gradient jako u jinde mikrotrendy aby šla přečíst legenda“). Časové popisky jsou celé hodiny bez minut („18“), u kWh grafů je jednotka v nadpisu („Energie po hodinách · kWh“) a popisky hodnot jsou bez jednotky.
+- Potvrzeno: mikrotrendy v hlavní kartě Klimatu zůstávají bez osy a mřížky.
+- Nepotvrzeno, otázka položena D. M.: vlhkost v historii Klimatu je čárkovaná čára bez osy („3 nevim“, nic se nemění).
+
 ### 2026-11-04 · Mřížka ve všech grafech: 6 až 10 svislých dělení, vodorovné čáry ve stejném rastru (potvrzeno uživatelem)
 
 - Uživatel (screenshot grafu Nabití a výkon): „Tyhle grafy bez vodících čar, bez os atd jsou nesmyslné. Jsou na hodně místech. Změn si spec - na šířku okna musí být 6-10 dělení. na výšku musí být cca ve stejném rastru. Změň to všude.“

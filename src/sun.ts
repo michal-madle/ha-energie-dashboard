@@ -10,7 +10,7 @@ import type { PowerUnit } from "./utils";
 import { NO_DATA, SUN_RANGE_KEY, TILE_VAR, clamp } from "./view";
 import type { BatEntry, Constructor, SunTab, Tile } from "./view";
 import { DAY, HOUR, W, areaPath, bandPath, bin, fetchStatistics, linePath, midnight, niceCeil, round1 } from "./battery-data";
-import { niceStep, tickPitch, timeTicks } from "./chart-grid";
+import { GUTTER, niceStep, tickPitch, timeTicks } from "./chart-grid";
 import type { Period, StatRow, StatType, Stats } from "./battery-data";
 import type { Batteried, Chart } from "./battery";
 import {
@@ -25,7 +25,7 @@ const WEATHER_REFRESH = 30 * 60000;
 /** Bins of the chart of today: five minutes. */
 const PER_HOUR = 12;
 /** The left margin of the charts for the labels of the vertical axis (viewBox units). */
-const PAD = 26;
+const PAD = 2;
 /** The five blocks of the day from the east to the west: from the warning colour through the sun to a light yellow. */
 const BLOCK_COLORS = [
   "var(--ed-warning)",
@@ -705,12 +705,13 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       return html`<div class="bat-card rel">
         <div class="bat-card-bar"><span class="bat-cap">${t.hist.accuracyTitle}</span>${this.hint("acc", t.hints.acc)}</div>
         <div class="sun-acc"><b>±${formatPercent(Math.round(v.deviation * 100))}</b><span class="bat-sub">${t.hist.accuracyAverage(v.pairs.length)}</span></div>
-        <svg viewBox="0 0 ${width} 80" class="sun-pairs" role="img" aria-label=${t.hist.accuracyLabel}>
+        <svg viewBox="0 0 ${width + GUTTER} 80" class="sun-pairs" role="img" aria-label=${t.hist.accuracyLabel}>
           ${Array.from({ length: pairs.length + 1 }, (_, i) => svg`<line x1=${round1(i * step)} y1="0" x2=${round1(i * step)} y2=${base} class="grid"></line>`)}
           <line x1="0" y1=${base - 25} x2=${width} y2=${base - 25} class="grid"></line>
           <line x1="0" y1=${base - 50} x2=${width} y2=${base - 50} class="grid"></line>
-          <text x="2" y=${base - 52} style="fill:var(--ed-secondary)" font-size="10">${formatNumber(top)} kWh</text>
-          <text x="2" y=${base - 27} style="fill:var(--ed-secondary)" font-size="10">${formatNumber(top / 2, (top / 2) % 1 ? 1 : 0)}</text>
+          <text x=${width + 5} y=${base - 46} style="fill:var(--ed-secondary)" font-size="12">${formatNumber(top)} kWh</text>
+          <text x=${width + 5} y=${base - 21} style="fill:var(--ed-secondary)" font-size="12">${formatNumber(top / 2, (top / 2) % 1 ? 1 : 0)}</text>
+          <text x=${width + 5} y=${base + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
           <line x1="0" y1=${base} x2=${width} y2=${base} class="axis"></line>
           ${pairs.map((pair, i) => {
             const x = i * step + (step - 2 * bw - 2) / 2;

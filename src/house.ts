@@ -11,7 +11,7 @@ import { allTexts } from "ha-dashboard-kit/config";
 import type { LocalizedText } from "ha-dashboard-kit/config";
 import { DAY, HOUR, RANGES, W, bin, fetchStatistics, formatDuration, hasValues, niceCeil } from "./battery-data";
 import type { Period, Range, StatRow, Stats } from "./battery-data";
-import { timeTicks } from "./chart-grid";
+import { GUTTER, timeTicks } from "./chart-grid";
 import { formatClock, formatDayName, formatKwh, formatNumber, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { NO_DATA, clamp } from "./view";
@@ -512,7 +512,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
               ${s.groups.map((group, index) => this.renderGroupRow(group, index))}
             </div>`
           : html`<ed-segmented .options=${options} .value=${range} label=${t.house.rangeLabel} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setHouseRange(event.detail.value as Range)}></ed-segmented>
-            <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.house.chartHours : t.house.chartDays}</span>
+            <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.house.chartHours : t.house.chartDays} · kWh</span>
               ${chart ? this.renderChart(chart) : html`<div class="bat-nodata" style="aspect-ratio:${W} / 220">${loading ? NO_DATA : t.bat.noDataChart}</div>`}
             </div>`}
       </section>`;
@@ -682,15 +682,16 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         });
       });
       return html`<div class="house-micro">
-        <span class="house-micro-cap">${t.house.chartToday}</span>
-        <svg viewBox="0 0 ${W} ${h}" role="img" aria-label=${t.house.chartToday}>
+        <span class="house-micro-cap">${t.house.chartToday} · kWh</span>
+        <svg viewBox="0 0 ${W + GUTTER} ${h}" role="img" aria-label=${t.house.chartToday}>
           ${ticks.map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${base} style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>`)}
           <line x1="0" y1="3" x2=${W} y2="3" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>
           <line x1="0" y1=${base} x2=${W} y2=${base} style="stroke:var(--ed-tick);stroke-width:1.5"></line>
           ${bars}
-          <text x=${W - 2} y="14" text-anchor="end" style="fill:var(--ed-secondary);stroke:var(--ed-tile);stroke-width:3px;paint-order:stroke" font-size="10">${peak > 0 ? `${formatKwh(peak)} kWh` : ""}</text>
+          <text x=${W + 5} y="7" style="fill:var(--ed-secondary)" font-size="12">${peak > 0 ? formatKwh(peak) : ""}</text>
+          <text x=${W + 5} y=${base + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
         </svg>
-        <div class="bat-axis ticks" aria-hidden="true">${ticks.map((tick) => html`<span style="left:${((tick.x / W) * 100).toFixed(1)}%;transform:translateX(${tick.x < 8 ? "0" : tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>
+        <div class="bat-axis ticks" aria-hidden="true">${ticks.map((tick) => html`<span style="left:${((tick.x / (W + GUTTER)) * 100).toFixed(1)}%;transform:translateX(${tick.x < 8 ? "0" : tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>
         ${items.length > 1 ? html`<div class="house-micro-legend">${items.map((item) => html`<span><i style="background:${item.color}"></i>${item.name}</span>`)}</div>` : nothing}
       </div>`;
     }
@@ -732,8 +733,8 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const h = 220;
       const base = 200;
       const scale = 180 / max;
-      // The labels of the axis stand on the left: the bars start to the right of them.
-      const lead = 30;
+      // The labels of the axis stand in the strip to the right of the plot (chart-grid.ts, GUTTER).
+      const lead = 0;
       const barW = Math.min(18, ((W - lead) / n) * 0.72);
       const x = (i: number) => lead + ((i + 0.5) / n) * (W - lead);
       // The parts of a bar are square and divided by a straight line (uživatel 2. 11.).
@@ -771,7 +772,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         h,
         // The top line is the value `max` exactly (the bars are drawn on the scale of 180 above the base).
         grid: [{ y: base - 180 }, { y: base, strong: true }],
-        labels: [{ y: base - 180, text: `${max} kWh` }, { y: base, text: "0" }],
+        labels: [{ y: base - 180, text: `${max}` }, { y: base, text: "0" }],
         time: { start: w.start, end: w.start + n * w.step, x0: lead, x1: W, slot: w.step },
         valueNum: (y) => ((base - y) / 180) * max,
         valueAt: (y) => { const v = ((base - y) / 180) * max; return v % 1 ? formatKwh(v) : formatNumber(v); },
