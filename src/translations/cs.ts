@@ -365,6 +365,8 @@ export const cs = {
     flowNone: "Slunce nikam nejde",
     soFar: "Dnes zatím",
     ofEstimate: (value: string) => `z odhadu ≈ ${value}`,
+    /** The share of the possible production until now, in the panel "Dnes zatím". */
+    ofPossibleSoFar: (percent: string) => `${percent} možného do teď`,
     ringLabel: (percent: string) => `Hotovo ${percent} odhadu dne`,
     started: "Začala",
     ends: "Skončí asi",

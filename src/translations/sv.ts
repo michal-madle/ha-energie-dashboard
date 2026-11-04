@@ -341,6 +341,7 @@ export const sv: Texts = {
     flowNone: "Solen går ingenstans",
     soFar: "Idag hittills",
     ofEstimate: (value: string) => `av ≈ ${value} väntat`,
+    ofPossibleSoFar: (percent: string) => `${percent} av möjligt hittills`,
     ringLabel: (percent: string) => `${percent} av dagens uppskattning klart`,
     started: "Började",
     ends: "Slutar ungefär",

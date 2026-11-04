@@ -24,6 +24,12 @@ Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pr
 - Uživatel 4. 11. 2026: „entity map taky přesun. V dashboardu budou jen veřejné věci. Private budou v ha-config. Tvrdé pravidlo“ (pravidlo 12 v `AGENTS.md` kitu). `ENTITY_MAP.md` je v `ha-config` jako `energie/entity/ENTITY_MAP.md`; z `README.md` odstraněny oddíly „Export entit z Home Assistantu“ a „Týdenní ladění předpovědi“. Přeodvození mapy z exportů z 3. 11. až po novém exportu (uživatel: „zatím ne, az po novem exportu“).
 - Zjištěno: `energie.json` a `spotrebice_helpery.json` v `ha-config` jsou z 3. 11. 2026 (374 a 21 entit), `ENTITY_MAP.md` vychází z exportů z 30. 10. a 2. 11.
 
+### 2026-11-04 · Slunce: podíl možného do teď, výkony v Detailu Dům ve W, bez „0“ v mikrografu (potvrzeno uživatelem)
+
+- Uživatel (screenshoty popupu a detailu Slunce): „Slunce „možné“ - prostě je to takové rozhádané. Na dnes vidím ve 12:07 možné 2,68kW za hodinu ale jinde nevidím možné za celý den (je to jen odhad, který celý den klesá, ráno byl 12 kWh). Ale v historii vidím že se vyrobilo za den jen 19%. To uvidím až zítra. Na kartě dnes to nevidím. Možná by stačil Dnes zatím 5 z odhadu 5,4 a vedle někde že to je 19% možného (asi stačí jen doteď, tj. sečíst graf 0- teď)“. A k Detailu Dům: „Ta 0 je useknutá. a nemusí být. Navíc se na této stránce míchají W a kW. Pračka je v kW, Kuchyně ve W. Všechno stejně. Klidně W.“
+- Nahrazeno: v panelu „Dnes zatím“ (popup i detail) přibyl řádek „N % možného do teď“ (produkce od půlnoci proti křivce „možné“ od půlnoci do teď); „Žádné „% možného““ v popupu je zrušeno. Detail Dům: všechny výkony ve W (dřív kW nebo W podle řádku), z mikrografu zmizel useknutý popisek „0“.
+- Poznámka: odhad dne („z odhadu“) klesá z 12 kWh ráno na 5,4 kWh; příčina nezkoumána, nic se v odhadu nezměnilo.
+
 ### 2026-11-04 · Popisky hodnot grafů vpravo za grafem, všude stejně (potvrzeno uživatelem)
 
 - Uživatel (k otázkám o mřížce): „1 mikrotrendy bez osy jsou spravne. 2 udelej to aby to bylo citelne a vsude stejne. 3 nevim.“
