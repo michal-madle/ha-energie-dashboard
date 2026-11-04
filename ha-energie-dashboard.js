@@ -8114,4 +8114,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: _e(zs()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-04 13:25 UTC · po 0a9280d ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-04 13:45 UTC · po 0306de2 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
