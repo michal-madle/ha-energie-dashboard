@@ -1,0 +1,42 @@
+# Dlouhodobé statistiky předpovědi výroby (Open-Meteo Solar Forecast), pro pět dní, které karta zobrazuje.
+# Proč ne "customize: state_class": senzory sensor.solar_forecast_energy_production_* mají třídu zařízení "energy",
+# a pro ni Home Assistant 2026.10.1 (sensor/const.py, DEVICE_CLASS_STATE_CLASSES) povoluje jen "total" a
+# "total_increasing"; "measurement" by jen vypsalo varování a statistiky průměru (mean) nevznikají u "total".
+# Šablonový senzor bez třídy zařízení smí mít "measurement", takže mu HA drží hodinový průměr, minimum a maximum.
+# Karta čte stav i jednotku (kWh), takže může používat tyto senzory místo původních, jen forecast.energy_today
+# potřebuje statistiky (z nich se učí typická odchylka předpovědi). Ostatní dny volitelně, kvůli dlouhodobé analýze
+# předpovědi podle předstihu (stavová historie se po recorder.purge_keep_days maže, statistiky ne).
+# Vložte do configuration.yaml (sekce template:) a restartujte Home Assistant (nebo "Znovu načíst: šablony").
+# Po restartu zkontrolujte: Nástroje -> Statistiky; senzory se objeví do hodiny.
+template:
+  - sensor:
+      - name: "Solar forecast stat today"
+        unique_id: solar_forecast_stat_today
+        unit_of_measurement: kWh
+        state_class: measurement
+        availability: "{{ states('sensor.solar_forecast_energy_production_today') | is_number }}"
+        state: "{{ states('sensor.solar_forecast_energy_production_today') | float }}"
+      - name: "Solar forecast stat tomorrow"
+        unique_id: solar_forecast_stat_tomorrow
+        unit_of_measurement: kWh
+        state_class: measurement
+        availability: "{{ states('sensor.solar_forecast_energy_production_tomorrow') | is_number }}"
+        state: "{{ states('sensor.solar_forecast_energy_production_tomorrow') | float }}"
+      - name: "Solar forecast stat d2"
+        unique_id: solar_forecast_stat_d2
+        unit_of_measurement: kWh
+        state_class: measurement
+        availability: "{{ states('sensor.solar_forecast_energy_production_d2') | is_number }}"
+        state: "{{ states('sensor.solar_forecast_energy_production_d2') | float }}"
+      - name: "Solar forecast stat d3"
+        unique_id: solar_forecast_stat_d3
+        unit_of_measurement: kWh
+        state_class: measurement
+        availability: "{{ states('sensor.solar_forecast_energy_production_d3') | is_number }}"
+        state: "{{ states('sensor.solar_forecast_energy_production_d3') | float }}"
+      - name: "Solar forecast stat d4"
+        unique_id: solar_forecast_stat_d4
+        unit_of_measurement: kWh
+        state_class: measurement
+        availability: "{{ states('sensor.solar_forecast_energy_production_d4') | is_number }}"
+        state: "{{ states('sensor.solar_forecast_energy_production_d4') | float }}"

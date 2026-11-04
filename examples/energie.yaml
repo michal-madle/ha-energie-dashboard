@@ -1,0 +1,231 @@
+# =============================================================================
+# Energie Dashboard – kompletní konfigurace jedné karty (CURRENT_SPEC.md, Konfigurace)
+#
+# Jsou tu VŠECHNA nastavení s výchozími hodnotami. Klíč bez hodnoty (např. "power:") nebo
+# smazaný klíč = výchozí hodnota. Entity výchozí hodnotu nemají (nenastavená entita = „––“).
+# ID entit potvrdil export z 24. 10. 2026 (ENTITY_MAP.md). Špatná hodnota zastaví kartu
+# chybou, která jmenuje klíč; neznámý klíč v sekci je také chyba. Test hlídá, že tu žádné
+# nastavení nechybí.
+# =============================================================================
+type: custom:ha-energie-dashboard
+
+language: auto                  # jazyk karty: auto (podle Home Assistantu: čeština, švédština, jinak angličtina), cs, sv, en
+title:                          # nadpis nad kartami: text, nebo podle jazyka {cs: Energie dům, en: Energy house, sv: Energi hus}; bez hodnoty podle jazyka karty (Energie / Energi / Energy), "" ho vynechá
+
+# ----------------------------------------------------------------- nadpisy panelů
+# Bez hodnoty se panely jmenují podle jazyka karty. Každý nadpis je text, nebo podle jazyka {cs: Elektřina, en: Electricity, sv: El}; bez jazyka karty se vezme angličtina, pak první uvedený.
+titles:
+  electricity:                  # panel s toky energie (Elektřina / El / Electricity)
+  car:                          # panel auta (BMW i3)
+  water:                        # panel bojleru, zásobníku a mísení (Teplá voda / Varmvatten / Hot water)
+
+# ------------------------------------------------------------ entity: toky energie
+pv:
+  power: sensor.goodwe_pv_power                         # výkon FVE (W)
+  total_generation: sensor.goodwe_total_pv_generation   # čítač výroby za celou dobu (kWh, total_increasing); z jeho statistik je historie a učená křivka Slunce
+battery:
+  power: sensor.goodwe_battery_power                    # výkon baterie (W), kladné = vybíjení
+  state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
+  depth_of_discharge: number.goodwe_depth_of_discharge_on_grid  # hloubka vybití ze střídače (%); rezerva = 100 − hodnota (80 % → rezerva 20 %)
+  reserve: 20                                           # % rezerva baterie, jen když střídač hloubku vybití nehlásí (pod ní je výplň dlaždice Baterie oranžová)
+  # Detail baterie (klepnutí na dlaždici Baterie → Detail baterie); všechno je volitelné, bez entity je hodnota „––“
+  state_of_health: sensor.goodwe_battery_state_of_health  # zdraví baterie SOH (%)
+  voltage: sensor.goodwe_battery_voltage                # napětí baterie (V)
+  current: sensor.goodwe_battery_current                # proud baterie (A)
+  temperature: sensor.goodwe_battery_temperature        # teplota baterie (°C)
+  min_cell_voltage: sensor.goodwe_battery_min_cell_voltage  # nejnižší napětí článku (V)
+  max_cell_voltage: sensor.goodwe_battery_max_cell_voltage  # nejvyšší napětí článku (V)
+  min_cell_temperature: sensor.goodwe_battery_min_cell_temperature  # nejnižší teplota článku (°C)
+  max_cell_temperature: sensor.goodwe_battery_max_cell_temperature  # nejvyšší teplota článku (°C)
+  total_charge: sensor.goodwe_total_battery_charge      # čítač nabití za celou dobu (kWh, total_increasing)
+  total_discharge: sensor.goodwe_total_battery_discharge  # čítač vybití za celou dobu (kWh, total_increasing)
+  inverter_temperature_air: sensor.goodwe_inverter_temperature_air  # teplota střídače, vzduch (°C)
+  inverter_temperature_radiator: sensor.goodwe_inverter_temperature_radiator  # teplota střídače, chladič (°C)
+  mode: sensor.goodwe_battery_mode                      # režim baterie, text tak, jak ho hlásí střídač
+  charge_limit: sensor.goodwe_battery_charge_limit      # limit nabíjení (A)
+  discharge_limit: sensor.goodwe_battery_discharge_limit  # limit vybíjení (A)
+  error: sensor.goodwe_battery_error                    # chyba baterie, prázdné = žádná
+  warning: sensor.goodwe_battery_warning                # varování baterie, prázdné = žádné
+  capacity: 11.2                                        # kWh využitelná kapacita (odhady času, ekvivalentní cykly, zátěž v C)
+  imbalance_good: 15                                    # mV rozbalancování článků, do kterého je „výborné“ (návrh)
+  imbalance_warn: 30                                    # mV rozbalancování, do kterého je „dobré“ (nad tím „pozor“) (návrh)
+  imbalance_fault: 100                                  # mV rozbalancování, nad kterým je „chyba“ (návrh)
+  default_range: 1d                                     # s jakým obdobím se otevře historie v Detailu baterie: 1d, 7d nebo 30d (poslední volba se pamatuje)
+grid:
+  power: sensor.goodwe_meter_active_power_total         # elektroměr (W), záporné = odběr ze sítě
+  total_import: sensor.goodwe_meter_total_energy_import # čítač odběru ze sítě (kWh, total_increasing); z jeho statistik je historie Domu
+  total_export: sensor.goodwe_meter_total_energy_export # čítač přetoku do sítě (kWh, total_increasing)
+house:
+  power: sensor.goodwe_house_consumption                # spotřeba domu (W), včetně wallboxu
+  label: appliances                                     # štítek spotřebičů v Home Assistantu (zařízení se štítkem a s měřením výkonu se ukážou v popupu a Detailu Dům)
+  default_range: 1d                                     # s jakým obdobím se otevře historie v Detailu Dům: 1d, 7d nebo 30d (poslední volba se pamatuje)
+  appliances:                                           # spotřebiče a jejich pomocníci cyklu podle názvu zařízení; power a energy jsou volitelné, pokud štítek spotřebiče funguje (bez pomocníků se ukáže jen výkon)
+    - name: {cs: Pračka, en: Washing machine}            # název zařízení v Home Assistantu (kterýkoli z uvedených), zobrazí se ten v jazyce karty; stačí i prostý text
+      icon: mdi:washing-machine
+      power: sensor.technicka_mistnost_pracka_power
+      energy: sensor.technicka_mistnost_pracka_energy
+      running: input_boolean.technicka_mistnost_pracka_bezi
+      start_energy: input_number.technicka_mistnost_pracka_power_start
+    - name: Sušička
+      icon: mdi:tumble-dryer
+      power: sensor.technicka_mistnost_susicka_power
+      energy: sensor.technicka_mistnost_susicka_energy
+      running: input_boolean.technicka_mistnost_susicka_bezi
+      start_energy: input_number.technicka_mistnost_susicka_power_start
+    - name: Myčka
+      icon: mdi:dishwasher
+      power: sensor.kuchyne_mycka_power
+      energy: sensor.kuchyne_mycka_energy
+      running: input_boolean.kuchyne_mycka_bezi
+      start_energy: input_number.kuchyne_mycka_start_energie
+  groups:                                               # skupiny spotřebičů, každá jeden řádek v Detailu Dům: součet výkonu teď a energie od půlnoci, po rozkliku tabulka zařízení (bez cyklů, bez prahu)
+    - name: {cs: Vaření, en: Cooking, sv: Matlagning}   # název textem, nebo podle jazyka (cs, en, sv; chybí-li jazyk, vezme se en)
+      icon: mdi:silverware-fork-knife                   # ikona řádku (výchozí mdi:power-plug)
+      appliances:                                       # name (text nebo podle jazyka) a power jsou povinné, energy (čítač kWh) volitelný, bez něj se energie spočítá z výkonu
+        - name: Trouba
+          power: sensor.kuchyne_trouba_power
+          energy: sensor.kuchyne_trouba_energy
+        - name: Lednice
+          power: sensor.kuchyne_lednice_power
+          energy: sensor.kuchyne_lednice_energy
+        - name: Kávovar
+          power: sensor.kuchyne_kavovar_power
+    - name: {cs: Klimatizace, en: Air conditioning, sv: Luftkonditionering}
+      icon: mdi:air-conditioner
+      appliances:
+        - name: Obývák
+          power: sensor.obyvak_klimatizace_power
+
+# ------------------------------------------------------------------ auto a wallbox
+car:
+  state_of_charge: sensor.vin_stav_nabiti_predikce_integrace  # nabití auta (%); ID obsahuje VIN, doplňte své
+  range: sensor.i3_120_range_ev_remaining_range         # dojezd (km)
+  capacity: sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana  # užitečná energie plné baterie (kWh); z ní, z nabití a z dojezdu se počítá spotřeba auta a km ze slunce; ID obsahuje VIN, doplňte své
+  image: image.vin                                      # obrázek auta (image.…); ID obsahuje VIN, doplňte své
+  charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
+  image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
+  link: /dashboard-bmw                                  # kam vede dvojklep nebo podržení obrázku auta (cesta nebo https://…); "" = nikam
+wallbox:
+  power: sensor.wallbox_total_power                     # výkon wallboxu (W)
+  status: sensor.wallbox_charge_status                  # Disconnected / Waiting / Charging
+  boost: switch.wallbox_boost                           # boost wallboxu (switch.…)
+  block_charging: switch.wallbox_1_block_charging       # zablokovat nabíjení (bojler má přednost)
+  prioritize_connected: switch.wallbox_2_prioritize_when_connected  # přednost před bojlerem, když je auto připojené
+  charging_power: number.wallbox_7_1_manual_charging_power  # nabíjecí výkon v boostu (number.…, W na fázi); k ověření
+  phases: 3                                             # počet fází (celkový výkon = hodnota entity × fáze)
+  power_min: 4200                                       # W nejnižší nabíjecí výkon (všechny fáze)
+  power_max: 11100                                      # W nejvyšší nabíjecí výkon (všechny fáze)
+  power_step: 300                                       # W krok nabíjecího výkonu (všechny fáze)
+  priority_min_sun: 200                                 # W slunce, od kterého karta hlásí, že přednostní auto čeká
+
+# ---------------------------------------------------------------------- teplá voda
+boiler:
+  power: sensor.tuv_power_total                         # výkon bojleru (W)
+  temperature: sensor.tuv_temperature                   # teplota vody v bojleru (°C)
+  boost: switch.tuv_boost                               # boost bojleru (switch.…)
+  target_temperature: number.tuv_2_1_target_temperature # cíl ohřevu z přebytku (number.…)
+  boost_target_temperature: number.tuv_2_2_boost_target_temperature  # cíl ohřevu v boostu (number.…); nesmí být vyšší než cíl z přebytku
+  target_min: 20                                        # °C nejnižší cíl ohřevu
+  target_max: 85                                        # °C nejvyšší cíl ohřevu
+  target_step: 5                                        # °C krok cíle ohřevu
+  show: heating                                         # heating = dlaždice Bojler jen při ohřevu a hold_minutes po něm; always = v diagramu vždy
+  hold_minutes: 15                                      # min, jak dlouho po konci ohřevu zůstane dlaždice vidět (jen při show: heating)
+water:
+  gauge_min: 15                                         # °C začátek obou obloukových měřičů a výplně dlaždice Bojler
+  gauge_max: 65                                         # °C konec měřičů (platí vyšší z této hodnoty a cíle Přetoky)
+tank:
+  water_heater: water_heater.technicka_mistnost_tado_tepla_voda  # zásobník (water_heater.…)
+  temp_min: 38                                          # °C nejnižší teplota zásobníku (v Off drží kotel toto minimum)
+  temp_max: 65                                          # °C nejvyšší teplota zásobníku
+  temp_step: 1                                          # °C krok teploty zásobníku
+mixing:
+  valve_c1: switch.technicka_mistnost_ventil_c1         # ventil C1 (switch.…)
+  valve_c2: switch.technicka_mistnost_ventil_c2         # ventil C2 (switch.…); mísí = C1 vypnutý a C2 zapnutý; karta spíná oba ventily přímo
+
+# --------------------------------------------- předpověď slunce (Detail slunce → Výhled)
+# Vše je volitelné. Bez předpovědi karta odhaduje den z tempa výroby a z učené křivky „možné“.
+# Kilowatthodiny dne dává integrace Open-Meteo Solar Forecast, Forecast.Solar nebo Solcast;
+# názvy entit podle vaší instalace (Nástroje pro vývojáře → Stavy).
+# Karta se učí typickou odchylku předpovědi z hodinových statistik energy_today; senzory Open-Meteo statistiky nemají
+# (třída energy nepovoluje measurement). Pro energy_today (a podle chuti ostatní dny) použijte šablonové senzory
+# sensor.solar_forecast_stat_today … z examples/statistiky_predpoved.yaml.
+forecast:
+  energy_today: sensor.solar_forecast_energy_production_today   # odhad výroby dnes (kWh)
+  energy_tomorrow: sensor.solar_forecast_energy_production_tomorrow  # odhad výroby zítra (kWh)
+  energy_day_2: sensor.solar_forecast_energy_production_d2      # odhad za 2 dny (kWh)
+  energy_day_3: sensor.solar_forecast_energy_production_d3      # odhad za 3 dny (kWh)
+  energy_day_4: sensor.solar_forecast_energy_production_d4      # odhad za 4 dny (kWh)
+  weather: weather.forecast_domov                       # entita počasí (weather.…), z ní je ikona a popis dne; název ověřte ve Stavech (filtr weather.)
+  default_range: 7d                                     # s jakým obdobím se otevře Historie slunce: 7d nebo 30d (poslední volba se pamatuje)
+  good_power: 2000                                      # W slunce, od kterého je hodina silná (plná žlutá v pětidenním pruhu, okno)
+  good_day: 10                                          # kWh za den, od kterých je den dobrý (Historie)
+  learn_days: 14                                        # dní, z kterých se učí křivka „možné“ a typická odchylka předpovědi
+  possible_percentile: 90                               # % percentil dní, který dává „možné“ v dané hodině
+  typical_deviation: 20                                 # % odchylka předpovědi, než karta uvidí dost dní
+  strip_from: 6                                         # h začátek hodinových pruhů
+  strip_to: 17                                          # h konec hodinových pruhů (tato hodina je poslední blok)
+  evening_hour: 22                                      # h, pro kterou se odhaduje večerní nabití baterie
+  morning_hour: 6                                       # h, kterou končí noc (baterie v tu hodinu)
+  car_start_soc: 50                                     # % baterie, od které se v odhadu večera pustí wallbox
+  car_stop_soc: 30                                      # % baterie, při které se wallbox v odhadu zastaví
+  car_min_sun: 2000                                     # W slunce, od kterého se wallbox v odhadu pustí
+  efficiency: 95                                        # % účinnost baterie v jednom směru
+
+# ------------------------------------------------ dnešní součty (jen v popupech, kWh)
+# Čítače, které se o půlnoci vynulují. Ze střídačových čítačů je udělá utility_meter,
+# viz examples/denni_soucty.yaml. Bez entity ukáže popup u příslušného řádku „––“.
+# Čítač energie auta (wallbox) a bojleru (AZ Router) v exportu entit není.
+daily:
+  pv_generation: sensor.energie_fve_dnes                # vyrobeno (kWh)
+  battery_charge: sensor.energie_baterie_nabito_dnes    # nabito do baterie (kWh)
+  battery_discharge: sensor.energie_baterie_vybito_dnes # vybito z baterie (kWh)
+  grid_import: sensor.energie_sit_odber_dnes            # odebráno ze sítě (kWh)
+  grid_export: sensor.energie_sit_dodavka_dnes          # dodáno do sítě (kWh)
+  car:                                                  # nabito do auta (kWh), bez čítače prázdné
+  boiler:                                               # ohřev bojleru (kWh), bez čítače prázdné
+
+# ------------------------------------------------------- toky: prahy a kreslení
+flows:
+  idle_threshold: 100                                   # W pod tím se tok bere jako žádný (platí i pro věty o stavu)
+  kw_from: 1000                                         # W od tohoto se všechny výkony ukazují v kW
+  decimals: auto                                        # desetinná místa kW: auto = aspoň 3 číslice (0,13 · 1,36 · 6,43 · 11,3 kW), 1 (6,8 kW) nebo 2 (6,81 kW)
+  export_notice: 300                                    # W přetoků do sítě, od kterých je to „přebytek“
+  source_min_share: 15                                  # % podíl zdroje, od kterého se ve větě jmenuje
+  grid_deviation_share: 50                              # % podíl sítě, nad kterým je to odchylka (oranžová)
+  band_max_px_per_kw: 14                                # px tloušťka pásu při 1 kW ve Sankey (silnější tok je tlustší o odmocninu výkonu)
+  band_min_px: 1.6                                      # px nejtenčí pás
+
+# ---------------------------------------- stupnice dlaždic (plná síla odstínu a záře)
+scale:
+  sun: 10000                                            # W
+  battery: 5000                                         # W
+  grid: 10000                                           # W
+  house: 10000                                          # W
+  car: 11100                                            # W
+  boiler: 4000                                          # W
+
+# ------------------------------------------------------------------------- vzhled
+ui:
+  revert_after: 6                                       # s po té se zvolená hodnota vrátí na skutečný stav, když ji HA nepotvrdí
+  hold_ms: 550                                          # ms podržení, které přepne chráněný ovladač (Mísení, Boost, Přetoky | Boost)
+  double_tap_ms: 400                                    # ms mezi dvěma klepnutími dvojklepnutí
+  hint_seconds: 3                                       # s, po která zůstane nápověda „Podržte nebo klepněte dvakrát.“
+colors:
+  sun: "#FFD60A"                                        # slunce
+  battery: "#30D158"                                    # baterie
+  grid: "#3D8BFF"                                       # síť
+  house: "#BF5AF2"                                      # dům
+  car: "#40D0E6"                                        # auto
+  boiler: "#FF6F59"                                     # bojler
+  discharge: "#64D2FF"                                  # vybíjení v grafech baterie (nabíjení má barvu baterie)
+  accent: "#0A84FF"                                     # přepínače, slider, zvýraznění
+  warning: "#FF9230"                                    # odchylka, upozornění, boost
+  neutral: "#8E8E93"                                    # vypnuté ikony a šedé texty
+  cold: "#64D2FF"                                       # studená půlka kapky mísení vody
+  hot: "#FF9F0A"                                        # teplá půlka kapky mísení vody
+  temp_scale:                                           # barva výplně obloukových měřičů podle teploty (°C, rostoucí)
+    - { temp: 20, color: "#0A84FF" }
+    - { temp: 32, color: "#5AC8FA" }
+    - { temp: 44, color: "#FFD60A" }
+    - { temp: 58, color: "#FF9F0A" }
+    - { temp: 85, color: "#FF453A" }

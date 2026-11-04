@@ -1,0 +1,10 @@
+# Aby měl výkon wallboxu a bojleru dlouhodobé statistiky (historie nad 10 dní, export, norma pro popisky),
+# potřebují třídu stavu "measurement". Senzory ji dnes nemají (výkon, ne kumulativní součet).
+# Vložte do configuration.yaml a restartujte Home Assistant (nebo "Znovu načíst: přizpůsobení").
+# Po restartu zkontrolujte: Nástroje pro vývojáře -> Statistiky, entity se objeví do hodiny.
+homeassistant:
+  customize:
+    sensor.wallbox_total_power:
+      state_class: measurement
+    sensor.tuv_power_total:
+      state_class: measurement
