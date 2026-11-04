@@ -734,7 +734,7 @@ test.describe("upozornění (CURRENT_SPEC.md, Upozornění)", () => {
       await open(page, "grid");
       expect(await alertTitles(page)).toEqual(["Boost bojleru je zapnutý"]);
       await expect(page.locator(".alert.warn")).toContainText("nemá smysl");
-      await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "off", attributes: { temperature: 38 } } });
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": { state: "off", attributes: { temperature: 38 } } });
       await expect(page.locator(".alert.warn")).toContainText("Bojler smí topit");
     });
   });
@@ -805,7 +805,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(page.locator(".source-line").nth(1)).toContainText("Auto · podle plánu");
       await expect(arcs.nth(1)).toHaveAttribute("aria-label", /naměřená teplota není/);
       // Off: oblouk ukazuje minimum, které kotel drží (tank.temp_min).
-      await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": "off" });
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": "off" });
       await expect(arcs.nth(1).locator(".arc-num b")).toHaveText("38");
       await expect(page.locator(".source-line").nth(1)).toContainText("Off");
       // Stejná teplota má na obou obloucích stejnou barvu (jedna stupnice).
@@ -1165,21 +1165,21 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await radio(page, "Režim zásobníku", "Manual").click();
       await radio(page, "Režim zásobníku", "Off").click();
       expect(await calls(page)).toEqual([
-        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
-        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "off" } },
+        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", operation_mode: "heat" } },
+        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", operation_mode: "off" } },
       ]);
     });
     await test.step("Manual začne v rozsahu: zásobník hlásí 30 °C, karta nastaví nejnižší povolenou a ukáže ji hned; pak jde měnit", async () => {
       await open(page, "full");
-      await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "auto", attributes: { temperature: 30, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] } } });
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": { state: "auto", attributes: { temperature: 30, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] } } });
       await radio(page, "Režim zásobníku", "Manual").click();
       expect(await calls(page)).toEqual([
-        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
-        { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 38 } },
+        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", operation_mode: "heat" } },
+        { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", temperature: 38 } },
       ]);
       await expect(page.locator(".arc-num b").nth(1)).toHaveText("38");
       // Home Assistant to potvrdí; pak jde teplota změnit.
-      await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "heat", attributes: { temperature: 38, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] } } });
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": { state: "heat", attributes: { temperature: 38, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] } } });
       await expand(page, "Teplota");
       const slider = page.locator('ed-slider[label="Teplota zásobníku"]');
       await slider.locator("input").evaluate((input: HTMLInputElement) => {
@@ -1187,7 +1187,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
         input.dispatchEvent(new Event("input", { bubbles: true }));
         input.dispatchEvent(new Event("change", { bubbles: true }));
       });
-      expect((await calls(page)).at(-1)).toEqual({ domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 52 } });
+      expect((await calls(page)).at(-1)).toEqual({ domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", temperature: 52 } });
       await expect(page.locator(".arc-num b").nth(1)).toHaveText("52");
     });
     await test.step("Teplota a doba: v Auto změna přepne na Manual a pak nastaví teplotu; v Off je neaktivní; meze z konfigurace", async () => {
@@ -1201,13 +1201,13 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
         input.dispatchEvent(new Event("change", { bubbles: true }));
       });
       expect(await calls(page)).toEqual([
-        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", operation_mode: "heat" } },
-        { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_tepla_voda", temperature: 45 } },
+        { domain: "water_heater", service: "set_operation_mode", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", operation_mode: "heat" } },
+        { domain: "water_heater", service: "set_temperature", data: { entity_id: "water_heater.technicka_mistnost_tado_ce_tepla_voda", temperature: 45 } },
       ]);
       // Home Assistant potvrdí Manual a 45 °C, potom se zásobník vypne.
       const attributes = { temperature: 45, min_temp: 30, max_temp: 65, operation_list: ["auto", "heat", "off"] };
-      await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "heat", attributes } });
-      await update(page, { "water_heater.technicka_mistnost_tado_tepla_voda": { state: "off", attributes } });
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": { state: "heat", attributes } });
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": { state: "off", attributes } });
       await expect(slider.locator("input")).toBeDisabled();
     });
   });
