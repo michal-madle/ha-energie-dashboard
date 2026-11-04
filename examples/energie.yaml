@@ -60,40 +60,41 @@ house:
   label: appliances                                     # štítek spotřebičů v Home Assistantu (zařízení se štítkem a s měřením výkonu se ukážou v popupu a Detailu Dům)
   default_range: 1d                                     # s jakým obdobím se otevře historie v Detailu Dům: 1d, 7d nebo 30d (poslední volba se pamatuje)
   appliances:                                           # spotřebiče a jejich pomocníci cyklu podle názvu zařízení; power a energy jsou volitelné, pokud štítek spotřebiče funguje (bez pomocníků se ukáže jen výkon)
-    - name: {cs: Pračka, en: Washing machine}            # název zařízení v Home Assistantu (kterýkoli z uvedených), zobrazí se ten v jazyce karty; stačí i prostý text
+    - name: {cs: Pračka, en: Washing machine, sv: Tvättmaskin}  # název zařízení v Home Assistantu (kterýkoli z uvedených), zobrazí se ten v jazyce karty; stačí i prostý text
       icon: mdi:washing-machine
       power: sensor.technicka_mistnost_pracka_power
       energy: sensor.technicka_mistnost_pracka_energy
       running: input_boolean.technicka_mistnost_pracka_bezi
       start_energy: input_number.technicka_mistnost_pracka_power_start
-    - name: Sušička
+    - name: {cs: Sušička, en: Tumble dryer, sv: Torktumlare}
       icon: mdi:tumble-dryer
       power: sensor.technicka_mistnost_susicka_power
       energy: sensor.technicka_mistnost_susicka_energy
       running: input_boolean.technicka_mistnost_susicka_bezi
       start_energy: input_number.technicka_mistnost_susicka_power_start
-    - name: Myčka
+    - name: {cs: Myčka, en: Dishwasher, sv: Diskmaskin}
       icon: mdi:dishwasher
       power: sensor.kuchyne_mycka_power
       energy: sensor.kuchyne_mycka_energy
       running: input_boolean.kuchyne_mycka_bezi
       start_energy: input_number.kuchyne_mycka_start_energie
   groups:                                               # skupiny spotřebičů, každá jeden řádek v Detailu Dům: součet výkonu teď a energie od půlnoci, po rozkliku tabulka zařízení (bez cyklů, bez prahu)
-    - name: {cs: Vaření, en: Cooking, sv: Matlagning}   # název textem, nebo podle jazyka (cs, en, sv; chybí-li jazyk, vezme se en)
+    - name: {cs: Kuchyně, en: Kitchen, sv: Kök}         # název textem, nebo podle jazyka (cs, en, sv; chybí-li jazyk, vezme se en)
       icon: mdi:silverware-fork-knife                   # ikona řádku (výchozí mdi:power-plug)
       appliances:                                       # name (text nebo podle jazyka) a power jsou povinné, energy (čítač kWh) volitelný, bez něj se energie spočítá z výkonu
-        - name: Trouba
-          power: sensor.kuchyne_trouba_power
-          energy: sensor.kuchyne_trouba_energy
-        - name: Lednice
+        - name: {cs: Digestoř, en: Cooker hood, sv: Spisfläkt}
+          power: sensor.kuchyne_digestor_power
+          energy: sensor.kuchyne_digestor_energy
+        - name: {cs: Lednice, en: Fridge, sv: Kylskåp}
           power: sensor.kuchyne_lednice_power
-          energy: sensor.kuchyne_lednice_energy
-        - name: Kávovar
-          power: sensor.kuchyne_kavovar_power
+        - name: {cs: Trouba, en: Oven, sv: Ugn}
+          power: sensor.kuchyne_trouba_power
+        - name: {cs: Mikrovlnka, en: Microwave, sv: Mikrovågsugn}
+          power: sensor.kuchyne_mikrovlnka_power
     - name: {cs: Klimatizace, en: Air conditioning, sv: Luftkonditionering}
       icon: mdi:air-conditioner
       appliances:
-        - name: Obývák
+        - name: {cs: Obývák, en: Living room, sv: Vardagsrum}
           power: sensor.obyvak_klimatizace_power
 
 # ------------------------------------------------------------------ auto a wallbox

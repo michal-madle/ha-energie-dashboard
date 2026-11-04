@@ -156,7 +156,10 @@ function fakeStatistics(message) {
         "sensor.technicka_mistnost_pracka_power": 600,
         "sensor.technicka_mistnost_susicka_power": 900,
         "sensor.kuchyne_mycka_power": 0,
-        "sensor.kuchyne_kavovar_power": 60,
+        "sensor.kuchyne_digestor_power": 0,
+        "sensor.kuchyne_lednice_power": 80,
+        "sensor.kuchyne_trouba_power": 300,
+        "sensor.kuchyne_mikrovlnka_power": 60,
         "sensor.obyvak_klimatizace_power": 0,
       }[id];
       const row = { start: time, end: time + step };
@@ -240,13 +243,13 @@ if (params.get("appliances") === "1") {
   add("dev_pracka", "Pračka", "technicka_mistnost_pracka", "technicka_mistnost_pracka_bezi", "technicka_mistnost_pracka_power_start", true, 31, 112, "mdi:washing-machine");
   add("dev_susicka", "Sušička", "technicka_mistnost_susicka", "technicka_mistnost_susicka_bezi", "technicka_mistnost_susicka_power_start", false, 40, 0, "mdi:tumble-dryer");
   add("dev_mycka", "Myčka", "kuchyne_mycka", "kuchyne_mycka_bezi", "kuchyne_mycka_start_energie", false, 900, 0, "mdi:dishwasher");
-  // The groups of the example (house.groups): cooking with a counter for the oven and the refrigerator, only the power for the coffee machine; air conditioning: a counter for the oven and the refrigerator, only the power for the coffee machine.
+  // The groups of the example (house.groups): kitchen with a counter for the hood, only the power for the refrigerator, oven and microwave; air conditioning: only the power for the coffee machine.
   Object.assign(states, {
-    "sensor.kuchyne_trouba_power": state("1100", { unit_of_measurement: "W", device_class: "power" }),
-    "sensor.kuchyne_trouba_energy": state("5", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
+    "sensor.kuchyne_digestor_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
+    "sensor.kuchyne_digestor_energy": state("3", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
     "sensor.kuchyne_lednice_power": state("80", { unit_of_measurement: "W", device_class: "power" }),
-    "sensor.kuchyne_lednice_energy": state("9", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
-    "sensor.kuchyne_kavovar_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
+    "sensor.kuchyne_trouba_power": state("1100", { unit_of_measurement: "W", device_class: "power" }),
+    "sensor.kuchyne_mikrovlnka_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
     "sensor.obyvak_klimatizace_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
   });
   // A vacuum has the label too but no power: it drops out.
