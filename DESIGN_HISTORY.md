@@ -3,6 +3,10 @@
 Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pravidla vedení: `AGENTS.md` kitu, oddíl Dokumentace. Nejnovější záznamy jsou nahoře. Stav záznamu: **potvrzeno** (zapsáno do spec), **nahrazeno**, **zamítnuto**, **nepotvrzeno** (otázka položena uživateli v chatu, do spec nepatří).
 
 ## Záznamy
+### 2026-11-05 · Kolečko Dnes zatím bez znaku „%“ (potvrzeno uživatelem)
+
+- Uživatel 5. 11. 2026: „% se mi nelíbí ani u té energie. Upravit všude.“ Kolečko panelu „Dnes zatím“ (popup i detail Slunce) má jen číslo uprostřed, bez „%“ pod ním; sdílené kolečko kitu (commit `f20279c`) jednotku u procent nemá.
+
 ### 2026-11-05 · Kolečko postupu z kitu (potvrzeno uživatelem)
 
 - Uživatel 5. 11. 2026 (při úpravě popupu Větrací režim v Klimatu): „Jo bude to komponenta na více míst.“ Kolečko panelu „Dnes zatím“ (`ring()` v `sun.ts`) je teď společný prvek kitu (`<ed-ring>`, `ha-dashboard-kit/controls`, commit `09f1fe2`); vzhled se nemění (40 px, tah 6, číslo `size × 0,3`, jednotka 10 px), karta mu dává jen barvy přes `--hdk-ring-*`. Vlastní CSS `.sun-ring` zaniklo.

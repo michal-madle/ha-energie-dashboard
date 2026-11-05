@@ -555,7 +555,7 @@ const la = class la extends Ct {
           transform="rotate(-90 ${i} ${i})"
         ></circle>
       </svg>
-      ${this.num ? y`<span class="num" style="font-size:${Math.round(t * (t <= 44 ? 0.3 : 0.27))}px">${this.num}</span>${this.unit ? y`<span class="unit">${this.unit}</span>` : T}` : T}
+      ${this.num ? y`<span class="num ${this.unit ? "with-unit" : ""}" style="font-size:${Math.round(t * (t <= 44 ? 0.3 : 0.27))}px">${this.num}</span>${this.unit ? y`<span class="unit">${this.unit}</span>` : T}` : T}
     </div>`;
   }
 };
@@ -587,11 +587,15 @@ la.styles = ne`
       text-align: center;
     }
     .num {
-      transform: translateY(-62%);
+      transform: translateY(-50%);
       color: var(--hdk-ring-text, currentColor);
       font-weight: 700;
       line-height: 1;
       font-variant-numeric: tabular-nums;
+    }
+    /* With a unit the number rises a little to make room for it under the number. */
+    .num.with-unit {
+      transform: translateY(-62%);
     }
     .unit {
       margin-top: 8px;
@@ -6852,7 +6856,7 @@ const yo = 5 * 6e4, $o = 30 * 6e4, de = 12, Zt = 2, Va = [
     const e = this.t.sun, s = t.estimate, n = s && t.done !== void 0 && s.value > 0 ? Math.min(100, Math.round(t.done / s.value * 100)) : void 0, o = t.done !== void 0 && t.possibleSoFar !== void 0 && t.possibleSoFar >= 0.3 ? Math.round(t.done / t.possibleSoFar * 100) : void 0;
     return y`<div class="sun-sofar">
         <div class="text"><span class="sub">${e.soFar}</span><span class="val">${t.done === void 0 ? C : `${st(t.done)} kWh`}</span><span class="sub">${s ? e.ofEstimate(st(s.value)) : C}</span>${o === void 0 ? T : y`<span class="sub">${e.ofPossibleSoFar(V(o))}</span>`}</div>
-        ${n === void 0 ? T : this.ring(n / 100, 40, 6, String(n), "%", e.ringLabel(V(n)))}
+        ${n === void 0 ? T : this.ring(n / 100, 40, 6, String(n), "", e.ringLabel(V(n)))}
       </div>`;
   }
   /** Where the sun goes now: the bar and the legend of the sinks (house, car, boiler, battery, grid). */
@@ -7140,7 +7144,7 @@ const yo = 5 * 6e4, $o = 30 * 6e4, de = 12, Zt = 2, Va = [
               <span class="bat-sub">${r ? n.between(st(r.low), st(r.high)) : ""}</span>
               ${r ? y`<span class="sun-conf"><span class="level" aria-hidden="true">${[1, 2, 3].map((_) => y`<i class=${_ <= h ? "on" : ""}></i>`)}</span><b>${n.certainty[r.certainty]}</b>${this.hint("conf", s.hints.conf)}</span>` : T}
             </div>
-            ${d === void 0 ? T : this.ring(d / 100, 76, 8, String(d), "%", s.ringLabel(V(d)))}
+            ${d === void 0 ? T : this.ring(d / 100, 76, 8, String(d), "", s.ringLabel(V(d)))}
           </div>
         </div>
         ${m.length > 1 ? y`<div class="bat-card rel">
@@ -8274,4 +8278,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ce(qs()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-05 18:40 UTC · po cf8b2d3 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-05 19:05 UTC · po f20ebe8 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

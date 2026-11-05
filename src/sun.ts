@@ -329,7 +329,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const share = v.done !== undefined && v.possibleSoFar !== undefined && v.possibleSoFar >= 0.3 ? Math.round((v.done / v.possibleSoFar) * 100) : undefined;
       return html`<div class="sun-sofar">
         <div class="text"><span class="sub">${t.soFar}</span><span class="val">${v.done === undefined ? NO_DATA : `${formatKwh(v.done)} kWh`}</span><span class="sub">${est ? t.ofEstimate(formatKwh(est.value)) : NO_DATA}</span>${share === undefined ? nothing : html`<span class="sub">${t.ofPossibleSoFar(formatPercent(share))}</span>`}</div>
-        ${percent === undefined ? nothing : this.ring(percent / 100, 40, 6, String(percent), "%", t.ringLabel(formatPercent(percent)))}
+        ${percent === undefined ? nothing : this.ring(percent / 100, 40, 6, String(percent), "", t.ringLabel(formatPercent(percent)))}
       </div>`;
     }
 
@@ -769,7 +769,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
               <span class="bat-sub">${est ? o.between(formatKwh(est.low), formatKwh(est.high)) : ""}</span>
               ${est ? html`<span class="sun-conf"><span class="level" aria-hidden="true">${[1, 2, 3].map((k) => html`<i class=${k <= level ? "on" : ""}></i>`)}</span><b>${o.certainty[est.certainty]}</b>${this.hint("conf", t.hints.conf)}</span>` : nothing}
             </div>
-            ${percent === undefined ? nothing : this.ring(percent / 100, 76, 8, String(percent), "%", t.ringLabel(formatPercent(percent)))}
+            ${percent === undefined ? nothing : this.ring(percent / 100, 76, 8, String(percent), "", t.ringLabel(formatPercent(percent)))}
           </div>
         </div>
         ${rows.length > 1
