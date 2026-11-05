@@ -2,6 +2,10 @@
 
 Jen archiv. Nic z tohoto dokumentu není závazné; platí `CURRENT_SPEC.md`. Pravidla vedení: `AGENTS.md` kitu, oddíl Dokumentace. Nejnovější záznamy jsou nahoře. Stav záznamu: **potvrzeno** (zapsáno do spec), **nahrazeno**, **zamítnuto**, **nepotvrzeno** (otázka položena uživateli v chatu, do spec nepatří).
 
+## 2026-11-05 · Kolečko postupu z kitu (potvrzeno uživatelem)
+
+- Uživatel 5. 11. 2026 (při úpravě popupu Větrací režim v Klimatu): „Jo bude to komponenta na více míst.“ Kolečko panelu „Dnes zatím“ (`ring()` v `sun.ts`) je teď společný prvek kitu (`<ed-ring>`, `ha-dashboard-kit/controls`, commit `09f1fe2`); vzhled se nemění (40 px, tah 6, číslo `size × 0,3`, jednotka 10 px), karta mu dává jen barvy přes `--hdk-ring-*`. Vlastní CSS `.sun-ring` zaniklo.
+
 ## Záznamy
 
 ### 2026-11-04 · Sušička znovu přidána, nová ID (nahrazeno: uživatel vrátil původní ID)
