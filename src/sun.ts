@@ -315,18 +315,9 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         </button>${open ? html`<div class="sun-note" role="note" @click=${() => { this._sunHint = undefined; }}>${text}</div>` : nothing}`;
     }
 
-    /** A ring with the number centred in it and the unit under the number. */
+    /** A ring with the number centred in it and the unit under the number: the shared ring of the kit (`<ed-ring>`). */
     ring(fraction: number, size: number, stroke: number, num: string, unit: string, label: string): TemplateResult {
-      const r = (size - stroke) / 2;
-      const c = 2 * Math.PI * r;
-      const f = clamp(fraction, 0, 1);
-      return html`<div class="sun-ring" style="width:${size}px;height:${size}px" role="img" aria-label=${label}>
-        <svg viewBox="0 0 ${size} ${size}" aria-hidden="true">
-          <circle cx=${size / 2} cy=${size / 2} r=${r} fill="none" class="track" stroke-width=${stroke}></circle>
-          <circle cx=${size / 2} cy=${size / 2} r=${r} fill="none" class="fill" stroke-width=${stroke} stroke-linecap="round" stroke-dasharray="${(c * f).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 ${size / 2} ${size / 2})"></circle>
-        </svg>
-        <span class="num" style="font-size:${Math.round(size * (size <= 44 ? 0.3 : 0.27))}px">${num}</span><span class="unit">${unit}</span>
-      </div>`;
+      return html`<ed-ring fraction=${fraction} size=${size} stroke=${stroke} num=${num} unit=${unit} label=${label}></ed-ring>`;
     }
 
     /** The one panel "Dnes zatím" with the ring, the same in the popup and in the detail. */

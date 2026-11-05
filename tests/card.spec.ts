@@ -1873,7 +1873,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(pop.getByRole("img", { name: "Dům 0,50 kW, Auto 4,10 kW, Bojler 1,20 kW, Baterie 0,80 kW, Do sítě 0,20 kW" })).toBeVisible();
       await expect(pop.locator(".sun-sofar")).toContainText("Dnes zatím");
       await expect(pop.locator(".sun-sofar")).toContainText("18,4 kWh");
-      await expect(pop.locator(".sun-sofar .sun-ring")).toBeVisible();
+      await expect(pop.locator(".sun-sofar ed-ring")).toBeVisible();
       await expect(pop.locator(".pop-row").first()).toContainText("Začala");
       await expect(pop.locator(".pop-row").nth(1)).toContainText("Skončí asi");
       // Podíl možného do teď (uživatel 4. 11.): produkce od půlnoci proti křivce možného od půlnoci do teď.

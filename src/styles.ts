@@ -2055,43 +2055,11 @@ export const styles = css`
     cursor: pointer;
   }
 
-  .sun-ring {
-    position: relative;
-    flex: none;
-  }
-
-  .sun-ring svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-  }
-
-  .sun-ring .track {
-    stroke: var(--sun-track, var(--ed-tile));
-  }
-
-  .sun-ring .fill {
-    stroke: var(--ed-sun);
-  }
-
-  .sun-ring .num {
-    position: absolute;
-    inset: 50% 0 auto;
-    transform: translateY(-62%);
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .sun-ring .unit {
-    position: absolute;
-    inset: 50% 0 auto;
-    margin-top: 8px;
-    color: var(--sun-sub, var(--ed-secondary));
-    font-size: 10px;
-    line-height: 1;
-    text-align: center;
+  /* The ring is the shared one of the kit; the card gives it its colours. */
+  ed-ring {
+    --hdk-ring-track: var(--sun-track, var(--ed-tile));
+    --hdk-ring-fill: var(--ed-sun);
+    --hdk-ring-sub: var(--sun-sub, var(--ed-secondary));
   }
 
   .sun-sofar {
