@@ -71,25 +71,25 @@ house:
         sv: Tvättmaskin
       icon: mdi:washing-machine
       power: sensor.technicka_mistnost_pracka
-      energy: sensor.technicka_mistnost_pracka_energy
+      energy: sensor.technicka_mistnost_pracka_energie
       running: input_boolean.technicka_mistnost_pracka_bezi
-      start_energy: input_number.technicka_mistnost_pracka_start
+      start_energy: input_number.technicka_mistnost_pracka_power_start
     - name:
         cs: Sušička
         en: Tumble dryer
         sv: Torktumlare
       icon: mdi:tumble-dryer
       power: sensor.technicka_mistnost_susicka
-      energy: sensor.technicka_mistnost_susicka_energy
+      energy: sensor.technicka_mistnost_susicka_energie
       running: input_boolean.technicka_mistnost_susicka_bezi
-      start_energy: input_number.technicka_mistnost_susicka_start
+      start_energy: input_number.technicka_mistnost_susicka_power_start
     - name:
         cs: Myčka
         en: Dishwasher
         sv: Diskmaskin
       icon: mdi:dishwasher
       power: sensor.kuchyne_mycka
-      energy: sensor.kuchyne_mycka_energy
+      energy: sensor.kuchyne_mycka_energie
       running: input_boolean.kuchyne_mycka_bezi
       start_energy: input_number.kuchyne_mycka_start_energie
   groups:                                               # skupiny spotřebičů, každá jeden řádek v Detailu Dům: součet výkonu teď a energie od půlnoci, po rozkliku tabulka zařízení (bez cyklů, bez prahu)
