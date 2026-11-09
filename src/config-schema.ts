@@ -103,7 +103,7 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     temp_step: range(1, 1, 50, "°C, temperature step"),
   },
   flows: {
-    idle_threshold: range(100, 0, 1000, "W, below this a flow counts as none"),
+    idle_threshold: range(25, 0, 1000, "W, below this a flow (and an appliance) counts as none"),
     kw_from: range(1000, 100, 100000, "W, from this any power is shown in kW"),
     export_notice: range(300, 0, 100000, "W of export that counts as a surplus"),
     source_min_share: range(15, 0, 100, "% a source needs to be named in a text"),

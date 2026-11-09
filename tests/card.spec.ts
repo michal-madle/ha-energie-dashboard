@@ -197,6 +197,8 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ water: { gauge_min: 60, gauge_max: 30 } }, /water\.gauge_min \(60\) must be below water\.gauge_max \(30\)/],
         [{ ui: { hold_ms: 10 } }, /ui\.hold_ms must be a whole number from 200 to 3000/],
         [{ flows: { idle: 5 } }, /flows: unknown key "idle"/],
+        [{ house: { appliances: [{ name: "Pračka", running: "sensor.pracka_bezi" }] } }, /house\.appliances\[0\]\.running must be an input_boolean or a binary_sensor entity, not sensor\.pracka_bezi/],
+        [{ house: { groups: [{ name: "Kuchyně", appliances: [{ name: "Trouba", power: "sensor.kuchyne_trouba", running: "switch.trouba" }] }] } }, /house\.groups\[0\]\.appliances\[0\]\.running must be an input_boolean or a binary_sensor entity, not switch\.trouba/],
         [{ scale: { sun: 0 } }, /scale\.sun must be a number from 100/],
         [{ colors: { sun: "yellow" } }, /colors\.sun must be a colour like #FFD60A/],
         [{ colors: { button: "#FFFFFF" } }, /colors: unknown key "button"/],
@@ -212,6 +214,8 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ title: null, pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { valve_c1: null }, colors: null, flows: { kw_from: null }, daily: null }, false],
         [{ theme: "light", grid_options: { columns: 12 }, view_layout: { position: "main" } }, false],
         [{ battery: { reserve: 0 }, colors: { sun: "#ff0000" } }, false],
+        // The helper "running" is an input_boolean (cycles) or a binary_sensor (the oven, the cooktop); for a member of a group too.
+        [{ house: { appliances: [{ name: "Pračka", running: "input_boolean.pracka_bezi" }, { name: "Trouba", running: "binary_sensor.trouba_bezi" }], groups: [{ name: "Kuchyně", appliances: [{ name: "Trouba", power: "sensor.kuchyne_trouba", running: "binary_sensor.trouba_bezi" }] }] } }, false],
         [{ type: "custom:ha-energie-dashboard" }, true],
       ];
       for (const [patch, whole] of accepted) {
@@ -269,10 +273,10 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     await test.step("limit nabíjení 100 % se v měřiči nekreslí; práh toku z konfigurace rozhoduje, co je tok", async () => {
       await open(page, "day");
       await expect(page.locator(".meter .limit")).toHaveCount(0);
-      await update(page, { "sensor.goodwe_battery_power": "-90" }); // pod 100 W: baterie nenabíjí
+      await update(page, { "sensor.goodwe_battery_power": "-20" }); // pod 25 W (uživatel 9. 11.): baterie nenabíjí
       expect((await tile(page, "batIn")).on).toBe(false);
       const config = example();
-      await reconfigure(page, { flows: { ...config.flows, idle_threshold: 50 } });
+      await reconfigure(page, { flows: { ...config.flows, idle_threshold: 10 } });
       expect((await tile(page, "batIn")).on).toBe(true);
     });
   });
@@ -513,9 +517,9 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await expect(mix).toContainText("Baterie");
       await expect(mix).toContainText("Síť");
     });
-    await test.step("šum pod prahem 100 W není tok: žádný pás, dlaždice nesvítí", async () => {
+    await test.step("šum pod prahem 25 W (uživatel 9. 11.) není tok: žádný pás, dlaždice nesvítí", async () => {
       await open(page, "full");
-      await update(page, { "sensor.goodwe_battery_power": "60", "sensor.goodwe_meter_active_power_total": "-40", "sensor.goodwe_house_consumption": "99" });
+      await update(page, { "sensor.goodwe_battery_power": "20", "sensor.goodwe_meter_active_power_total": "-15", "sensor.goodwe_house_consumption": "24" });
       await expect(page.locator(".flow > svg > path")).toHaveCount(0);
       for (const item of await readTiles(page)) expect(item.on, item.key).toBe(false);
     });
@@ -677,17 +681,43 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
 test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
   test("popup Dům, upozornění na závadu zásuvky a detail se seznamem a grafem", async ({ page }) => {
     test.setTimeout(90000);
-    await test.step("popup: jen běžící spotřebič s dobou a výkonem, Dnes spotřebováno, tlačítko Detail; bez „Ostatní“", async () => {
+    await test.step("popup (uživatel 9. 11.): běžící spotřebiče i členové skupin od největšího výkonu, doba jen s pomocným senzorem, vše ve W, Dnes dole; bez „Ostatní“", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
       await page.locator('.tile[data-tile="house"]').click();
       const pop = page.getByRole("dialog", { name: "Dům" });
       await expect(pop).toBeVisible();
-      await expect(pop).toContainText("Pračka · 31 min");
-      await expect(pop).toContainText("112 W");
-      await expect(pop).not.toContainText("Sušička");
-      await expect(pop).not.toContainText("Roborock");
-      await expect(pop).not.toContainText("Ostatní");
+      // The oven is a member of the group Kuchyně: its helper has been on since 55 minutes ago (the restart of Home Assistant in between is not a start);
+      // the washing machine is a cycle; the refrigerator (80 W) is above the threshold of 25 W and has no helper, so no duration.
+      const rows = pop.locator(".house-app");
+      await expect(rows).toHaveCount(3);
+      await expect(rows.nth(0)).toContainText("Trouba · 55 min");
+      await expect(rows.nth(0)).toContainText(/1\s100\sW/);
+      await expect(rows.nth(1)).toContainText("Pračka · 31 min");
+      await expect(rows.nth(1)).toContainText("112 W");
+      await expect(rows.nth(2)).toContainText("Lednice");
+      await expect(rows.nth(2)).toContainText("80 W");
+      await expect(rows.nth(2)).not.toContainText("min");
+      for (const name of ["Sušička", "Myčka", "Roborock", "Ostatní", "Varná deska", "Digestoř", "Mikrovlnka"]) await expect(pop).not.toContainText(name);
+      // Watts in the whole popup, the header too (uživatel 9. 11.: "Q10 ano"); "Dnes spotřebováno" under the rows, then the button.
+      expect(await pop.innerText()).not.toMatch(/kW(?!h)/);
+      await expect(pop.locator(".pop-row")).toContainText("Dnes spotřebováno");
       await expect(pop.getByRole("button", { name: /Detail domu/ })).toBeVisible();
+    });
+    await test.step("popup: nejvýš pět řádků, běžící cykly v nich vždy, řazení podle výkonu (uživatel 9. 11.: „Q1 B“)", async () => {
+      await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
+      // Six appliances draw more than the washing machine (112 W): the cycle still has its place, the smallest of the others gives way.
+      await update(page, {
+        "sensor.kuchyne_trouba": "1100", "sensor.kuchyne_varna_deska": "2200", "sensor.kuchyne_ostruvek": "300", "sensor.kuchyne_mikrovlnka": "900", "sensor.kuchyne_digestor": "150",
+        "sensor.kuchyne_lednice": "60", "binary_sensor.kuchyne_varna_deska_bezi": "on",
+      });
+      await page.locator('.tile[data-tile="house"]').click();
+      const pop = page.getByRole("dialog", { name: "Dům" });
+      const rows = pop.locator(".house-app");
+      await expect(rows).toHaveCount(5);
+      const names = await rows.locator(".ell").allInnerTexts();
+      expect(names.map((name) => name.replace(/ · .*/, "").trim())).toEqual(["Varná deska", "Trouba", "Mikrovlnka", "Ostrůvek", "Pračka"]);
+      await expect(pop).not.toContainText("Digestoř");
+      await expect(pop).not.toContainText("Lednice");
     });
     await test.step("závada zásuvky je řádek Upozornění: název spotřebiče a text", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1&fault=1");
@@ -703,8 +733,12 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".house-hero").locator("xpath=preceding-sibling::*[1]")).toHaveText("Spotřeba domu teď");
       await expect(detail).toContainText("Pračka");
       // The icon the user gave to the device stands before the name.
-      await expect(detail.locator("ha-icon.house-icon")).toHaveCount(5);
+      await expect(detail.locator("ha-icon.house-icon")).toHaveCount(4);
       await expect(detail.locator("ha-icon.house-icon").first()).toHaveAttribute("icon", /^mdi:/);
+      // The order (uživatel 9. 11.: "Q9 ano zkusme"): what runs first, from the largest power (the group Kuchyně 1 180 W, the washing machine 112 W), then the others by name.
+      await expect(detail.locator(".house-item .bat-label")).toHaveText(["Kuchyně", "Pračka", "Myčka", "Sušička"]);
+      // Digestoř, a member of the group, is not listed a second time; the idle appliances are not folded away.
+      await expect(detail.locator(".house-item")).toHaveCount(4);
       await expect(detail).toContainText("Běží · 31 min");
       // The cycle ended when the gap of the restart began (1 h 40 min ago), not when the helper changed (40 min ago).
       await expect(detail).toContainText("Skončilo · před 1 h 40 min");
@@ -732,7 +766,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(cooking).toContainText("Dnes");
       await expect(cooking).toContainText(/1\s180\sW/);
       await cooking.click();
-      for (const name of ["Digestoř", "Lednice", "Trouba", "Mikrovlnka"]) await expect(detail.locator(".house-cook")).toContainText(name);
+      for (const name of ["Digestoř", "Lednice", "Trouba", "Mikrovlnka", "Varná deska", "Ostrůvek", "Pracovní linka"]) await expect(detail.locator(".house-cook")).toContainText(name);
       await expect(detail.locator(".house-cook")).toContainText("Teď");
       await expect(detail.locator(".house-cook")).toContainText("Celkem dnes");
       await expect(detail.locator(".house-cook")).toContainText(/1\s100\sW/);
@@ -744,18 +778,27 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // The icons of the rows take the colour of the secondary text, never black (dark mode).
       const iconColors = await detail.locator("ha-icon.house-icon").evaluateAll((els) => els.map((el) => getComputedStyle(el).color));
       for (const color of iconColors) expect(color).toBe("rgb(152, 152, 159)");
-      // The second group has a translated name and its own icon.
-      await expect(detail.getByRole("button", { name: /Klimatizace/ })).toContainText("0 W");
       // The group has the trend too (its appliances stacked, a legend names them).
-      await expect(detail.locator(".house-micro-legend span")).toHaveCount(4);
+      await expect(detail.locator(".house-micro-legend span")).toHaveCount(7);
       await detail.getByRole("radio", { name: "Historie" }).click();
       await expect(detail.locator(".bat-chart")).toBeVisible();
+      // 1 den is today from midnight (uživatel 9. 11.: "Q8 ok"): the axis 0 to 24 by 3 hours; until a bar is picked there is no cursor and the panel reads the whole day,
+      // the parts from the largest energy (the "Top dnes").
+      await expect(detail.locator(".bat-chart line.cursor")).toHaveCount(0);
+      await expect(detail.locator(".house-panel-head")).toContainText("Dnes");
+      await expect(detail.locator(".house-panel-head")).toContainText("Celkem");
+      const whole = await detail.locator(".house-panel-row b").allInnerTexts();
+      const kwh = whole.slice(0, -1).map((text) => Number(text.replace(/\s?kWh/, "").replace(",", ".").replace(/\s/g, "")));
+      expect([...kwh].sort((a, b) => b - a)).toEqual(kwh);
+      expect((await detail.locator(".bat-axis.ticks span").allInnerTexts()).filter(Boolean)).toEqual(["03", "06", "09", "12", "15", "18", "21"]);
+      await detail.getByRole("radio", { name: "7 dní" }).click();
+      await expect(detail.locator(".bat-chart line.cursor")).toHaveCount(0);
       // A click lands on the bar it touches, not on its neighbour (the bars start to the right of the labels of the axis).
       const centres = await detail.locator(".bat-chart svg rect[style]").evaluateAll((els) => [...new Set(els.map((el) => Number(el.getAttribute("x")) + Number(el.getAttribute("width")) / 2))].sort((a, b) => a - b));
-      expect(centres.length).toBeGreaterThan(10);
+      expect(centres.length).toBe(7);
       const box = (await detail.locator(".bat-chart").boundingBox())!;
       const viewWidth = await detail.locator(".bat-chart svg").evaluate((el) => (el as SVGSVGElement).viewBox.baseVal.width);
-      for (const index of [3, 9, centres.length - 2]) {
+      for (const index of [1, 3, centres.length - 2]) {
         await page.mouse.click(box.x + (centres[index] / viewWidth) * box.width, box.y + box.height / 2);
         const cursor = Number(await detail.locator(".bat-chart line.cursor").getAttribute("x1"));
         expect(Math.abs(cursor - centres[index]), `sloupec ${index}`).toBeLessThan(1);
@@ -766,7 +809,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".bat-read")).toHaveCount(0);
       // Groups are in the chart too: the group Kuchyně is a row of the reading.
       await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).toHaveCount(1);
-      await detail.getByRole("radio", { name: "7 dní" }).click();
+      await detail.getByRole("radio", { name: "30 dní" }).click();
       await expect(detail.locator(".bat-chart")).toBeVisible();
       await page.keyboard.press("Escape");
       await expect(page.getByRole("dialog", { name: "Detail domu" })).toHaveCount(0);

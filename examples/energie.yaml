@@ -98,7 +98,7 @@ house:
         en: Kitchen
         sv: Kök
       icon: mdi:silverware-fork-knife                   # ikona řádku (výchozí mdi:power-plug)
-      appliances:                                       # name (text nebo podle jazyka) a power jsou povinné, energy (čítač kWh) volitelný, bez něj se energie spočítá z výkonu
+      appliances:                                       # name (text nebo podle jazyka) a power jsou povinné, energy (čítač kWh) volitelný, bez něj se energie spočítá z výkonu; running (input_boolean nebo binary_sensor) je volitelný a dává dobu běhu v popupu
         - name:
             cs: Digestoř
             en: Cooker hood
@@ -117,6 +117,7 @@ house:
             sv: Ugn
           power: sensor.kuchyne_trouba
           energy: sensor.kuchyne_trouba_energie
+          running: binary_sensor.kuchyne_trouba_bezi          # výkon nad prahem s prodlevou (ha-config, yaml/configuration.yaml)
         - name:
             cs: Mikrovlnka
             en: Microwave
@@ -129,6 +130,7 @@ house:
             sv: Spishäll
           power: sensor.kuchyne_varna_deska
           energy: sensor.kuchyne_varna_deska_energie
+          running: binary_sensor.kuchyne_varna_deska_bezi     # výkon nad prahem s prodlevou (ha-config, yaml/configuration.yaml)
         - name:
             cs: Ostrůvek
             en: Kitchen Island
@@ -139,7 +141,7 @@ house:
             cs: Pracovní linka
             en: Worktop
             sv: Arbetsbänk
-          power: sensor.kuchyne_pracovni_linka
+          power: sensor.cuco_v2eur_620d_electric_power        # stejný senzor jako zařízení se štítkem spotřebičů: v seznamu se ukáže jen jednou, ve skupině
           energy: sensor.kuchyne_pracovni_linka_energie
 
 # ------------------------------------------------------------------ auto a wallbox
@@ -232,7 +234,7 @@ daily:
 
 # ------------------------------------------------------- toky: prahy a kreslení
 flows:
-  idle_threshold: 100                                   # W pod tím se tok bere jako žádný (platí i pro věty o stavu)
+  idle_threshold: 25                                    # W pod tím se tok bere jako žádný (platí i pro věty o stavu a pro popup Dům)
   kw_from: 1000                                         # W od tohoto se všechny výkony ukazují v kW
   decimals: auto                                        # desetinná místa kW: auto = aspoň 3 číslice (0,13 · 1,36 · 6,43 · 11,3 kW), 1 (6,8 kW) nebo 2 (6,81 kW)
   export_notice: 300                                    # W přetoků do sítě, od kterých je to „přebytek“

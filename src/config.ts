@@ -187,13 +187,22 @@ function appliances(config: DashboardConfig): ApplianceConfig[] {
     if (name === undefined) {
       fail(`${where}.name must be the name of the device of the appliance.`);
     }
-    const running = entityId(item.running, `${where}.running`, { domain: "input_boolean" });
+    const running = runningHelper(item.running, `${where}.running`);
     const start = entityId(item.start_energy, `${where}.start_energy`, { domain: "input_number" });
     const power = entityId(item.power, `${where}.power`, { domain: "sensor" });
     const energy = entityId(item.energy, `${where}.energy`, { domain: "sensor" });
     const icon = iconName(item.icon, `${where}.icon`);
     return { name, ...(power ? { power } : {}), ...(energy ? { energy } : {}), ...(running ? { running } : {}), ...(start ? { start_energy: start } : {}), ...(icon ? { icon } : {}) };
   });
+}
+
+/** The helper "running" of an appliance: an input_boolean (set by the automations of the cycle) or a binary_sensor (the power above a threshold, with a delay). */
+function runningHelper(value: unknown, where: string): string | undefined {
+  const id = entityId(value, where, { example: "input_boolean.technicka_mistnost_pracka_bezi" });
+  if (id && !/^(input_boolean|binary_sensor)\./.test(id)) {
+    fail(`${where} must be an input_boolean or a binary_sensor entity, not ${id}.`);
+  }
+  return id;
 }
 
 /** A name that must be given. */
@@ -228,20 +237,21 @@ function groups(config: DashboardConfig): GroupConfig[] {
     }
     checkKeys(group, ["name", "icon", "appliances"], where);
     if (!Array.isArray(group.appliances) || group.appliances.length === 0) {
-      fail(`${where}.appliances must be a list of {name, power, energy}.`);
+      fail(`${where}.appliances must be a list of {name, power, energy, running}.`);
     }
     const items = group.appliances.map((item, at): GroupItemConfig => {
       const here = `${where}.appliances[${at}]`;
       if (!isRecord(item)) {
         fail(`${here} must be a mapping like {name: Trouba, power: sensor.…, energy: sensor.…}.`);
       }
-      checkKeys(item, ["name", "power", "energy"], here);
+      checkKeys(item, ["name", "power", "energy", "running"], here);
       const power = entityId(item.power, `${here}.power`, { domain: "sensor" });
       if (!power) {
         fail(`${here}.power must be the power sensor (sensor.…) of the appliance.`);
       }
       const energy = entityId(item.energy, `${here}.energy`, { domain: "sensor" });
-      return { name: required(localizedText(item.name, `${here}.name`), `${here}.name`), power, ...(energy ? { energy } : {}) };
+      const running = runningHelper(item.running, `${here}.running`);
+      return { name: required(localizedText(item.name, `${here}.name`), `${here}.name`), power, ...(energy ? { energy } : {}), ...(running ? { running } : {}) };
     });
     return { name: required(localizedText(group.name, `${where}.name`), `${where}.name`), icon: iconName(group.icon, `${where}.icon`) ?? DEFAULT_GROUP_ICON, appliances: items };
   });

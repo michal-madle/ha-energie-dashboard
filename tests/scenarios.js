@@ -153,14 +153,16 @@ function fakeStatistics(message) {
         "sensor.energy_production_today": 12 + 4 * SUN_DAYS[Math.floor(time / 86400000) % 7],
         "sensor.wallbox_total_power": 800,
         "sensor.tuv_power_total": 300,
-        "sensor.technicka_mistnost_pracka_power": 600,
-        "sensor.technicka_mistnost_susicka_power": 900,
-        "sensor.kuchyne_mycka_power": 0,
-        "sensor.kuchyne_digestor_power": 0,
-        "sensor.kuchyne_lednice_power": 80,
-        "sensor.kuchyne_trouba_power": 300,
-        "sensor.kuchyne_mikrovlnka_power": 60,
-        "sensor.obyvak_klimatizace_power": 0,
+        "sensor.technicka_mistnost_pracka": 600,
+        "sensor.technicka_mistnost_susicka": 900,
+        "sensor.kuchyne_mycka": 0,
+        "sensor.kuchyne_digestor": 0,
+        "sensor.kuchyne_lednice": 80,
+        "sensor.kuchyne_trouba": 300,
+        "sensor.kuchyne_mikrovlnka": 60,
+        "sensor.kuchyne_varna_deska": 0,
+        "sensor.kuchyne_ostruvek": 0,
+        "sensor.cuco_v2eur_620d_electric_power": 0,
       }[id];
       const row = { start: time, end: time + step };
       const curve = id === "sensor.goodwe_pv_power" || id === "sensor.goodwe_total_pv_generation" ? sunWatts : id === "sensor.goodwe_house_consumption" ? houseWatts : undefined;
@@ -225,13 +227,12 @@ const registry = { devices: {}, entities: {} };
 if (params.get("appliances") === "1") {
   const add = (device, name, prefix, helper, start, running, since, power, icon) => {
     registry.devices[device] = { name, name_by_user: null, labels: ["appliances"] };
-    for (const id of [`sensor.${prefix}_power`, `sensor.${prefix}_energy`, `sensor.${prefix}_energy_returned`, `switch.${prefix}`, ...["overcurrent", "overheating", "overpowering", "overvoltage"].map((kind) => `binary_sensor.${prefix}_${kind}`)]) {
+    for (const id of [`sensor.${prefix}`, `sensor.${prefix}_energie`, `switch.${prefix}`, ...["overcurrent", "overheating", "overpowering", "overvoltage"].map((kind) => `binary_sensor.${prefix}_${kind}`)]) {
       registry.entities[id] = { device_id: device, labels: [] };
     }
     Object.assign(states, {
-      [`sensor.${prefix}_power`]: state(String(power), { unit_of_measurement: "W", device_class: "power", state_class: "measurement" }),
-      [`sensor.${prefix}_energy`]: state("2.6", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
-      [`sensor.${prefix}_energy_returned`]: state("0", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
+      [`sensor.${prefix}`]: state(String(power), { unit_of_measurement: "W", device_class: "power", state_class: "measurement" }),
+      [`sensor.${prefix}_energie`]: state("2.6", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
       [`switch.${prefix}`]: state("on", icon ? { icon } : {}),
       [`input_boolean.${helper}`]: { ...state(running ? "on" : "off"), last_changed: minutesAgo(since) },
       [`input_number.${start}`]: state("2.0", { unit_of_measurement: "kWh" }),
@@ -243,17 +244,26 @@ if (params.get("appliances") === "1") {
   add("dev_pracka", "Pračka", "technicka_mistnost_pracka", "technicka_mistnost_pracka_bezi", "technicka_mistnost_pracka_power_start", true, 31, 112, "mdi:washing-machine");
   add("dev_susicka", "Sušička", "technicka_mistnost_susicka", "technicka_mistnost_susicka_bezi", "technicka_mistnost_susicka_power_start", false, 40, 0, "mdi:tumble-dryer");
   add("dev_mycka", "Myčka", "kuchyne_mycka", "kuchyne_mycka_bezi", "kuchyne_mycka_start_energie", false, 900, 0, "mdi:dishwasher");
-  // The groups of the example (house.groups): kitchen with a counter for the hood, only the power for the refrigerator, oven and microwave; air conditioning: only the power for the coffee machine.
+  // The group of the example (house.groups): kitchen; the oven and the cooktop have a helper that says they run (the duration in the popup), the oven runs for 12 minutes.
+  const watt = (value) => state(String(value), { unit_of_measurement: "W", device_class: "power", state_class: "measurement" });
+  const kwh = (value, kind = "total") => state(String(value), { unit_of_measurement: "kWh", device_class: "energy", state_class: kind });
   Object.assign(states, {
-    "sensor.kuchyne_digestor_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
-    "sensor.kuchyne_digestor_energy": state("3", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total_increasing" }),
-    "sensor.kuchyne_lednice_energie": state("9", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
-    "sensor.kuchyne_trouba_energie": state("5", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
-    "sensor.kuchyne_mikrovlnka_energie": state("1", { unit_of_measurement: "kWh", device_class: "energy", state_class: "total" }),
-    "sensor.kuchyne_lednice_power": state("80", { unit_of_measurement: "W", device_class: "power" }),
-    "sensor.kuchyne_trouba_power": state("1100", { unit_of_measurement: "W", device_class: "power" }),
-    "sensor.kuchyne_mikrovlnka_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
-    "sensor.obyvak_klimatizace_power": state("0", { unit_of_measurement: "W", device_class: "power" }),
+    "sensor.kuchyne_digestor": watt(0),
+    "sensor.kuchyne_digestor_energy": kwh(3, "total_increasing"),
+    "sensor.kuchyne_lednice": watt(80),
+    "sensor.kuchyne_lednice_energie": kwh(9),
+    "sensor.kuchyne_trouba": watt(1100),
+    "sensor.kuchyne_trouba_energie": kwh(5),
+    "sensor.kuchyne_mikrovlnka": watt(0),
+    "sensor.kuchyne_mikrovlnka_energie": kwh(1),
+    "sensor.kuchyne_varna_deska": watt(0),
+    "sensor.kuchyne_varna_deska_energie": kwh(2),
+    "sensor.kuchyne_ostruvek": watt(0),
+    "sensor.kuchyne_ostruvek_energie": kwh(1),
+    "sensor.cuco_v2eur_620d_electric_power": watt(0),
+    "sensor.kuchyne_pracovni_linka_energie": kwh(1),
+    "binary_sensor.kuchyne_trouba_bezi": { ...state("on"), last_changed: minutesAgo(12) },
+    "binary_sensor.kuchyne_varna_deska_bezi": { ...state("off"), last_changed: minutesAgo(300) },
   });
   // A vacuum has the label too but no power: it drops out.
   registry.devices.dev_vacuum = { name: "Roborock", name_by_user: null, labels: ["appliances"] };
@@ -314,6 +324,8 @@ let current = { states, devices: registry.devices, entities: registry.entities, 
         "input_boolean.technicka_mistnost_pracka_bezi": [{ s: "off", lu: at(4000) }, { s: "on", lu: at(31) }],
         "input_boolean.technicka_mistnost_susicka_bezi": [{ s: "off", lu: at(4000) }, { s: "on", lu: at(198) }, { s: "unavailable", lu: at(100) }, { s: "off", lu: at(40) }],
         "input_boolean.kuchyne_mycka_bezi": [{ s: "off", lu: at(4000) }, { s: "on", lu: at(960) }, { s: "off", lu: at(900) }],
+        // The oven runs for 12 minutes; Home Assistant restarted (unavailable) at 30 minutes and the helper is on again: the start stays at 55 minutes ago.
+        "binary_sensor.kuchyne_trouba_bezi": [{ s: "off", lu: at(4000) }, { s: "on", lu: at(55) }, { s: "unavailable", lu: at(30) }, { s: "on", lu: at(12) }],
       };
       const result = {};
       for (const id of message.entity_ids) result[id] = sequences[id] ?? [{ s: "off", lu: Date.parse(message.start_time) / 1000 }];

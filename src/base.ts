@@ -61,6 +61,8 @@ export class CardBase extends LitElement {
   @state() _houseCycles?: { at: number; byId: Record<string, { starts: number[]; ends: number[] }> };
   /** The appliances shown in the open popup, in the order they were opened in (the rows do not jump while the popup is open). */
   _houseFrozen?: string[];
+  /** The order of the rows of the open house detail (what runs first, from the largest power), decided when the detail opened. */
+  _houseOrder?: string[];
   /** Texts and number formats of the card language (CURRENT_SPEC.md, Jazyky); set in willUpdate. */
   _i18n: I18n = getI18n("cs");
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */

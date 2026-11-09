@@ -175,11 +175,13 @@ export interface GroupConfig {
   appliances: GroupItemConfig[];
 }
 
-/** One appliance of a group: its name, the power sensor and optionally the counter of the energy. */
+/** One appliance of a group: its name, the power sensor, optionally the counter of the energy and the helper that says it runs (the duration in the popup). */
 export interface GroupItemConfig {
   name: LocalizedText;
   power: EntityId;
   energy?: EntityId;
+  /** An input_boolean or a binary_sensor that is on while the appliance runs; only the duration in the popup comes from it. */
+  running?: EntityId;
 }
 
 /** The helpers of the cycle of one appliance (house.appliances), found by the name of its device. */

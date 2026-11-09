@@ -23,8 +23,8 @@ const REFRESH = 5 * 60000;
 const ENDED_MAX = 24 * HOUR;
 /** How far back the states of the cycle helpers are read: the last cycle of an appliance that did not run for days is still known. */
 const CYCLE_DAYS = 7;
-/** The most appliances in the popup. */
-const POPUP_ROWS = 3;
+/** The most rows in the popup (uživatel 9. 11. 2026: "Q1 B"). */
+const POPUP_ROWS = 5;
 const KINDS = ["overcurrent", "overheating", "overpowering", "overvoltage"] as const;
 type Kind = (typeof KINDS)[number];
 /** The colours of the appliances in the chart: indigo, pink, teal, then amber, green, steel blue in reserve. */
@@ -38,6 +38,21 @@ const POWER_OFF = "M13,3H11V13H13V3M17.83,5.17L16.41,6.59C17.99,7.86 19,9.81 19,
 const groupKey = (index: number) => `\u0000group:${index}`;
 /** The icon of an appliance that has none (the device has no icon and the configuration none). */
 const DEFAULT_ICON = "mdi:power-plug";
+
+/** What decides whether an appliance (or a member of a group) runs: its power and, if it has one, its helper. */
+interface Runner {
+  power: string;
+  running?: string;
+}
+
+/** A row of the popup: an appliance, or a member of a group (its helper only gives the duration). */
+interface PopupItem extends Runner {
+  key: string;
+  name: string;
+  icon?: string;
+  /** An appliance with the helper of a cycle: it is in the popup whenever it runs. */
+  cycle: boolean;
+}
 
 export interface Appliance {
   /** The identity of the appliance: the name of its device, or the first name of the configuration. */
@@ -118,6 +133,19 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       return result.sort((a, b) => a.name.localeCompare(b.name));
     }
 
+    /** The appliances of the list and of the chart: without the ones that are members of a group (a power sensor is listed once, in its group). */
+    listed(s: Settings): Appliance[] {
+      const grouped = new Set(s.groups.flatMap((g) => g.appliances.map((m) => m.power)));
+      return this.appliances(s).filter((a) => !grouped.has(a.power));
+    }
+
+    /** What the popup can show: the listed appliances and the members of the groups (Varná deska and Trouba are named in the popup, the group stays one row of the detail). */
+    popupItems(s: Settings): PopupItem[] {
+      const apps = this.listed(s).map((a): PopupItem => ({ key: a.name, name: this.applianceName(a), icon: a.icon, power: a.power, running: a.running, cycle: !!a.running }));
+      const members = s.groups.flatMap((g, index) => g.appliances.map((m): PopupItem => ({ key: `${groupKey(index)}:${m.power}`, name: this.pickText(m.name) ?? "", icon: g.icon, power: m.power, running: m.running, cycle: false })));
+      return [...apps, ...members];
+    }
+
     /** The icon of an appliance: the configured one, the one of the entities of its device, the one of its helpers, otherwise a plug. */
     iconOf(configured: string | undefined, found: string | undefined, ids: Array<string | undefined>): string {
       const own = ids.map((id) => (id ? this.hass?.states?.[id]?.attributes?.icon : undefined)).find((icon): icon is string => typeof icon === "string" && icon !== "");
@@ -151,7 +179,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
     }
 
     /** Whether the appliance runs: the helper of its cycle, otherwise (an appliance without helpers) its power above the threshold. */
-    applianceOn(a: Appliance, s: Settings): boolean | undefined {
+    applianceOn(a: Runner, s: Settings): boolean | undefined {
       if (a.running) {
         const state = readText(this.hass, a.running);
         if (state === "on") return true;
@@ -162,14 +190,14 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
     }
 
     /** When the helper last changed (ms); the start of the running cycle or the end of the finished one. */
-    changedAt(a: Appliance): number | undefined {
+    changedAt(a: Pick<Runner, "running">): number | undefined {
       const iso = a.running ? this.hass?.states?.[a.running]?.last_changed : undefined;
       const time = iso ? Date.parse(iso) : NaN;
       return Number.isFinite(time) ? time : undefined;
     }
 
     /** Start, end and length of the last cycle: from the moments the helper turned on and off (the recorder), without them only a running cycle (the helper changed when it started). */
-    cycleTimes(a: Appliance, on: boolean | undefined): { start?: number; end?: number; minutes?: number } {
+    cycleTimes(a: Pick<Runner, "running">, on: boolean | undefined): { start?: number; end?: number; minutes?: number } {
       const known = a.running ? this._houseCycles?.byId[a.running] : undefined;
       const lastStart = known?.starts.length ? Math.max(...known.starts) : undefined;
       const lastEnd = known?.ends.length ? Math.max(...known.ends) : undefined;
@@ -232,22 +260,37 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
 
     // ----------------------------------------------------------------- the popup
 
-    /** The order of the rows is decided when the popup opens: the running appliances by power, at most three. */
+    /**
+     * The rows are decided when the popup opens (uživatel 9. 11. 2026, "Q1 B"): at most five, the running cycles always among them, the rest by power
+     * (an appliance or a member of a group runs by its helper, without one by its power above the threshold); shown from the largest power.
+     */
     freezeHouse(s: Settings): void {
-      const rows = this.appliances(s)
-        .filter((a) => this.applianceOn(a, s) === true)
-        .sort((a, b) => (readNumber(this.hass, b.power) ?? 0) - (readNumber(this.hass, a.power) ?? 0))
-        .slice(0, POPUP_ROWS);
-      this._houseFrozen = rows.map((a) => a.name);
+      const watts = (item: Runner) => readNumber(this.hass, item.power) ?? 0;
+      const byPower = (a: PopupItem, b: PopupItem) => watts(b) - watts(a);
+      const running = this.popupItems(s).filter((item) => this.applianceOn(item, s) === true);
+      const cycles = running.filter((item) => item.cycle).sort(byPower).slice(0, POPUP_ROWS);
+      const others = running.filter((item) => !item.cycle).sort(byPower).slice(0, POPUP_ROWS - cycles.length);
+      this._houseFrozen = [...cycles, ...others].sort(byPower).map((item) => item.key);
     }
 
-    renderHousePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
+    /** The order of the detail, decided when it opens: what runs (an appliance by its helper or power, a group by the sum of its power) from the largest power, the rest after it. */
+    houseOrder(s: Settings): string[] {
+      const active: Array<{ key: string; watts: number }> = [];
+      for (const a of this.listed(s)) if (this.applianceOn(a, s) === true) active.push({ key: a.name, watts: readNumber(this.hass, a.power) ?? 0 });
+      s.groups.forEach((group, index) => {
+        const sum = group.appliances.reduce((total, m) => total + (readNumber(this.hass, m.power) ?? 0), 0);
+        if (isOn(sum, s.num.flows.idle_threshold)) active.push({ key: groupKey(index), watts: sum });
+      });
+      return active.sort((a, b) => b.watts - a.watts).map((item) => item.key);
+    }
+
+    renderHousePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel): TemplateResult {
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const on = isOn(model.other, idle);
       const day = this.today(s);
-      const all = this.appliances(s);
-      const rows = (this._houseFrozen ?? []).map((name) => all.find((a) => a.name === name)).filter((a): a is Appliance => !!a);
+      const all = this.popupItems(s);
+      const rows = (this._houseFrozen ?? []).map((key) => all.find((item) => item.key === key)).filter((item): item is PopupItem => !!item);
       // Wider than the other popups (uživatel 2. 11.): a value never wraps.
       const width = Math.min(300, lay.width);
       const centreX = tile.side === "L" ? lay.tile.w / 2 : lay.width - lay.tile.w / 2;
@@ -256,19 +299,22 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const top = centreY - lay.tile.h / 2;
       const below = centreY < lay.height / 2;
       const place = below ? `top:${(top + lay.tile.h + 8).toFixed(0)}px` : `bottom:${(lay.height - top + 8).toFixed(0)}px`;
-      const now = on ? formatPower(model.other!, unit) : model.other === undefined ? NO_DATA : t.idle.house;
+      // Watts in the whole popup (uživatel 9. 11. 2026, "Q10 ano").
+      const now = on ? formatPower(model.other!, "W").replace(" ", "\u00a0") : model.other === undefined ? NO_DATA : t.idle.house;
       return html`<div class="pop bat-pop house-pop" role="dialog" aria-label=${tile.name} tabindex="-1" style="left:${left.toFixed(0)}px;${place};width:${width}px">
         <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - left - 6).toFixed(0)}px"></i>
         <div class="pop-head"><span class="pop-title">${tile.name}</span><span class="pop-now">${now}</span></div>
         <div class="pop-rows">
-          ${rows.map((a) => {
-            const watts = readNumber(this.hass, a.power);
-            const status = this.applianceStatus(a, s);
-            const minutes = this.cycleTimes(a, this.applianceOn(a, s)).minutes;
-            const label = this.applianceOn(a, s) && a.running && minutes !== undefined ? `${this.applianceName(a)} · ${formatDuration(minutes)}` : this.applianceName(a);
-            const value = watts === undefined ? html`<b>${NO_DATA}</b>` : isOn(watts, idle) ? html`<b>${formatPower(watts, unit).replace(" ", "\u00a0")}</b>` : this.applianceOn(a, s) ? html`<b>${formatNumber(watts)}\u00a0W</b>` : this.renderIdleMark();
-            // The consumption stands under the name of the appliance.
-            return html`<div class="house-app" title=${status ?? ""}><span class="ell">${this.renderApplianceIcon(a)}${label}</span>${value}</div>`;
+          ${rows.map((item) => {
+            const watts = readNumber(this.hass, item.power);
+            const running = this.applianceOn(item, s);
+            const app = this.listed(s).find((a) => a.name === item.key);
+            const status = app ? this.applianceStatus(app, s) : undefined;
+            const minutes = this.cycleTimes(item, running).minutes;
+            // The duration only where a helper says when it started (a power sensor alone cannot).
+            const label = running && item.running && minutes !== undefined ? `${item.name} · ${formatDuration(minutes)}` : item.name;
+            const value = watts === undefined ? html`<b>${NO_DATA}</b>` : isOn(watts, idle) || running ? html`<b>${formatPower(watts, "W").replace(" ", "\u00a0")}</b>` : this.renderIdleMark();
+            return html`<div class="house-app" title=${status ?? ""}><span class="ell">${item.icon ? html`<ha-icon class="house-icon" icon=${item.icon}></ha-icon>` : nothing}${label}</span>${value}</div>`;
           })}
           <div class="pop-row"><span>${t.pop.rows.consumed}</span><b>${day.house === undefined ? NO_DATA : `${formatKwh(day.house)}\u00a0kWh`}</b></div>
         </div>
@@ -306,12 +352,14 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       this._batScrub = {};
       const s = this._config;
       if (s && !this._houseFrozen) this.freezeHouse(s);
+      if (s) this._houseOrder = this.houseOrder(s);
     }
 
     closeHouseDetail(): void {
       this._houseDetail = false;
       this._pop = undefined;
       this._houseFrozen = undefined;
+      this._houseOrder = undefined;
       this.updateComplete.then(() => this.scrollIntoView({ block: "nearest" }));
     }
 
@@ -388,16 +436,15 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       }
     }
 
-    /** The first moment and the number of bins of the chart: 24 whole hours, or whole days up to today (the same as the history of the battery). */
+    /** The first moment and the number of bins of the chart: today by hours from midnight to midnight, or whole days up to today (uživatel 9. 11. 2026, "Q8 ok": 1 den = od půlnoci). */
     houseWindow(range: Range | "day", at: number): { start: number; bins: number; step: number } {
-      // "day": the hours of today from midnight to midnight (the charts in the rows of the appliances).
-      if (range === "day") {
+      // "day" and "1d": the hours of today from midnight to midnight (also the charts in the rows of the appliances).
+      if (range === "day" || range === "1d") {
         const midnight = new Date(at);
         midnight.setHours(0, 0, 0, 0);
         return { start: midnight.getTime(), bins: 24, step: HOUR };
       }
-      const w = this.histWindow(range, at);
-      return { ...w, step: range === "1d" ? HOUR : DAY };
+      return { ...this.histWindow(range, at), step: DAY };
     }
 
     async fetchHouse(s: Settings, key: string, range: Range | "day", previous: BatEntry | undefined): Promise<void> {
@@ -412,7 +459,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const e = s.entities;
         // The running bin (the hour or the day that has not ended): the last one of the rolling windows, the current hour in "day".
         const lastStart = w.start + Math.min(w.bins - 1, Math.max(0, Math.floor((at - w.start) / w.step))) * w.step;
-        const apps = this.appliances(s);
+        const apps = this.listed(s);
         const members = s.groups.flatMap((g) => g.appliances);
         const own = range === "day";
         const counters = ids(...(own ? [] : [e.pv.total_generation, e.battery.total_discharge, e.battery.total_charge, e.grid.total_import, e.grid.total_export]), ...apps.map((a) => a.energy), ...members.map((m) => m.energy));
@@ -436,7 +483,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       if (!hass) return;
       const at = Date.now();
       this._houseCycles = { at, byId: this._houseCycles?.byId ?? {} };
-      const ids = this.appliances(s).map((a) => a.running).filter((id): id is string => !!id);
+      const ids = [...this.appliances(s).map((a) => a.running), ...s.groups.flatMap((g) => g.appliances.map((m) => m.running))].filter((id, at, list): id is string => !!id && list.indexOf(id) === at);
       if (!ids.length) return;
       try {
         const result = await hass.callWS<Record<string, Array<{ s?: string; state?: string; lu?: number; last_updated?: number | string }>> | null>({
@@ -485,15 +532,18 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const range = this.houseRange(s);
       const options = RANGES.map((value) => ({ value, label: t.bat.ranges[value] }));
       const tabs = ((["now", "hist"] as const)).map((value) => ({ value, label: t.house.tabs[value] }));
-      const all = this.appliances(s);
-      // The same unit rule as in the popup: W while everything is below 1 kW.
       // Every power on the page in watts (uživatel 4. 11. 2026: "Všechno stejně. Klidně W."), not kW for one row and W for the next.
       const unit: PowerUnit = "W";
-      const order = [...(this._houseFrozen ?? [])];
-      const rows = [...all].sort((a, b) => {
-        const ia = order.indexOf(a.name);
-        const ib = order.indexOf(b.name);
-        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.name.localeCompare(b.name);
+      // What runs first, from the largest power, in the order decided when the detail opened (uživatel 9. 11. 2026, "Q9 ano zkusme"); the rest: the appliances by name, then the groups.
+      const order = this._houseOrder ?? [];
+      const entries = [
+        ...this.listed(s).map((a) => ({ key: a.name, group: false, render: () => this.renderApplianceRow(a, s, unit) })),
+        ...s.groups.map((group, index) => ({ key: groupKey(index), group: true, render: () => this.renderGroupRow(group, index) })),
+      ].sort((a, b) => {
+        const ia = order.indexOf(a.key);
+        const ib = order.indexOf(b.key);
+        if (ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+        return Number(a.group) - Number(b.group) || (a.group ? 0 : a.key.localeCompare(b.key));
       });
       const chart = this.houseChart(s, range);
       const entry = this._houseData[`hist:${range}`];
@@ -509,8 +559,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
           ? html`<div class="bat-card"><span class="bat-cap">${t.house.nowLabel}</span>
               <span class="house-hero">${model.other === undefined ? NO_DATA : formatPower(model.other, unit)}</span></div>
             <div class="house-list"><span class="bat-cap">${t.house.appliances}</span>
-              ${rows.length || s.groups.length ? rows.map((a) => this.renderApplianceRow(a, s, unit)) : html`<div class="bat-card"><span>${t.house.none}</span><span class="bat-sub">${this.labelDiagnostics(s)}</span></div>`}
-              ${s.groups.map((group, index) => this.renderGroupRow(group, index))}
+              ${entries.length ? entries.map((entry) => entry.render()) : html`<div class="bat-card"><span>${t.house.none}</span><span class="bat-sub">${this.labelDiagnostics(s)}</span></div>`}
             </div>`
           : html`<ed-segmented .options=${options} .value=${range} label=${t.house.rangeLabel} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setHouseRange(event.detail.value as Range)}></ed-segmented>
             <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.house.chartHours : t.house.chartDays} · kWh</span>
@@ -570,7 +619,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       midnight.setHours(0, 0, 0, 0);
       const known = a.running ? this._houseCycles?.byId[a.running] : undefined;
       const starts = known ? known.starts.filter((time) => time >= midnight.getTime()).length : undefined;
-      const index = Math.max(0, this.appliances(s).findIndex((item) => item.name === a.name));
+      const index = Math.max(0, this.listed(s).findIndex((item) => item.name === a.name));
       const color = APP_COLORS[index % APP_COLORS.length];
       // "Poslední cyklus: 12:49 – 14:27 · 0,84 kWh" (uživatel 2. 11.: bez délky); the day is written when it is not today.
       const range = (start: number, end: string) => `${this.stamp(start)}\u00a0–\u00a0${end}`;
@@ -722,7 +771,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         return have.length ? Array.from({ length: n }, (_, i) => have.reduce((sum, list) => sum + (list[i] ?? 0), 0)) : undefined;
       };
       const items = [
-        ...this.appliances(s).map((a) => ({ name: this.applianceName(a), list: a.energy ? counter(a.energy) : meanKwh(a.power) })),
+        ...this.listed(s).map((a) => ({ name: this.applianceName(a), list: a.energy ? counter(a.energy) : meanKwh(a.power) })),
         ...s.groups.map((g) => ({ name: this.pickText(g.name) ?? "", list: sumLists(g.appliances.map((m) => (m.energy ? counter(m.energy) : meanKwh(m.power)))) })),
       ]
         .map((item, k) => ({ ...item, color: APP_COLORS[k % APP_COLORS.length] }))
@@ -768,6 +817,14 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
           : [];
         return this.renderReading(date(i), all, sumLabel, rows);
       };
+      // Until a bar is picked the panel reads the whole period (Dnes, 7 or 30 days): the parts from the largest energy, the "Top dnes" (uživatel 9. 11. 2026, "Q8 ok").
+      const period = (): TemplateResult => {
+        const bins = Array.from({ length: n }, (_, i) => i);
+        const all = bins.reduce((sum, i) => sum + whole(i), 0);
+        const parts = items.map((item) => ({ name: item.name, kwh: bins.reduce((sum, i) => sum + val(item.list, i), 0), color: item.color })).sort((p, q) => q.kwh - p.kwh);
+        const used = parts.reduce((sum, part) => sum + part.kwh, 0);
+        return this.renderReading(range === "1d" ? t.house.today : t.bat.ranges[range], all, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }] : []);
+      };
       const missing = [pv, bdis, bchg, gin, gout].some((list) => list && list[0] === undefined);
       return {
         id: `house-${range}`,
@@ -786,6 +843,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         to: t.house.axisTo,
         fade: 0,
         panel,
+        whole: period,
       };
     }
   };

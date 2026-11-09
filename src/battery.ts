@@ -38,6 +38,8 @@ export interface Chart {
   read: (index: number) => string;
   /** A reading of the selected bar that replaces the text above the chart and the legend below it. */
   panel?: (index: number) => TemplateResult;
+  /** The reading of the whole period: shown instead of `panel` (and without the cursor) until the user picks a bar. */
+  whole?: () => TemplateResult;
   from: string;
   to: string;
   legend?: TemplateResult;
@@ -296,6 +298,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
     renderChart(c: Chart): TemplateResult {
       const t = this.t;
       const position = this._batScrub[c.id] ?? c.start ?? 100;
+      const overall = !!c.whole && this._batScrub[c.id] === undefined;
       const fade = c.fade ?? FADE;
       // The bar nearest to the finger or to the thumb: the bars need not be spread over the whole width (the labels of the axis are on the left).
       const target = (position / 100) * W;
@@ -326,8 +329,8 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
             ${filled.grid.map((line) => svg`<line x1="0" y1=${line.y} x2=${W} y2=${line.y} class=${line.strong ? "axis" : "grid"}></line>`)}
             ${(ticks ?? []).map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${c.h} class="grid"></line>`)}
             <g mask=${fade > 0 ? `url(#bm-${c.id})` : nothing}>${c.body}</g>
-            <line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>
-            ${dot ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
+            ${overall ? nothing : svg`<line x1=${x} y1="0" x2=${x} y2=${c.h} class="cursor"></line>`}
+            ${dot && !overall ? svg`<circle cx=${x} cy=${dot.y} r="6" style="fill:var(--ed-text)"></circle>` : nothing}
           </svg>
           ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 7px);left:calc(${((W / (W + GUTTER)) * 100).toFixed(2)}% + 8px)">${label.text}</span>`)}
           <input type="range" style="width:${((W / (W + GUTTER)) * 100).toFixed(2)}%" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
@@ -336,7 +339,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         ${ticks
           ? html`<div class="bat-axis ticks">${ticks.map((tick) => html`<span style="left:${(((tick.labelX ?? tick.x) / (W + GUTTER)) * 100).toFixed(2)}%;transform:translateX(${tick.labelX === undefined && tick.x < 8 ? "0" : tick.labelX === undefined && tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>`
           : html`<div class="bat-axis"><span>${c.from}</span><span>${c.to}</span></div>`}
-        ${c.panel ? c.panel(index) : c.legend ?? nothing}`;
+        ${c.panel ? (overall ? c.whole!() : c.panel(index)) : c.legend ?? nothing}`;
     }
 
     renderChartOrEmpty(key: string, height: number, chart: Chart | undefined): TemplateResult {

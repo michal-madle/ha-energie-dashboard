@@ -275,7 +275,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       // The sun has one too, with the day so far and the detail (CURRENT_SPEC.md, Slunce).
       if (tile.key === "sun") return this.renderSunPopup(tile, lay, s, model, unit);
       // The house has one too, with the running appliances and the detail (CURRENT_SPEC.md, Dům: popup a detail).
-      if (tile.key === "house") return this.renderHousePopup(tile, lay, s, model, unit);
+      if (tile.key === "house") return this.renderHousePopup(tile, lay, s, model);
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const day = this.today(s);
