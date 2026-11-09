@@ -386,7 +386,7 @@ export const styles = css`
   /* Popups: a tile popover with an arrow, and the big one of the heading. */
   .house-pop .pop-row, .house-pop .pop-row span, .house-pop .pop-row b { white-space: nowrap; }
   .house-app { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; }
-  .house-app .ell { color: var(--ed-secondary); font-size: 15px; line-height: 20px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .house-app .ell { color: var(--ed-pop-sec); font-size: 15px; line-height: 20px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .house-app b { font-size: 17px; line-height: 22px; font-weight: 600; white-space: nowrap; }
   .house-list { display: flex; flex-direction: column; gap: 10px; }
   .house-list .bat-cap { padding: 0 4px; }

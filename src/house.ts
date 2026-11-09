@@ -278,7 +278,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const active: Array<{ key: string; watts: number }> = [];
       for (const a of this.listed(s)) if (this.applianceOn(a, s) === true) active.push({ key: a.name, watts: readNumber(this.hass, a.power) ?? 0 });
       s.groups.forEach((group, index) => {
-        const sum = group.appliances.reduce((total, m) => total + (readNumber(this.hass, m.power) ?? 0), 0);
+        // The same rule as the row of the group: a sum counts only when every appliance of it is known (otherwise the row shows "––").
+        const watts = group.appliances.map((m) => readNumber(this.hass, m.power));
+        if (watts.some((value) => value === undefined)) return;
+        const sum = (watts as number[]).reduce((total, value) => total + value, 0);
         if (isOn(sum, s.num.flows.idle_threshold)) active.push({ key: groupKey(index), watts: sum });
       });
       return active.sort((a, b) => b.watts - a.watts).map((item) => item.key);
@@ -313,7 +316,8 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
             const minutes = this.cycleTimes(item, running).minutes;
             // The duration only where a helper says when it started (a power sensor alone cannot).
             const label = running && item.running && minutes !== undefined ? `${item.name} · ${formatDuration(minutes)}` : item.name;
-            const value = watts === undefined ? html`<b>${NO_DATA}</b>` : isOn(watts, idle) || running ? html`<b>${formatPower(watts, "W").replace(" ", "\u00a0")}</b>` : this.renderIdleMark();
+            // The symbol of a switched-off appliance only for an appliance with the helper of a cycle; a member of a group shows what it draws (CURRENT_SPEC.md: groups without the symbol).
+            const value = watts === undefined ? html`<b>${NO_DATA}</b>` : isOn(watts, idle) || running || !item.cycle ? html`<b>${formatPower(watts, "W").replace(" ", "\u00a0")}</b>` : this.renderIdleMark();
             return html`<div class="house-app" title=${status ?? ""}><span class="ell">${item.icon ? html`<ha-icon class="house-icon" icon=${item.icon}></ha-icon>` : nothing}${label}</span>${value}</div>`;
           })}
           <div class="pop-row"><span>${t.pop.rows.consumed}</span><b>${day.house === undefined ? NO_DATA : `${formatKwh(day.house)}\u00a0kWh`}</b></div>
@@ -351,7 +355,6 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       this._houseTab = "now";
       this._batScrub = {};
       const s = this._config;
-      if (s && !this._houseFrozen) this.freezeHouse(s);
       if (s) this._houseOrder = this.houseOrder(s);
     }
 
@@ -537,13 +540,13 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       // What runs first, from the largest power, in the order decided when the detail opened (uživatel 9. 11. 2026, "Q9 ano zkusme"); the rest: the appliances by name, then the groups.
       const order = this._houseOrder ?? [];
       const entries = [
-        ...this.listed(s).map((a) => ({ key: a.name, group: false, render: () => this.renderApplianceRow(a, s, unit) })),
-        ...s.groups.map((group, index) => ({ key: groupKey(index), group: true, render: () => this.renderGroupRow(group, index) })),
+        ...this.listed(s).map((a) => ({ key: a.name, label: this.applianceName(a), group: false, render: () => this.renderApplianceRow(a, s, unit) })),
+        ...s.groups.map((group, index) => ({ key: groupKey(index), label: "", group: true, render: () => this.renderGroupRow(group, index) })),
       ].sort((a, b) => {
         const ia = order.indexOf(a.key);
         const ib = order.indexOf(b.key);
         if (ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
-        return Number(a.group) - Number(b.group) || (a.group ? 0 : a.key.localeCompare(b.key));
+        return Number(a.group) - Number(b.group) || (a.group ? 0 : a.label.localeCompare(b.label));
       });
       const chart = this.houseChart(s, range);
       const entry = this._houseData[`hist:${range}`];
@@ -823,8 +826,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const all = bins.reduce((sum, i) => sum + whole(i), 0);
         const parts = items.map((item) => ({ name: item.name, kwh: bins.reduce((sum, i) => sum + val(item.list, i), 0), color: item.color })).sort((p, q) => q.kwh - p.kwh);
         const used = parts.reduce((sum, part) => sum + part.kwh, 0);
-        return this.renderReading(range === "1d" ? t.house.today : t.bat.ranges[range], all, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }] : []);
+        return this.renderReading(periodTitle, all, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }] : []);
       };
+      const periodTitle = range === "1d" ? t.house.today : t.bat.ranges[range];
+      const periodText = (): string => `${periodTitle} · ${sumLabel} ${formatKwh(Array.from({ length: n }, (_, i) => whole(i)).reduce((sum, value) => sum + value, 0))} kWh`;
       const missing = [pv, bdis, bchg, gin, gout].some((list) => list && list[0] === undefined);
       return {
         id: `house-${range}`,
@@ -844,6 +849,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         fade: 0,
         panel,
         whole: period,
+        wholeText: periodText(),
       };
     }
   };

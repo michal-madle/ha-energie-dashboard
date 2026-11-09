@@ -40,6 +40,8 @@ export interface Chart {
   panel?: (index: number) => TemplateResult;
   /** The reading of the whole period: shown instead of `panel` (and without the cursor) until the user picks a bar. */
   whole?: () => TemplateResult;
+  /** The text of `whole` for the screen reader (the value of the slider while the whole period is read). */
+  wholeText?: string;
   from: string;
   to: string;
   legend?: TemplateResult;
@@ -313,7 +315,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       };
       const x = c.x(index);
       const dot = c.dot?.(index);
-      const text = c.read(index);
+      const text = overall && c.wholeText ? c.wholeText : c.read(index);
       const pct = (y: number) => `${((y / c.h) * 100).toFixed(2)}%`;
       // The grid (chart-grid.ts): 6 to 10 vertical lines with the time, the horizontal ones about the same distance apart.
       const ticks = c.ticks ?? (c.time ? timeTicks(c.time) : undefined);

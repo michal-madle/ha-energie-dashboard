@@ -718,6 +718,17 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       expect(names.map((name) => name.replace(/ · .*/, "").trim())).toEqual(["Varná deska", "Trouba", "Mikrovlnka", "Ostrůvek", "Pračka"]);
       await expect(pop).not.toContainText("Digestoř");
       await expect(pop).not.toContainText("Lednice");
+      // The narrowest phone: the value never wraps and never overlaps the name (a long name is cut with an ellipsis).
+      await page.setViewportSize({ width: 320, height: 852 });
+      await page.locator(".house-app .ell").first().evaluate((el) => { el.lastChild!.textContent = "Varná deska s dlouhým názvem · 1 h 40 min"; });
+      const popBox = (await pop.boundingBox())!;
+      for (const row of await rows.all()) {
+        const name = (await row.locator(".ell").boundingBox())!;
+        const value = (await row.locator("b").boundingBox())!;
+        expect(name.x + name.width, "název nepřekrývá hodnotu").toBeLessThanOrEqual(value.x);
+        expect(value.x + value.width, "hodnota je v popupu").toBeLessThanOrEqual(popBox.x + popBox.width);
+        expect(value.height, "hodnota se nezalamuje").toBeLessThan(26);
+      }
     });
     await test.step("závada zásuvky je řádek Upozornění: název spotřebiče a text", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1&fault=1");
