@@ -780,6 +780,8 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(cooking).toContainText(/1\s180\sW/);
       await cooking.click();
       for (const name of ["Digestoř", "Lednice", "Trouba", "Mikrovlnka", "Varná deska", "Ostrůvek", "Pracovní linka"]) await expect(detail.locator(".house-cook")).toContainText(name);
+      // The table of the group from the largest power (uživatel 9. 11.: "Q19 ok"), the ones that draw nothing in the order of the configuration.
+      await expect(detail.locator(".house-cook-name")).toHaveText(["Trouba", "Lednice", "Digestoř", "Mikrovlnka", "Varná deska", "Ostrůvek", "Pracovní linka"]);
       await expect(detail.locator(".house-cook")).toContainText("Teď");
       await expect(detail.locator(".house-cook")).toContainText("Celkem dnes");
       await expect(detail.locator(".house-cook")).toContainText(/1\s100\sW/);
@@ -793,6 +795,10 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       for (const color of iconColors) expect(color).toBe("rgb(152, 152, 159)");
       // The group has the trend too (its appliances stacked, a legend names them).
       await expect(detail.locator(".house-micro-legend span")).toHaveCount(7);
+      // Nine colours of the palette (uživatel 9. 11.: "Q13 ano"): the seven appliances of the group each have their own.
+      expect(new Set(await detail.locator(".house-micro-legend i").evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor))).size).toBe(7);
+      // Sdílené s Baterií a Sluncem (Q18): the track of the control of the detail is visible in the dark mode, the unit stays "kWh" in the caption.
+      expect(await detail.locator("ed-segmented").first().evaluate((el) => getComputedStyle(el).getPropertyValue("--hdk-track").trim())).toBe("#2c2c2e");
       await detail.getByRole("radio", { name: "Historie" }).click();
       await expect(detail.locator(".bat-chart")).toBeVisible();
       // 1 den is today from midnight (uživatel 9. 11.: "Q8 ok"): the axis 0 to 24 by 3 hours; until a bar is picked there is no cursor and the panel reads the whole day,
@@ -800,6 +806,8 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".bat-chart line.cursor")).toHaveCount(0);
       await expect(detail.locator(".house-panel-head")).toContainText("Dnes");
       await expect(detail.locator(".house-panel-head")).toContainText("Celkem");
+      // The unit of the caption is "kWh", not "KWH" (Q18).
+      expect(await detail.locator(".bat-cap .unit").first().evaluate((el) => getComputedStyle(el).textTransform)).toBe("none");
       const whole = await detail.locator(".house-panel-row b").allInnerTexts();
       const kwh = whole.slice(0, -1).map((text) => Number(text.replace(/\s?kWh/, "").replace(",", ".").replace(/\s/g, "")));
       expect([...kwh].sort((a, b) => b - a)).toEqual(kwh);
@@ -816,6 +824,13 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
         const cursor = Number(await detail.locator(".bat-chart line.cursor").getAttribute("x1"));
         expect(Math.abs(cursor - centres[index]), `sloupec ${index}`).toBeLessThan(1);
       }
+      // A second tap on the picked bar goes back to the reading of the whole period (uživatel 9. 11.: "Q14 ano"); the kit of the picked bar is another tap.
+      const last = centres.length - 2;
+      await page.mouse.click(box.x + (centres[last] / viewWidth) * box.width, box.y + box.height / 2);
+      await expect(detail.locator(".bat-chart line.cursor")).toHaveCount(0);
+      await expect(detail.locator(".house-panel-head")).toContainText("7 dní");
+      await page.mouse.click(box.x + (centres[last] / viewWidth) * box.width, box.y + box.height / 2);
+      await expect(detail.locator(".bat-chart line.cursor")).toHaveCount(1);
       // The reading: the moment, the total and every part with its colour; no more cryptic line above the chart.
       await expect(detail.locator(".house-panel-head")).toContainText("Celkem");
       await expect(detail.locator(".house-panel-row")).not.toHaveCount(0);
@@ -826,6 +841,36 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".bat-chart")).toBeVisible();
       await page.keyboard.press("Escape");
       await expect(page.getByRole("dialog", { name: "Detail domu" })).toHaveCount(0);
+    });
+    await test.step("Dnes je jedno číslo (uživatel 9. 11.: „Q15 ano“): Celkem v panelu Historie 1 den je Dnes spotřebováno z popupu; tlačítko Detail bez okraje prohlížeče (Q18)", async () => {
+      await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
+      await update(page, { "sensor.energie_fve_dnes": "100" });
+      await page.locator('.tile[data-tile="house"]').click();
+      const pop = page.getByRole("dialog", { name: "Dům" });
+      const today = pop.locator(".pop-row b");
+      await expect.poll(async () => (await today.innerText()).trim()).toMatch(/^\d/);
+      const popup = (await today.innerText()).replace(/\s+/g, " ").trim();
+      expect(await pop.locator(".bat-open").evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe("0px");
+      await pop.getByRole("button", { name: /Detail domu/ }).click();
+      const detail = page.getByRole("dialog", { name: "Detail domu" });
+      await detail.getByRole("radio", { name: "Historie" }).click();
+      // The last range is remembered by the card: ask for 1 den explicitly.
+      await detail.getByRole("radio", { name: "1 den" }).click();
+      await expect(detail.locator(".house-panel-head")).toContainText("Dnes");
+      expect((await detail.locator(".house-panel-head b").innerText()).replace(/\s+/g, " ").replace("Celkem", "").trim()).toBe(popup);
+    });
+    await test.step("součet skupiny jen při známých všech zařízeních i v grafu (uživatel 9. 11.: „Q20 ok“): člen bez dat dělá ze skupiny „––“", async () => {
+      await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
+      const config = example();
+      const groups = structuredClone(config.house.groups);
+      groups[0].appliances.push({ name: "Neznámý", power: "sensor.kuchyne_neznamy" });
+      await reconfigure(page, { house: { ...config.house, groups } });
+      await page.locator('.tile[data-tile="house"]').click();
+      await page.getByRole("button", { name: /Detail domu/ }).click();
+      const detail = page.getByRole("dialog", { name: "Detail domu" });
+      await detail.getByRole("radio", { name: "Historie" }).click();
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).toContainText("––");
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Pračka" })).not.toContainText("––");
     });
     await test.step("upozornění „Trouba běží už N“ (uživatel 9. 11.: 2 h): jen s pomocným senzorem a klíčem warn_after, doba z historie (restart není začátek), v en a sv přeložené", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");

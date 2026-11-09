@@ -27,8 +27,8 @@ const CYCLE_DAYS = 7;
 const POPUP_ROWS = 5;
 const KINDS = ["overcurrent", "overheating", "overpowering", "overvoltage"] as const;
 type Kind = (typeof KINDS)[number];
-/** The colours of the appliances in the chart: indigo, pink, teal, then amber, green, steel blue in reserve. */
-const APP_COLORS = ["#5E5CE6", "#E8457A", "#1E9E96", "#B8803A", "#5E9E34", "#6F8FAF"];
+/** The colours of the appliances in the chart: indigo, pink, teal, amber, green, steel blue, and since 9. 11. 2026 ("Q13 ano": nine) red, orchid, olive; each at least 3 : 1 on the dark and the light surface. */
+const APP_COLORS = ["#5E5CE6", "#E8457A", "#1E9E96", "#B8803A", "#5E9E34", "#6F8FAF", "#D9503C", "#A064C8", "#8F8C2A"];
 const HOUSE_RANGE_KEY = "ha-energie-dashboard.house-range";
 /** The icon of an appliance that draws no power (the power symbol, grey). */
 const POWER_OFF = "M13,3H11V13H13V3M17.83,5.17L16.41,6.59C17.99,7.86 19,9.81 19,12C19,15.87 15.87,19 12,19C8.13,19 5,15.87 5,12C5,9.82 6.01,7.87 7.59,6.59L6.17,5.17C4.23,6.82 3,9.26 3,12C3,16.97 7.03,21 12,21C16.97,21 21,16.97 21,12C21,9.26 19.77,6.82 17.83,5.17Z";
@@ -298,6 +298,13 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       return active.sort((a, b) => b.watts - a.watts).map((item) => item.key);
     }
 
+    /** The order of the table of each group, decided when the detail opens: from the largest power now, the unknown ones last (uživatel 9. 11. 2026, "Q19 ok"). */
+    memberOrder(s: Settings): Record<number, string[]> {
+      return Object.fromEntries(
+        s.groups.map((group, index) => [index, group.appliances.map((m) => ({ power: m.power, watts: readNumber(this.hass, m.power) ?? -1 })).sort((a, b) => b.watts - a.watts).map((m) => m.power)]),
+      );
+    }
+
     renderHousePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel): TemplateResult {
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
@@ -366,7 +373,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       this._houseTab = "now";
       this._batScrub = {};
       const s = this._config;
-      if (s) this._houseOrder = this.houseOrder(s);
+      if (s) {
+        this._houseOrder = this.houseOrder(s);
+        this._houseMembers = this.memberOrder(s);
+      }
     }
 
     closeHouseDetail(): void {
@@ -374,6 +384,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       this._pop = undefined;
       this._houseFrozen = undefined;
       this._houseOrder = undefined;
+      this._houseMembers = undefined;
       this.updateComplete.then(() => this.scrollIntoView({ block: "nearest" }));
     }
 
@@ -577,7 +588,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
               ${entries.length ? entries.map((entry) => entry.render()) : html`<div class="bat-card"><span>${t.house.none}</span><span class="bat-sub">${this.labelDiagnostics(s)}</span></div>`}
             </div>`
           : html`<ed-segmented .options=${options} .value=${range} label=${t.house.rangeLabel} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setHouseRange(event.detail.value as Range)}></ed-segmented>
-            <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.house.chartHours : t.house.chartDays} · kWh</span>
+            <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.house.chartHours : t.house.chartDays} · <span class="unit">kWh</span></span>
               ${chart ? this.renderChart(chart) : html`<div class="bat-nodata" style="aspect-ratio:${W} / 220">${loading ? NO_DATA : t.bat.noDataChart}</div>`}
             </div>`}
       </section>`;
@@ -590,7 +601,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
     renderGroupRow(group: GroupConfig, index: number): TemplateResult {
       const key = groupKey(index);
       const open = this._houseOpen.includes(key);
-      const items = group.appliances.map((c) => ({ name: this.pickText(c.name) ?? "", watts: readNumber(this.hass, c.power), kwh: this._houseToday?.groups?.[c.power] }));
+      const order = this._houseMembers?.[index] ?? [];
+      const items = group.appliances
+        .map((c) => ({ power: c.power, name: this.pickText(c.name) ?? "", watts: readNumber(this.hass, c.power), kwh: this._houseToday?.groups?.[c.power] }))
+        .sort((a, b) => (order.indexOf(a.power) < 0 ? 999 : order.indexOf(a.power)) - (order.indexOf(b.power) < 0 ? 999 : order.indexOf(b.power)));
       const known = (list: Array<number | undefined>): number | undefined => (list.every((v) => v !== undefined) ? (list as number[]).reduce((sum, v) => sum + v, 0) : undefined);
       // Watts everywhere on the page: a small draw of a standby appliance is never rounded to 0,00 kW.
       const power = (watts: number | undefined) => (watts === undefined ? NO_DATA : formatPower(watts, "W").replace(" ", "\u00a0"));
@@ -703,10 +717,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
     }
 
     /** The reading of a bar (and the legend at once): the moment and the total, then every part with its colour and its energy. */
-    renderReading(title: string, total: number, label: string, rows: Array<{ name: string; kwh: number; color: string }>): TemplateResult {
+    renderReading(title: string, total: number, label: string, rows: Array<{ name: string; kwh: number | undefined; color: string }>): TemplateResult {
       return html`<div class="house-panel" role="group" aria-label=${title}>
         <div class="house-panel-head"><span>${title}</span><b>${label}\u00a0${formatKwh(total)}\u00a0kWh</b></div>
-        ${rows.map((row) => html`<div class="house-panel-row"><i style="background:${row.color}"></i><span>${row.name}</span><b>${formatKwh(row.kwh)}\u00a0kWh</b></div>`)}
+        ${rows.map((row) => html`<div class="house-panel-row"><i style="background:${row.color}"></i><span>${row.name}</span><b>${row.kwh === undefined ? NO_DATA : `${formatKwh(row.kwh)}\u00a0kWh`}</b></div>`)}
       </div>`;
     }
 
@@ -749,7 +763,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         });
       });
       return html`<div class="house-micro">
-        <span class="house-micro-cap">${t.house.chartToday} · kWh</span>
+        <span class="house-micro-cap">${t.house.chartToday} · <span class="unit">kWh</span></span>
         <svg viewBox="0 0 ${W + GUTTER} ${h}" role="img" aria-label=${t.house.chartToday}>
           ${ticks.map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${base} style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>`)}
           <line x1="0" y1="6" x2=${W} y2="6" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>
@@ -767,7 +781,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const entry = this._houseData[`hist:${range}`];
       if (!entry || entry.status === "error" || !Object.keys(entry.parts).length) return undefined;
       const e = s.entities;
-      const { w, n, counter, meanKwh } = this.houseSeries(entry, range);
+      const { w, n, cur, counter, meanKwh } = this.houseSeries(entry, range);
       const pv = counter(e.pv.total_generation);
       const bdis = counter(e.battery.total_discharge);
       const bchg = counter(e.battery.total_charge);
@@ -781,16 +795,19 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const house = Array.from({ length: n }, (_, i) => Math.max(0, val(pv, i) + val(bdis, i) + val(gin, i) - val(bchg, i) - val(gout, i) - val(car, i) - val(boil, i)));
       // The appliances and the groups: the counter of the energy, otherwise the mean power (a group is the sum of its appliances).
       // A fixed palette (uživatel 2. 11.): six hues of the same weight, readable on the dark and the light surface (3 : 1); the colour of an appliance is the same in its row (the strip of the cycles).
+      // The sum of a group counts only when every appliance of it is known (uživatel 9. 11. 2026, "Q20 ok", the same rule as the row of the group): a bin where one has no value stays unknown, never 0.
       const sumLists = (lists: Array<Array<number | undefined> | undefined>): Array<number | undefined> | undefined => {
-        const have = lists.filter((list): list is Array<number | undefined> => !!list);
-        return have.length ? Array.from({ length: n }, (_, i) => have.reduce((sum, list) => sum + (list[i] ?? 0), 0)) : undefined;
+        if (!lists.length || lists.some((list) => !list)) return undefined;
+        const have = lists as Array<Array<number | undefined>>;
+        return Array.from({ length: n }, (_, i) => (have.some((list) => list[i] === undefined) ? undefined : have.reduce((sum, list) => sum + (list[i] as number), 0)));
       };
       const items = [
-        ...this.listed(s).map((a) => ({ name: this.applianceName(a), list: a.energy ? counter(a.energy) : meanKwh(a.power) })),
-        ...s.groups.map((g) => ({ name: this.pickText(g.name) ?? "", list: sumLists(g.appliances.map((m) => (m.energy ? counter(m.energy) : meanKwh(m.power)))) })),
+        ...this.listed(s).map((a) => ({ name: this.applianceName(a), group: false, list: a.energy ? counter(a.energy) : meanKwh(a.power) })),
+        ...s.groups.map((g) => ({ name: this.pickText(g.name) ?? "", group: true, list: sumLists(g.appliances.map((m) => (m.energy ? counter(m.energy) : meanKwh(m.power)))) })),
       ]
         .map((item, k) => ({ ...item, color: APP_COLORS[k % APP_COLORS.length] }))
-        .filter((item) => item.list && item.list.some((value) => typeof value === "number"));
+        // A group stays in the reading even when its sum is unknown ("––"): its energy is not guessed, and not hidden either.
+        .filter((item) => item.group || (item.list && item.list.some((value) => typeof value === "number")));
       const total = (i: number) => Math.max(house[i], items.reduce((sum, item) => sum + val(item.list, i), 0));
       let peak = 0;
       for (let i = 0; i < n; i++) peak = Math.max(peak, total(i));
@@ -828,20 +845,27 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const all = whole(i);
         const used = items.reduce((sum, item) => sum + val(item.list, i), 0);
         const rows = items.length
-          ? [...items.map((item) => ({ name: item.name, kwh: val(item.list, i), color: item.color })).sort((p, q) => q.kwh - p.kwh), { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }]
+          ? [...items.map((item) => ({ name: item.name, kwh: item.list?.[i], color: item.color })).sort((p, q) => (q.kwh ?? -1) - (p.kwh ?? -1)), { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }]
           : [];
         return this.renderReading(date(i), all, sumLabel, rows);
       };
       // Until a bar is picked the panel reads the whole period (Dnes, 7 or 30 days): the parts from the largest energy, the "Top dnes" (uživatel 9. 11. 2026, "Q8 ok").
-      const period = (): TemplateResult => {
-        const bins = Array.from({ length: n }, (_, i) => i);
-        const all = bins.reduce((sum, i) => sum + whole(i), 0);
-        const parts = items.map((item) => ({ name: item.name, kwh: bins.reduce((sum, i) => sum + val(item.list, i), 0), color: item.color })).sort((p, q) => q.kwh - p.kwh);
-        const used = parts.reduce((sum, part) => sum + part.kwh, 0);
-        return this.renderReading(periodTitle, all, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }] : []);
-      };
+      const bins = Array.from({ length: n }, (_, i) => i);
+      const parts = items
+        .map((item) => ({
+          name: item.name,
+          // A group with an unknown bin up to now is unknown as a whole (Q20); the bins after now have no value yet.
+          kwh: item.group && bins.slice(0, cur + 1).some((i) => item.list?.[i] === undefined) ? undefined : bins.reduce((sum, i) => sum + val(item.list, i), 0),
+          color: item.color,
+        }))
+        .sort((p, q) => (q.kwh ?? -1) - (p.kwh ?? -1));
+      const used = parts.reduce((sum, part) => sum + (part.kwh ?? 0), 0);
+      // One definition of "Dnes" (uživatel 9. 11. 2026, "Q15 ano"): the number of the popup, "Dnes spotřebováno", when it is known; never less than the parts.
+      const popupToday = range === "1d" ? this.today(s).house : undefined;
+      const periodAll = Math.max(popupToday ?? bins.reduce((sum, i) => sum + whole(i), 0), used);
+      const period = (): TemplateResult => this.renderReading(periodTitle, periodAll, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: Math.max(0, periodAll - used), color: "#8E8E93" }] : []);
       const periodTitle = range === "1d" ? t.house.today : t.bat.ranges[range];
-      const periodText = (): string => `${periodTitle} · ${sumLabel} ${formatKwh(Array.from({ length: n }, (_, i) => whole(i)).reduce((sum, value) => sum + value, 0))} kWh`;
+      const periodText = (): string => `${periodTitle} · ${sumLabel} ${formatKwh(periodAll)} kWh`;
       const missing = [pv, bdis, bchg, gin, gout].some((list) => list && list[0] === undefined);
       return {
         id: `house-${range}`,

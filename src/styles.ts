@@ -13,6 +13,7 @@ export const styles = css`
     --ed-tile: #2c2c2e;
     --ed-tint-base: #000000;
     --ed-track: #2c2c2e;
+    --ed-track-page: #2c2c2e;
     --ed-text: #ffffff;
     --ed-secondary: #98989f;
     --ed-off: #8e8e93;
@@ -45,6 +46,8 @@ export const styles = css`
     --ed-tile: #f2f2f7;
     --ed-tint-base: #ffffff;
     --ed-track: #f2f2f7;
+    /* The track of a control that stands on the page itself (the detail), not on a white card: it would vanish on #f2f2f7. */
+    --ed-track-page: #e3e3e8;
     --ed-text: #000000;
     --ed-secondary: #5f5f66;
     --ed-off: #8e8e93;
@@ -1444,7 +1447,10 @@ export const styles = css`
     opacity: 0.45;
   }
 
+  .bat-detail ed-segmented { --hdk-track: var(--ed-track-page); }
+
   .bat-open {
+    border: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -1551,6 +1557,8 @@ export const styles = css`
   .bat-card-bar ed-segmented {
     width: 132px;
   }
+
+  .bat-cap .unit { text-transform: none; }
 
   .bat-cap {
     color: var(--ed-secondary);

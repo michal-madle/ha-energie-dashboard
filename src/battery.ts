@@ -303,10 +303,25 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const overall = !!c.whole && this._batScrub[c.id] === undefined;
       const fade = c.fade ?? FADE;
       // The bar nearest to the finger or to the thumb: the bars need not be spread over the whole width (the labels of the axis are on the left).
-      const target = (position / 100) * W;
-      let index = 0;
-      for (let i = 1; i < c.n; i++) if (Math.abs(c.x(i) - target) < Math.abs(c.x(index) - target)) index = i;
+      const nearest = (percent: number) => {
+        const target = (percent / 100) * W;
+        let found = 0;
+        for (let i = 1; i < c.n; i++) if (Math.abs(c.x(i) - target) < Math.abs(c.x(found) - target)) found = i;
+        return found;
+      };
+      const index = nearest(position);
+      // A second tap on the picked bar goes back to the reading of the whole period (uživatel 9. 11. 2026, "Q14 ano"); Enter does the same from the keyboard.
+      const reset = () => {
+        const rest = { ...this._batScrub };
+        delete rest[c.id];
+        this._batScrub = rest;
+      };
       const step = (event: KeyboardEvent) => {
+        if (event.key === "Enter" && c.whole && !overall) {
+          event.preventDefault();
+          reset();
+          return;
+        }
         const move = event.key === "ArrowRight" || event.key === "ArrowUp" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowDown" ? -1 : 0;
         if (!move) return;
         event.preventDefault();
@@ -336,7 +351,18 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
           </svg>
           ${labels.map((label) => html`<span class="bat-ylabel" style="top:calc(${pct(label.y)} - 7px);left:calc(${((W / (W + GUTTER)) * 100).toFixed(2)}% + 8px)">${label.text}</span>`)}
           <input type="range" style="width:${((W / (W + GUTTER)) * 100).toFixed(2)}%" min="0" max="100" step="1" .value=${String(position)} aria-label=${t.bat.scrubLabel} aria-valuetext=${text}
-            @input=${(event: Event) => { this._batScrub = { ...this._batScrub, [c.id]: Number((event.target as HTMLInputElement).value) }; }} @keydown=${step} />
+            @pointerdown=${() => { this._scrubTap = { id: c.id, index: overall ? undefined : index, moved: false }; }}
+            @pointercancel=${() => { this._scrubTap = undefined; }}
+            @pointerup=${() => {
+              const tap = this._scrubTap;
+              this._scrubTap = undefined;
+              if (c.whole && tap && tap.id === c.id && !tap.moved && tap.index !== undefined) reset();
+            }}
+            @input=${(event: Event) => {
+              const value = Number((event.target as HTMLInputElement).value);
+              if (this._scrubTap?.id === c.id && this._scrubTap.index !== nearest(value)) this._scrubTap.moved = true;
+              this._batScrub = { ...this._batScrub, [c.id]: value };
+            }} @keydown=${step} />
         </div>
         ${ticks
           ? html`<div class="bat-axis ticks">${ticks.map((tick) => html`<span style="left:${(((tick.labelX ?? tick.x) / (W + GUTTER)) * 100).toFixed(2)}%;transform:translateX(${tick.labelX === undefined && tick.x < 8 ? "0" : tick.labelX === undefined && tick.x > W - 8 ? "-100%" : "-50%"})">${tick.text}</span>`)}</div>`
@@ -683,7 +709,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const edges = [0, 20, 40, 60, 80, 100];
       const shares = edges.slice(0, 5).map((lowEdge, i) => (known.length ? Math.round((known.filter((v) => (i === 4 ? v >= lowEdge : v >= lowEdge && v < edges[i + 1])).length / known.length) * 100) : undefined));
       return html`${this.renderRange(s)}
-        <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.bat.energyHours : t.bat.energyDays} · kWh</span>${this.renderChartOrEmpty(key, 200, energy?.chart)}</div>
+        <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.bat.energyHours : t.bat.energyDays} · <span class="unit">kWh</span></span>${this.renderChartOrEmpty(key, 200, energy?.chart)}</div>
         <div class="bat-kpis">${kpis.map((k) => html`<div class="bat-kpi"><span class="sub">${k.label}</span><span class="val">${k.value}</span><span class="sub">${k.sub}</span></div>`)}</div>
         <div class="bat-card">
           <span class="bat-cap">${t.bat.bandsTitle}</span>

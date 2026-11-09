@@ -40,6 +40,8 @@ export class CardBase extends LitElement {
   @state() _batOpen?: BatRow;
   /** Position (0–100) of the finger on a chart, by chart. */
   @state() _batScrub: Record<string, number> = {};
+  /** A touch on a chart that is being decided: where it started (the picked bar, none while the whole period is read) and whether it moved to another bar. */
+  _scrubTap?: { id: string; index?: number; moved: boolean };
   /** History by view ("trend", "day:24h", "hist:7d" …). */
   @state() _batData: Record<string, BatEntry> = {};
   /** The sun detail (a page of its own inside the card), its part, history range, chart view and the hint that is open. */
@@ -63,6 +65,8 @@ export class CardBase extends LitElement {
   _houseFrozen?: string[];
   /** The order of the rows of the open house detail (what runs first, from the largest power), decided when the detail opened. */
   _houseOrder?: string[];
+  /** The order of the appliances inside each opened group of the detail (the power sensors, from the largest power), decided when the detail opened. */
+  _houseMembers?: Record<number, string[]>;
   /** Texts and number formats of the card language (CURRENT_SPEC.md, Jazyky); set in willUpdate. */
   _i18n: I18n = getI18n("cs");
   /** A temperature of the tank just chosen, shown until Home Assistant reports it. */
