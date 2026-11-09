@@ -892,7 +892,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
         expect(track).toBe(theme === "dark" ? "#2c2c2e" : "#e3e3e8");
       }
     });
-    await test.step("součet skupiny jen při známých všech zařízeních i v grafu (uživatel 9. 11.: „Q20 ok“): člen bez dat dělá ze skupiny „––“", async () => {
+    await test.step("graf Historie ukazuje jen data, která existují, jako baterie (uživatel 9. 11.: „Q20 udělej stejně jako baterie“): člen bez dat se do součtu skupiny nezapočítá, nic se nedopočítává", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
       const config = example();
       const groups = structuredClone(config.house.groups);
@@ -904,10 +904,13 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await detail.getByRole("radio", { name: "Historie" }).click();
       // 30 days: the days before are settled whatever the hour of the test is.
       await detail.getByRole("radio", { name: "30 dní" }).click();
-      await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).toContainText("––");
-      // Ostatní cannot be told while the group is unknown (its energy would end up there).
-      await expect(detail.locator(".house-panel-row").filter({ hasText: "Ostatní" })).toContainText("––");
-      await expect(detail.locator(".house-panel-row").filter({ hasText: "Pračka" })).not.toContainText("––");
+      // The group keeps its sum of the appliances that have data, nothing is "––", the one without data is left out.
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).toContainText("kWh");
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).not.toContainText("––");
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Ostatní" })).not.toContainText("––");
+      // The row of the group in the detail of today keeps the rule "Q11": the sum counts only when every appliance is known.
+      await detail.getByRole("radio", { name: "Dnes" }).click();
+      await expect(detail.getByRole("button", { name: /Kuchyně/ })).toContainText("––");
     });
     await test.step("upozornění „Trouba běží už N“ (uživatel 9. 11.: 2 h): jen s pomocným senzorem a klíčem warn_after, doba z historie (restart není začátek), v en a sv přeložené", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
