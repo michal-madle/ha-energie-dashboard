@@ -182,6 +182,8 @@ export interface GroupItemConfig {
   energy?: EntityId;
   /** An input_boolean or a binary_sensor that is on while the appliance runs; only the duration in the popup comes from it. */
   running?: EntityId;
+  /** Minutes of running (by `running`) after which the page shows the alert "Běží už …" (uživatel 9. 11. 2026: the oven 2 h). */
+  warn_after?: number;
 }
 
 /** The helpers of the cycle of one appliance (house.appliances), found by the name of its device. */
@@ -192,6 +194,8 @@ export interface ApplianceConfig {
   energy?: EntityId;
   running?: EntityId;
   start_energy?: EntityId;
+  /** Minutes of running (by `running`) after which the page shows the alert "Běží už …". */
+  warn_after?: number;
   /** The icon (mdi:washing-machine); without it the card takes the icon of the entities of the device. */
   icon?: string;
 }

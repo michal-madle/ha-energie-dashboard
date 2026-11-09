@@ -208,6 +208,7 @@ export const en: Texts = {
     running: (duration: string) => `Running · ${duration}`,
     noneHint: (label: string, found: number, registry: boolean) => (registry ? `The label "${label}" has ${found} devices.` : "Home Assistant did not pass the registry of devices and labels."),
     runningNoCycle: "Drawing power",
+    runningLong: (duration: string) => `Running for ${duration}`,
     ended: (duration: string) => `Finished · ${duration} ago`,
     notRunning: "Not running",
     idle: "not drawing",

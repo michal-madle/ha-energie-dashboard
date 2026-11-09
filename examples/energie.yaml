@@ -98,7 +98,7 @@ house:
         en: Kitchen
         sv: Kök
       icon: mdi:silverware-fork-knife                   # ikona řádku (výchozí mdi:power-plug)
-      appliances:                                       # name (text nebo podle jazyka) a power jsou povinné, energy (čítač kWh) volitelný, bez něj se energie spočítá z výkonu; running (input_boolean nebo binary_sensor) je volitelný a dává dobu běhu v popupu
+      appliances:                                       # name (text nebo podle jazyka) a power jsou povinné, energy (čítač kWh) volitelný, bez něj se energie spočítá z výkonu; running (input_boolean nebo binary_sensor) je volitelný a dává dobu běhu v popupu, warn_after (minuty) k němu přidá upozornění, že běží příliš dlouho
         - name:
             cs: Digestoř
             en: Cooker hood
@@ -118,6 +118,7 @@ house:
           power: sensor.kuchyne_trouba
           energy: sensor.kuchyne_trouba_energie
           running: binary_sensor.kuchyne_trouba_bezi          # výkon nad prahem s prodlevou (ha-config, yaml/configuration.yaml)
+          warn_after: 120                                     # min: po tak dlouhém běhu se nahoře ukáže upozornění „Trouba běží už 2 h“ (bez klíče žádné)
         - name:
             cs: Mikrovlnka
             en: Microwave

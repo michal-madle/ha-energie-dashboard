@@ -174,14 +174,14 @@ function appliances(config: DashboardConfig): ApplianceConfig[] {
     return [];
   }
   if (!Array.isArray(raw)) {
-    fail("house.appliances must be a list of {name, icon, power, energy, running, start_energy}.");
+    fail("house.appliances must be a list of {name, icon, power, energy, running, start_energy, warn_after}.");
   }
   return raw.map((item, index): ApplianceConfig => {
     const where = `house.appliances[${index}]`;
     if (!isRecord(item)) {
       fail(`${where} must be a mapping like {name: Pračka, running: input_boolean.…, start_energy: input_number.…}.`);
     }
-    checkKeys(item, ["name", "power", "energy", "running", "start_energy", "icon"], where);
+    checkKeys(item, ["name", "power", "energy", "running", "start_energy", "icon", "warn_after"], where);
     // The name of the device in Home Assistant (a text, or the texts by language: any of them can be the name of the device).
     const name = localizedText(item.name, `${where}.name`);
     if (name === undefined) {
@@ -192,7 +192,8 @@ function appliances(config: DashboardConfig): ApplianceConfig[] {
     const power = entityId(item.power, `${where}.power`, { domain: "sensor" });
     const energy = entityId(item.energy, `${where}.energy`, { domain: "sensor" });
     const icon = iconName(item.icon, `${where}.icon`);
-    return { name, ...(power ? { power } : {}), ...(energy ? { energy } : {}), ...(running ? { running } : {}), ...(start ? { start_energy: start } : {}), ...(icon ? { icon } : {}) };
+    const warn = warnAfter(item.warn_after, `${where}.warn_after`);
+    return { name, ...(power ? { power } : {}), ...(energy ? { energy } : {}), ...(running ? { running } : {}), ...(start ? { start_energy: start } : {}), ...(warn ? { warn_after: warn } : {}), ...(icon ? { icon } : {}) };
   });
 }
 
@@ -203,6 +204,17 @@ function runningHelper(value: unknown, where: string): string | undefined {
     fail(`${where} must be an input_boolean or a binary_sensor entity, not ${id}.`);
   }
   return id;
+}
+
+/** warn_after: minutes of running after which the alert "Běží už …" appears (a whole number of minutes, one day at most). */
+function warnAfter(value: unknown, where: string): number | undefined {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 1 || value > 1440) {
+    fail(`${where} must be a whole number of minutes from 1 to 1440, not ${JSON.stringify(value)}.`);
+  }
+  return value;
 }
 
 /** A name that must be given. */
@@ -244,14 +256,15 @@ function groups(config: DashboardConfig): GroupConfig[] {
       if (!isRecord(item)) {
         fail(`${here} must be a mapping like {name: Trouba, power: sensor.…, energy: sensor.…}.`);
       }
-      checkKeys(item, ["name", "power", "energy", "running"], here);
+      checkKeys(item, ["name", "power", "energy", "running", "warn_after"], here);
       const power = entityId(item.power, `${here}.power`, { domain: "sensor" });
       if (!power) {
         fail(`${here}.power must be the power sensor (sensor.…) of the appliance.`);
       }
       const energy = entityId(item.energy, `${here}.energy`, { domain: "sensor" });
       const running = runningHelper(item.running, `${here}.running`);
-      return { name: required(localizedText(item.name, `${here}.name`), `${here}.name`), power, ...(energy ? { energy } : {}), ...(running ? { running } : {}) };
+      const warn = warnAfter(item.warn_after, `${here}.warn_after`);
+      return { name: required(localizedText(item.name, `${here}.name`), `${here}.name`), power, ...(energy ? { energy } : {}), ...(running ? { running } : {}), ...(warn ? { warn_after: warn } : {}) };
     });
     return { name: required(localizedText(group.name, `${where}.name`), `${where}.name`), icon: iconName(group.icon, `${where}.icon`) ?? DEFAULT_GROUP_ICON, appliances: items };
   });

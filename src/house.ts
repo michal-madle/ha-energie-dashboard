@@ -52,6 +52,8 @@ interface PopupItem extends Runner {
   icon?: string;
   /** An appliance with the helper of a cycle: it is in the popup whenever it runs. */
   cycle: boolean;
+  /** Minutes of running after which the alert "Běží už …" appears. */
+  warnAfter?: number;
 }
 
 export interface Appliance {
@@ -66,6 +68,8 @@ export interface Appliance {
   problems: Array<{ id: string; kind: Kind }>;
   running?: string;
   startEnergy?: string;
+  /** Minutes of running after which the alert "Běží už …" appears. */
+  warnAfter?: number;
   /** The icon the user gave to the device or its entities (mdi:washing-machine), if any. */
   icon?: string;
 }
@@ -121,14 +125,14 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const found = gather(deviceId);
         if (!found.power) continue;
         const config = s.appliances.find((item) => allTexts(item.name).some((text) => text.toLowerCase() === name.toLowerCase()));
-        result.push({ name, label: config?.name, deviceId, power: config?.power ?? found.power, energy: config?.energy ?? found.energy, plug: found.plug, icon: this.iconOf(config?.icon, found.icon, [config?.power ?? found.power, config?.energy ?? found.energy, config?.running, config?.start_energy]), problems: found.problems, running: config?.running, startEnergy: config?.start_energy });
+        result.push({ name, label: config?.name, deviceId, warnAfter: config?.warn_after, power: config?.power ?? found.power, energy: config?.energy ?? found.energy, plug: found.plug, icon: this.iconOf(config?.icon, found.icon, [config?.power ?? found.power, config?.energy ?? found.energy, config?.running, config?.start_energy]), problems: found.problems, running: config?.running, startEnergy: config?.start_energy });
       }
       // An appliance named with its power sensor in the configuration needs no label.
       for (const config of s.appliances) {
         if (!config.power || result.some((a) => a.power === config.power)) continue;
         const deviceId = entities[config.power]?.device_id ?? undefined;
         const found = gather(deviceId);
-        result.push({ name: allTexts(config.name)[0], label: config.name, deviceId: deviceId ?? config.power, power: config.power, energy: config.energy ?? found.energy, plug: found.plug, icon: this.iconOf(config.icon, found.icon, [config.power, config.energy, config.running, config.start_energy]), problems: found.problems, running: config.running, startEnergy: config.start_energy });
+        result.push({ name: allTexts(config.name)[0], label: config.name, deviceId: deviceId ?? config.power, power: config.power, energy: config.energy ?? found.energy, plug: found.plug, icon: this.iconOf(config.icon, found.icon, [config.power, config.energy, config.running, config.start_energy]), problems: found.problems, running: config.running, startEnergy: config.start_energy, warnAfter: config.warn_after });
       }
       return result.sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -141,8 +145,8 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
 
     /** What the popup can show: the listed appliances and the members of the groups (Varná deska and Trouba are named in the popup, the group stays one row of the detail). */
     popupItems(s: Settings): PopupItem[] {
-      const apps = this.listed(s).map((a): PopupItem => ({ key: a.name, name: this.applianceName(a), icon: a.icon, power: a.power, running: a.running, cycle: !!a.running }));
-      const members = s.groups.flatMap((g, index) => g.appliances.map((m): PopupItem => ({ key: `${groupKey(index)}:${m.power}`, name: this.pickText(m.name) ?? "", icon: g.icon, power: m.power, running: m.running, cycle: false })));
+      const apps = this.listed(s).map((a): PopupItem => ({ key: a.name, name: this.applianceName(a), icon: a.icon, power: a.power, running: a.running, cycle: !!a.running, warnAfter: a.warnAfter }));
+      const members = s.groups.flatMap((g, index) => g.appliances.map((m): PopupItem => ({ key: `${groupKey(index)}:${m.power}`, name: this.pickText(m.name) ?? "", icon: g.icon, power: m.power, running: m.running, cycle: false, warnAfter: m.warn_after })));
       return [...apps, ...members];
     }
 
@@ -250,12 +254,19 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
 
     // ----------------------------------------------------------------- alerts
 
-    /** One alert for each appliance whose socket reports a fault (CURRENT_SPEC.md, Dům: popup a detail). */
+    /** One alert for each appliance whose socket reports a fault, and for each one that runs longer than its `warn_after` (CURRENT_SPEC.md, Upozornění). */
     houseAlerts(s: Settings): Alert[] {
-      return this.appliances(s).flatMap((a) => {
+      const faults = this.appliances(s).flatMap((a) => {
         const active = a.problems.filter((p) => readText(this.hass, p.id) === "on");
         return active.map((p) => ({ kind: "warn" as const, title: this.applianceName(a), text: this.t.house.problem[p.kind] }));
       });
+      // "Trouba běží už 2 h" (uživatel 9. 11. 2026): only by the helper `running`, the duration from the recorder (a restart of Home Assistant is no start).
+      const long = this.popupItems(s).flatMap((item) => {
+        if (!item.warnAfter || !item.running || this.applianceOn(item, s) !== true) return [];
+        const minutes = this.cycleTimes(item, true).minutes;
+        return minutes !== undefined && minutes >= item.warnAfter ? [{ kind: "warn" as const, title: item.name, text: this.t.house.runningLong(formatDuration(minutes)) }] : [];
+      });
+      return [...faults, ...long];
     }
 
     // ----------------------------------------------------------------- the popup
@@ -388,8 +399,9 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const day = this._houseData.day;
         if (!day || (day.status !== "loading" && Date.now() - day.at > REFRESH)) void this.fetchHouse(s, "day", "day", day);
       }
-      // The cycles of the helpers: for the rows of the detail and for the popup.
-      if ((this._houseDetail && this._houseTab === "now") || this._pop === "house") {
+      // The cycles of the helpers: for the rows of the detail, for the popup and for the alert of an appliance that runs too long.
+      const watching = this.popupItems(s).some((item) => item.warnAfter && item.running);
+      if ((this._houseDetail && this._houseTab === "now") || this._pop === "house" || watching) {
         const cycles = this._houseCycles;
         if (!cycles || Date.now() - cycles.at > REFRESH) void this.fetchCycles(s);
       }

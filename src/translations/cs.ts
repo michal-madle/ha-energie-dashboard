@@ -232,6 +232,7 @@ export const cs = {
     running: (duration: string) => `Běží · ${duration}`,
     noneHint: (label: string, found: number, registry: boolean) => (registry ? `Štítek „${label}“ má ${found} zařízení.` : "Home Assistant nepředal registr zařízení a štítků."),
     runningNoCycle: "Odebírá",
+    runningLong: (duration: string) => `Běží už ${duration}`,
     ended: (duration: string) => `Skončilo · před ${duration}`,
     notRunning: "Neběží",
     idle: "neodebírá",

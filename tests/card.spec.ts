@@ -199,6 +199,8 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ flows: { idle: 5 } }, /flows: unknown key "idle"/],
         [{ house: { appliances: [{ name: "Pračka", running: "sensor.pracka_bezi" }] } }, /house\.appliances\[0\]\.running must be an input_boolean or a binary_sensor entity, not sensor\.pracka_bezi/],
         [{ house: { groups: [{ name: "Kuchyně", appliances: [{ name: "Trouba", power: "sensor.kuchyne_trouba", running: "switch.trouba" }] }] } }, /house\.groups\[0\]\.appliances\[0\]\.running must be an input_boolean or a binary_sensor entity, not switch\.trouba/],
+        [{ house: { groups: [{ name: "Kuchyně", appliances: [{ name: "Trouba", power: "sensor.kuchyne_trouba", warn_after: 0 }] }] } }, /house\.groups\[0\]\.appliances\[0\]\.warn_after must be a whole number of minutes from 1 to 1440, not 0/],
+        [{ house: { appliances: [{ name: "Pračka", warn_after: "2 h" }] } }, /house\.appliances\[0\]\.warn_after must be a whole number of minutes from 1 to 1440, not "2 h"/],
         [{ scale: { sun: 0 } }, /scale\.sun must be a number from 100/],
         [{ colors: { sun: "yellow" } }, /colors\.sun must be a colour like #FFD60A/],
         [{ colors: { button: "#FFFFFF" } }, /colors: unknown key "button"/],
@@ -824,6 +826,24 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".bat-chart")).toBeVisible();
       await page.keyboard.press("Escape");
       await expect(page.getByRole("dialog", { name: "Detail domu" })).toHaveCount(0);
+    });
+    await test.step("upozornění „Trouba běží už N“ (uživatel 9. 11.: 2 h): jen s pomocným senzorem a klíčem warn_after, doba z historie (restart není začátek), v en a sv přeložené", async () => {
+      await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
+      // The example: the oven warns after 120 minutes and has run for 55: no alert.
+      await expect(page.locator(".alert").filter({ hasText: "Trouba" })).toHaveCount(0);
+      const config = example();
+      const groups = structuredClone(config.house.groups);
+      groups[0].appliances.find((member: { name: { cs: string } }) => member.name.cs === "Trouba").warn_after = 30;
+      await reconfigure(page, { house: { ...config.house, groups } });
+      // 55 minutes from the recorder (the restart of Home Assistant 30 minutes ago is no start), not the 12 minutes of the last change of the helper.
+      const alert = page.locator(".alert").filter({ hasText: "Trouba" });
+      await expect(alert).toContainText("Běží už 55 min");
+      await expect(alert.locator(".row-title")).toHaveText("Trouba");
+      for (const [lang, text] of [["en", "Running for 55 min"], ["sv", "Har varit på i 55 min"]]) {
+        await open(page, "full", 393, 852, "dark", lang, "&appliances=1");
+        await reconfigure(page, { house: { ...config.house, groups } });
+        await expect(page.locator(".alert").filter({ hasText: text })).toHaveCount(1);
+      }
     });
     await test.step("názvy skupin se překládají podle jazyka karty", async () => {
       for (const [lang, name] of [["en", "Kitchen"], ["sv", "Kök"]]) {
@@ -1612,7 +1632,8 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
   const requests = (page: Page) =>
     page.evaluate(() => {
       // @ts-expect-error test hook
-      return window.__test.requests as Array<{ type: string; statistic_ids: string[]; period: string; types: string[]; start_time: string; end_time: string }>;
+      // Only the questions for statistics (the card also asks for the states of the helpers of the cycles).
+      return (window.__test.requests as Array<{ type: string; statistic_ids: string[]; period: string; types: string[]; start_time: string; end_time: string }>).filter((item) => item.type === "recorder/statistics_during_period");
     });
 
   const openDetail = async (page: Page, key: "bat" | "batIn" = "bat") => {

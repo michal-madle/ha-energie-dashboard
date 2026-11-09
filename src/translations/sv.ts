@@ -208,6 +208,7 @@ export const sv: Texts = {
     running: (duration: string) => `Pågår · ${duration}`,
     noneHint: (label: string, found: number, registry: boolean) => (registry ? `Etiketten "${label}" har ${found} enheter.` : "Home Assistant skickade inte register över enheter och etiketter."),
     runningNoCycle: "Drar ström",
+    runningLong: (duration: string) => `Har varit på i ${duration}`,
     ended: (duration: string) => `Klar · för ${duration} sedan`,
     notRunning: "Går inte",
     idle: "drar ingen ström",
