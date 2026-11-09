@@ -117,7 +117,7 @@ house:
             sv: Ugn
           power: sensor.kuchyne_trouba
           energy: sensor.kuchyne_trouba_energie
-          running: binary_sensor.kuchyne_trouba_bezi          # výkon nad prahem s prodlevou (ha-config, yaml/configuration.yaml)
+          running: binary_sensor.kuchyne_trouba_bezi          # zapnuto od 25 W, vypnuto pod 1 W (ha-config, yaml/configuration.yaml)
           warn_after: 120                                     # min: po tak dlouhém běhu se nahoře ukáže upozornění „Trouba běží už 2 h“ (bez klíče žádné)
         - name:
             cs: Mikrovlnka
@@ -131,7 +131,7 @@ house:
             sv: Spishäll
           power: sensor.kuchyne_varna_deska
           energy: sensor.kuchyne_varna_deska_energie
-          running: binary_sensor.kuchyne_varna_deska_bezi     # výkon nad prahem s prodlevou (ha-config, yaml/configuration.yaml)
+          running: binary_sensor.kuchyne_varna_deska_bezi     # zapnuto od 25 W, vypnuto pod 1 W (ha-config, yaml/configuration.yaml)
         - name:
             cs: Ostrůvek
             en: Kitchen Island

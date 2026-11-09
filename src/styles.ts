@@ -395,10 +395,11 @@ export const styles = css`
   .house-list .bat-cap { padding: 0 4px; }
   .house-item { overflow: hidden; }
   .house-body { margin: 0 12px 12px; padding: 4px 14px; border-radius: 12px; background: var(--ed-tile); display: flex; flex-direction: column; }
-  .house-cook { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; column-gap: 14px; align-items: baseline; padding: 0; }
-  .house-cook-head { font-size: 13px; line-height: 18px; color: var(--ed-secondary); text-align: right; padding: 6px 0 2px; white-space: nowrap; }
+  /* The two columns of numbers have their own width (the power up to "10 000 W", the energy up to "99,9 kWh"), so a value of a thousand watts or more never runs into the next column. */
+  .house-cook { display: grid; grid-template-columns: minmax(0, 1fr) minmax(76px, max-content) minmax(76px, max-content); column-gap: 12px; align-items: baseline; padding: 0; }
+  .house-cook-head { font-size: 13px; line-height: 18px; color: var(--ed-secondary); text-align: right; justify-self: end; padding: 6px 0 2px; white-space: nowrap; }
   .house-cook-name { font-size: 15px; line-height: 20px; color: var(--ed-secondary); padding: 9px 0; min-width: 0; }
-  .house-cook b { font-size: 15px; line-height: 20px; font-weight: 600; text-align: right; white-space: nowrap; padding: 9px 0; font-variant-numeric: tabular-nums; }
+  .house-cook b { font-size: 15px; line-height: 20px; font-weight: 600; text-align: right; justify-self: end; white-space: nowrap; padding: 9px 0; font-variant-numeric: tabular-nums; }
   .house-line.wrap { flex-wrap: wrap; white-space: normal; }
   .house-line.wrap b { margin-left: auto; text-align: right; }
   .house-line.wrap b span { white-space: nowrap; }

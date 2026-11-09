@@ -892,6 +892,25 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
         expect(track).toBe(theme === "dark" ? "#2c2c2e" : "#e3e3e8");
       }
     });
+    await test.step("tabulka skupiny: výkon od tisíce wattů nevjede do sloupce energie a čísla jsou zarovnaná vpravo (telefon uživatele 9. 11.)", async () => {
+      for (const width of [393, 320]) {
+        await open(page, "full", width, 852, "dark", "cs", "&appliances=1");
+        await update(page, { "sensor.kuchyne_trouba": "12345", "sensor.kuchyne_lednice": "72" });
+        await page.locator('.tile[data-tile="house"]').click();
+        await page.getByRole("button", { name: /Detail domu/ }).click();
+        const detail = page.getByRole("dialog", { name: "Detail domu" });
+        await detail.getByRole("button", { name: /Kuchyně/ }).click();
+        const cells = detail.locator(".house-cook b");
+        const boxes = await cells.evaluateAll((els) => els.map((el) => { const r = el.getBoundingClientRect(); return { right: r.right, left: r.left, width: r.width, scroll: el.scrollWidth, client: el.clientWidth }; }));
+        const watts = boxes.filter((_, i) => i % 2 === 0);
+        const energy = boxes.filter((_, i) => i % 2 === 1);
+        expect(watts.length, String(width)).toBe(7);
+        for (const box of boxes) expect(box.scroll, "text se vejde do buňky").toBeLessThanOrEqual(box.client + 1);
+        expect(new Set(watts.map((b) => Math.round(b.right))).size, `${width}: výkony končí na jedné hraně`).toBe(1);
+        expect(new Set(energy.map((b) => Math.round(b.right))).size, `${width}: energie končí na jedné hraně`).toBe(1);
+        expect(watts[0].right, `${width}: výkon nevjíždí do energie`).toBeLessThanOrEqual(energy[0].left);
+      }
+    });
     await test.step("graf Historie ukazuje jen data, která existují, jako baterie (uživatel 9. 11.: „Q20 udělej stejně jako baterie“): člen bez dat se do součtu skupiny nezapočítá, nic se nedopočítává", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
       const config = example();
