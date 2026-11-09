@@ -817,6 +817,12 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // A click lands on the bar it touches, not on its neighbour (the bars start to the right of the labels of the axis).
       const centres = await detail.locator(".bat-chart svg rect[style]").evaluateAll((els) => [...new Set(els.map((el) => Number(el.getAttribute("x")) + Number(el.getAttribute("width")) / 2))].sort((a, b) => a - b));
       expect(centres.length).toBe(7);
+      // From the keyboard: from the reading of the whole period the first arrow picks the last bar (not the one before it), Enter goes back.
+      await detail.locator(".bat-chart input[type=range]").focus();
+      await page.keyboard.press("ArrowLeft");
+      expect(Math.abs(Number(await detail.locator(".bat-chart line.cursor").getAttribute("x1")) - centres[centres.length - 1])).toBeLessThan(1);
+      await page.keyboard.press("Enter");
+      await expect(detail.locator(".bat-chart line.cursor")).toHaveCount(0);
       const box = (await detail.locator(".bat-chart").boundingBox())!;
       const viewWidth = await detail.locator(".bat-chart svg").evaluate((el) => (el as SVGSVGElement).viewBox.baseVal.width);
       for (const index of [1, 3, centres.length - 2]) {
@@ -859,6 +865,33 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await expect(detail.locator(".house-panel-head")).toContainText("Dnes");
       expect((await detail.locator(".house-panel-head b").innerText()).replace(/\s+/g, " ").replace("Celkem", "").trim()).toBe(popup);
     });
+    await test.step("paleta devíti barev (uživatel 9. 11.: „Q13 ano“): devět různých barev, každá aspoň 3 : 1 na kartě v tmavém i světlém režimu; stopa segmentů v detailu ve světlém režimu #e3e3e8 (Q18)", async () => {
+      const config = example();
+      for (const theme of ["dark", "light"] as const) {
+        await open(page, "full", 393, 852, theme, "cs", "&appliances=1");
+        const groups = structuredClone(config.house.groups);
+        groups[0].appliances.push({ name: "Osmý", power: "sensor.kuchyne_osmy", energy: "sensor.kuchyne_osmy_energie" }, { name: "Devátý", power: "sensor.kuchyne_devaty", energy: "sensor.kuchyne_devaty_energie" });
+        await reconfigure(page, { house: { ...config.house, groups } });
+        await page.locator('.tile[data-tile="house"]').click();
+        await page.getByRole("button", { name: /Detail domu/ }).click();
+        const detail = page.getByRole("dialog", { name: "Detail domu" });
+        await detail.getByRole("button", { name: /Kuchyně/ }).click();
+        const colors = await detail.locator(".house-micro-legend i").evaluateAll((els) => els.map((el) => getComputedStyle(el).backgroundColor));
+        expect(new Set(colors).size, theme).toBe(9);
+        const card = theme === "dark" ? [28, 28, 30] : [255, 255, 255];
+        const lum = (rgb: number[]) => {
+          const [r, g, b] = rgb.map((v) => { const c = v / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; });
+          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        };
+        for (const color of colors) {
+          const rgb = color.match(/\d+/g)!.slice(0, 3).map(Number);
+          const [hi, lo] = [lum(rgb), lum(card)].sort((a, b) => b - a);
+          expect((hi + 0.05) / (lo + 0.05), `${theme} ${color}`).toBeGreaterThanOrEqual(3);
+        }
+        const track = await detail.locator("ed-segmented").first().evaluate((el) => getComputedStyle(el).getPropertyValue("--hdk-track").trim());
+        expect(track).toBe(theme === "dark" ? "#2c2c2e" : "#e3e3e8");
+      }
+    });
     await test.step("součet skupiny jen při známých všech zařízeních i v grafu (uživatel 9. 11.: „Q20 ok“): člen bez dat dělá ze skupiny „––“", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
       const config = example();
@@ -869,7 +902,11 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       await page.getByRole("button", { name: /Detail domu/ }).click();
       const detail = page.getByRole("dialog", { name: "Detail domu" });
       await detail.getByRole("radio", { name: "Historie" }).click();
+      // 30 days: the days before are settled whatever the hour of the test is.
+      await detail.getByRole("radio", { name: "30 dní" }).click();
       await expect(detail.locator(".house-panel-row").filter({ hasText: "Kuchyně" })).toContainText("––");
+      // Ostatní cannot be told while the group is unknown (its energy would end up there).
+      await expect(detail.locator(".house-panel-row").filter({ hasText: "Ostatní" })).toContainText("––");
       await expect(detail.locator(".house-panel-row").filter({ hasText: "Pračka" })).not.toContainText("––");
     });
     await test.step("upozornění „Trouba běží už N“ (uživatel 9. 11.: 2 h): jen s pomocným senzorem a klíčem warn_after, doba z historie (restart není začátek), v en a sv přeložené", async () => {

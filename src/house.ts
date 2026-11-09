@@ -623,7 +623,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
               <span class="house-cook-head"></span><span class="house-cook-head">${t.house.nowCol}</span><span class="house-cook-head">${t.house.totalCol}</span>
               ${items.map((i) => html`<span class="house-cook-name">${i.name}</span><b>${power(i.watts)}</b><b>${energy(i.kwh)}</b>`)}
             </div>
-            ${this.renderDayChart(group.appliances.map((m, k) => ({ name: this.pickText(m.name) ?? "", energy: m.energy, power: m.power, color: APP_COLORS[k % APP_COLORS.length] })))}
+            ${this.renderDayChart(group.appliances.map((m, k) => ({ name: this.pickText(m.name) ?? "", energy: m.energy, power: m.power, color: APP_COLORS[k % APP_COLORS.length] })).sort((a, b) => (order.indexOf(a.power) < 0 ? 999 : order.indexOf(a.power)) - (order.indexOf(b.power) < 0 ? 999 : order.indexOf(b.power))))}
           </div>`
           : nothing}
       </div>`;
@@ -794,7 +794,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const totalOnly = !car || !boil;
       const house = Array.from({ length: n }, (_, i) => Math.max(0, val(pv, i) + val(bdis, i) + val(gin, i) - val(bchg, i) - val(gout, i) - val(car, i) - val(boil, i)));
       // The appliances and the groups: the counter of the energy, otherwise the mean power (a group is the sum of its appliances).
-      // A fixed palette (uživatel 2. 11.): six hues of the same weight, readable on the dark and the light surface (3 : 1); the colour of an appliance is the same in its row (the strip of the cycles).
+      // A fixed palette (uživatel 2. 11., nine hues since 9. 11.): the same weight, readable on the dark and the light surface (3 : 1); the colour of an appliance is the same in its row.
       // The sum of a group counts only when every appliance of it is known (uživatel 9. 11. 2026, "Q20 ok", the same rule as the row of the group): a bin where one has no value stays unknown, never 0.
       const sumLists = (lists: Array<Array<number | undefined> | undefined>): Array<number | undefined> | undefined => {
         if (!lists.length || lists.some((list) => !list)) return undefined;
@@ -845,7 +845,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const all = whole(i);
         const used = items.reduce((sum, item) => sum + val(item.list, i), 0);
         const rows = items.length
-          ? [...items.map((item) => ({ name: item.name, kwh: item.list?.[i], color: item.color })).sort((p, q) => (q.kwh ?? -1) - (p.kwh ?? -1)), { name: t.house.houseRest, kwh: Math.max(0, all - used), color: "#8E8E93" }]
+          ? [...items.map((item) => ({ name: item.name, kwh: item.list?.[i], color: item.color })).sort((p, q) => (q.kwh ?? -1) - (p.kwh ?? -1)), { name: t.house.houseRest, kwh: restOf(all, used, items.some((item) => item.group && item.list?.[i] === undefined)), color: "#8E8E93" }]
           : [];
         return this.renderReading(date(i), all, sumLabel, rows);
       };
@@ -854,8 +854,10 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const parts = items
         .map((item) => ({
           name: item.name,
-          // A group with an unknown bin up to now is unknown as a whole (Q20); the bins after now have no value yet.
-          kwh: item.group && bins.slice(0, cur + 1).some((i) => item.list?.[i] === undefined) ? undefined : bins.reduce((sum, i) => sum + val(item.list, i), 0),
+          group: item.group,
+          // A group with an unknown bin is unknown as a whole (Q20). The running bin and the one before it are not judged: the statistics of the hour that has just ended
+          // and of the one that is running are compiled a few minutes late, which is a delay, not a missing appliance. The bins after now have no value yet.
+          kwh: item.group && bins.slice(0, Math.max(0, cur - 1)).some((i) => item.list?.[i] === undefined) ? undefined : bins.reduce((sum, i) => sum + val(item.list, i), 0),
           color: item.color,
         }))
         .sort((p, q) => (q.kwh ?? -1) - (p.kwh ?? -1));
@@ -863,7 +865,9 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       // One definition of "Dnes" (uživatel 9. 11. 2026, "Q15 ano"): the number of the popup, "Dnes spotřebováno", when it is known; never less than the parts.
       const popupToday = range === "1d" ? this.today(s).house : undefined;
       const periodAll = Math.max(popupToday ?? bins.reduce((sum, i) => sum + whole(i), 0), used);
-      const period = (): TemplateResult => this.renderReading(periodTitle, periodAll, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: Math.max(0, periodAll - used), color: "#8E8E93" }] : []);
+      // "Ostatní" is what no appliance accounts for: with a group that is unknown it cannot be told (its energy would end up there), so it is "––" too.
+      const restOf = (all: number, taken: number, unknown: boolean): number | undefined => (unknown ? undefined : Math.max(0, all - taken));
+      const period = (): TemplateResult => this.renderReading(periodTitle, periodAll, sumLabel, items.length ? [...parts, { name: t.house.houseRest, kwh: restOf(periodAll, used, parts.some((part) => part.group && part.kwh === undefined)), color: "#8E8E93" }] : []);
       const periodTitle = range === "1d" ? t.house.today : t.bat.ranges[range];
       const periodText = (): string => `${periodTitle} · ${sumLabel} ${formatKwh(periodAll)} kWh`;
       const missing = [pv, bdis, bchg, gin, gout].some((list) => list && list[0] === undefined);

@@ -325,7 +325,8 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         const move = event.key === "ArrowRight" || event.key === "ArrowUp" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowDown" ? -1 : 0;
         if (!move) return;
         event.preventDefault();
-        const next = clamp(index + move, 0, c.n - 1);
+        // From the reading of the whole period the first arrow picks the last bar (the cursor was not shown), then it moves.
+        const next = overall ? index : clamp(index + move, 0, c.n - 1);
         this._batScrub = { ...this._batScrub, [c.id]: (c.x(next) / W) * 100 };
       };
       const x = c.x(index);

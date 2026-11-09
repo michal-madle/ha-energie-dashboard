@@ -1447,7 +1447,7 @@ export const styles = css`
     opacity: 0.45;
   }
 
-  .bat-detail ed-segmented { --hdk-track: var(--ed-track-page); }
+  .bat-detail > ed-segmented { --hdk-track: var(--ed-track-page); }
 
   .bat-open {
     border: 0;
