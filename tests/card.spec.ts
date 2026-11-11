@@ -850,7 +850,9 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
     });
     await test.step("Dnes je jedno číslo (uživatel 9. 11.: „Q15 ano“): Celkem v panelu Historie 1 den je Dnes spotřebováno z popupu; tlačítko Detail bez okraje prohlížeče (Q18)", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
-      await update(page, { "sensor.energie_fve_dnes": "100" });
+      // Dnes z popupu musí být nad součtem spotřebičů z hodinových statistik (Celkem je aspoň součet částí). Ten
+      // s denní dobou roste (večer přes 80 kWh), proto vysoká výroba dnes, aby test nezávisel na hodině spuštění.
+      await update(page, { "sensor.energie_fve_dnes": "400" });
       await page.locator('.tile[data-tile="house"]').click();
       const pop = page.getByRole("dialog", { name: "Dům" });
       const today = pop.locator(".pop-row b");
