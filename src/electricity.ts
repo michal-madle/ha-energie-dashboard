@@ -1,7 +1,7 @@
 /* The Elektřina panel: alerts, the Sankey diagram, the popups of the tiles and of the heading. */
 import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
-import { SOURCES, isOn } from "./model";
+import { isOn, SHOWN_W, SOURCES } from "./model";
 import type { FlowModel, Sink, Source } from "./model";
 import { bands, layout, order } from "./sankey";
 import type { Layout } from "./sankey";
@@ -107,7 +107,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       const t = this.t;
       const e = s.entities;
       const sc = s.num.scale;
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       const link = model.carLink;
       const soc = model.soc;
       const low = soc !== undefined && soc <= this.batteryReserve(s);
@@ -154,7 +154,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
     }
 
     renderFlow(s: Settings, model: FlowModel): TemplateResult {
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       const unit: PowerUnit = powerUnit(
         [model.sun, model.batDis, model.batIn, model.imp, model.exp, model.other, model.car, model.boil].map((value) => (isOn(value, idle) ? value : undefined)),
         s.num.flows.kw_from,
@@ -235,7 +235,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
 
     renderTile(tile: Tile, lay: Layout, unit: PowerUnit, s: Settings): TemplateResult {
       const noData = tile.watts === undefined;
-      const on = isOn(tile.watts, s.num.flows.idle_threshold);
+      const on = isOn(tile.watts, SHOWN_W);
       const left = tile.side === "L" ? 0 : lay.width - lay.tile.w;
       const centre = tile.side === "L" ? lay.left[tile.key as Source] : lay.right[tile.key as Sink];
       const k = clamp(tile.k, 0, 1);
@@ -278,7 +278,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       // The house has one too, with the running appliances and the detail (CURRENT_SPEC.md, Dům: popup a detail).
       if (tile.key === "house") return this.renderHousePopup(tile, lay, s, model);
       const t = this.t;
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       const day = this.today(s);
       const kwh = (value: number | undefined) => (value === undefined ? NO_DATA : `${formatKwh(value)} kWh`);
       const p = (watts: number | undefined) => (watts === undefined ? NO_DATA : formatPower(watts, unit));

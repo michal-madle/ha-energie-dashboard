@@ -2,7 +2,7 @@
 import { html } from "lit";
 import type { PropertyValues, TemplateResult } from "lit";
 import { normalizeConfig } from "./config";
-import { isOn } from "./model";
+import { isOn, SHOWN_W } from "./model";
 import type { FlowModel, SourceText } from "./model";
 import type { DashboardConfig, HomeAssistant, Settings } from "./types";
 import { entityState, readEnergy, readNumber, useFormat } from "./utils";
@@ -139,7 +139,7 @@ export class CardBase extends LitElement {
     // Only the dark / light mode of Home Assistant is followed; the surfaces are the card's own.
     this.toggleAttribute("data-light", this.hass?.themes?.darkMode === false);
     const s = this._config;
-    if (s && isOn(readNumber(this.hass, s.entities.boiler.power), s.num.flows.idle_threshold)) {
+    if (s && isOn(readNumber(this.hass, s.entities.boiler.power), SHOWN_W)) {
       this._lastHeating = Date.now();
       if (this._lastHeating - this._storedHeating > 60000) {
         this._storedHeating = this._lastHeating;
@@ -201,10 +201,15 @@ export class CardBase extends LitElement {
   }
 
   /** The state under a panel title; parts ("Bojler ohřívá ze slunce", "Boost") are joined by a dot (ha-dashboard-kit/joined). */
-  stateLine(text: string | readonly string[] | undefined, color: string | undefined): TemplateResult {
+  stateLine(text: string | readonly unknown[] | undefined, color: string | undefined): TemplateResult {
     return html`<p class="state ${color ? "tinted" : ""}" style="--sc:${color ?? "var(--ed-secondary)"}">
       <span class="dot" aria-hidden="true"></span>${text === undefined ? html`<span>${this.noData()}</span>` : typeof text === "string" ? html`<span>${text}</span>` : joined(text)}
     </p>`;
+  }
+
+  /** „Boost“ in the state line, orange: the one mark that Boost is on (uživatel 12. 11. 2026: „Q137 A“; CURRENT_SPEC.md, Bojler: „oranžový zůstává jen popisek stavu“). */
+  boostMark(): TemplateResult {
+    return html`<span class="boost-mark">${this.t.boostOptions.on}</span>`;
   }
 
   /** "––" in the grey of no data, read as „bez dat“ (CURRENT_SPEC.md, Chybějící a zastaralá data; DASHBOARD_UX_SYSTEM.md, Text). */
@@ -214,12 +219,12 @@ export class CardBase extends LitElement {
 
   carVisible(s: Settings, model: FlowModel): boolean {
     // Hidden only when the car is known to be disconnected and the wallbox delivers nothing.
-    return !(model.carLink === "disconnected" && !isOn(model.car, s.num.flows.idle_threshold));
+    return !(model.carLink === "disconnected" && !isOn(model.car, SHOWN_W));
   }
 
   boilerVisible(s: Settings, model: FlowModel): boolean {
     if (s.boilerShow === "always" || model.boil === undefined) return true;
-    if (isOn(model.boil, s.num.flows.idle_threshold)) return true;
+    if (isOn(model.boil, SHOWN_W)) return true;
     return this._lastHeating > 0 && Date.now() - this._lastHeating < s.num.boiler.hold_minutes * 60000;
   }
 

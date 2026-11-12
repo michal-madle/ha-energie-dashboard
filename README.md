@@ -31,7 +31,7 @@ Popup a Detail Dům (spotřebiče, jejich cykly a historie) používají sekci `
 
 Detail baterie používá navíc entity `battery.*` (zdraví, napětí, teploty článků, čítače, limity, chyby) a klíče `battery.default_range` (`1d`, `7d`, `30d`; zvolený rozsah si prohlížeč pamatuje), `battery.capacity` a `battery.imbalance_*`; všechny jsou v příkladu.
 
-Klíče jsou po systémech: `language`, `title`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (prahy a pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení volby, kterou Home Assistant nepotvrdil) a `colors`. Výchozí hodnoty a význam každého klíče jsou v [příkladu](./examples/energie.yaml) (komentáře u klíčů).
+Klíče jsou po systémech: `language`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení volby, kterou Home Assistant nepotvrdil) a `colors`. Výchozí hodnoty a význam každého klíče jsou v [příkladu](./examples/energie.yaml) (komentáře u klíčů).
 
 ID entit v příkladu odpovídají entitám z Home Assistantu autora karty (export a mapa entit nejsou součástí repozitáře), kromě zástupných názvů (předpověď, denní čítače podle [examples/denni_soucty.yaml](./examples/denni_soucty.yaml), entity auta), které si upravte podle svých entit. Odhadnutá ID nepoužívejte.
 
@@ -52,7 +52,7 @@ Po změně ve složce `src/` spusťte v kořeni repozitáře `npm install` a `np
 
 `npm test` kartu sestaví a spustí 21 testů v prohlížeči (Playwright, Chromium) na zkušební stránce [tests/harness.html](./tests/harness.html) s náhradními daty Home Assistantu ([tests/scenarios.js](./tests/scenarios.js)); všechny scénáře používají přímo [příklad YAML](./examples/energie.yaml). Související kontroly jsou v jednom testu jako kroky (`test.step`), aby se karta nenačítala pro každou zvlášť:
 
-- konfigurace: příklad obsahuje všechna nastavení a výchozí hodnoty jsou přesně ty v příkladu; chybné hodnoty zastaví kartu chybou s názvem klíče; klíč bez hodnoty je výchozí; čísla, nadpisy a barvy se projeví na kartě; `title: ""` vynechá nadpis;
+- konfigurace: příklad obsahuje všechna nastavení a výchozí hodnoty jsou přesně ty v příkladu; chybné hodnoty zastaví kartu chybou s názvem klíče; klíč bez hodnoty je výchozí; čísla, nadpisy panelů a barvy se projeví na kartě; karta nemá nadpis;
 - jazyky: čeština, angličtina a švédština (žádný český text v cizím jazyce, rozložení na 320 px, čísla a procenta podle jazyka, přepnutí jazyka za běhu, `language` v YAML);
 - karty: Elektřina (Sankey, hladiny v dlaždicích, skrývání Auta a Bojleru, popupy s denními součty, upozornění), BMW i3 (stav, odkud auto nabíjí, měřič a limit, Wallbox) a Teplá voda (oblouky, cílové teploty, zásobník, mísení);
 - ovládání: chráněné prvky (jedno klepnutí jen nápověda, podržení, dvojklik, tah jezdcem, klávesnice hned), nabíjecí výkon, Boost při zablokovaném nabíjení, vrácení volby, kterou Home Assistant nepotvrdil;

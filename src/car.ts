@@ -1,7 +1,7 @@
 /* The car panel: the picture with its link, the charge level, the sources, the mode and the wallbox. */
 import { html, nothing } from "lit";
 import type { TemplateResult } from "lit";
-import { SOURCES, isOn, sourceText } from "./model";
+import { isOn, SHOWN_W, SOURCES, sourceText } from "./model";
 import type { FlowModel, Source } from "./model";
 import type { Settings } from "./types";
 import { ago, entityState, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
@@ -76,7 +76,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const flows = s.num.flows;
       const limit = s.num.car.charge_limit;
       const link = model.carLink;
-      const charging = isOn(model.car, flows.idle_threshold) && link !== "disconnected";
+      const charging = isOn(model.car, SHOWN_W) && link !== "disconnected";
       const src = sourceText(model.loadShare.car, flows, t);
       const blocked = readText(this.hass, e.wallbox.block_charging) === "on";
       const boost = this.shown(e.wallbox.boost);
@@ -84,13 +84,16 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const srcColor = boost === "on" ? `var(${SOURCE_VAR[src.main]})` : this.sourceColor(src);
       const priorityWaiting = readText(this.hass, e.wallbox.prioritize_connected) === "on" && link === "connected" && !blocked && (model.sun ?? 0) > s.num.wallbox.priority_min_sun;
 
-      let stateText: string | string[] | undefined;
+      let stateText: string | unknown[] | undefined;
       let stateColor: string | undefined;
+      // Boost on: an orange „Boost“ in the state, the rest in the colour of the source (uživatel 12. 11. 2026: „Q137 A ale neco
+      // oranzoveho by tam melo byt … nejaky indikator je jede boost bych chtel. Kdekoliv“; 3. 11.: barva zdroje i u boostu).
+      const boostMark = boost === "on" ? [this.boostMark()] : [];
       if (charging) {
-        stateText = [t.car.charging(src.text), ...(boost === "on" ? [t.boostOptions.on] : [])];
+        stateText = [t.car.charging(src.text), ...boostMark];
         stateColor = srcColor;
       } else if (link === "connected" || link === "charging") {
-        stateText = t.car.connectedIdle;
+        stateText = [t.car.connectedIdle, ...boostMark];
         stateColor = priorityWaiting ? "var(--ed-warning)" : undefined;
       } else if (link === "disconnected") {
         stateText = t.car.disconnected;
@@ -98,7 +101,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const glow = mix(stateColor ?? "#d8d8dc", stateColor ? 42 : 28);
       const picture = entityState(this.hass, e.car.image)?.attributes?.entity_picture;
       const soc = model.carSoc;
-      const unit = powerUnit([isOn(model.car, flows.idle_threshold) ? model.car : undefined], flows.kw_from);
+      const unit = powerUnit([isOn(model.car, SHOWN_W) ? model.car : undefined], flows.kw_from);
       const hasLimit = limit < 100;
       const meterLabel = t.car.chargeLevel(soc === undefined ? t.noData : formatPercent(soc), hasLimit ? formatPercent(limit) : undefined);
       const w = e.wallbox;
@@ -134,7 +137,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         ${charging ? this.renderCarSources(model, flows, formatPower(model.car ?? 0, unit), boost === "on") : nothing}
         ${w.boost
           ? html`<div class="mode">
-              <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${boost === "on" || boost === "off"
+              <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub">${boost === "on" || boost === "off"
                 ? // Both descriptions in one place, the other one invisible: the taller one sets the height, so switching moves nothing (CURRENT_SPEC.md, Klidné přepínání režimů).
                   [t.car.modeSurplus, t.car.modeBoost].map((text, i) => html`<span class=${(i === 1) === (boost === "on") ? "shown" : "spare"}>${joinedText(text)}</span>`)
                 : modeSub}</span></div>
@@ -209,9 +212,9 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
             : link === "disconnected"
               ? html`${t.wallbox.disconnected}`
               : html`${NO_DATA}`;
-      const socId = s.entities.car.state_of_charge;
-      // The age of the reading; nothing for a car that reports no value.
-      const age = readNumber(this.hass, socId) === undefined ? undefined : ago(entityState(this.hass, socId)?.last_updated, this._now, t);
+      // The age of the car data: the time of the last message from the car (car.last_message, a timestamp sensor; uživatel
+      // 12. 11. 2026: „Q136 A“), not the change of the charge, which follows the prediction of the integration while charging.
+      const age = ago(readText(this.hass, s.entities.car.last_message), this._now, t);
       const block = this.shown(w.block_charging);
       const prio = this.shown(w.prioritize_connected);
       return html`<ul class="group">

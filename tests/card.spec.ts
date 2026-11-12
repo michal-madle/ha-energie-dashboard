@@ -62,7 +62,8 @@ async function settle(page: Page): Promise<void> {
 /** axe-core on the whole harness page; `skip` turns off rules that judge the page, not the card. */
 async function axeViolations(page: Page, skip: string[] = []): Promise<string[]> {
   await settle(page);
-  return kitAxeViolations(page, skip);
+  // The card has no title (the name of the dashboard is in Home Assistant's toolbar), so the test page has no h1.
+  return kitAxeViolations(page, ["page-has-heading-one", ...skip]);
 }
 
 /** What every tile shows: key, visible value and the label a screen reader gets. */
@@ -141,7 +142,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       };
       // Without title, titles, numbers, colours and the scale: the defaults must be the values of the example.
       const bare = structuredClone(config);
-      for (const key of ["title", "titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
+      for (const key of ["titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
         battery: ["reserve"], car: ["charge_limit", "image_scale"],
         wallbox: ["phases", "power_min", "power_max", "power_step", "priority_min_sun"],
@@ -151,18 +152,17 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       // The title and the headings of the panels are in the example in all three languages (uživatel 4. 11. 2026); without them the card
       // names the panels by its language, so they are compared apart from the rest.
       const plain = structuredClone(config);
-      const languages = [plain.title, ...Object.values(plain.titles ?? {})].map((texts) => Object.keys((texts as object) ?? {}));
-      delete plain.title;
+      const languages = Object.values(plain.titles ?? {}).map((texts) => Object.keys((texts as object) ?? {}));
       delete plain.titles;
       return [normalized(plain), normalized(bare), languages];
     }, example());
     expect(explicit).toEqual(implicit);
-    expect(titleLanguages).toEqual([["cs", "en", "sv"], ["cs", "en", "sv"], ["cs", "en", "sv"], ["cs", "en", "sv"]]);
+    expect(titleLanguages).toEqual([["cs", "en", "sv"], ["cs", "en", "sv"], ["cs", "en", "sv"]]);
     const settings = JSON.parse(explicit);
     expect(settings.entities.boiler.boost_target_temperature).toBe("number.tuv_2_2_boost_target_temperature");
     expect(settings.entities.daily.pv_generation).toBe("sensor.energie_fve_dnes");
     expect(settings.num.wallbox.power_max).toBe(11100);
-    expect(settings.num.flows.idle_threshold).toBe(25); // CURRENT_SPEC.md, Konfigurace: práh 25 W (od 9. 11. 2026)
+    expect(settings.num.flows.idle_threshold).toBeUndefined(); // bez prahu (uživatel 12. 11. 2026: „Bude se zobrazovat vse“)
     expect(settings.num.ui).toEqual({ revert_after: 6, hold_ms: 550, double_tap_ms: 400, hint_seconds: 3 });
     expect(settings.tempScale).toHaveLength(5);
     expect(settings.boilerShow).toBe("heating");
@@ -187,9 +187,8 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
         [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
         [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
-        [{ car: { soc: "sensor.vin_stav_nabiti_predikce_integrace" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, charge_limit, image_scale, link\)/],
+        [{ car: { soc: "sensor.vin_stav_nabiti_predikce_integrace" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, last_message, charge_limit, image_scale, link\)/],
         [{ car: { image_scale: 5 } }, /car\.image_scale must be a number from 0\.5 to 3/],
-        [{ title: 5 }, /title must be a text or a mapping of the language to the text/],
         [{ titles: { car: "" } }, /titles\.car must be a text or a mapping/],
         [{ titles: { auto: "Auto" } }, /titles: unknown key "auto"/],
         [{ battery: { reserve: "20" } }, /battery\.reserve must be a number \(% battery reserve\)/],
@@ -214,8 +213,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       }
       expect(await configError(page, ["pv"] as unknown as Record<string, unknown>, true)).toMatch(/configuration must be a mapping/);
       const accepted: Array<[Record<string, unknown>, boolean]> = [
-        [{ title: "" }, false],
-        [{ title: null, pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { valve_c1: null }, colors: null, flows: { kw_from: null }, daily: null }, false],
+        [{ pv: null, battery: { power: null, state_of_charge: null, reserve: null }, mixing: { valve_c1: null }, colors: null, flows: { kw_from: null }, daily: null }, false],
         [{ theme: "light", grid_options: { columns: 12 }, view_layout: { position: "main" } }, false],
         [{ battery: { reserve: 0 }, colors: { sun: "#ff0000" } }, false],
         // The helper "running" is an input_boolean (cycles) or a binary_sensor (the oven, the cooktop); for a member of a group too.
@@ -225,9 +223,10 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       for (const [patch, whole] of accepted) {
         expect(await configError(page, patch, whole), JSON.stringify(patch)).toBe("");
       }
-      await reconfigure(page, { title: null, pv: { power: null } });
-      await expect(page.locator("h1")).toHaveText("Energie");
-      await reconfigure(page, { title: "" });
+      // No title: the name of the dashboard is at the top of Home Assistant (uživatel 12. 11. 2026: „nechci title … To zrus“).
+      await reconfigure(page, { pv: { power: null } });
+      await expect(page.locator("h1")).toHaveCount(0);
+      await reconfigure(page, { title: "Energie" }); // an old key: ignored, nothing is drawn
       await expect(page.locator("h1")).toHaveCount(0);
       await expect(page.locator(".tile")).toHaveCount(TILES.length);
     });
@@ -274,14 +273,15 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
       await expect(reconfigure(page, { flows: { ...config.flows, decimals: 3 } })).rejects.toThrow();
     });
-    await test.step("limit nabíjení 100 % se v měřiči nekreslí; práh toku z konfigurace rozhoduje, co je tok", async () => {
+    await test.step("limit nabíjení 100 % se v měřiči nekreslí; bez prahu je tokem každý výkon od 1 W", async () => {
       await open(page, "day");
       await expect(page.locator(".meter .limit")).toHaveCount(0);
-      await update(page, { "sensor.goodwe_battery_power": "-20" }); // pod 25 W (uživatel 9. 11.): baterie nenabíjí
-      expect((await tile(page, "batIn")).on).toBe(false);
-      const config = example();
-      await reconfigure(page, { flows: { ...config.flows, idle_threshold: 10 } });
+      await update(page, { "sensor.goodwe_battery_power": "-3" }); // uživatel 12. 11. 2026: „Bude se zobrazovat vse“
       expect((await tile(page, "batIn")).on).toBe(true);
+      await update(page, { "sensor.goodwe_battery_power": "0" });
+      expect((await tile(page, "batIn")).on).toBe(false);
+      // An older dashboard with the key still works: it is skipped (the card can be updated before the dashboard).
+      expect(await configError(page, { flows: { idle_threshold: 100 } })).toBe("");
     });
   });
 });
@@ -466,7 +466,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
     await update(page, { "sensor.tuv_power_total": "2000" });
     expect((await strength("boil")).rest).toBe(31);
   });
-  test("toky: poledne, večer, boost ze sítě a šum pod prahem", async ({ page }) => {
+  test("toky: poledne, večer, boost ze sítě a bez prahu", async ({ page }) => {
     test.setTimeout(120000);
     await test.step("poledne: hodnoty ve všech dlaždicích v jedné jednotce, pásy podle zdrojů, věta o stavu", async () => {
       await open(page, "day");
@@ -521,11 +521,15 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await expect(mix).toContainText("Baterie");
       await expect(mix).toContainText("Síť");
     });
-    await test.step("šum pod prahem 25 W (uživatel 9. 11.) není tok: žádný pás, dlaždice nesvítí", async () => {
+    await test.step("bez prahu (uživatel 12. 11. 2026: „Bude se zobrazovat vse“): nulový výkon není tok, každý další ano", async () => {
       await open(page, "full");
-      await update(page, { "sensor.goodwe_battery_power": "20", "sensor.goodwe_meter_active_power_total": "-15", "sensor.goodwe_house_consumption": "24" });
+      const zero = { "sensor.goodwe_pv_power": "0", "sensor.goodwe_battery_power": "0", "sensor.goodwe_meter_active_power_total": "0", "sensor.goodwe_house_consumption": "0", "sensor.wallbox_total_power": "0", "sensor.tuv_power_total": "0" };
+      await update(page, zero);
       await expect(page.locator(".flow > svg > path")).toHaveCount(0);
       for (const item of await readTiles(page)) expect(item.on, item.key).toBe(false);
+      await update(page, { ...zero, "sensor.goodwe_battery_power": "15", "sensor.goodwe_house_consumption": "15" });
+      expect((await tile(page, "bat")).on).toBe(true);
+      expect((await tile(page, "house")).on).toBe(true);
     });
   });
 
@@ -1017,16 +1021,17 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(page.locator(".mix-legend")).toContainText("Slunce100 %");
       await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí 4,10 kW");
       // The age of the car data under the power (uživatel 12. 11. 2026: „Q132 A“).
-      await expect(page.locator(".row-sub.wrap")).toContainText("z auta právě teď");
+      await expect(page.locator(".row-sub.wrap")).toContainText("data auta právě teď");
       await expect(page.locator(".car-art img")).toHaveAttribute("src", /^data:image\/svg/);
       // Without the name of the mode (uživatel 12. 11. 2026: „Q134 B“).
       await expect(page.locator(".mode-sub .shown")).toHaveText("jen z přebytku");
+      await expect(page.locator(".mode-sub")).not.toHaveClass(/warn/);
     });
     await test.step("večer: auto připojené, nenabíjí; bez „Odkud auto nabíjí“; odpojené", async () => {
       await open(page, "full");
       await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí");
       await expect(page.locator(".mix")).toHaveCount(0);
-      await expect(page.locator(".row-btn .row-sub")).toHaveText("nenabíjí · z auta právě teď");
+      await expect(page.locator(".row-btn .row-sub")).toHaveText("nenabíjí · data auta právě teď");
       await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
       await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
       await expect(stateLine(page, 1)).toHaveText("Odpojeno");
@@ -1040,7 +1045,9 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       expect(await stateLine(page, 1).evaluate((el) => (el as HTMLElement).style.getPropertyValue("--sc"))).toBe("var(--ed-grid)");
       expect(await page.locator(".mix-bar > div").evaluateAll((bars) => bars.map((bar) => (bar as HTMLElement).style.background))).toEqual(["var(--ed-grid)"]);
       await expect(page.locator(".mix-legend")).toContainText("Síť100 %");
-      await expect(page.locator(".mode-sub .shown")).toHaveText("bere i ze sítě a z baterie");
+      await expect(page.locator(".mode-sub .shown")).toHaveText("i ze sítě a z baterie");
+      // Boost: the description grey, an orange „Boost“ in the state (uživatel 12. 11. 2026: „Q137 A“).
+      await expect(stateLine(page, 1).locator(".boost-mark")).toHaveText("Boost");
     });
     await test.step("měřič nabití auta: limit jen pod 100 %, popisek čtečky", async () => {
       await open(page, "day");
@@ -1244,7 +1251,7 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
           await expect(page.locator(".alerts"), at).toHaveCount(0);
           await expect(page.locator(".arc-num b"), at).toHaveText(["––", "––"]);
           await expect(page.getByRole("switch", { name: "Mísení vody" }), at).toBeDisabled();
-          await expect(page.locator(".row-sub.wrap"), at).not.toContainText("z auta");
+          await expect(page.locator(".row-sub.wrap"), at).not.toContainText("data auta");
         }
       }
       await open(page, "missing");
@@ -1461,7 +1468,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       const head = () => page.locator(".mode-head").evaluate((el) => el.getBoundingClientRect().height);
       const before = await head();
       await update(page, { "switch.wallbox_boost": "on" });
-      await expect(page.locator(".mode-sub .shown")).toHaveText("also from the grid and battery");
+      await expect(page.locator(".mode-sub .shown")).toHaveText("also grid and battery");
       expect(await head()).toBe(before);
       expect(await page.locator("#mode-l").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(23);
       await open(page, "grid", 320, 852, "dark", "en");
@@ -1610,8 +1617,7 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
       await page.keyboard.press("Escape");
       await page.locator(".title-btn").click();
       expect(await axeViolations(page), "popover záhlaví").toEqual([]);
-      await reconfigure(page, { title: "" });
-      expect(await axeViolations(page, ["page-has-heading-one"]), "title: \"\"").toEqual([]);
+
     }
   });
 
@@ -1809,15 +1815,15 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
     await test.step("jazyk karty je jazyk profilu Home Assistantu a mění se hned; jiný jazyk než cs a sv = angličtina; klíč language jazyk vynutí; lang na hostiteli", async () => {
       await open(page, "full");
       const host = page.locator(CARD);
-      const title = () => page.locator("h1");
-      await expect(title()).toHaveText("Energie");
+      const title = () => page.locator(".panel h2").first();
+      await expect(title()).toHaveText("Elektřina");
       await expect(host).toHaveAttribute("lang", "cs");
       await page.evaluate(() => (window as any).__test.setLanguage("sv"));
-      await expect(title()).toHaveText("Energi");
+      await expect(title()).toHaveText("El");
       await expect(host).toHaveAttribute("lang", "sv");
       await expect(page.locator(".tile .name").first()).toHaveText("Sol");
       await page.evaluate(() => (window as any).__test.setLanguage("de"));
-      await expect(title()).toHaveText("Energy");
+      await expect(title()).toHaveText("Electricity");
       await expect(host).toHaveAttribute("lang", "en");
       await page.evaluate(() => (window as any).__test.setLanguage("en-GB"));
       await expect(page.locator(".tile .name").first()).toHaveText("Sun");
@@ -1826,30 +1832,25 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
         const test = (window as any).__test;
         test.card.setConfig({ ...structuredClone(test.config), language: "cs" });
       });
-      await expect(title()).toHaveText("Energie");
+      await expect(title()).toHaveText("Elektřina");
       await expect(host).toHaveAttribute("lang", "cs");
     });
     await test.step("texty z konfigurace: text se nepřekládá, mapa jazyk → text se vybere podle jazyka karty, bez nich platí jazyk karty", async () => {
       await open(page, "full", 393, 852, "dark", "sv");
-      await expect(page.locator("h1")).toHaveText("Energi");
       await expect(page.locator(".panel h2")).toHaveText(["El", "BMW i3", "Varmvatten"]);
       await page.evaluate(() => {
         const test = (window as any).__test;
-        test.card.setConfig({ ...structuredClone(test.config), title: "Domov Madle", titles: { electricity: "Elektřina doma", car: null, water: "Teplá voda" } });
+        test.card.setConfig({ ...structuredClone(test.config), titles: { electricity: "Elektřina doma", car: null, water: "Teplá voda" } });
       });
-      await expect(page.locator("h1")).toHaveText("Domov Madle");
       await expect(page.locator(".panel h2")).toHaveText(["Elektřina doma", "BMW i3", "Teplá voda"]);
       // per language: the language of the card, then English, then the first one given
       await page.evaluate(() => {
         const test = (window as any).__test;
-        test.card.setConfig({ ...structuredClone(test.config), title: { cs: "Domov", en: "Home" }, titles: { electricity: { cs: "Elektřina", sv: "Ström" }, car: null, water: { cs: "Voda", en: "Water" } } });
+        test.card.setConfig({ ...structuredClone(test.config), titles: { electricity: { cs: "Elektřina", sv: "Ström" }, car: null, water: { cs: "Voda", en: "Water" } } });
       });
-      await expect(page.locator("h1")).toHaveText("Home");
       await expect(page.locator(".panel h2")).toHaveText(["Ström", "BMW i3", "Water"]);
       await page.evaluate(() => (window as any).__test.setLanguage("cs"));
-      await expect(page.locator("h1")).toHaveText("Domov");
       await expect(page.locator(".panel h2")).toHaveText(["Elektřina", "BMW i3", "Voda"]);
-      expect(await configError(page, { title: { Czech: "x" } })).toContain("title must be a text or a mapping of the language to the text");
       expect(await configError(page, { titles: { car: {} } })).toContain("titles.car must be a text or a mapping");
     });
     await test.step("odpojené auto a nápověda u obrázku auta mluví jazykem karty", async () => {

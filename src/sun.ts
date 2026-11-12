@@ -2,7 +2,7 @@
 import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import type { FlowModel, Sink } from "./model";
-import { SINKS, carLink, isOn } from "./model";
+import { carLink, isOn, SHOWN_W, SINKS } from "./model";
 import type { Layout } from "./sankey";
 import type { HomeAssistant, Settings } from "./types";
 import { entityState, formatClock, formatDayName, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, readEnergy, readNumber, readText } from "./utils";
@@ -274,7 +274,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const place = this.place();
       const times = place ? sunTimes(today, place.latitude, place.longitude) : undefined;
       // The first and the last five-minute mean of today above the idle threshold.
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       const todayRows = (fiveRows ?? []).filter((row) => row.start >= today && typeof row.mean === "number");
       const producing = todayRows.filter((row) => (row.mean as number) >= idle);
       const started = producing.length ? producing[0].start : undefined;
@@ -337,7 +337,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
     /** Where the sun goes now: the bar and the legend of the sinks (house, car, boiler, battery, grid). */
     renderSunFlow(model: FlowModel, s: Settings, large: boolean): TemplateResult {
       const t = this.t;
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       const parts = SINKS.map((sink) => ({ sink, watts: model.flows.filter((f) => f.from === "sun" && f.to === sink).reduce((sum, f) => sum + f.watts, 0) })).filter((part) => isOn(part.watts, idle));
       if (!parts.length) return html`<p class="bat-sub">${model.sun === undefined ? NO_DATA : t.sun.flowNone}</p>`;
       const unit: PowerUnit = "kW";
@@ -370,7 +370,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
     renderSunPopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
       const t = this.t;
       const v = this.sunView(s);
-      const on = isOn(model.sun, s.num.flows.idle_threshold);
+      const on = isOn(model.sun, SHOWN_W);
       const weather = this.weatherNow(s);
       const now = on ? (weather ? t.sun.producingWith(weather) : t.sun.producing) : model.sun === undefined ? NO_DATA : t.idle.sun;
       const width = Math.min(236, lay.width);
@@ -515,7 +515,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       return html`<div class="bat-card">
           <span class="bat-cap">${t.sun.powerNow}</span>
           <span class="bat-huge">${kw}</span>
-          ${isOn(model.sun, s.num.flows.idle_threshold) ? this.renderSunFlow(model, s, true) : nothing}
+          ${isOn(model.sun, SHOWN_W) ? this.renderSunFlow(model, s, true) : nothing}
         </div>
         <div class="bat-card rel">
           <div class="bat-card-bar"><span class="sun-title">${t.sun.chartTitle}</span><span class="sun-unit">${t.sun.chartUnit}${this.hint("chart", t.sun.hints.chart)}</span></div>

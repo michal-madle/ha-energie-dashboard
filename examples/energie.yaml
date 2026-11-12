@@ -9,7 +9,6 @@
 # =============================================================================
 type: custom:ha-energie-dashboard
 language: auto                  # jazyk karty: auto (podle Home Assistantu: čeština, švédština, jinak angličtina), cs, sv, en
-title: {cs: Energie, en: Energy, sv: Energi}   # nadpis nad kartami: text, nebo podle jazyka; bez hodnoty podle jazyka karty (Energie / Energi / Energy), "" ho vynechá
 
 # ----------------------------------------------------------------- nadpisy panelů
 # Bez hodnoty se panely jmenují podle jazyka karty. Každý nadpis je text, nebo podle jazyka {cs, en, sv}; bez jazyka karty se vezme angličtina, pak první uvedený.
@@ -152,6 +151,7 @@ car:
   range: sensor.i3_120_range_ev_remaining_range         # dojezd (km)
   capacity: sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana  # užitečná energie plné baterie (kWh); z ní, z nabití a z dojezdu se počítá spotřeba auta a km ze slunce; ID obsahuje VIN, doplňte své
   image: image.vin                                      # obrázek auta (image.…); ID obsahuje VIN, doplňte své
+  last_message: sensor.garaz_bmw_i3_2                   # čas poslední zprávy z auta (timestamp); v řádku Wallbox „data auta před 3 h“
   charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
   image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
   link: /dashboard-bmw                                  # kam vede dvojklep nebo podržení obrázku auta (cesta nebo https://…); "" = nikam
@@ -236,7 +236,6 @@ daily:
 
 # ------------------------------------------------------- toky: prahy a kreslení
 flows:
-  idle_threshold: 25                                    # W pod tím se tok bere jako žádný (platí i pro věty o stavu a pro popup Dům)
   kw_from: 1000                                         # W od tohoto se všechny výkony ukazují v kW
   decimals: auto                                        # desetinná místa kW: auto = aspoň 3 číslice (0,13 · 1,36 · 6,43 · 11,3 kW), 1 (6,8 kW) nebo 2 (6,81 kW)
   export_notice: 300                                    # W přetoků do sítě, od kterých je to „přebytek“

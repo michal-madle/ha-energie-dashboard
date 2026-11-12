@@ -37,7 +37,7 @@ export interface EntitySections {
   };
   grid: { power?: EntityId; total_import?: EntityId; total_export?: EntityId };
   house: { power?: EntityId };
-  car: { state_of_charge?: EntityId; range?: EntityId; capacity?: EntityId; image?: EntityId };
+  car: { state_of_charge?: EntityId; range?: EntityId; capacity?: EntityId; image?: EntityId; last_message?: EntityId };
   wallbox: {
     power?: EntityId;
     status?: EntityId;
@@ -81,7 +81,6 @@ export interface NumberSettings {
   water: { gauge_min: number; gauge_max: number };
   tank: { temp_min: number; temp_max: number; temp_step: number };
   flows: {
-    idle_threshold: number;
     kw_from: number;
     export_notice: number;
     source_min_share: number;
@@ -141,7 +140,6 @@ export type DashboardConfig = {
 /** Normalized configuration used by the card. */
 export interface Settings {
   /** Undefined: the heading of the card language ("Energie", "Energy", "Energi"); "" leaves it out. */
-  title: LocalizedText | undefined;
   language: LanguageSetting;
   entities: EntitySections;
   /** A heading that is not set is undefined and takes the card language. */

@@ -23,6 +23,7 @@ const EVENING = {
   "sensor.goodwe_meter_active_power_total": state("-148", { unit_of_measurement: "W" }),
   "sensor.goodwe_house_consumption": state("459", { unit_of_measurement: "W" }),
   "sensor.vin_stav_nabiti_predikce_integrace": state("50.2", { unit_of_measurement: "%" }),
+  "sensor.garaz_bmw_i3_2": state(now, { device_class: "timestamp" }),
   "sensor.i3_120_range_ev_remaining_range": state("95", { unit_of_measurement: "km" }),
   "sensor.wallbox_total_power": state("0", { unit_of_measurement: "W" }),
   "sensor.wallbox_charge_status": state("Waiting"),

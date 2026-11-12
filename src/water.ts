@@ -1,7 +1,7 @@
 /* The hot water panel: the boiler and tank tiles, the targets and the mixing capsule. */
 import { html, nothing } from "lit";
 import type { TemplateResult } from "lit";
-import { isOn, mixingState, sourceText } from "./model";
+import { isOn, mixingState, SHOWN_W, sourceText } from "./model";
 import type { FlowModel } from "./model";
 import { arcSvg } from "./gauge";
 import type { Settings } from "./types";
@@ -20,15 +20,15 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
       const t = this.t;
       const e = s.entities;
       const flows = s.num.flows;
-      const heating = isOn(model.boil, flows.idle_threshold);
+      const heating = isOn(model.boil, SHOWN_W);
       const src = sourceText(model.loadShare.boil, flows, t);
       const srcColor = this.sourceColor(src);
       const boost = this.shown(e.boiler.boost);
       const boostOn = boost === "on";
       const unit = powerUnit([heating ? model.boil : undefined], flows.kw_from);
 
-      let stateText: string | string[] | undefined;
-      if (heating) stateText = [t.water.boilerHeats(src.text), ...(boostOn ? [t.boostOptions.on] : [])];
+      let stateText: string | unknown[] | undefined;
+      if (heating) stateText = [t.water.boilerHeats(src.text), ...(boostOn ? [this.boostMark()] : [])];
       else if (model.boil !== undefined) stateText = t.water.noHeating;
 
       return html`<section class="panel" aria-labelledby="h-water">

@@ -34,7 +34,8 @@ export class HaEnergieDashboard extends withWater(withCar(withElectricity(withHo
     if (this._houseDetail) return html`<div class="page" style=${vars} @keydown=${this.onKey}>${this.renderHouseDetail(s, model)}</div>`;
     if (this._sunDetail) return html`<div class="page" style=${vars} @keydown=${this.onKey}>${this.renderSunDetail(s, model)}</div>`;
     return html`<div class="page" style=${vars} @keydown=${this.onKey}>
-      ${s.title === "" ? nothing : html`<h1>${this.pickText(s.title) ?? this.t.title}</h1>`} ${this.renderAlerts(s, model)} ${this.renderElectricity(s, model)} ${this.renderCar(s, model)}
+      <!-- No title: the name of the dashboard is already at the top (uživatel 12. 11. 2026: „nechci title … To zrus“). -->
+      ${this.renderAlerts(s, model)} ${this.renderElectricity(s, model)} ${this.renderCar(s, model)}
       ${this.renderWater(s, model)}
       <p class="feedback" aria-live="polite">${this._feedback}</p>
     </div>`;

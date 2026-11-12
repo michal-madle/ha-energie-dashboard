@@ -22,7 +22,7 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
   },
   grid: { power: undefined, total_import: undefined, total_export: undefined },
   house: { power: undefined },
-  car: { state_of_charge: undefined, range: undefined, capacity: undefined, image: "image" },
+  car: { state_of_charge: undefined, range: undefined, capacity: undefined, image: "image", last_message: undefined },
   wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", prioritize_connected: "switch", charging_power: "number" },
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
@@ -32,6 +32,12 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
 };
 
 /** Non-numeric, non-entity keys inside sections that also hold numbers (boiler.show). */
+/**
+ * Keys that are gone but still in older dashboards: skipped without an error, so the card can be updated before the
+ * dashboard (flows.idle_threshold, uživatel 12. 11. 2026: „zrus threshold … Bude se zobrazovat vse“).
+ */
+export const REMOVED_KEYS: Partial<Record<string, readonly string[]>> = { flows: ["idle_threshold"] };
+
 export const EXTRA_KEYS: Partial<Record<string, readonly string[]>> = { house: ["label", "default_range", "appliances", "groups"], boiler: ["show"], car: ["link"], flows: ["decimals"], battery: ["default_range"], forecast: ["default_range"] };
 
 /** battery.default_range: the history range the battery detail opens with. */
@@ -103,7 +109,6 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     temp_step: range(1, 1, 50, "°C, temperature step"),
   },
   flows: {
-    idle_threshold: range(25, 0, 1000, "W, below this a flow (and an appliance) counts as none"),
     kw_from: range(1000, 100, 100000, "W, from this any power is shown in kW"),
     export_notice: range(300, 0, 100000, "W of export that counts as a surplus"),
     source_min_share: range(15, 0, 100, "% a source needs to be named in a text"),
@@ -173,7 +178,6 @@ export const TITLE_KEYS = ["electricity", "car", "water"] as const;
 /** Every setting as a dotted key, for the example configuration and its test. */
 export const CONFIG_KEYS: string[] = [
   "type",
-  "title",
   "language",
   ...SECTION_NAMES.flatMap((name) => Object.keys(SECTION_KEYS[name]).map((key) => `${name}.${key}`)),
   ...Object.entries(NUMBERS).flatMap(([section, keys]) => Object.keys(keys).map((key) => `${section}.${key}`)),

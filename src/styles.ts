@@ -193,6 +193,14 @@ export const styles = css`
     min-height: 40px;
   }
 
+  .boost-mark {
+    color: var(--ed-warning);
+  }
+
+  :host([data-light]) .boost-mark {
+    color: color-mix(in srgb, var(--ed-warning) 45%, #000);
+  }
+
   /* Beside the first line when the state has two. */
   .state .dot {
     flex: none;

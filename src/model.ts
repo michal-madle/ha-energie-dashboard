@@ -57,10 +57,12 @@ export interface FlowModel {
 const positive = (value: number | undefined): number | undefined => (value === undefined ? undefined : Math.max(0, value));
 
 /**
- * Whether a power counts as a flow: from `flows.idle_threshold` W (default 100) upwards. Below it
- * (noise such as ±99 W on the meter) there is no flow at all (CURRENT_SPEC.md, Toky energie).
+ * A power counts as a flow when it shows as at least 1 W (whole W, from 0,5 W): there is no threshold, everything
+ * is shown (uživatel 12. 11. 2026: „zrus threshold na zobrazovani zdroje/spotreby energie. Bude se zobrazovat vse“).
  */
-export const isOn = (watts: number | undefined, idle: number): boolean => watts !== undefined && watts >= idle;
+export const SHOWN_W = 0.5;
+
+export const isOn = (watts: number | undefined, idle: number = SHOWN_W): boolean => watts !== undefined && watts >= idle;
 
 export function carLink(status: string | undefined): CarLink {
   if (status === "Disconnected") return "disconnected";
@@ -71,7 +73,7 @@ export function carLink(status: string | undefined): CarLink {
 
 export function buildModel(hass: HomeAssistant | undefined, settings: Settings, t: Texts): FlowModel {
   const e = settings.entities;
-  const idle = settings.num.flows.idle_threshold;
+  const idle = SHOWN_W;
   const sun = positive(readNumber(hass, e.pv.power));
   const battery = readNumber(hass, e.battery.power); // + discharging, − charging (measured 15. 10.)
   const grid = readNumber(hass, e.grid.power); // − import (measured); + export (sign by definition, confirmed 28. 10.)
@@ -142,7 +144,7 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings, 
 
 /** The sentence under the title (what the sun does; otherwise where the house gets its energy). */
 export function summarize(m: FlowModel, flows: NumberSettings["flows"], t: Texts): { summary?: string; summarySource?: Source } {
-  const idle = flows.idle_threshold;
+  const idle = SHOWN_W;
   const on = (value: number | undefined) => isOn(value, idle);
   const noData = [m.sun, m.batDis, m.imp, m.other].every((value) => value === undefined);
   if (noData) return {};

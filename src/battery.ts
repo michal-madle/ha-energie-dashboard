@@ -2,7 +2,7 @@
 import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import type { FlowModel } from "./model";
-import { isOn } from "./model";
+import { isOn, SHOWN_W } from "./model";
 import type { Layout } from "./sankey";
 import type { Settings } from "./types";
 import { entityState, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, formatClock, readEnergy, readNumber } from "./utils";
@@ -203,7 +203,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
     // ----------------------------------------------------------------- shared pieces
 
     batState(model: FlowModel, s: Settings): "charging" | "discharging" | "idle" | undefined {
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       if (isOn(model.batIn, idle)) return "charging";
       if (isOn(model.batDis, idle)) return "discharging";
       return model.batIn === undefined && model.batDis === undefined ? undefined : "idle";
@@ -251,7 +251,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
 
     renderBatteryPopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
       const t = this.t;
-      const idle = s.num.flows.idle_threshold;
+      const idle = SHOWN_W;
       const out = tile.key === "bat";
       const soc = model.soc;
       const low = soc !== undefined && soc <= this.batteryReserve(s);
@@ -425,7 +425,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         dot: (i) => (soc[i] === undefined ? undefined : { y: sy(soc[i]!), color: "var(--ed-text)" }),
         read: (i) => {
           const p = power[i];
-          const state = p === undefined ? NO_DATA : Math.abs(p) < s.num.flows.idle_threshold / 1000 ? this.t.bat.status.idle.toLowerCase() : `${p > 0 ? this.t.bat.charging : this.t.bat.discharging} ${formatPower(Math.abs(p) * 1000, "kW")}`;
+          const state = p === undefined ? NO_DATA : Math.abs(p) < SHOWN_W / 1000 ? this.t.bat.status.idle.toLowerCase() : `${p > 0 ? this.t.bat.charging : this.t.bat.discharging} ${formatPower(Math.abs(p) * 1000, "kW")}`;
           return `${this.back((1 - i / (n - 1)) * hours * 60)} · ${soc[i] === undefined ? NO_DATA : formatPercent(soc[i]!)} · ${state}`;
         },
         from: `−${hours} h`, to: this.t.bat.now,

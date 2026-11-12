@@ -1,6 +1,6 @@
 import { checkKeys, entityId, fail, isRecord, languageSetting, localizedText, section, withCardName } from "ha-dashboard-kit/config";
 import type { LocalizedText } from "ha-dashboard-kit/config";
-import { DEFAULT_HOUSE_LABEL, BATTERY_RANGES, BOILER_SHOW, DEFAULT_SUN_RANGE, SUN_RANGES, COLORS, DEFAULT_BATTERY_RANGE, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
+import { DEFAULT_HOUSE_LABEL, BATTERY_RANGES, BOILER_SHOW, DEFAULT_SUN_RANGE, SUN_RANGES, COLORS, DEFAULT_BATTERY_RANGE, DEFAULT_BOILER_SHOW, DEFAULT_POWER_DECIMALS, EXTRA_KEYS, NUMBERS, POWER_DECIMALS, REMOVED_KEYS, SECTION_KEYS, SECTION_NAMES, TEMP_SCALE, TITLE_KEYS } from "./config-schema";
 import type { Range } from "./config-schema";
 import type { ApplianceConfig, Colors, DashboardConfig, EntitySections, GroupConfig, GroupItemConfig, NumberSettings, SectionName, Settings, TempStop, Titles } from "./types";
 
@@ -14,8 +14,15 @@ import type { ApplianceConfig, Colors, DashboardConfig, EntitySections, GroupCon
  */
 
 
+/** A section without the keys that are gone (REMOVED_KEYS). */
+function current(config: DashboardConfig, name: string): Record<string, unknown> {
+  const input = { ...section(config[name], name) };
+  for (const key of REMOVED_KEYS[name] ?? []) delete input[key];
+  return input;
+}
+
 function entitySection<Name extends SectionName>(config: DashboardConfig, name: Name): EntitySections[Name] {
-  const input = section(config[name], name);
+  const input = current(config, name);
   const keys = SECTION_KEYS[name] as Record<string, string | undefined>;
   // A section may also hold numbers (battery.reserve, wallbox.power_min …): only entity keys are read here.
   const extra = [...Object.keys((NUMBERS as Record<string, Record<string, Range>>)[name] ?? {}), ...(EXTRA_KEYS[name] ?? [])];
@@ -33,7 +40,7 @@ function entitySection<Name extends SectionName>(config: DashboardConfig, name: 
 function numbers(config: DashboardConfig): NumberSettings {
   const result: Record<string, Record<string, number>> = {};
   for (const [name, keys] of Object.entries(NUMBERS) as Array<[string, Record<string, Range>]>) {
-    const input = section(config[name], name);
+    const input = current(config, name);
     const entityKeys = Object.keys((SECTION_KEYS as Record<string, object>)[name] ?? {});
     checkKeys(input, [...entityKeys, ...Object.keys(keys), ...(EXTRA_KEYS[name] ?? [])], name);
     result[name] = {};
@@ -337,7 +344,6 @@ function normalize(config: DashboardConfig): Settings {
     fail("the configuration must be a mapping of keys.");
   }
   // An empty text leaves the heading out; otherwise a text or the texts by language.
-  const title = config.title === "" ? "" : localizedText(config.title, "title");
   const entities = Object.fromEntries(SECTION_NAMES.map((name) => [name, entitySection(config, name)])) as unknown as EntitySections;
   // The two mixing valves are never on together and switch together (CURRENT_SPEC.md, Mísení vody).
   if (entities.mixing.valve_c1 && entities.mixing.valve_c1 === entities.mixing.valve_c2) {
@@ -346,5 +352,5 @@ function normalize(config: DashboardConfig): Settings {
   const num = numbers(config);
   checkOrder(num);
   const language = languageSetting(config.language);
-  return { title, language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config), batteryRange: batteryRange(config), sunRange: sunRange(config), houseLabel: houseLabel(config), houseRange: houseRange(config), appliances: appliances(config), groups: groups(config) };
+  return { language, entities, titles: titles(config), num, colors: colors(config), tempScale: tempScale(config), boilerShow: boilerShow(config), powerDecimals: powerDecimals(config), carLink: carLink(config), batteryRange: batteryRange(config), sunRange: sunRange(config), houseLabel: houseLabel(config), houseRange: houseRange(config), appliances: appliances(config), groups: groups(config) };
 }
