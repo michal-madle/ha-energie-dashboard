@@ -43,7 +43,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
     gauge(value: number | undefined, min: number, max: number, s: Settings, label: string, dim = false): TemplateResult {
       return html`<div class="arc" role="img" aria-label=${label}>
         ${arcSvg(value, min, max, s.tempScale)}
-        <div class="arc-num ${dim ? "dim" : ""}"><b>${value === undefined ? NO_DATA : formatNumber(value)}</b>${value === undefined ? html`<span class="sr-only">${this.t.noData}</span>` : html`<span>°C</span>`}</div>
+        <div class="arc-num ${dim ? "dim" : ""}"><b class=${value === undefined ? "nodata" : ""}>${value === undefined ? NO_DATA : formatNumber(value)}</b>${value === undefined ? html`<span class="sr-only">${this.t.noData}</span>` : html`<span>°C</span>`}</div>
         <span class="arc-min" aria-hidden="true">${formatNumber(min)}</span><span class="arc-max" aria-hidden="true">${formatNumber(max)}</span>
       </div>`;
     }
@@ -188,7 +188,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
       // Manual has no second part until „Jak dlouho“ gives „do 18:07“; the row shows only the temperature, in bold
       // like the targets (uživatel 12. 11. 2026: „Q127 A“, „Q128 A“).
       const plan = off ? tt.tank.keepsMinimum : manual ? undefined : tt.tank.byPlan;
-      const summary = shownTemp === undefined ? this.noData() : html`<b>${formatNumber(off ? nt.temp_min : shownTemp)} °C</b>`;
+      const summary = shownTemp === undefined ? this.noData() : html`<b class=${off ? "off" : ""}>${formatNumber(off ? nt.temp_min : shownTemp)} °C</b>`;
       const label = tt.tank.label(
         shownTemp === undefined ? tt.tank.settingNoData : off ? tt.tank.settingOff(`${formatNumber(nt.temp_min)} °C`) : tt.tank.settingSet(`${formatNumber(shownTemp)} °C`),
         modeName,

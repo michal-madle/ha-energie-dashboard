@@ -991,6 +991,11 @@ export const styles = css`
     color: var(--ed-secondary);
   }
 
+  /* „––“ in the grey of no data (DASHBOARD_UX_SYSTEM.md, Text). */
+  .arc-num b.nodata {
+    color: var(--ed-nodata);
+  }
+
   .arc-num span {
     color: var(--ed-pop-sec);
     font-size: 13px;
@@ -1136,6 +1141,11 @@ export const styles = css`
     font-weight: 500;
   }
 
+  /* Off: grey like the temperature on the gauge (CURRENT_SPEC.md, Zásobník: „v Off šedá“). */
+  .rowbtn-value b.off {
+    color: var(--ed-secondary);
+  }
+
   /* The water between the two tiles: connectors and the mixing capsule. */
   .link {
     width: 0;
@@ -1265,6 +1275,11 @@ export const styles = css`
 
   :host([data-light]) .row-sub b {
     color: color-mix(in srgb, var(--c, var(--ed-text)) 45%, #000);
+  }
+
+  /* A row with a note on the right (Wallbox: „z auta právě teď“): the title and the power stay whole, the note wraps. */
+  .row:has(> .row-aside) {
+    grid-template-columns: 40px minmax(min-content, max-content) minmax(0, 1fr) auto;
   }
 
   .row-aside {

@@ -3804,6 +3804,11 @@ const An = Jt`
     color: var(--ed-secondary);
   }
 
+  /* „––“ in the grey of no data (DASHBOARD_UX_SYSTEM.md, Text). */
+  .arc-num b.nodata {
+    color: var(--ed-nodata);
+  }
+
   .arc-num span {
     color: var(--ed-pop-sec);
     font-size: 13px;
@@ -3949,6 +3954,11 @@ const An = Jt`
     font-weight: 500;
   }
 
+  /* Off: grey like the temperature on the gauge (CURRENT_SPEC.md, Zásobník: „v Off šedá“). */
+  .rowbtn-value b.off {
+    color: var(--ed-secondary);
+  }
+
   /* The water between the two tiles: connectors and the mixing capsule. */
   .link {
     width: 0;
@@ -4078,6 +4088,11 @@ const An = Jt`
 
   :host([data-light]) .row-sub b {
     color: color-mix(in srgb, var(--c, var(--ed-text)) 45%, #000);
+  }
+
+  /* A row with a note on the right (Wallbox: „z auta právě teď“): the title and the power stay whole, the note wraps. */
+  .row:has(> .row-aside) {
+    grid-template-columns: 40px minmax(min-content, max-content) minmax(0, 1fr) auto;
   }
 
   .row-aside {
@@ -8338,7 +8353,7 @@ const ei = (a) => class extends a {
   gauge(t, e, s, n, o, i = !1) {
     return v`<div class="arc" role="img" aria-label=${o}>
         ${ti(t, e, s, n.tempScale)}
-        <div class="arc-num ${i ? "dim" : ""}"><b>${t === void 0 ? C : B(t)}</b>${t === void 0 ? v`<span class="sr-only">${this.t.noData}</span>` : v`<span>°C</span>`}</div>
+        <div class="arc-num ${i ? "dim" : ""}"><b class=${t === void 0 ? "nodata" : ""}>${t === void 0 ? C : B(t)}</b>${t === void 0 ? v`<span class="sr-only">${this.t.noData}</span>` : v`<span>°C</span>`}</div>
         <span class="arc-min" aria-hidden="true">${B(e)}</span><span class="arc-max" aria-hidden="true">${B(s)}</span>
       </div>`;
   }
@@ -8428,7 +8443,7 @@ const ei = (a) => class extends a {
         <div class="link ${n ? "on" : ""}" aria-hidden="true"></div>`;
   }
   renderTankTile(t) {
-    const e = this.t, s = t.entities.tank, n = t.num.tank, o = s.water_heater, i = ht(this.hass, o), r = this.shown(o), l = r === "off", h = r === "heat", c = Ht(i, "temperature"), d = this._tankTemp, u = d && d.id === o ? d.value : c, b = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, I(this.hass, t.entities.boiler.target_temperature) ?? 0), m = l ? n.temp_min : u, g = Array.isArray(i?.attributes?.operation_list) ? i.attributes.operation_list : Object.keys(e.tank.modes), p = Object.keys(e.tank.modes).filter((T) => g.includes(T)).map((T) => ({ value: T, label: e.tank.modes[T] })), f = !!this._open.tank, { min: $, max: _ } = this.tankRange(t), w = r === void 0 ? C : e.tank.modes[r] ?? r, E = l ? e.tank.keepsMinimum : h ? void 0 : e.tank.byPlan, L = m === void 0 ? this.noData() : v`<b>${B(l ? n.temp_min : m)} °C</b>`, S = e.tank.label(
+    const e = this.t, s = t.entities.tank, n = t.num.tank, o = s.water_heater, i = ht(this.hass, o), r = this.shown(o), l = r === "off", h = r === "heat", c = Ht(i, "temperature"), d = this._tankTemp, u = d && d.id === o ? d.value : c, b = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, I(this.hass, t.entities.boiler.target_temperature) ?? 0), m = l ? n.temp_min : u, g = Array.isArray(i?.attributes?.operation_list) ? i.attributes.operation_list : Object.keys(e.tank.modes), p = Object.keys(e.tank.modes).filter((T) => g.includes(T)).map((T) => ({ value: T, label: e.tank.modes[T] })), f = !!this._open.tank, { min: $, max: _ } = this.tankRange(t), w = r === void 0 ? C : e.tank.modes[r] ?? r, E = l ? e.tank.keepsMinimum : h ? void 0 : e.tank.byPlan, L = m === void 0 ? this.noData() : v`<b class=${l ? "off" : ""}>${B(l ? n.temp_min : m)} °C</b>`, S = e.tank.label(
       m === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${B(n.temp_min)} °C`) : e.tank.settingSet(`${B(m)} °C`),
       w,
       B(b),
@@ -8494,4 +8509,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Be(pn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 12:51 UTC · po f156670 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 13:10 UTC · po d57d127 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
