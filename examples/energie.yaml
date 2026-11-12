@@ -9,6 +9,7 @@
 # =============================================================================
 type: custom:ha-energie-dashboard
 language: auto                  # jazyk karty: auto (podle Home Assistantu: čeština, švédština, jinak angličtina), cs, sv, en
+title: {cs: Energie, en: Energy, sv: Energi}   # nadpis nad kartami: text, nebo podle jazyka; bez hodnoty podle jazyka karty (Energie / Energi / Energy), "" ho vynechá
 
 # ----------------------------------------------------------------- nadpisy panelů
 # Bez hodnoty se panely jmenují podle jazyka karty. Každý nadpis je text, nebo podle jazyka {cs, en, sv}; bez jazyka karty se vezme angličtina, pak první uvedený.
@@ -152,7 +153,7 @@ car:
   capacity: sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana  # užitečná energie plné baterie (kWh); z ní, z nabití a z dojezdu se počítá spotřeba auta a km ze slunce; ID obsahuje VIN, doplňte své
   image: image.vin                                      # obrázek auta (image.…); ID obsahuje VIN, doplňte své
   charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
-  image_scale: 1.5                                      # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
+  image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
   link: /dashboard-bmw                                  # kam vede dvojklep nebo podržení obrázku auta (cesta nebo https://…); "" = nikam
 wallbox:
   power: sensor.wallbox_total_power                     # výkon wallboxu (W)
@@ -283,9 +284,3 @@ colors:
       color: '#FF9F0A'
     - temp: 85
       color: '#FF453A'
-cards:
-  - type: heading
-    heading:
-      cs: Energie
-      en: Energy
-      sv: Energi

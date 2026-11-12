@@ -42,7 +42,6 @@ Co mají karty Energie a Klima společné, je v repozitáři [ha-dashboard-kit](
 ## Dokumentace projektu
 
 - `CURRENT_SPEC.md` – aktuální specifikace a zdroj pravdy (soukromý repozitář `ha-config`, `energie/`; veřejně je popis konfigurace v [příkladu](./examples/energie.yaml))
-- [AI_MCP.md](https://github.com/michal-madle/ha-dashboard-kit/blob/main/AI_MCP.md) (kit) – připojení Claude k Home Assistantu (MCP)
 - `DESIGN_HISTORY.md` – historie návrhu a zamítnuté návrhy (nezávazné; tamtéž)
 
 ## Sestavení

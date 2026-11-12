@@ -160,7 +160,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(settings.entities.boiler.boost_target_temperature).toBe("number.tuv_2_2_boost_target_temperature");
     expect(settings.entities.daily.pv_generation).toBe("sensor.energie_fve_dnes");
     expect(settings.num.wallbox.power_max).toBe(11100);
-    expect(settings.num.flows.idle_threshold).toBe(100);
+    expect(settings.num.flows.idle_threshold).toBe(25); // CURRENT_SPEC.md, Konfigurace: práh 25 W (od 9. 11. 2026)
     expect(settings.num.ui).toEqual({ revert_after: 6, hold_ms: 550, double_tap_ms: 400, hint_seconds: 3 });
     expect(settings.tempScale).toHaveLength(5);
     expect(settings.boilerShow).toBe("heating");
@@ -1114,7 +1114,10 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
           const panels = [...root.querySelectorAll<HTMLElement>(".panel")].map((panel) => {
             const box = panel.getBoundingClientRect();
             // The enlarged car picture is meant to reach over the edge (and is clipped); nothing else may.
-            const over = [...panel.querySelectorAll<HTMLElement>("*")].some((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
+            // Which element reaches over (tag, class, text, by how much): "" when nothing does.
+            const bad = [...panel.querySelectorAll<HTMLElement>("*")].find((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
+            const r = bad?.getBoundingClientRect();
+            const over = bad && r ? `${bad.tagName.toLowerCase()}.${[...bad.classList].join(".")} „${(bad.textContent ?? "").trim().slice(0, 40)}“ vpravo ${(r.right - box.right).toFixed(1)} px, vlevo ${(box.left - r.left).toFixed(1)} px` : "";
             return { left: box.left, right: box.right, over };
           });
           // The compact Auto | Manual | Off of the tank is 40 px by the design; everything else 44 px.
@@ -1122,13 +1125,13 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
             [...(host.shadowRoot?.querySelectorAll<HTMLElement>("button, input") ?? [])].map((el) => el.getBoundingClientRect().height),
           );
           const rows = [...root.querySelectorAll<HTMLElement>(".row, .rowbtn")].map((row) => row.getBoundingClientRect().height);
-          const sources = [...root.querySelectorAll<HTMLElement>(".source")].map((el) => ({ over: el.scrollWidth > el.clientWidth + 0.5, right: el.getBoundingClientRect().right }));
+          const sources = [...root.querySelectorAll<HTMLElement>(".source")].map((el) => ({ over: el.scrollWidth > el.clientWidth + 0.5 ? `.source „${(el.textContent ?? "").trim().slice(0, 40)}“ ${el.scrollWidth} > ${el.clientWidth} px` : "", right: el.getBoundingClientRect().right }));
           return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources };
         }, CARD);
         expect(layout.scrollWidth, at).toBeLessThanOrEqual(width);
         expect(layout.card.right, at).toBeLessThanOrEqual(width);
         for (const panel of [...layout.panels, ...layout.sources]) {
-          expect(panel.over, `${at}: panel`).toBe(false);
+          expect(panel.over, `${at}: panel`).toBe("");
           expect(panel.right, `${at}: panel`).toBeLessThanOrEqual(width);
         }
         for (const box of layout.boxes) {
@@ -1643,16 +1646,22 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
         await expandEverything(page);
         const layout = await page.evaluate((tag) => {
           const root = document.querySelector(tag)!.shadowRoot!;
-          const tiles = [...root.querySelectorAll<HTMLElement>(".tile .text")].map((text) => text.scrollWidth > text.clientWidth + 0.5 || text.getBoundingClientRect().right > text.closest(".tile")!.getBoundingClientRect().right + 0.5);
+          // Each problem names the element and its text ("" = in order).
+          const tiles = [...root.querySelectorAll<HTMLElement>(".tile .text")].map((text) => {
+            const tileBox = text.closest<HTMLElement>(".tile")!.getBoundingClientRect();
+            const cut = text.scrollWidth > text.clientWidth + 0.5 || text.getBoundingClientRect().right > tileBox.right + 0.5;
+            return cut ? `${text.closest<HTMLElement>(".tile")!.dataset.tile}: „${(text.textContent ?? "").trim().slice(0, 50)}“ ${text.scrollWidth} > ${text.clientWidth} px` : "";
+          });
           const panels = [...root.querySelectorAll<HTMLElement>(".panel, .source")].map((panel) => {
             const box = panel.getBoundingClientRect();
-            return [...panel.querySelectorAll<HTMLElement>("*")].some((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
+            const bad = [...panel.querySelectorAll<HTMLElement>("*")].find((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
+            return bad ? `${bad.tagName.toLowerCase()}.${[...bad.classList].join(".")} „${(bad.textContent ?? "").trim().slice(0, 40)}“` : "";
           });
           return { scrollWidth: document.documentElement.scrollWidth, tiles, panels };
         }, CARD);
         expect(layout.scrollWidth, `${lang} ${scenario}`).toBeLessThanOrEqual(320);
-        expect(layout.tiles.some(Boolean), `${lang} ${scenario}: text dlaždice se ořízl`).toBe(false);
-        expect(layout.panels.some(Boolean), `${lang} ${scenario}: obsah přesahuje panel`).toBe(false);
+        expect(layout.tiles.filter(Boolean), `${lang} ${scenario}: text dlaždice se ořízl`).toEqual([]);
+        expect(layout.panels.filter(Boolean), `${lang} ${scenario}: obsah přesahuje panel`).toEqual([]);
         expect(await axeViolations(page), `${lang} ${scenario} axe`).toEqual([]);
       }
     }
@@ -2122,10 +2131,12 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       const card = detail.locator(".bat-card").filter({ hasText: "Výroba po dnech" });
       await expect(card.locator("svg rect[style*='--ed-sun']").first()).toBeVisible();
       const heightTotal = await card.evaluate((el) => el.getBoundingClientRect().height);
+      const parts = () => card.evaluate((el) => [...el.children].map((child) => `${child.tagName.toLowerCase()}.${[...child.classList].join(".")} ${child.getBoundingClientRect().height.toFixed(1)}`).join(" | "));
+      const partsTotal = await parts();
       await card.getByRole("radio", { name: "Denní doba" }).click();
       await expect(card.locator("svg polygon")).toHaveCount(5);
       await expect(card.locator(".sun-blocks > span")).toHaveCount(5);
-      expect(await card.evaluate((el) => el.getBoundingClientRect().height)).toBe(heightTotal);
+      expect(await card.evaluate((el) => el.getBoundingClientRect().height), `Celkem: ${partsTotal}; Denní doba: ${await parts()}`).toBe(heightTotal);
       expect((await detail.locator(".bat-kpi .sub").allTextContents()).join(" ")).toMatch(/Nejlepší den[\s\S]*Nejhorší den[\s\S]*Špička[\s\S]*Délka výroby/);
       await expect(detail.locator(".sun-two")).toContainText("Východ a západ");
       await expect(detail.locator(".sun-two")).toContainText("Dobré dny");
