@@ -20,6 +20,8 @@ async function open(page: Page, scenario = "full", width = 393, height = 852, th
   await page.setViewportSize({ width, height });
   await page.goto(`/tests/harness.html?s=${scenario}${theme === "light" ? "&theme=light" : ""}&lang=${lang}${extra}`);
   await page.locator(".tile").first().waitFor();
+  // The web font arrives after the first drawing; measuring before it moved the mixing switch by 3,6 px in CI.
+  await page.evaluate(() => document.fonts.ready.then(() => true));
 }
 
 const example = () => parse(readFileSync(new URL("../examples/energie.yaml", import.meta.url), "utf8"));
@@ -1136,11 +1138,22 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
               return text > room + 0.5 ? `„${(button.textContent ?? "").trim()}“ ${text.toFixed(1)} > ${room.toFixed(1)} px` : "";
             }),
           ).filter(Boolean);
-          return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources, segText };
+          // The value of a row never runs into its chevron ("· Boost 55 °C" in en on 320 px did, Q118): "" = in order.
+          const valueOver = [...root.querySelectorAll<HTMLElement>(".rowbtn")].map((button) => {
+            const value = button.querySelector<HTMLElement>(".rowbtn-value");
+            const chevron = button.querySelector<SVGElement>(".chevron");
+            if (!value || !chevron) return "";
+            const range = document.createRange();
+            range.selectNodeContents(value);
+            const right = Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+            return right > chevron.getBoundingClientRect().left + 0.5 ? `„${(value.textContent ?? "").trim()}“ o ${(right - chevron.getBoundingClientRect().left).toFixed(1)} px` : "";
+          }).filter(Boolean);
+          return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources, segText, valueOver };
         }, CARD);
         expect(layout.scrollWidth, at).toBeLessThanOrEqual(width);
         expect(layout.card.right, at).toBeLessThanOrEqual(width);
         expect(layout.segText, `${at}: text přepínače se nevejde do tlačítka`).toEqual([]);
+        expect(layout.valueOver, `${at}: hodnota řádku najede na šipku`).toEqual([]);
         for (const panel of [...layout.panels, ...layout.sources]) {
           expect(panel.over, `${at}: panel`).toBe("");
           expect(panel.right, `${at}: panel`).toBeLessThanOrEqual(width);
@@ -1420,7 +1433,16 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     });
     await test.step("Cílové teploty: Přetoky ≥ Boost, slidery volají number.set_value", async () => {
       await open(page, "full");
-      await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky 60 · Boost 55 °C");
+      await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky 60 · Boost 55 °C", { useInnerText: true });
+      // On two lines the line break is the separator: no dot, °C at both (uživatel 12. 11. 2026); the other texts of the section the same.
+      await open(page, "full", 320);
+      const lines = (selector: string, i = 0) => page.locator(selector).nth(i).evaluate((el: HTMLElement) => el.innerText.split("\n").map((line) => line.replace(/\s+/g, " ").trim()));
+      await expect.poll(() => lines(".rowbtn-value")).toEqual(["Přetoky 60 °C", "Boost 55 °C"]);
+      await open(page, "full", 320, 852, "dark", "en");
+      await expect.poll(() => lines(".rowbtn-value")).toEqual(["Surplus 60 °C", "Boost 55 °C"]);
+      await expect.poll(() => lines(".source-line")).toEqual(["not heating", "target 60 °C"]);
+      await expect.poll(() => lines(".rowbtn-value", 1)).toEqual(["40 °C", "by schedule"]);
+      await open(page, "full");
       await expand(page, "Cílové teploty");
       const solar = page.locator('ed-slider[label="Cíl ohřevu bojleru, Přetoky"]');
       const boost = page.locator('ed-slider[label="Cíl ohřevu bojleru, Boost"]');
@@ -1675,13 +1697,51 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
               return range.getBoundingClientRect().width > button.getBoundingClientRect().width + 0.5 ? `„${(button.textContent ?? "").trim()}“` : "";
             }),
           ).filter(Boolean);
-          return { scrollWidth: document.documentElement.scrollWidth, tiles, panels, segText };
+          // The value of a row never runs into its chevron ("· Boost 55 °C" in en on 320 px did, Q118): "" = in order.
+          const valueOver = [...root.querySelectorAll<HTMLElement>(".rowbtn")].map((button) => {
+            const value = button.querySelector<HTMLElement>(".rowbtn-value");
+            const chevron = button.querySelector<SVGElement>(".chevron");
+            if (!value || !chevron) return "";
+            const range = document.createRange();
+            range.selectNodeContents(value);
+            const right = Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+            return right > chevron.getBoundingClientRect().left + 0.5 ? `„${(value.textContent ?? "").trim()}“ o ${(right - chevron.getBoundingClientRect().left).toFixed(1)} px` : "";
+          }).filter(Boolean);
+          return { scrollWidth: document.documentElement.scrollWidth, tiles, panels, segText, valueOver };
         }, CARD);
         expect(layout.scrollWidth, `${lang} ${scenario}`).toBeLessThanOrEqual(320);
         expect(layout.tiles.filter(Boolean), `${lang} ${scenario}: text dlaždice se ořízl`).toEqual([]);
         expect(layout.panels.filter(Boolean), `${lang} ${scenario}: obsah přesahuje panel`).toEqual([]);
         expect(layout.segText, `${lang} ${scenario}: text přepínače se nevejde do tlačítka`).toEqual([]);
+        expect(layout.valueOver, `${lang} ${scenario}: hodnota řádku najede na šipku`).toEqual([]);
         expect(await axeViolations(page), `${lang} ${scenario} axe`).toEqual([]);
+      }
+      // Longer words (en, sv) at the widths where the switch is beside the gauge or just moved under it.
+      for (const width of [360, 375, 393]) {
+        await open(page, "full", width, 852, "dark", lang);
+        await expandEverything(page);
+        const fit = await page.evaluate((tag) => {
+          const root = document.querySelector(tag)!.shadowRoot!;
+          const segText = [...root.querySelectorAll<HTMLElement>("ed-segmented")].flatMap((host) =>
+            [...(host.shadowRoot?.querySelectorAll<HTMLElement>("button") ?? [])].map((button) => {
+              const range = document.createRange();
+              range.selectNodeContents(button);
+              return range.getBoundingClientRect().width > button.getBoundingClientRect().width + 0.5 ? `„${(button.textContent ?? "").trim()}“` : "";
+            }),
+          ).filter(Boolean);
+          // The value of a row never runs into its chevron ("· Boost 55 °C" in en on 320 px did, Q118): "" = in order.
+          const valueOver = [...root.querySelectorAll<HTMLElement>(".rowbtn")].map((button) => {
+            const value = button.querySelector<HTMLElement>(".rowbtn-value");
+            const chevron = button.querySelector<SVGElement>(".chevron");
+            if (!value || !chevron) return "";
+            const range = document.createRange();
+            range.selectNodeContents(value);
+            const right = Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+            return right > chevron.getBoundingClientRect().left + 0.5 ? `„${(value.textContent ?? "").trim()}“ o ${(right - chevron.getBoundingClientRect().left).toFixed(1)} px` : "";
+          }).filter(Boolean);
+          return { segText, valueOver };
+        }, CARD);
+        expect(fit, `${lang} ${width} px`).toEqual({ segText: [], valueOver: [] });
       }
     }
   });

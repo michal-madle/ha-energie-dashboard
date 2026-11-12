@@ -10,7 +10,7 @@ import type { PowerUnit } from "./utils";
 import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { ICON } from "./icons";
 import type { Controlled } from "./controls";
-import { NO_DATA, attribute } from "./view";
+import { NO_DATA, attribute, dots } from "./view";
 import type { Constructor } from "./view";
 
 export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
@@ -73,9 +73,10 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
           <div class="source-body">
             <div>
               <div class="source-title">${tt.water.boilerTitle}</div>
-              <div class="source-line">
-                <span class="src" style="--c:${heating ? srcColor : "var(--ed-secondary)"}">${heating ? formatPower(model.boil!, unit) : model.boil === undefined ? NO_DATA : tt.water.notHeating}</span>${target === undefined ? nothing : html` <span class="dim">· ${tt.water.target(`${formatNumber(target)} °C`)}</span>`}
-              </div>
+              <div class="source-line">${dots([
+                html`<span class="src" style="--c:${heating ? srcColor : "var(--ed-secondary)"}">${heating ? formatPower(model.boil!, unit) : model.boil === undefined ? NO_DATA : tt.water.notHeating}</span>`,
+                ...(target === undefined ? [] : [html`<span class="dim">${tt.water.target(`${formatNumber(target)} °C`)}</span>`]),
+              ])}</div>
             </div>
             ${b.boost
               ? html`<ed-segmented
@@ -90,7 +91,11 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
           ? html`<div class="subrow">
               <button type="button" class="rowbtn" aria-expanded=${open ? "true" : "false"} @click=${() => this.toggle("targets")}>
                 <span class="rowbtn-title">${tt.water.targets}</span>
-                <span class="rowbtn-value"><span class="nw">${tt.water.targetFlow} <b>${flowTarget === undefined ? NO_DATA : formatNumber(flowTarget)}</b></span> <span class="nw">· ${tt.water.targetBoost} <b>${boostTarget === undefined ? NO_DATA : `${formatNumber(boostTarget)} °C`}</b></span></span>
+                <span class="rowbtn-value">${dots([
+                  // On two lines both targets have the unit (uživatel 12. 11. 2026: „A °C bude na obou“).
+                  html`${tt.water.targetFlow} <b>${flowTarget === undefined ? NO_DATA : html`${formatNumber(flowTarget)}<span class="dots-only"> °C</span>`}</b>`,
+                  html`${tt.water.targetBoost} <b>${boostTarget === undefined ? NO_DATA : `${formatNumber(boostTarget)} °C`}</b>`,
+                ])}</span>
                 <svg class="chevron ${open ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>
               </button>
               <div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>${this.renderTargets(s, flowTarget, boostTarget)}</div></div>
@@ -180,7 +185,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
       const { min, max } = this.tankRange(s);
       const modeName = mode === undefined ? NO_DATA : (tt.tank.modes[mode] ?? mode);
       const plan = off ? tt.tank.keepsMinimum : manual ? tt.tank.setManually : tt.tank.byPlan;
-      const summary = shownTemp === undefined ? NO_DATA : off ? tt.tank.summaryOff(`${formatNumber(nt.temp_min)} °C`) : (manual ? tt.tank.summaryManual : tt.tank.summaryPlan)(`${formatNumber(shownTemp)} °C`);
+      const summary = shownTemp === undefined ? NO_DATA : dots([`${formatNumber(off ? nt.temp_min : shownTemp)} °C`, off ? tt.tank.summaryOff : manual ? tt.tank.summaryManual : tt.tank.summaryPlan]);
       const label = tt.tank.label(
         shownTemp === undefined ? tt.tank.settingNoData : off ? tt.tank.settingOff(`${formatNumber(nt.temp_min)} °C`) : tt.tank.settingSet(`${formatNumber(shownTemp)} °C`),
         modeName,
@@ -193,7 +198,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
           <div class="source-body">
             <div>
               <div class="source-title">${tt.tank.title}</div>
-              <div class="source-line"><span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${modeName}</span>${mode === undefined ? nothing : html` <span class="dim">· ${plan}</span>`}</div>
+              <div class="source-line">${dots([html`<span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${modeName}</span>`, ...(mode === undefined ? [] : [html`<span class="dim">${plan}</span>`])])}</div>
             </div>
             ${id
               ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`

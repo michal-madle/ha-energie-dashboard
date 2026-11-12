@@ -73,6 +73,11 @@ export class CardBase extends LitElement {
   @state() _tankTemp?: { id: string; value: number };
 
   _observer?: ResizeObserver;
+  _fonts = 0;
+  _onFonts = (): void => {
+    this._fonts++;
+    this.requestUpdate();
+  };
   _timers = new Map<string, number>();
   _clock?: number;
   /** When the boiler last heated (ms); 0 = not known. */
@@ -96,6 +101,8 @@ export class CardBase extends LitElement {
     }
     // The age of the car data ("před 4 min") and the end of the boiler hold move with the time.
     this._clock = window.setInterval(() => (this._now = Date.now()), 30000);
+    // Text widths change when a web font arrives: the dots are measured again.
+    document.fonts?.addEventListener("loadingdone", this._onFonts);
   }
 
   disconnectedCallback(): void {
@@ -105,6 +112,7 @@ export class CardBase extends LitElement {
     this._timers.forEach((timer) => window.clearTimeout(timer));
     this._timers.clear();
     window.clearInterval(this._clock);
+    document.fonts?.removeEventListener("loadingdone", this._onFonts);
   }
 
   /** The texts of the card language. */
@@ -159,6 +167,7 @@ export class CardBase extends LitElement {
       });
       this._observer.observe(flow);
     }
+    this.fitDots();
     if (changed.has("hass")) {
       // Drop a chosen value as soon as Home Assistant reports it.
       const settled = Object.entries(this._optimistic).filter(([id, value]) => this.hass?.states?.[id]?.state === value);
@@ -178,6 +187,24 @@ export class CardBase extends LitElement {
       const left = this._lastHeating + s.num.boiler.hold_minutes * 60000 - Date.now();
       if (left > 0) this._timers.set("hold", window.setTimeout(() => this.requestUpdate(), left + 50));
     }
+  }
+
+  /** One line with dots, or one part per line without them (`dots` in view.ts); measured again when the width, the font or the text changes. */
+  fitDots(): void {
+    this.renderRoot.querySelectorAll<HTMLElement>(".dots").forEach((el) => {
+      const key = `${this._width}|${this._fonts}|${el.textContent}`;
+      if (el.dataset.fit === key) return;
+      el.classList.remove("stacked");
+      const parts = el.querySelectorAll<HTMLElement>(":scope > .dots-part");
+      const first = parts[0]?.getBoundingClientRect();
+      const last = parts[parts.length - 1]?.getBoundingClientRect();
+      if (!first || !last || !first.width) {
+        delete el.dataset.fit;
+        return;
+      }
+      el.dataset.fit = key;
+      if (last.top > first.top + 1) el.classList.add("stacked");
+    });
   }
 
   /** The colour of a source text: the grid beyond its share is a deviation (orange). */

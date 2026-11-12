@@ -1021,15 +1021,31 @@ export const styles = css`
     white-space: nowrap;
   }
 
-  /* The parts ("not heating", "· target 60 °C") wrap as wholes when a language is wordy. */
   .source-line {
     font-size: 13px;
     line-height: 18px;
   }
 
-  .source-line .src,
-  .source-line .dim {
+  /* Parts joined by a dot; on two lines one part per line without the dot (dots in view.ts, uživatel 12. 11. 2026). */
+  .dots-part {
     white-space: nowrap;
+  }
+
+  .dots-only,
+  .dots.stacked .dots-sep {
+    display: none;
+  }
+
+  .dots.stacked .dots-part {
+    display: block;
+  }
+
+  .dots.stacked .dots-only {
+    display: inline;
+  }
+
+  .source-line .dots-sep {
+    color: var(--ed-secondary);
   }
 
   .source-line .src {
@@ -1066,7 +1082,8 @@ export const styles = css`
     all: unset;
     box-sizing: border-box;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    /* The value keeps its unbreakable parts ("Přetoky 60 °C", "Boost 55 °C"); a long title wraps instead (Q118). */
+    grid-template-columns: auto minmax(min-content, 1fr) auto;
     align-items: center;
     gap: 10px;
     width: 100%;
@@ -1086,20 +1103,14 @@ export const styles = css`
     font-size: 15px;
     font-weight: 500;
     line-height: 20px;
-    white-space: nowrap;
   }
 
-  /* On the narrowest phones the value wraps to a second line instead of being cut. */
+  /* On narrow phones the value has one part per line instead of being cut. */
   .rowbtn-value {
     color: var(--ed-secondary);
     font-size: 15px;
     line-height: 20px;
     text-align: right;
-  }
-
-  /* A part of the value ("Přetoky 60", "· Boost 55 °C") never breaks inside: the unit stays at its number, the dot starts the line (Q118). */
-  .rowbtn-value .nw {
-    white-space: nowrap;
   }
 
   .rowbtn-value b {
