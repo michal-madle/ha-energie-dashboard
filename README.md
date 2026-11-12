@@ -25,25 +25,25 @@ Dokud karta nemá všechny funkce dnešního dashboardu, nechte „Energie dům�
 
 ## Konfigurace
 
-Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/energie.yaml) obsahuje úplně všechna nastavení. Klíč bez hodnoty (např. `power:`) nebo smazaný klíč znamená výchozí hodnotu; entity výchozí hodnotu nemají, nenastavená entita se ukáže jako „––“. Každá proměnná karty (limity, prahy, stupnice, krok posuvníků, barvy, nadpisy) je v konfiguraci s výchozí hodnotou; v kódu žádná skrytá konstanta není. Chybnou hodnotu karta neignoruje: místo karty ukáže chybu s názvem klíče (např. `wallbox.boost must be a switch entity (switch.…), not sensor.…`). Přesná pravidla jsou v [CURRENT_SPEC.md](./CURRENT_SPEC.md#konfigurace).
+Všechno, co jde nastavit, je v YAML konfiguraci karty. [Příklad](./examples/energie.yaml) obsahuje úplně všechna nastavení. Klíč bez hodnoty (např. `power:`) nebo smazaný klíč znamená výchozí hodnotu; entity výchozí hodnotu nemají, nenastavená entita se ukáže jako „––“. Každá proměnná karty (limity, prahy, stupnice, krok posuvníků, barvy, nadpisy) je v konfiguraci s výchozí hodnotou; v kódu žádná skrytá konstanta není. Chybnou hodnotu karta neignoruje: místo karty ukáže chybu s názvem klíče (např. `wallbox.boost must be a switch entity (switch.…), not sensor.…`). Přesná pravidla jsou ve spec karty (soukromý `ha-config`); každý klíč s výchozí hodnotou a komentářem je v [příkladu](./examples/energie.yaml).
 
 Popup a Detail Dům (spotřebiče, jejich cykly a historie) používají sekci `house`: `label` (štítek spotřebičů v Home Assistantu, výchozí `appliances`), `default_range` (`1d`, `7d`, `30d`) `appliances` (pomocníci cyklu podle názvu zařízení: `running` (`input_boolean` nebo `binary_sensor`), `start_energy`, `warn_after` (minuty) a `icon`), `groups` (skupiny spotřebičů v jednom řádku: `name` textem nebo podle jazyka, `icon`, `appliances` s `name`, `power`, volitelně `energy`, `running` (doba běhu v popupu) a `warn_after` (minuty, upozornění „Běží už …“); v Detailu jen výkon teď a energie od půlnoci), a čítače `grid.total_import` a `grid.total_export`.
 
 Detail baterie používá navíc entity `battery.*` (zdraví, napětí, teploty článků, čítače, limity, chyby) a klíče `battery.default_range` (`1d`, `7d`, `30d`; zvolený rozsah si prohlížeč pamatuje), `battery.capacity` a `battery.imbalance_*`; všechny jsou v příkladu.
 
-Klíče jsou po systémech: `language`, `title`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (prahy a pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení volby, kterou Home Assistant nepotvrdil) a `colors`. Výchozí hodnoty a význam každého klíče jsou v tabulce v [CURRENT_SPEC.md](./CURRENT_SPEC.md#konfigurace).
+Klíče jsou po systémech: `language`, `title`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (prahy a pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení volby, kterou Home Assistant nepotvrdil) a `colors`. Výchozí hodnoty a význam každého klíče jsou v [příkladu](./examples/energie.yaml) (komentáře u klíčů).
 
 ID entit v příkladu odpovídají entitám z Home Assistantu autora karty (export a mapa entit nejsou součástí repozitáře), kromě zástupných názvů (předpověď, denní čítače podle [examples/denni_soucty.yaml](./examples/denni_soucty.yaml), entity auta), které si upravte podle svých entit. Odhadnutá ID nepoužívejte.
 
 ## Společný kit
 
-Co mají karty Energie a Klima společné, je v repozitáři [ha-dashboard-kit](https://github.com/michal-madle/ha-dashboard-kit) a tato karta to používá jako závislost: jazyky a formáty čísel a času, čtení entit, pravidla konfigurace, gesto podržení nebo dvojklep, ovládací prvky (přepínač, segmentový ovladač, posuvník), nastavení TypeScriptu, sestavení a testovací infrastruktura. **Společný kód a společná pravidla se zakládají v kitu, ne tady**; v téhle kartě zůstávají její entity, texty (`src/translations/`), model toků a vzhled. Kde co hledat a jak se kit mění, říká [README kitu](https://github.com/michal-madle/ha-dashboard-kit#readme) a jeho `CURRENT_SPEC.md` (oddíl Kam co patří); v téhle kartě [CURRENT_SPEC.md](./CURRENT_SPEC.md#společný-kit-ha-dashboard-kit).
+Co mají karty Energie a Klima společné, je v repozitáři [ha-dashboard-kit](https://github.com/michal-madle/ha-dashboard-kit) a tato karta to používá jako závislost: jazyky a formáty čísel a času, čtení entit, pravidla konfigurace, gesto podržení nebo dvojklep, ovládací prvky (přepínač, segmentový ovladač, posuvník), nastavení TypeScriptu, sestavení a testovací infrastruktura. **Společný kód a společná pravidla se zakládají v kitu, ne tady**; v téhle kartě zůstávají její entity, texty (`src/translations/`), model toků a vzhled. Kde co hledat a jak se kit mění, říká [README kitu](https://github.com/michal-madle/ha-dashboard-kit#readme) a jeho `CURRENT_SPEC.md` (oddíl Kam co patří); v téhle kartě spec karty, oddíl Společný kit (soukromý `ha-config`).
 
 ## Dokumentace projektu
 
-- [CURRENT_SPEC.md](./CURRENT_SPEC.md) – aktuální specifikace a zdroj pravdy
+- `CURRENT_SPEC.md` – aktuální specifikace a zdroj pravdy (soukromý repozitář `ha-config`, `energie/`; veřejně je popis konfigurace v [příkladu](./examples/energie.yaml))
 - [AI_MCP.md](https://github.com/michal-madle/ha-dashboard-kit/blob/main/AI_MCP.md) (kit) – připojení Claude k Home Assistantu (MCP)
-- [DESIGN_HISTORY.md](./DESIGN_HISTORY.md) – historie návrhu a zamítnuté návrhy (nezávazné)
+- `DESIGN_HISTORY.md` – historie návrhu a zamítnuté návrhy (nezávazné; tamtéž)
 
 ## Sestavení
 
