@@ -3745,6 +3745,7 @@ const Cn = ce`
     border-radius: 12px;
     background: var(--ed-tile);
     overflow: hidden;
+    container: source / inline-size;
   }
 
   .source-top {
@@ -3819,6 +3820,20 @@ const Cn = ce`
     justify-content: space-between;
     min-width: 0;
     height: 100px;
+  }
+
+  /* On a narrow card (320–360 px) the switch beside the gauge would be under 45 px per option and "Manual" would not fit
+     (Q118, 12. 11. 2026): the switch moves under the gauge, across the whole tile. */
+  @container source (max-width: 299px) {
+    .source-top {
+      row-gap: 12px;
+    }
+    .source-body {
+      display: contents;
+    }
+    .source-body > ed-segmented {
+      grid-column: 1 / -1;
+    }
   }
 
   .source-title {
@@ -7749,7 +7764,7 @@ function No(a, t) {
   return { sources: [...vt], sinks: t.slice().sort((e, s) => le.indexOf(e) - le.indexOf(s)) };
 }
 function Io(a, t = le, e = vt) {
-  const s = Math.round(Math.max(116, Math.min(132, a * 0.377))), n = 56, o = 6, i = Math.max(1, t.length), r = i * n + (i - 1) * o, l = Object.fromEntries(t.map((c, d) => [c, n / 2 + d * (n + o)])), h = Object.fromEntries(
+  const s = Math.round(Math.max(120, Math.min(132, a * 0.377))), n = 56, o = 6, i = Math.max(1, t.length), r = i * n + (i - 1) * o, l = Object.fromEntries(t.map((c, d) => [c, n / 2 + d * (n + o)])), h = Object.fromEntries(
     e.map((c, d) => [c, i < 4 ? n / 2 + d * (n + o) : (d + 0.5) * r / vt.length])
   );
   return { width: a, tile: { w: s, h: n }, gap: o, height: r, left: h, right: l, xa: s - 8, xb: a - s + 8 };
@@ -8358,4 +8373,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: He(cn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-11 22:25 UTC · po b5719cb ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 06:53 UTC · po e5a40da ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

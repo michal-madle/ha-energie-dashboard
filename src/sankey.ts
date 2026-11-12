@@ -43,7 +43,8 @@ export function order(_flows: readonly Flow[], visible: readonly Sink[]): { sour
  * sit on the left (three tiles in a row when there are only three consumers, otherwise spread).
  */
 export function layout(width: number, visible: readonly Sink[] = SINKS, sources: readonly Source[] = SOURCES): Layout {
-  const tileW = Math.round(Math.max(116, Math.min(132, width * 0.377)));
+  // At least 120 px: the longest idle text of a tile ("discharging", en) needs 72 px and more in WebKit (Q118, 12. 11. 2026).
+  const tileW = Math.round(Math.max(120, Math.min(132, width * 0.377)));
   const h = 56;
   const gap = 6;
   const rows = Math.max(1, visible.length);

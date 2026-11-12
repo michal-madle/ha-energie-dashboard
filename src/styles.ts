@@ -923,6 +923,7 @@ export const styles = css`
     border-radius: 12px;
     background: var(--ed-tile);
     overflow: hidden;
+    container: source / inline-size;
   }
 
   .source-top {
@@ -997,6 +998,20 @@ export const styles = css`
     justify-content: space-between;
     min-width: 0;
     height: 100px;
+  }
+
+  /* On a narrow card (320–360 px) the switch beside the gauge would be under 45 px per option and "Manual" would not fit
+     (Q118, 12. 11. 2026): the switch moves under the gauge, across the whole tile. */
+  @container source (max-width: 299px) {
+    .source-top {
+      row-gap: 12px;
+    }
+    .source-body {
+      display: contents;
+    }
+    .source-body > ed-segmented {
+      grid-column: 1 / -1;
+    }
   }
 
   .source-title {

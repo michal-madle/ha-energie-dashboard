@@ -1126,10 +1126,21 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
           );
           const rows = [...root.querySelectorAll<HTMLElement>(".row, .rowbtn")].map((row) => row.getBoundingClientRect().height);
           const sources = [...root.querySelectorAll<HTMLElement>(".source")].map((el) => ({ over: el.scrollWidth > el.clientWidth + 0.5 ? `.source „${(el.textContent ?? "").trim().slice(0, 40)}“ ${el.scrollWidth} > ${el.clientWidth} px` : "", right: el.getBoundingClientRect().right }));
-          return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources };
+          // Every option of a switch fits its button ("Manual" in the tank on 320 px did not, Q118): "" = in order.
+          const segText = [...root.querySelectorAll<HTMLElement>("ed-segmented")].flatMap((host) =>
+            [...(host.shadowRoot?.querySelectorAll<HTMLElement>("button") ?? [])].map((button) => {
+              const range = document.createRange();
+              range.selectNodeContents(button);
+              const text = range.getBoundingClientRect().width;
+              const room = button.getBoundingClientRect().width;
+              return text > room + 0.5 ? `„${(button.textContent ?? "").trim()}“ ${text.toFixed(1)} > ${room.toFixed(1)} px` : "";
+            }),
+          ).filter(Boolean);
+          return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources, segText };
         }, CARD);
         expect(layout.scrollWidth, at).toBeLessThanOrEqual(width);
         expect(layout.card.right, at).toBeLessThanOrEqual(width);
+        expect(layout.segText, `${at}: text přepínače se nevejde do tlačítka`).toEqual([]);
         for (const panel of [...layout.panels, ...layout.sources]) {
           expect(panel.over, `${at}: panel`).toBe("");
           expect(panel.right, `${at}: panel`).toBeLessThanOrEqual(width);
@@ -1657,11 +1668,19 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
             const bad = [...panel.querySelectorAll<HTMLElement>("*")].find((el) => !el.closest(".car-art") && el.getBoundingClientRect().width > 0 && (el.getBoundingClientRect().right > box.right + 0.5 || el.getBoundingClientRect().left < box.left - 0.5));
             return bad ? `${bad.tagName.toLowerCase()}.${[...bad.classList].join(".")} „${(bad.textContent ?? "").trim().slice(0, 40)}“` : "";
           });
-          return { scrollWidth: document.documentElement.scrollWidth, tiles, panels };
+          const segText = [...root.querySelectorAll<HTMLElement>("ed-segmented")].flatMap((host) =>
+            [...(host.shadowRoot?.querySelectorAll<HTMLElement>("button") ?? [])].map((button) => {
+              const range = document.createRange();
+              range.selectNodeContents(button);
+              return range.getBoundingClientRect().width > button.getBoundingClientRect().width + 0.5 ? `„${(button.textContent ?? "").trim()}“` : "";
+            }),
+          ).filter(Boolean);
+          return { scrollWidth: document.documentElement.scrollWidth, tiles, panels, segText };
         }, CARD);
         expect(layout.scrollWidth, `${lang} ${scenario}`).toBeLessThanOrEqual(320);
         expect(layout.tiles.filter(Boolean), `${lang} ${scenario}: text dlaždice se ořízl`).toEqual([]);
         expect(layout.panels.filter(Boolean), `${lang} ${scenario}: obsah přesahuje panel`).toEqual([]);
+        expect(layout.segText, `${lang} ${scenario}: text přepínače se nevejde do tlačítka`).toEqual([]);
         expect(await axeViolations(page), `${lang} ${scenario} axe`).toEqual([]);
       }
     }
