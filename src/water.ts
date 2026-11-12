@@ -90,7 +90,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
           ? html`<div class="subrow">
               <button type="button" class="rowbtn" aria-expanded=${open ? "true" : "false"} @click=${() => this.toggle("targets")}>
                 <span class="rowbtn-title">${tt.water.targets}</span>
-                <span class="rowbtn-value">${tt.water.targetFlow} <b>${flowTarget === undefined ? NO_DATA : formatNumber(flowTarget)}</b> · ${tt.water.targetBoost} <b>${boostTarget === undefined ? NO_DATA : `${formatNumber(boostTarget)} °C`}</b></span>
+                <span class="rowbtn-value"><span class="nw">${tt.water.targetFlow} <b>${flowTarget === undefined ? NO_DATA : formatNumber(flowTarget)}</b></span> <span class="nw">· ${tt.water.targetBoost} <b>${boostTarget === undefined ? NO_DATA : `${formatNumber(boostTarget)} °C`}</b></span></span>
                 <svg class="chevron ${open ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>
               </button>
               <div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>${this.renderTargets(s, flowTarget, boostTarget)}</div></div>

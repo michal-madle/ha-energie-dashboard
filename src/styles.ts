@@ -1097,6 +1097,11 @@ export const styles = css`
     text-align: right;
   }
 
+  /* A part of the value ("Přetoky 60", "· Boost 55 °C") never breaks inside: the unit stays at its number, the dot starts the line (Q118). */
+  .rowbtn-value .nw {
+    white-space: nowrap;
+  }
+
   .rowbtn-value b {
     color: var(--ed-text);
     font-weight: 500;

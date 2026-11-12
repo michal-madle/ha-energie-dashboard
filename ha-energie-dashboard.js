@@ -3919,6 +3919,11 @@ const Cn = ce`
     text-align: right;
   }
 
+  /* A part of the value ("Přetoky 60", "· Boost 55 °C") never breaks inside: the unit stays at its number, the dot starts the line (Q118). */
+  .rowbtn-value .nw {
+    white-space: nowrap;
+  }
+
   .rowbtn-value b {
     color: var(--ed-text);
     font-weight: 500;
@@ -8254,7 +8259,7 @@ const qo = (a) => class extends a {
         ${g ? y`<div class="subrow">
               <button type="button" class="rowbtn" aria-expanded=${u ? "true" : "false"} @click=${() => this.toggle("targets")}>
                 <span class="rowbtn-title">${i.water.targets}</span>
-                <span class="rowbtn-value">${i.water.targetFlow} <b>${c === void 0 ? C : j(c)}</b> · ${i.water.targetBoost} <b>${d === void 0 ? C : `${j(d)} °C`}</b></span>
+                <span class="rowbtn-value"><span class="nw">${i.water.targetFlow} <b>${c === void 0 ? C : j(c)}</b></span> <span class="nw">· ${i.water.targetBoost} <b>${d === void 0 ? C : `${j(d)} °C`}</b></span></span>
                 <svg class="chevron ${u ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${at.expand}></path></svg>
               </button>
               <div class="fold ${u ? "open" : ""}" ?inert=${!u}><div>${this.renderTargets(t, c, d)}</div></div>
@@ -8373,4 +8378,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: He(cn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 06:53 UTC · po e5a40da ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 06:57 UTC · po a7b94ba ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
