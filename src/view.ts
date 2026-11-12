@@ -10,10 +10,11 @@ export const NO_DATA = "––";
 /**
  * Parts of a text joined by a dot on one line ("Přetoky 60 · Boost 55 °C"). When they do not fit, each part
  * is on its own line and the line break is the separator, without the dot (uživatel 12. 11. 2026). The card
- * decides after drawing (`fitDots` in base.ts); a `.dots-only` piece (the unit of the first target) shows only then.
+ * decides after drawing (`fitJoined` in base.ts); a `.joined-only` piece (the unit of the first target) shows only then.
  */
-export function dots(parts: readonly unknown[]): TemplateResult {
-  return html`<span class="dots">${parts.map((part, i) => html`${i ? html`<span class="dots-sep"> · </span>` : nothing}<span class="dots-part">${part}</span>`)}</span>`;
+export function joined(parts: readonly unknown[]): TemplateResult {
+  if (parts.length < 2) return html`${parts[0]}`;
+  return html`<span class="joined">${parts.map((part, i) => html`${i ? html`<span class="joined-sep"> · </span>` : nothing}<span class="joined-part">${part}</span>`)}</span>`;
 }
 
 export const SOURCE_VAR: Record<Source, string> = { sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-grid" };

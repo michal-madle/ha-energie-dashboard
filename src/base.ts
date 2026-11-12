@@ -13,7 +13,7 @@ import type { I18n, Texts } from "./i18n";
 import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
-import { HEATING_KEY, NO_DATA, SOURCE_VAR, attribute } from "./view";
+import { HEATING_KEY, NO_DATA, SOURCE_VAR, attribute, joined } from "./view";
 import type { BatEntry, BatRow, BatTab, Panel, SunTab, TileKey } from "./view";
 import type { Range } from "./battery-data";
 
@@ -101,7 +101,7 @@ export class CardBase extends LitElement {
     }
     // The age of the car data ("před 4 min") and the end of the boiler hold move with the time.
     this._clock = window.setInterval(() => (this._now = Date.now()), 30000);
-    // Text widths change when a web font arrives: the dots are measured again.
+    // Text widths change when a web font arrives: joined texts are measured again.
     document.fonts?.addEventListener("loadingdone", this._onFonts);
   }
 
@@ -167,7 +167,7 @@ export class CardBase extends LitElement {
       });
       this._observer.observe(flow);
     }
-    this.fitDots();
+    this.fitJoined();
     if (changed.has("hass")) {
       // Drop a chosen value as soon as Home Assistant reports it.
       const settled = Object.entries(this._optimistic).filter(([id, value]) => this.hass?.states?.[id]?.state === value);
@@ -189,13 +189,13 @@ export class CardBase extends LitElement {
     }
   }
 
-  /** One line with dots, or one part per line without them (`dots` in view.ts); measured again when the width, the font or the text changes. */
-  fitDots(): void {
-    this.renderRoot.querySelectorAll<HTMLElement>(".dots").forEach((el) => {
+  /** One line with dots, or one part per line without them (`joined` in view.ts); measured again when the width, the font or the text changes. */
+  fitJoined(): void {
+    this.renderRoot.querySelectorAll<HTMLElement>(".joined").forEach((el) => {
       const key = `${this._width}|${this._fonts}|${el.textContent}`;
       if (el.dataset.fit === key) return;
       el.classList.remove("stacked");
-      const parts = el.querySelectorAll<HTMLElement>(":scope > .dots-part");
+      const parts = el.querySelectorAll<HTMLElement>(":scope > .joined-part");
       const first = parts[0]?.getBoundingClientRect();
       const last = parts[parts.length - 1]?.getBoundingClientRect();
       if (!first || !last || !first.width) {
@@ -212,9 +212,10 @@ export class CardBase extends LitElement {
     return text.deviation ? "var(--ed-warning)" : `var(${SOURCE_VAR[text.main]})`;
   }
 
-  stateLine(text: string | undefined, color: string | undefined): TemplateResult {
+  /** The state under a panel title; parts ("Bojler ohřívá ze slunce", "Boost") are joined by a dot (`joined` in view.ts). */
+  stateLine(text: string | readonly string[] | undefined, color: string | undefined): TemplateResult {
     return html`<p class="state" style="--sc:${color ?? "var(--ed-secondary)"}">
-      <span class="dot" aria-hidden="true"></span>${text ?? html`${NO_DATA}<span class="sr-only">${this.t.noData}</span>`}
+      <span class="dot" aria-hidden="true"></span>${text === undefined ? html`<span>${NO_DATA}<span class="sr-only">${this.t.noData}</span></span>` : typeof text === "string" ? html`<span>${text}</span>` : joined(text)}
     </p>`;
   }
 

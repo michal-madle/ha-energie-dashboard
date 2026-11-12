@@ -83,10 +83,10 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const srcColor = boost === "on" ? `var(${SOURCE_VAR[src.main]})` : this.sourceColor(src);
       const priorityWaiting = readText(this.hass, e.wallbox.prioritize_connected) === "on" && link === "connected" && !blocked && (model.sun ?? 0) > s.num.wallbox.priority_min_sun;
 
-      let stateText: string | undefined;
+      let stateText: string | string[] | undefined;
       let stateColor: string | undefined;
       if (charging) {
-        stateText = `${t.car.charging(src.text)}${boost === "on" ? ` · ${t.boostOptions.on}` : ""}`;
+        stateText = [t.car.charging(src.text), ...(boost === "on" ? [t.boostOptions.on] : [])];
         stateColor = srcColor;
       } else if (link === "connected" || link === "charging") {
         stateText = t.car.connectedIdle;

@@ -4,9 +4,9 @@ import type { TempStop } from "./types";
 
 /*
  * Arc gauge of the hot-water tiles (CURRENT_SPEC.md, Teplá voda: dvě dlaždice; HIG Gauges): 270°
- * from the lower left to the lower right, a track of 45 short segments, the fill up to the value in
- * the colour of the temperature scale (the same temperature has the same colour on both gauges),
- * a white dot at the value. No ticks, no target marks.
+ * from the lower left to the lower right, one flat track with round ends, the fill up to the value in
+ * 45 short segments in the colour of the temperature scale (the same temperature has the same colour
+ * on both gauges), a white dot at the value. No ticks, no target marks.
  */
 
 const SEGMENTS = 45;
@@ -41,19 +41,22 @@ const segment = (from: number, to: number): string => {
 /** The SVG of one gauge: `value` between `min` and `max`; undefined = an empty track without the dot. */
 export function arcSvg(value: number | undefined, min: number, max: number, scale: TempStop[]): TemplateResult {
   const fraction = value === undefined ? 0 : Math.max(0, Math.min(1, (value - min) / (max - min)));
-  const track = "var(--ed-gauge-track)";
+  // One flat track (CURRENT_SPEC.md, Teplá voda): its colour is translucent, so overlapping segments of it showed as stripes.
+  const [ax, ay] = point(0, RADIUS);
+  const [mx, my] = point(0.5, RADIUS);
+  const [bx, by] = point(1, RADIUS);
+  const arc = (x: number, y: number) => `A${RADIUS} ${RADIUS} 0 0 1 ${x.toFixed(2)} ${y.toFixed(2)}`;
+  const track = svg`<path d=${`M${ax.toFixed(2)} ${ay.toFixed(2)} ${arc(mx, my)} ${arc(bx, by)}`} fill="none" stroke="var(--ed-gauge-track)" stroke-width="10" stroke-linecap="round"></path>`;
   const paths = Array.from({ length: SEGMENTS }, (_, i) => {
     const mid = (i + 0.5) / SEGMENTS;
-    const color = value !== undefined && mid <= fraction ? tempColor(scale, min + mid * (max - min)) : track;
-    return svg`<path d=${segment(i / SEGMENTS, Math.min(1, (i + 1) / SEGMENTS + 0.004))} fill="none" stroke=${color} stroke-width="10"></path>`;
+    if (value === undefined || mid > fraction) return null;
+    return svg`<path d=${segment(i / SEGMENTS, Math.min(1, (i + 1) / SEGMENTS + 0.004))} fill="none" stroke=${tempColor(scale, min + mid * (max - min))} stroke-width="10"></path>`;
   });
-  const [ax, ay] = point(0, RADIUS);
-  const [bx, by] = point(1, RADIUS);
   const [kx, ky] = point(fraction, RADIUS);
   return svg`<svg viewBox="0 0 124 112" width="108" height="98" aria-hidden="true">
-    ${paths}
-    <circle cx=${ax.toFixed(1)} cy=${ay.toFixed(1)} r="5" fill=${value !== undefined && fraction > 0 ? tempColor(scale, min) : track}></circle>
-    <circle cx=${bx.toFixed(1)} cy=${by.toFixed(1)} r="5" fill=${value !== undefined && fraction >= 0.99 ? tempColor(scale, max) : track}></circle>
+    ${track}${paths}
+    ${value !== undefined && fraction > 0 ? svg`<circle cx=${ax.toFixed(1)} cy=${ay.toFixed(1)} r="5" fill=${tempColor(scale, min)}></circle>` : null}
+    ${value !== undefined && fraction >= 0.99 ? svg`<circle cx=${bx.toFixed(1)} cy=${by.toFixed(1)} r="5" fill=${tempColor(scale, max)}></circle>` : null}
     ${value === undefined ? null : svg`<circle class="knob" cx=${kx.toFixed(1)} cy=${ky.toFixed(1)} r="6.5" fill="#ffffff" stroke="var(--ed-tile)" stroke-width="2.5"></circle>`}
   </svg>`;
 }

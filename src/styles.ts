@@ -172,7 +172,7 @@ export const styles = css`
   /* The state line under a heading: a dot and a sentence in the colour of the energy source. */
   .state {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 6px;
     color: var(--sc, var(--ed-secondary));
     font-size: 15px;
@@ -184,10 +184,12 @@ export const styles = css`
     color: color-mix(in srgb, var(--sc, var(--ed-secondary)) 45%, #000);
   }
 
+  /* Beside the first line when the state has two. */
   .state .dot {
     flex: none;
     width: 8px;
     height: 8px;
+    margin-top: 6px;
     border-radius: 4px;
     background: var(--sc, var(--ed-secondary));
   }
@@ -1026,25 +1028,31 @@ export const styles = css`
     line-height: 18px;
   }
 
-  /* Parts joined by a dot; on two lines one part per line without the dot (dots in view.ts, uživatel 12. 11. 2026). */
-  .dots-part {
+  /* Parts joined by a dot; on two lines one part per line without the dot (joined in view.ts, uživatel 12. 11. 2026). */
+  .joined-part {
     white-space: nowrap;
   }
 
-  .dots-only,
-  .dots.stacked .dots-sep {
+  .joined-only,
+  .joined.stacked .joined-sep {
     display: none;
   }
 
-  .dots.stacked .dots-part {
+  /* On its own line a long part ("the boiler keeps the minimum") may wrap; a row value keeps its parts whole. */
+  .joined.stacked .joined-part {
     display: block;
+    white-space: normal;
   }
 
-  .dots.stacked .dots-only {
+  .rowbtn-value .joined.stacked .joined-part {
+    white-space: nowrap;
+  }
+
+  .joined.stacked .joined-only {
     display: inline;
   }
 
-  .source-line .dots-sep {
+  .source-line .joined-sep {
     color: var(--ed-secondary);
   }
 
@@ -1123,7 +1131,8 @@ export const styles = css`
     width: 0;
     height: 8px;
     margin: 0 auto;
-    border-left: 2px dashed var(--ed-off);
+    /* Off: a grey dotted line (CURRENT_SPEC.md, Teplá voda: Mísení). */
+    border-left: 2px dotted #636366;
   }
 
   .link.on {
