@@ -187,6 +187,12 @@ export const styles = css`
     color: color-mix(in srgb, var(--sc) 45%, #000);
   }
 
+  /* Teplá voda and the car: the state keeps room for two lines, so a longer state („· Boost“) moves nothing (uživatel 12. 11. 2026: „Q130 A“). */
+  #h-water + .state,
+  #h-car + .state {
+    min-height: 40px;
+  }
+
   /* Beside the first line when the state has two. */
   .state .dot {
     flex: none;
@@ -965,6 +971,12 @@ export const styles = css`
     line-height: 38px;
     letter-spacing: -0.5px;
     font-variant-numeric: tabular-nums;
+  }
+
+  /* Light mode: a darker outline, the white knob would vanish on the light track (uživatel 12. 11. 2026: „Q124 A“; #8E8E93 to white 3,3 : 1). */
+  :host([data-light]) .arc .knob {
+    stroke: #8e8e93;
+    stroke-width: 1.5px;
   }
 
   /* Off: the temperature the gas boiler keeps is grey (CURRENT_SPEC.md, Zásobník: „v Off šedá“). */

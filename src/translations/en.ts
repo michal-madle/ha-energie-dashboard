@@ -168,11 +168,7 @@ export const en: Texts = {
     sliderLabel: "Tank temperature",
     // Not „the boiler“: in English it reads as the Boiler (PV) tile above.
     keepsMinimum: "held at the minimum",
-    setManually: "set manually",
     byPlan: "by schedule",
-    summaryOff: "off",
-    summaryManual: "manual",
-    summaryPlan: "by schedule",
     hintOff: "the tank is off",
     hintManual: "you set it manually",
     hintPlan: "by schedule; a change switches to Manual",

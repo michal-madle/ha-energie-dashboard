@@ -184,8 +184,10 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
       const open = !!this._open.tank;
       const { min, max } = this.tankRange(s);
       const modeName = mode === undefined ? NO_DATA : (tt.tank.modes[mode] ?? mode);
-      const plan = off ? tt.tank.keepsMinimum : manual ? tt.tank.setManually : tt.tank.byPlan;
-      const summary = shownTemp === undefined ? this.noData() : joined([`${formatNumber(off ? nt.temp_min : shownTemp)} °C`, off ? tt.tank.summaryOff : manual ? tt.tank.summaryManual : tt.tank.summaryPlan]);
+      // Manual has no second part until „Jak dlouho“ gives „do 18:07“; the row shows only the temperature, in bold
+      // like the targets (uživatel 12. 11. 2026: „Q127 A“, „Q128 A“).
+      const plan = off ? tt.tank.keepsMinimum : manual ? undefined : tt.tank.byPlan;
+      const summary = shownTemp === undefined ? this.noData() : html`<b>${formatNumber(off ? nt.temp_min : shownTemp)} °C</b>`;
       const label = tt.tank.label(
         shownTemp === undefined ? tt.tank.settingNoData : off ? tt.tank.settingOff(`${formatNumber(nt.temp_min)} °C`) : tt.tank.settingSet(`${formatNumber(shownTemp)} °C`),
         modeName,
@@ -198,7 +200,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
           <div class="source-body">
             <div>
               <div class="source-title">${tt.tank.title}</div>
-              <div class="source-line">${joined([html`<span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${mode === undefined ? this.noData() : modeName}</span>`, ...(mode === undefined ? [] : [html`<span class="dim">${plan}</span>`])])}</div>
+              <div class="source-line">${joined([html`<span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${mode === undefined ? this.noData() : modeName}</span>`, ...(mode === undefined || plan === undefined ? [] : [html`<span class="dim">${plan}</span>`])])}</div>
             </div>
             ${id
               ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`

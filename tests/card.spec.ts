@@ -1444,7 +1444,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await open(page, "full", 320, 852, "dark", "en");
       await expect.poll(() => lines(".rowbtn-value")).toEqual(["Surplus 60 °C", "Boost 55 °C"]);
       await expect.poll(() => lines(".source-line")).toEqual(["not heating", "target 60 °C"]);
-      await expect.poll(() => lines(".rowbtn-value", 1)).toEqual(["40 °C", "by schedule"]);
+      await expect.poll(() => lines(".rowbtn-value", 1)).toEqual(["40 °C"]);
       // A long part wraps on its own lines and is never cut by the tile.
       await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": "off" });
       await expect.poll(() => lines(".source-line", 1)).toEqual(["Off", "held at the minimum"]);
