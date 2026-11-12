@@ -1455,7 +1455,8 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       })).toBe(true);
       // The same in the car (uživatel 12. 11. 2026: „Q126 A“ = in both cards): the row title stays whole.
       await open(page, "full", 320, 852, "dark", "en");
-      await expect.poll(() => lines(".mode-sub")).toEqual(["Surplus", "from the surplus only"]);
+      // Whether it breaks depends on the font (WebKit fits it on one line); if it does, then only at the dot.
+      expect((await lines(".mode-sub")).join(" · ")).toBe("Surplus · from the surplus only");
       expect(await page.locator("#mode-l").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(23);
       await open(page, "grid", 320, 852, "dark", "en");
       await expect.poll(() => lines(".panel .state", 2)).toEqual(["The boiler heats from the grid", "Boost"]);
