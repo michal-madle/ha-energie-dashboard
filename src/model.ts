@@ -16,7 +16,7 @@ export const SOURCES: readonly Source[] = ["sun", "bat", "grid"];
 export type Sink = "house" | "car" | "boil" | "batIn" | "gridOut";
 export const SINKS: readonly Sink[] = ["house", "car", "boil", "batIn", "gridOut"];
 
-/** The loads the sources fill in order (the battery and the grid take only the sun's surplus). */
+/** The loads whose sources the texts name (house, car, boiler). */
 export type LoadSink = "house" | "car" | "boil";
 
 export interface Flow {
@@ -89,46 +89,53 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings, 
 
   // Only flows from the threshold up take part in the shares and in the bands (noise is no flow).
   const real = (value: number | undefined) => (isOn(value, idle) ? value! : 0);
-  // What each source gives to the loads: the sun without what it puts into the battery and the grid.
-  const toLoads: Record<Source, number> = {
-    sun: Math.max(0, real(sun) - real(batIn) - real(exp)),
-    bat: real(batDis),
-    grid: real(imp),
-  };
-  const total = toLoads.sun + toLoads.bat + toLoads.grid;
-  const share: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
-  if (total > 0) {
-    for (const source of SOURCES) share[source] = toLoads[source] / total;
-  }
-
-  // The sources fill the loads in order (the sun first, then the battery, then the grid; the house first, then the
-  // car, then the boiler), so every source feeds the loads next to each other and the bands do not cross
-  // (CURRENT_SPEC.md, Toky energie). The supply is scaled to the loads, so each load shows its whole power.
-  const flows: Flow[] = [];
-  const loadShare: Record<LoadSink, Record<Source, number>> = { house: { ...share }, car: { ...share }, boil: { ...share } };
-  const loads: Array<[LoadSink, number | undefined]> = [
+  // The sources fill the consumers in order, top to bottom on both sides (the sun first, then the battery, then the
+  // grid; the house first, then the car, the boiler, the battery and the grid), so the bands never cross while the
+  // order of the tiles stays (CURRENT_SPEC.md, Toky energie). The battery is charged and the grid is fed by whatever
+  // source is left after the consumers above them, not always by the sun (uživatel 12. 11. 2026: „ma jit odtamtud
+  // odkud je zdroj elektriny“). The supply is scaled to the consumers, so each of them shows its whole power.
+  const supply: Record<Source, number> = { sun: real(sun), bat: real(batDis), grid: real(imp) };
+  const supplied = supply.sun + supply.bat + supply.grid;
+  const sinks: Array<[Sink, number | undefined]> = [
     ["house", other],
     ["car", car],
     ["boil", boil],
+    ["batIn", batIn],
+    ["gridOut", exp],
   ];
-  const demand = loads.reduce((sum, [, watts]) => sum + (isOn(watts, idle) ? watts! : 0), 0);
+  const demand = sinks.reduce((sum, [, watts]) => sum + real(watts), 0);
   const left: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
-  for (const source of SOURCES) left[source] = total > 0 ? (toLoads[source] * demand) / total : 0;
-  for (const [sink, watts] of loads) {
+  for (const source of SOURCES) left[source] = supplied > 0 ? (supply[source] * demand) / supplied : 0;
+  const flows: Flow[] = [];
+  const own = {} as Record<Sink, Record<Source, number>>;
+  const toLoads: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
+  for (const [sink, watts] of sinks) {
     if (!isOn(watts, idle)) continue;
     let need = watts!;
-    const own: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
+    const parts: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
     for (const source of SOURCES) {
       const part = Math.min(left[source], need);
       left[source] -= part;
       need -= part;
-      own[source] = part / watts!;
+      parts[source] = part / watts!;
+      if (sink === "house" || sink === "car" || sink === "boil") toLoads[source] += part;
       if (part > 0.5) flows.push({ from: source, to: sink, watts: part });
     }
-    if (own.sun + own.bat + own.grid > 0) loadShare[sink] = own;
+    own[sink] = parts;
   }
-  if (isOn(batIn, idle)) flows.push({ from: "sun", to: "batIn", watts: batIn! });
-  if (isOn(exp, idle)) flows.push({ from: "sun", to: "gridOut", watts: exp! });
+  // Per source, its share of what the loads (house, car, boiler) take; a load without its own flow shows this share.
+  const total = toLoads.sun + toLoads.bat + toLoads.grid;
+  const share: Record<Source, number> = { sun: 0, bat: 0, grid: 0 };
+  if (total > 0) {
+    for (const source of SOURCES) share[source] = toLoads[source] / total;
+  } else if (supplied > 0) {
+    for (const source of SOURCES) share[source] = supply[source] / supplied;
+  }
+  const loadShare: Record<LoadSink, Record<Source, number>> = { house: { ...share }, car: { ...share }, boil: { ...share } };
+  for (const load of ["house", "car", "boil"] as const) {
+    const parts = own[load];
+    if (parts && parts.sun + parts.bat + parts.grid > 0) loadShare[load] = parts;
+  }
 
   const model: FlowModel = {
     sun, batDis, batIn, imp, exp, other, car, boil, share, loadShare, flows,

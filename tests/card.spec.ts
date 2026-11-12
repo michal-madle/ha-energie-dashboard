@@ -521,6 +521,21 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await expect(mix).toContainText("Baterie");
       await expect(mix).toContainText("Síť");
     });
+    await test.step("baterie se nabíjí ze zdroje, který na ni zbyl, a pásy se nekříží (uživatel 12. 11. 2026)", async () => {
+      await open(page, "full");
+      const none = { "sensor.wallbox_total_power": "0", "sensor.tuv_power_total": "0" };
+      // Bez slunce: dům i nabíjení baterie jdou ze sítě, ze Slunce nevede nic.
+      await update(page, { ...none, "sensor.goodwe_pv_power": "0", "sensor.goodwe_battery_power": "-10", "sensor.goodwe_meter_active_power_total": "-1030", "sensor.goodwe_house_consumption": "1020" });
+      const fills = () => page.locator(".flow > svg > path").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")).sort());
+      expect(await fills()).toEqual(["url(#rg-grid)", "url(#rg-grid)"]);
+      expect((await tile(page, "batIn")).on).toBe(true);
+      // Slunce nestačí na dům i baterii: slunce jde celé do Domu (nahoře), síť do baterie (dole), dva pásy bez křížení.
+      await update(page, { ...none, "sensor.goodwe_pv_power": "2000", "sensor.goodwe_battery_power": "-1000", "sensor.goodwe_meter_active_power_total": "-1000", "sensor.goodwe_house_consumption": "2000" });
+      expect(await fills()).toEqual(["url(#rg-grid)", "url(#rg-sun)"]);
+      const ends = await page.locator(".flow > svg > path").evaluateAll((paths) =>
+        paths.map((path) => (path.getAttribute("d") ?? "").match(/^M[\d.]+ ([\d.]+) C[\d.]+ [\d.]+ [\d.]+ ([\d.]+)/)!.slice(1).map(Number)));
+      for (const a of ends) for (const b of ends) expect((a[0] - b[0]) * (a[1] - b[1]), "pásy se nekříží").toBeGreaterThanOrEqual(0);
+    });
     await test.step("bez prahu (uživatel 12. 11. 2026: „Bude se zobrazovat vse“): nulový výkon není tok, každý další ano", async () => {
       await open(page, "full");
       const zero = { "sensor.goodwe_pv_power": "0", "sensor.goodwe_battery_power": "0", "sensor.goodwe_meter_active_power_total": "0", "sensor.goodwe_house_consumption": "0", "sensor.wallbox_total_power": "0", "sensor.tuv_power_total": "0" };
