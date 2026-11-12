@@ -132,9 +132,10 @@ export const cs = {
     limit: (value: string) => `limit ${value}`,
     mode: "Režim nabíjení",
     modeLabel: "Režim nabíjení auta",
-    modeSurplus: "Přetoky · jen z přebytku",
-    // Non-breaking spaces: a one-letter word never ends a line (Czech typography).
-    modeBoost: "Boost · bere i\u00a0ze sítě a\u00a0z\u00a0baterie",
+    modeSurplus: "jen z přebytku",
+    // Without the name of the mode, the switch below shows it (uživatel 12. 11. 2026: „Q134 B“); non-breaking
+    // spaces: a one-letter word never ends a line (Czech typography).
+    modeBoost: "bere i\u00a0ze sítě a\u00a0z\u00a0baterie",
     sourcesTitle: "Odkud auto nabíjí",
     sourcesLabel: "Odkud auto nabíjí, průměr za 5 minut",
     power: "Nabíjecí výkon",

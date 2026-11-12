@@ -11,7 +11,7 @@ import { ICON } from "./icons";
 import type { Controlled } from "./controls";
 import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages, segments } from "./view";
 import type { Constructor } from "./view";
-import { joinedText } from "ha-dashboard-kit/joined";
+import { joined, joinedText } from "ha-dashboard-kit/joined";
 
 export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
   class extends Base {
@@ -134,7 +134,10 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         ${charging ? this.renderCarSources(model, flows, formatPower(model.car ?? 0, unit), boost === "on") : nothing}
         ${w.boost
           ? html`<div class="mode">
-              <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${joinedText(modeSub)}</span></div>
+              <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${boost === "on" || boost === "off"
+                ? // Both descriptions in one place, the other one invisible: the taller one sets the height, so switching moves nothing (CURRENT_SPEC.md, Klidné přepínání režimů).
+                  [t.car.modeSurplus, t.car.modeBoost].map((text, i) => html`<span class=${(i === 1) === (boost === "on") ? "shown" : "spare"}>${joinedText(text)}</span>`)
+                : modeSub}</span></div>
               <ed-segmented
                 guarded .options=${modeOptions} .value=${mode} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${boost === undefined}
                 .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
@@ -215,8 +218,8 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         <li class=${open ? "open" : ""}>
           <button type="button" class="row row-btn" aria-expanded=${open ? "true" : "false"} ?disabled=${!hasDetail} @click=${() => this.toggle("wallbox")}>
             <span class="badge" aria-hidden="true" style=${charging ? `--bc:${srcColor}` : ""}><svg viewBox="0 0 24 24"><path d=${ICON.wallbox}></path></svg></span>
-            <span class="row-text"><span class="row-title">${t.wallbox.title}</span><span class="row-sub">${sub}</span></span>
-            <span class="row-aside">${age ? t.wallbox.fromCar(age) : ""}</span>
+            <span class="row-text"><span class="row-title">${t.wallbox.title}</span><span class="row-sub wrap">${age ? joined([sub, t.wallbox.fromCar(age)]) : sub}</span></span>
+            <span></span>
             ${hasDetail ? html`<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>` : html`<span></span>`}
           </button>
           ${hasDetail

@@ -922,11 +922,21 @@ export const styles = css`
   }
 
   .mode-sub {
+    display: grid;
+    justify-items: end;
     min-width: 0;
     color: var(--ed-secondary);
     font-size: 13px;
     line-height: 18px;
     text-align: right;
+  }
+
+  .mode-sub > span {
+    grid-area: 1 / 1;
+  }
+
+  .mode-sub > .spare {
+    visibility: hidden;
   }
 
   /* --------------------------------------------------------- hot water */
@@ -1267,6 +1277,11 @@ export const styles = css`
     text-overflow: ellipsis;
   }
 
+  /* Wallbox: the power and the age of the car data („z auta právě teď“) under it when they do not fit one line (uživatel 12. 11. 2026: „Q132 A“). */
+  .row-sub.wrap {
+    white-space: normal;
+  }
+
   /* The source colour a little lighter on the tile grey: the blue of the grid has 4.2 : 1 there, this 5 : 1 and more. */
   .row-sub b {
     color: color-mix(in srgb, var(--c, var(--ed-text)) 82%, #fff);
@@ -1277,17 +1292,6 @@ export const styles = css`
     color: color-mix(in srgb, var(--c, var(--ed-text)) 45%, #000);
   }
 
-  /* A row with a note on the right (Wallbox: „z auta právě teď“): the title and the power stay whole, the note wraps. */
-  .row:has(> .row-aside) {
-    grid-template-columns: 40px minmax(min-content, max-content) minmax(0, 1fr) auto;
-  }
-
-  .row-aside {
-    color: var(--ed-secondary);
-    font-size: 13px;
-    line-height: 18px;
-    text-align: right;
-  }
 
   .chevron {
     width: 14px;

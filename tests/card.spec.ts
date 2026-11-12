@@ -1016,15 +1016,17 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(page.locator(".mix-head")).toContainText("Odkud auto nabíjí");
       await expect(page.locator(".mix-legend")).toContainText("Slunce100 %");
       await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí 4,10 kW");
-      await expect(page.locator(".row-aside")).toHaveText("z auta právě teď");
+      // The age of the car data under the power (uživatel 12. 11. 2026: „Q132 A“).
+      await expect(page.locator(".row-sub.wrap")).toContainText("z auta právě teď");
       await expect(page.locator(".car-art img")).toHaveAttribute("src", /^data:image\/svg/);
-      await expect(page.locator(".mode-sub")).toHaveText("Přetoky · jen z přebytku");
+      // Without the name of the mode (uživatel 12. 11. 2026: „Q134 B“).
+      await expect(page.locator(".mode-sub .shown")).toHaveText("jen z přebytku");
     });
     await test.step("večer: auto připojené, nenabíjí; bez „Odkud auto nabíjí“; odpojené", async () => {
       await open(page, "full");
       await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí");
       await expect(page.locator(".mix")).toHaveCount(0);
-      await expect(page.locator(".row-btn .row-sub")).toHaveText("nenabíjí");
+      await expect(page.locator(".row-btn .row-sub")).toHaveText("nenabíjí · z auta právě teď");
       await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
       await update(page, { "sensor.wallbox_charge_status": "Disconnected" });
       await expect(stateLine(page, 1)).toHaveText("Odpojeno");
@@ -1038,7 +1040,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       expect(await stateLine(page, 1).evaluate((el) => (el as HTMLElement).style.getPropertyValue("--sc"))).toBe("var(--ed-grid)");
       expect(await page.locator(".mix-bar > div").evaluateAll((bars) => bars.map((bar) => (bar as HTMLElement).style.background))).toEqual(["var(--ed-grid)"]);
       await expect(page.locator(".mix-legend")).toContainText("Síť100 %");
-      await expect(page.locator(".mode-sub")).toHaveText("Boost · bere i ze sítě a z baterie");
+      await expect(page.locator(".mode-sub .shown")).toHaveText("bere i ze sítě a z baterie");
     });
     await test.step("měřič nabití auta: limit jen pod 100 %, popisek čtečky", async () => {
       await open(page, "day");
@@ -1242,7 +1244,7 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
           await expect(page.locator(".alerts"), at).toHaveCount(0);
           await expect(page.locator(".arc-num b"), at).toHaveText(["––", "––"]);
           await expect(page.getByRole("switch", { name: "Mísení vody" }), at).toBeDisabled();
-          await expect(page.locator(".row-aside"), at).toHaveText("");
+          await expect(page.locator(".row-sub.wrap"), at).not.toContainText("z auta");
         }
       }
       await open(page, "missing");
@@ -1455,8 +1457,12 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       })).toBe(true);
       // The same in the car (uživatel 12. 11. 2026: „Q126 A“ = in both cards): the row title stays whole.
       await open(page, "full", 320, 852, "dark", "en");
-      // Whether it breaks depends on the font (WebKit fits it on one line); if it does, then only at the dot.
-      expect((await lines(".mode-sub")).join(" · ")).toBe("Surplus · from the surplus only");
+      // Switching Surplus | Boost moves nothing: both descriptions take one place, the taller sets the height.
+      const head = () => page.locator(".mode-head").evaluate((el) => el.getBoundingClientRect().height);
+      const before = await head();
+      await update(page, { "switch.wallbox_boost": "on" });
+      await expect(page.locator(".mode-sub .shown")).toHaveText("also from the grid and battery");
+      expect(await head()).toBe(before);
       expect(await page.locator("#mode-l").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(23);
       await open(page, "grid", 320, 852, "dark", "en");
       await expect.poll(() => lines(".panel .state", 2)).toEqual(["The boiler heats from the grid", "Boost"]);
