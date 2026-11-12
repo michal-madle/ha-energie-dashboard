@@ -17,6 +17,8 @@ export const styles = css`
     --ed-text: #ffffff;
     --ed-secondary: #98989f;
     --ed-off: #8e8e93;
+    /* No data ("––"): DASHBOARD_UX_SYSTEM.md, Text. */
+    --ed-nodata: #8e8e93;
     --ed-sep: rgb(84 84 88 / 65%);
     --ed-bar: rgb(255 255 255 / 14%);
     --ed-tick: rgb(255 255 255 / 28%);
@@ -51,6 +53,7 @@ export const styles = css`
     --ed-text: #000000;
     --ed-secondary: #5f5f66;
     --ed-off: #8e8e93;
+    --ed-nodata: #6e6e73;
     --ed-sep: rgb(60 60 67 / 29%);
     --ed-bar: rgb(60 60 67 / 18%);
     --ed-tick: rgb(60 60 67 / 30%);
@@ -180,8 +183,8 @@ export const styles = css`
     line-height: 20px;
   }
 
-  :host([data-light]) .state {
-    color: color-mix(in srgb, var(--sc, var(--ed-secondary)) 45%, #000);
+  :host([data-light]) .state.tinted {
+    color: color-mix(in srgb, var(--sc) 45%, #000);
   }
 
   /* Beside the first line when the state has two. */
@@ -964,6 +967,11 @@ export const styles = css`
     font-variant-numeric: tabular-nums;
   }
 
+  /* Off: the temperature the gas boiler keeps is grey (CURRENT_SPEC.md, Zásobník: „v Off šedá“). */
+  .arc-num.dim b {
+    color: var(--ed-secondary);
+  }
+
   .arc-num span {
     color: var(--ed-pop-sec);
     font-size: 13px;
@@ -1028,7 +1036,10 @@ export const styles = css`
     line-height: 18px;
   }
 
-  /* Parts joined by a dot; on two lines one part per line without the dot (joined in view.ts, uživatel 12. 11. 2026). */
+  /*
+   * Parts joined by a dot (joined in view.ts, uživatel 12. 11. 2026): one line when they fit; else one part per
+   * line without the dot; when a part does not fit even its own line, one flowing text with the dot kept inside it.
+   */
   .joined-part {
     white-space: nowrap;
   }
@@ -1038,18 +1049,31 @@ export const styles = css`
     display: none;
   }
 
-  /* On its own line a long part ("the boiler keeps the minimum") may wrap; a row value keeps its parts whole. */
+  .joined.stacked,
   .joined.stacked .joined-part {
     display: block;
-    white-space: normal;
-  }
-
-  .rowbtn-value .joined.stacked .joined-part {
-    white-space: nowrap;
   }
 
   .joined.stacked .joined-only {
     display: inline;
+  }
+
+  .joined.flow .joined-part {
+    white-space: normal;
+  }
+
+  /* The dot never starts or ends a line of the flowing text. */
+  .joined.flow .joined-sep {
+    white-space: nowrap;
+  }
+
+  .state .joined {
+    min-width: 0;
+  }
+
+  .nodata {
+    color: var(--ed-nodata);
+    font-weight: 400;
   }
 
   .source-line .joined-sep {
@@ -1061,7 +1085,8 @@ export const styles = css`
     font-weight: 500;
   }
 
-  :host([data-light]) .source-line .src {
+  /* Only a source colour is darker in the light mode; the neutral grey stays grey (CURRENT_SPEC.md, Teplá voda: „neohřívá“ šedě). */
+  :host([data-light]) .source-line .src.tinted {
     color: color-mix(in srgb, var(--c) 45%, #000);
   }
 

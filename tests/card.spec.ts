@@ -1144,8 +1144,11 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
             const chevron = button.querySelector<SVGElement>(".chevron");
             if (!value || !chevron) return "";
             const range = document.createRange();
-            range.selectNodeContents(value);
-            const right = Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+            // The visible text only: a hidden „bez dat“ for the screen reader has no width on screen.
+            const right = Math.max(...[...value.querySelectorAll<HTMLElement>("*"), value].flatMap((el) => [...el.childNodes].filter((node) => node.nodeType === 3 && !el.closest(".sr-only")).flatMap((node) => {
+              range.selectNodeContents(node);
+              return [...range.getClientRects()].map((rect) => rect.right);
+            })));
             return right > chevron.getBoundingClientRect().left + 0.5 ? `„${(value.textContent ?? "").trim()}“ o ${(right - chevron.getBoundingClientRect().left).toFixed(1)} px` : "";
           }).filter(Boolean);
           return { scrollWidth: document.documentElement.scrollWidth, card: { left: card.left, right: card.right }, boxes, panels, controls, rows, sources, segText, valueOver };
@@ -1444,7 +1447,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await expect.poll(() => lines(".rowbtn-value", 1)).toEqual(["40 °C", "by schedule"]);
       // A long part wraps on its own lines and is never cut by the tile.
       await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": "off" });
-      await expect.poll(() => lines(".source-line", 1)).toEqual(["Off", "the boiler keeps the minimum"]);
+      await expect.poll(() => lines(".source-line", 1)).toEqual(["Off", "held at the minimum"]);
       expect(await page.locator(".source").nth(1).evaluate((tile: HTMLElement) => {
         const range = document.createRange();
         range.selectNodeContents(tile.querySelector(".source-line")!);
@@ -1452,6 +1455,19 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       })).toBe(true);
       await open(page, "grid", 320, 852, "dark", "en");
       await expect.poll(() => lines(".panel .state", 2)).toEqual(["The boiler heats from the grid", "Boost"]);
+      // A part longer than its own line: one flowing text with the dot inside, no orphan line (dashboard-critic 12. 11.).
+      await open(page, "full", 320, 852, "dark", "en");
+      await update(page, { "sensor.tuv_power_total": "1200", "switch.tuv_boost": "on" });
+      const water = page.locator('section[aria-labelledby="h-water"] .state');
+      await expect(water).toContainText("The boiler heats from the battery and the grid · Boost");
+      await expect.poll(() => water.locator(".joined").getAttribute("class")).toBe("joined flow");
+      // Grey stays grey in the light mode, only a source colour is darker; Off has the tank temperature grey; "––" is read as „bez dat“.
+      await open(page, "full", 393, 852, "light");
+      const colour = (locator: ReturnType<Page["locator"]>) => locator.evaluate((el) => getComputedStyle(el).color);
+      expect(await colour(page.locator(".source-line .src").first())).toBe(await colour(page.locator(".source-line .joined-sep").first()));
+      await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": "off", "number.tuv_2_1_target_temperature": "unavailable" });
+      expect(await colour(page.locator(".arc-num b").nth(1))).toBe(await colour(page.locator(".source-line .joined-sep").first()));
+      await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky ––bez dat");
       await open(page, "full");
       await expand(page, "Cílové teploty");
       const solar = page.locator('ed-slider[label="Cíl ohřevu bojleru, Přetoky"]');
@@ -1713,8 +1729,11 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
             const chevron = button.querySelector<SVGElement>(".chevron");
             if (!value || !chevron) return "";
             const range = document.createRange();
-            range.selectNodeContents(value);
-            const right = Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+            // The visible text only: a hidden „bez dat“ for the screen reader has no width on screen.
+            const right = Math.max(...[...value.querySelectorAll<HTMLElement>("*"), value].flatMap((el) => [...el.childNodes].filter((node) => node.nodeType === 3 && !el.closest(".sr-only")).flatMap((node) => {
+              range.selectNodeContents(node);
+              return [...range.getClientRects()].map((rect) => rect.right);
+            })));
             return right > chevron.getBoundingClientRect().left + 0.5 ? `„${(value.textContent ?? "").trim()}“ o ${(right - chevron.getBoundingClientRect().left).toFixed(1)} px` : "";
           }).filter(Boolean);
           return { scrollWidth: document.documentElement.scrollWidth, tiles, panels, segText, valueOver };
@@ -1745,8 +1764,11 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
             const chevron = button.querySelector<SVGElement>(".chevron");
             if (!value || !chevron) return "";
             const range = document.createRange();
-            range.selectNodeContents(value);
-            const right = Math.max(...[...range.getClientRects()].map((rect) => rect.right));
+            // The visible text only: a hidden „bez dat“ for the screen reader has no width on screen.
+            const right = Math.max(...[...value.querySelectorAll<HTMLElement>("*"), value].flatMap((el) => [...el.childNodes].filter((node) => node.nodeType === 3 && !el.closest(".sr-only")).flatMap((node) => {
+              range.selectNodeContents(node);
+              return [...range.getClientRects()].map((rect) => rect.right);
+            })));
             return right > chevron.getBoundingClientRect().left + 0.5 ? `„${(value.textContent ?? "").trim()}“ o ${(right - chevron.getBoundingClientRect().left).toFixed(1)} px` : "";
           }).filter(Boolean);
           return { segText, valueOver };

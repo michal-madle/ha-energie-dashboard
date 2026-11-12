@@ -166,7 +166,8 @@ export const en: Texts = {
     modeLabel: "Tank mode",
     temperature: "Temperature",
     sliderLabel: "Tank temperature",
-    keepsMinimum: "the boiler keeps the minimum",
+    // Not „the boiler“: in English it reads as the Boiler (PV) tile above.
+    keepsMinimum: "held at the minimum",
     setManually: "set manually",
     byPlan: "by schedule",
     summaryOff: "off",

@@ -189,12 +189,12 @@ export class CardBase extends LitElement {
     }
   }
 
-  /** One line with dots, or one part per line without them (`joined` in view.ts); measured again when the width, the font or the text changes. */
+  /** One line with dots, one part per line without them, or one flowing text (`joined` in view.ts); measured again when the width, the font or the text changes. */
   fitJoined(): void {
     this.renderRoot.querySelectorAll<HTMLElement>(".joined").forEach((el) => {
       const key = `${this._width}|${this._fonts}|${el.textContent}`;
       if (el.dataset.fit === key) return;
-      el.classList.remove("stacked");
+      el.classList.remove("stacked", "flow");
       const parts = el.querySelectorAll<HTMLElement>(":scope > .joined-part");
       const first = parts[0]?.getBoundingClientRect();
       const last = parts[parts.length - 1]?.getBoundingClientRect();
@@ -203,7 +203,10 @@ export class CardBase extends LitElement {
         return;
       }
       el.dataset.fit = key;
-      if (last.top > first.top + 1) el.classList.add("stacked");
+      if (last.top <= first.top + 1) return;
+      el.classList.add("stacked");
+      // A part longer than its own line ("The boiler heats from the battery and the grid") would leave an orphan: one flowing text.
+      if (!el.closest(".rowbtn-value") && [...parts].some((part) => part.scrollWidth > part.clientWidth + 0.5)) el.classList.replace("stacked", "flow");
     });
   }
 
@@ -214,9 +217,14 @@ export class CardBase extends LitElement {
 
   /** The state under a panel title; parts ("Bojler ohřívá ze slunce", "Boost") are joined by a dot (`joined` in view.ts). */
   stateLine(text: string | readonly string[] | undefined, color: string | undefined): TemplateResult {
-    return html`<p class="state" style="--sc:${color ?? "var(--ed-secondary)"}">
-      <span class="dot" aria-hidden="true"></span>${text === undefined ? html`<span>${NO_DATA}<span class="sr-only">${this.t.noData}</span></span>` : typeof text === "string" ? html`<span>${text}</span>` : joined(text)}
+    return html`<p class="state ${color ? "tinted" : ""}" style="--sc:${color ?? "var(--ed-secondary)"}">
+      <span class="dot" aria-hidden="true"></span>${text === undefined ? html`<span>${this.noData()}</span>` : typeof text === "string" ? html`<span>${text}</span>` : joined(text)}
     </p>`;
+  }
+
+  /** "––" in the grey of no data, read as „bez dat“ (CURRENT_SPEC.md, Chybějící a zastaralá data; DASHBOARD_UX_SYSTEM.md, Text). */
+  noData(): TemplateResult {
+    return html`<span class="nodata">${NO_DATA}<span class="sr-only">${this.t.noData}</span></span>`;
   }
 
   carVisible(s: Settings, model: FlowModel): boolean {
