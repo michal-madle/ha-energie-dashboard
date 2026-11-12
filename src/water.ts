@@ -29,7 +29,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
 
       let stateText: string | unknown[] | undefined;
       if (heating) stateText = [t.water.boilerHeats(src.text), ...(boostOn ? [this.boostMark()] : [])];
-      else if (model.boil !== undefined) stateText = t.water.noHeating;
+      else if (model.boil !== undefined) stateText = [t.water.noHeating, ...(boostOn ? [this.boostMark()] : [])];
 
       return html`<section class="panel" aria-labelledby="h-water">
         <div class="head"><h2 id="h-water">${this.pickText(s.titles.water) ?? t.titles.water}</h2>${this.stateLine(stateText, heating ? srcColor : undefined)}</div>

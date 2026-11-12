@@ -8365,7 +8365,7 @@ const ni = (a) => class extends a {
   renderWater(t, e) {
     const s = this.t, n = t.entities, o = t.num.flows, i = tt(e.boil, ot), r = ua(e.loadShare.boil, o, s), l = this.sourceColor(r), c = this.shown(n.boiler.boost) === "on", d = pa([i ? e.boil : void 0], o.kw_from);
     let u;
-    return i ? u = [s.water.boilerHeats(r.text), ...c ? [this.boostMark()] : []] : e.boil !== void 0 && (u = s.water.noHeating), v`<section class="panel" aria-labelledby="h-water">
+    return i ? u = [s.water.boilerHeats(r.text), ...c ? [this.boostMark()] : []] : e.boil !== void 0 && (u = [s.water.noHeating, ...c ? [this.boostMark()] : []]), v`<section class="panel" aria-labelledby="h-water">
         <div class="head"><h2 id="h-water">${this.pickText(t.titles.water) ?? s.titles.water}</h2>${this.stateLine(u, i ? l : void 0)}</div>
         <div class="water">
           ${this.renderBoilerTile(t, e, i, l, d)} ${this.renderMixing(t)} ${this.renderTankTile(t)}
@@ -8533,4 +8533,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Be(gn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 16:42 UTC · po 0cdee60 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.1.0 · 2026-11-12 16:44 UTC · po f797897 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

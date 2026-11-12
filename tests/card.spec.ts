@@ -1048,6 +1048,9 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(page.locator(".mode-sub .shown")).toHaveText("i ze sítě a z baterie");
       // Boost: the description grey, an orange „Boost“ in the state (uživatel 12. 11. 2026: „Q137 A“).
       await expect(stateLine(page, 1).locator(".boost-mark")).toHaveText("Boost");
+      // Teplá voda the same, also without heating (one indicator in both panels).
+      await update(page, { "switch.tuv_boost": "on", "sensor.tuv_power_total": "0" });
+      await expect(page.locator('section[aria-labelledby="h-water"] .state .boost-mark')).toHaveText("Boost");
     });
     await test.step("měřič nabití auta: limit jen pod 100 %, popisek čtečky", async () => {
       await open(page, "day");
