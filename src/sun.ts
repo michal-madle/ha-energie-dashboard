@@ -18,6 +18,7 @@ import {
   strongWindow, sunTimes, todayHours, typicalDeviation,
 } from "./sun-data";
 import type { Estimate, HourlyDays, Learned } from "./sun-data";
+import { joined, joinedText } from "ha-dashboard-kit/joined";
 
 /** How long a loaded history is used before it is fetched again (ms), and the weather forecast. */
 const REFRESH = 5 * 60000;
@@ -381,7 +382,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
       const place = below ? `top:${(top + lay.tile.h + 8).toFixed(0)}px` : `bottom:${(lay.height - top + 8).toFixed(0)}px`;
       return html`<div class="pop bat-pop sun-pop" role="dialog" aria-label=${tile.name} tabindex="-1" style="left:${left.toFixed(0)}px;${place};width:${width}px">
         <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - left - 6).toFixed(0)}px"></i>
-        <div class="pop-head"><span class="pop-title">${tile.name}</span><span class="pop-now">${now}</span></div>
+        <div class="pop-head"><span class="pop-title">${tile.name}</span><span class="pop-now">${joinedText(now)}</span></div>
         <div class="pop-level">
           <div class="pop-level-row"><span class="pop-label">${t.sun.powerNow}</span><span class="pop-big">${model.sun === undefined ? NO_DATA : formatPower(model.sun, unit === "W" && model.sun >= s.num.flows.kw_from ? "kW" : unit)}</span></div>
           ${on ? this.renderSunFlow(model, s, false) : nothing}
@@ -674,7 +675,7 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         <div class="bat-card">
           <span class="bat-cap">${t.hist.last(RANGE_DAYS[range])}</span>
           <span class="bat-huge sun-huge">${known.length ? `${formatFixed(total, 1)} kWh` : NO_DATA}</span>
-          <span class="bat-sub">${known.length ? html`${percent === undefined ? nothing : html`<b class="sun-yellow">${t.hist.ofPossible(formatPercent(percent))}</b> · `}${t.hist.average(`${formatFixed(total / known.length, 1)} kWh`)}` : loading ? NO_DATA : NO_DATA}</span>
+          <span class="bat-sub">${known.length ? joined([...(percent === undefined ? [] : [html`<b class="sun-yellow">${t.hist.ofPossible(formatPercent(percent))}</b>`]), t.hist.average(`${formatFixed(total / known.length, 1)} kWh`)]) : loading ? NO_DATA : NO_DATA}</span>
         </div>
         <div class="bat-card">
           <div class="bat-card-bar sun-mode"><span class="sun-title">${t.hist.chartTitle}</span>
@@ -683,8 +684,8 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
           ${this.renderChartOrEmpty("sun:hist", 170, chart)}
         </div>
         <div class="bat-kpis">
-          <div class="bat-kpi"><span class="sub">${t.hist.best}</span><span class="val">${best ? `${formatFixed(best.total, 1)} kWh` : NO_DATA}</span><span class="sub">${best ? day(best) : ""}</span></div>
-          <div class="bat-kpi"><span class="sub">${t.hist.worst}</span><span class="val">${worst ? `${formatFixed(worst.total, 1)} kWh` : NO_DATA}</span><span class="sub">${worst ? day(worst) : ""}</span></div>
+          <div class="bat-kpi"><span class="sub">${t.hist.best}</span><span class="val">${best ? `${formatFixed(best.total, 1)} kWh` : NO_DATA}</span><span class="sub">${best ? joinedText(day(best)) : ""}</span></div>
+          <div class="bat-kpi"><span class="sub">${t.hist.worst}</span><span class="val">${worst ? `${formatFixed(worst.total, 1)} kWh` : NO_DATA}</span><span class="sub">${worst ? joinedText(day(worst)) : ""}</span></div>
           <div class="bat-kpi"><span class="sub">${t.hist.peak}</span><span class="val">${peakRow ? formatPower(peakRow.max as number, "kW") : NO_DATA}</span><span class="sub">${peakRow ? `${formatWeekday(peakRow.start)} ${t.at(formatClock(peakRow.start))}` : ""}</span></div>
           <div class="bat-kpi"><span class="sub">${t.hist.length}</span><span class="val">${length === undefined ? NO_DATA : t.hist.lengthValue(formatFixed(length, 1))}</span><span class="sub">${before === undefined ? "" : (range === "7d" ? t.hist.before7 : t.hist.before30)(formatFixed(before, 1))}</span></div>
         </div>
@@ -796,13 +797,13 @@ export const withSun = <T extends Constructor<Batteried>>(Base: T) =>
         ${evening
           ? html`<div class="bat-card rel">
               <div class="bat-card-bar"><span class="bat-cap">${o.eveningTitle}</span>${this.hint("eve", t.hints.eve)}</div>
-              <div class="bat-list">${evening.map((row) => html`<div class="bat-line sun-line"><span><i style="background:var(${row.color})"></i>${row.label}</span><b>${row.value}</b></div>`)}
+              <div class="bat-list">${evening.map((row) => html`<div class="bat-line sun-line"><span><i style="background:var(${row.color})"></i>${row.label}</span><b>${joinedText(row.value)}</b></div>`)}
               </div>
             </div>`
           : nothing}
         <div class="bat-kpis">
           <div class="bat-kpi"><span class="sub">${o.dayLength}</span><span class="val">${length === undefined ? NO_DATA : o.hoursMinutes(Math.floor(length / 60), length % 60)}</span><span class="sub">${change === undefined ? "" : o.dayChange(change)}</span></div>
-          <div class="bat-kpi"><span class="sub">${o.bestDay}</span><span class="val">${best ? (best.i === 0 ? o.today : formatDayName(best.day)) : NO_DATA}</span><span class="sub">${best ? o.bestSub(formatKwh(best.kwh!), bestWindow ? o.window(bestWindow[0], bestWindow[1]) : "") : ""}</span></div>
+          <div class="bat-kpi"><span class="sub">${o.bestDay}</span><span class="val">${best ? (best.i === 0 ? o.today : formatDayName(best.day)) : NO_DATA}</span><span class="sub">${best ? joinedText(o.bestSub(formatKwh(best.kwh!), bestWindow ? o.window(bestWindow[0], bestWindow[1]) : "")) : ""}</span></div>
         </div>`;
     }
 

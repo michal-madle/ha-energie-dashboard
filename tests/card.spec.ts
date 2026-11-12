@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { parse } from "yaml";
-import { axeViolations as kitAxeViolations } from "ha-dashboard-kit/testing/helpers.mjs";
+import { axeViolations as kitAxeViolations, joinedLines } from "ha-dashboard-kit/testing/helpers.mjs";
 import { expect, test } from "./fixtures";
 import type { Page } from "./fixtures";
 import { CONFIG_KEYS } from "../src/config-schema";
@@ -1439,7 +1439,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky 60 · Boost 55 °C", { useInnerText: true });
       // On two lines the line break is the separator: no dot, °C at both (uživatel 12. 11. 2026); the other texts of the section the same.
       await open(page, "full", 320);
-      const lines = (selector: string, i = 0) => page.locator(selector).nth(i).evaluate((el: HTMLElement) => el.innerText.split("\n").map((line) => line.replace(/\s+/g, " ").trim()));
+      const lines = (selector: string, i = 0) => joinedLines(page.locator(selector).nth(i));
       await expect.poll(() => lines(".rowbtn-value")).toEqual(["Přetoky 60 °C", "Boost 55 °C"]);
       await open(page, "full", 320, 852, "dark", "en");
       await expect.poll(() => lines(".rowbtn-value")).toEqual(["Surplus 60 °C", "Boost 55 °C"]);
@@ -1453,6 +1453,10 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
         range.selectNodeContents(tile.querySelector(".source-line")!);
         return Math.max(...[...range.getClientRects()].map((rect) => rect.right)) <= tile.getBoundingClientRect().right - 12 + 0.5;
       })).toBe(true);
+      // The same in the car (uživatel 12. 11. 2026: „Q126 A“ = in both cards): the row title stays whole.
+      await open(page, "full", 320);
+      await expect.poll(() => lines(".mode-sub")).toEqual(["Přetoky", "jen z přebytku"]);
+      expect(await page.locator("#mode-l").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(23);
       await open(page, "grid", 320, 852, "dark", "en");
       await expect.poll(() => lines(".panel .state", 2)).toEqual(["The boiler heats from the grid", "Boost"]);
       // A part longer than its own line: one flowing text with the dot inside, no orphan line (dashboard-critic 12. 11.).
@@ -1943,7 +1947,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     const labels = await detail.locator(".bat-ylabel").allTextContents();
     expect(labels.slice(0, 3)).toEqual(["100 %", "50 %", "0 %"]);
     expect(labels).toHaveLength(6);
-    await expect(detail.locator(".bat-read")).toContainText(/^teď · \d+ % · /);
+    await expect(detail.locator(".bat-read")).toContainText(/^teď\s·\s\d+ %\s·\s/);
     await detail.locator(".bat-chart input").focus();
     for (let i = 0; i < 20; i++) await page.keyboard.press("ArrowLeft");
     await expect(detail.locator(".bat-read")).toContainText(/^−\d+ h/);
@@ -2033,7 +2037,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     // Vyvážení: jedna čára rozdílu v mV od nuly nad zeleným pásem „výborné do 15 mV“; napětí článků jsou v údaji pod prstem.
     await row("Vyvážení článků").locator(".bat-row").click();
     await expect(row("Vyvážení článků").locator(".bat-row")).toHaveAttribute("aria-expanded", "true");
-    await expect(row("Vyvážení článků").locator(".bat-read")).toContainText(/rozdíl \d+ mV · min 3,3\d\d V · max 3,3\d\d V/);
+    await expect(row("Vyvážení článků").locator(".bat-read")).toContainText(/rozdíl \d+ mV\s·\smin 3,3\d\d V\s·\smax 3,3\d\d V/);
     const gapLabels = await row("Vyvážení článků").locator(".bat-ylabel").allTextContents();
     expect(gapLabels).toHaveLength(3);
     expect(gapLabels[0]).toMatch(/ mV$/);
@@ -2047,14 +2051,14 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     expect(asked[0]).toMatchObject({ period: "5minute", types: ["mean", "state"] });
     // Teplota: v každém okamžiku nejnižší, nejvyšší a teplota baterie.
     await row("Teplota").locator(".bat-row").click();
-    await expect(row("Teplota").locator(".bat-read")).toContainText(/min \d+,\d · baterie \d+,\d · max \d+,\d °C/);
+    await expect(row("Teplota").locator(".bat-read")).toContainText(/min \d+,\d\s·\sbaterie \d+,\d\s·\smax \d+,\d °C/);
     await expect(row("Teplota")).toContainText("23,8 °C");
     await expect(row("Teplota")).toContainText("Střídač, vzduch");
     await expect(row("Teplota")).toContainText("33,5 °C");
     // Životnost: ekvivalentní cykly v čase a čítače.
     await row("Životnost").locator(".bat-row").click();
     await expect(row("Životnost")).toContainText(/Celkem nabito\s*2.731 kWh/);
-    await expect(row("Životnost").locator(".bat-read")).toContainText(/ · \d+,\d cyklů/);
+    await expect(row("Životnost").locator(".bat-read")).toContainText(/\s·\s\d+,\d cyklů/);
     // 7 dní: hodinové statistiky.
     await tab(page, "7 dní").click();
     await expect.poll(() => requests(page).then((items) => items.some((item) => item.period === "hour" && item.statistic_ids.includes("sensor.goodwe_battery_min_cell_voltage")))).toBe(true);
@@ -2205,7 +2209,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       await expect(detail.locator(".bat-legend").first()).toContainText("Možné");
       await expect(detail.locator(".bat-legend").first()).toContainText("Předpověď");
       // Čtení pod prstem: čas, výkon a možné.
-      await expect(detail.locator(".bat-read").first()).toContainText(/\d+:\d\d · .*kW/);
+      await expect(detail.locator(".bat-read").first()).toContainText(/\d+:\d\d\s·\s.*kW/);
       // Svislé vodicí linky po celých hodinách (6 až 10 dělení), popsané časem; krajní linky popisek nemají.
       const hourLabels = (await detail.locator(".bat-axis.ticks span").allTextContents()).filter(Boolean);
       expect(hourLabels.length).toBeGreaterThanOrEqual(4);

@@ -16,6 +16,7 @@ import { formatClock, formatDayName, formatKwh, formatNumber, formatPower, power
 import type { PowerUnit } from "./utils";
 import { NO_DATA, clamp } from "./view";
 import type { Alert, BatEntry, Constructor, Tile } from "./view";
+import { joined, joinedText } from "ha-dashboard-kit/joined";
 
 /** How long a loaded history is used before it is fetched again (ms). */
 const REFRESH = 5 * 60000;
@@ -588,7 +589,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
               ${entries.length ? entries.map((entry) => entry.render()) : html`<div class="bat-card"><span>${t.house.none}</span><span class="bat-sub">${this.labelDiagnostics(s)}</span></div>`}
             </div>`
           : html`<ed-segmented .options=${options} .value=${range} label=${t.house.rangeLabel} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setHouseRange(event.detail.value as Range)}></ed-segmented>
-            <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.house.chartHours : t.house.chartDays} · <span class="unit">kWh</span></span>
+            <div class="bat-card"><span class="bat-cap">${joined([range === "1d" ? t.house.chartHours : t.house.chartDays, html`<span class="unit">kWh</span>`])}</span>
               ${chart ? this.renderChart(chart) : html`<div class="bat-nodata" style="aspect-ratio:${W} / 220">${loading ? NO_DATA : t.bat.noDataChart}</div>`}
             </div>`}
       </section>`;
@@ -653,7 +654,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       // "Poslední cyklus: 12:49 – 14:27 · 0,84 kWh" (uživatel 2. 11.: bez délky); the day is written when it is not today.
       const range = (start: number, end: string) => `${this.stamp(start)}\u00a0–\u00a0${end}`;
       const last = a.running && times.start !== undefined
-        ? html`<div class="house-line wrap"><span>${on ? t.house.currentCycle : t.house.lastCycle}</span><b><span>${range(times.start, on ? t.house.axisTo : this.stamp(times.end ?? times.start, times.start))}</span>${kwh !== undefined ? html` <span>·\u00a0${formatKwh(kwh)}\u00a0kWh</span>` : nothing}</b></div>`
+        ? html`<div class="house-line wrap"><span>${on ? t.house.currentCycle : t.house.lastCycle}</span><b>${joined([range(times.start, on ? t.house.axisTo : this.stamp(times.end ?? times.start, times.start)), ...(kwh !== undefined ? [`${formatKwh(kwh)}\u00a0kWh`] : [])])}</b></div>`
         : a.running && times.end !== undefined && !on
           ? html`<div class="house-line wrap"><span>${t.house.lastCycle}</span><b>${t.house.endedAt(this.stamp(times.end))}</b></div>`
           : nothing;
@@ -661,11 +662,11 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const todayKwh = a.energy ? this._houseToday?.apps?.[a.energy] : undefined;
       const plug = a.plug ? readText(this.hass, a.plug) : undefined;
       const problem = a.problems.find((p) => readText(this.hass, p.id) === "on");
-      const line = (label: string, text: string) => html`<div class="house-line"><span>${label}</span><b>${text}</b></div>`;
+      const line = (label: string, text: string) => html`<div class="house-line"><span>${label}</span><b>${joinedText(text)}</b></div>`;
       return html`<div class="bat-card flush house-item">
         <button type="button" class="bat-row" aria-expanded=${open ? "true" : "false"} @click=${() => { this._houseOpen = open ? this._houseOpen.filter((name) => name !== a.name) : [...this._houseOpen, a.name]; }}>
           ${this.renderApplianceIcon(a)}
-          <span class="bat-col"><span class="bat-label">${this.applianceName(a)}</span><span class="bat-sub">${status}</span></span>
+          <span class="bat-col"><span class="bat-label">${this.applianceName(a)}</span><span class="bat-sub">${joinedText(status)}</span></span>
           ${value}
           <svg class="chev ${open ? "open" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg>
         </button>
@@ -763,7 +764,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         });
       });
       return html`<div class="house-micro">
-        <span class="house-micro-cap">${t.house.chartToday} · <span class="unit">kWh</span></span>
+        <span class="house-micro-cap">${joined([t.house.chartToday, html`<span class="unit">kWh</span>`])}</span>
         <svg viewBox="0 0 ${W + GUTTER} ${h}" role="img" aria-label=${t.house.chartToday}>
           ${ticks.map((tick) => svg`<line x1=${tick.x} y1="0" x2=${tick.x} y2=${base} style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>`)}
           <line x1="0" y1="6" x2=${W} y2="6" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>

@@ -14,6 +14,7 @@ import { DAY, HOUR, RANGES, RANGE_DAYS, W, areaPath, bandPath, bin, domain, fetc
 import type { Period, Range, StatType, Stats } from "./battery-data";
 import { GUTTER, fillGrid, niceStep, tickPitch, timeTicks } from "./chart-grid";
 import type { TimeAxis } from "./chart-grid";
+import { joined, joinedText } from "ha-dashboard-kit/joined";
 
 /** How long a loaded history is used before it is fetched again (ms). */
 const REFRESH = 5 * 60000;
@@ -337,7 +338,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const ticks = c.ticks ?? (c.time ? timeTicks(c.time) : undefined);
       const filled = fillGrid(c.grid, tickPitch(ticks), c.valueAt, c.valueNum);
       const labels = [...c.labels, ...filled.labels.filter((added) => c.labels.every((own) => Math.abs(own.y - added.y) > 13))];
-      return html`${c.panel ? nothing : html`<div class="bat-read">${text}</div>`}
+      return html`${c.panel ? nothing : html`<div class="bat-read">${joinedText(text)}</div>`}
         <div class="bat-chart" style="aspect-ratio:${W + GUTTER} / ${c.h}">
           <svg viewBox="0 0 ${W + GUTTER} ${c.h}" aria-hidden="true">
             <defs>
@@ -710,7 +711,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const edges = [0, 20, 40, 60, 80, 100];
       const shares = edges.slice(0, 5).map((lowEdge, i) => (known.length ? Math.round((known.filter((v) => (i === 4 ? v >= lowEdge : v >= lowEdge && v < edges[i + 1])).length / known.length) * 100) : undefined));
       return html`${this.renderRange(s)}
-        <div class="bat-card"><span class="bat-cap">${range === "1d" ? t.bat.energyHours : t.bat.energyDays} · <span class="unit">kWh</span></span>${this.renderChartOrEmpty(key, 200, energy?.chart)}</div>
+        <div class="bat-card"><span class="bat-cap">${joined([range === "1d" ? t.bat.energyHours : t.bat.energyDays, html`<span class="unit">kWh</span>`])}</span>${this.renderChartOrEmpty(key, 200, energy?.chart)}</div>
         <div class="bat-kpis">${kpis.map((k) => html`<div class="bat-kpi"><span class="sub">${k.label}</span><span class="val">${k.value}</span><span class="sub">${k.sub}</span></div>`)}</div>
         <div class="bat-card">
           <span class="bat-cap">${t.bat.bandsTitle}</span>

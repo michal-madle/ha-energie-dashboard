@@ -614,7 +614,8 @@ export const styles = css`
     line-height: 22px;
   }
 
-  .pop.day h3 span {
+  .pop.day h3 .joined-sep,
+  .pop.day h3 .unit {
     color: var(--ed-pop-sec);
     font-size: 15px;
     font-weight: 400;
@@ -915,7 +916,13 @@ export const styles = css`
     line-height: 22px;
   }
 
+  /* The row title stays whole; the description takes the rest (one line, two lines without the dot, or flowing text). */
+  #mode-l {
+    flex: none;
+  }
+
   .mode-sub {
+    min-width: 0;
     color: var(--ed-secondary);
     font-size: 13px;
     line-height: 18px;
@@ -1048,41 +1055,7 @@ export const styles = css`
     line-height: 18px;
   }
 
-  /*
-   * Parts joined by a dot (joined in view.ts, uživatel 12. 11. 2026): one line when they fit; else one part per
-   * line without the dot; when a part does not fit even its own line, one flowing text with the dot kept inside it.
-   */
-  .joined-part {
-    white-space: nowrap;
-  }
-
-  .joined-only,
-  .joined.stacked .joined-sep {
-    display: none;
-  }
-
-  .joined.stacked,
-  .joined.stacked .joined-part {
-    display: block;
-  }
-
-  .joined.stacked .joined-only {
-    display: inline;
-  }
-
-  .joined.flow .joined-part {
-    white-space: normal;
-  }
-
-  /* The dot never starts or ends a line of the flowing text. */
-  .joined.flow .joined-sep {
-    white-space: nowrap;
-  }
-
-  .state .joined {
-    min-width: 0;
-  }
-
+  /* Texts joined by a dot: ha-dashboard-kit/joined (joinedStyles, added in ha-energie-dashboard.ts). */
   .nodata {
     color: var(--ed-nodata);
     font-weight: 400;

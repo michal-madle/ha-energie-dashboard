@@ -1,22 +1,9 @@
 /* Constants, types and small helpers shared by the parts of the card. */
-import { html, nothing } from "lit";
-import type { TemplateResult } from "lit";
 import type { HassEntity } from "./types";
 import type { Sink, Source } from "./model";
 
 /** Shown for every value without data (CURRENT_SPEC.md, Chybějící a zastaralá data). */
 export const NO_DATA = "––";
-
-/**
- * Parts of a text joined by a dot on one line ("Přetoky 60 · Boost 55 °C"). When they do not fit, each part
- * is on its own line and the line break is the separator, without the dot (uživatel 12. 11. 2026); a part too
- * long even for its own line makes one flowing text instead. The card decides after drawing (`fitJoined` in
- * base.ts); a `.joined-only` piece (the unit of the first target) shows only on separate lines.
- */
-export function joined(parts: readonly unknown[]): TemplateResult {
-  if (parts.length < 2) return html`${parts[0]}`;
-  return html`<span class="joined">${parts.map((part, i) => html`${i ? html`<span class="joined-sep">\u00a0· </span>` : nothing}<span class="joined-part">${part}</span>`)}</span>`;
-}
 
 export const SOURCE_VAR: Record<Source, string> = { sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-grid" };
 export const TILE_VAR: Record<TileKey, string> = {

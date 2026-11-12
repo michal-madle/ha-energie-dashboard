@@ -10,7 +10,8 @@ import type { PowerUnit } from "./utils";
 import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { ICON } from "./icons";
 import type { Controlled } from "./controls";
-import { NO_DATA, attribute, joined } from "./view";
+import { NO_DATA, attribute } from "./view";
+import { joined } from "ha-dashboard-kit/joined";
 import type { Constructor } from "./view";
 
 export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
@@ -95,7 +96,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
                   // On two lines both targets have the unit (uživatel 12. 11. 2026: „A °C bude na obou“).
                   html`${tt.water.targetFlow} <b>${flowTarget === undefined ? this.noData() : html`${formatNumber(flowTarget)}<span class="joined-only"> °C</span>`}</b>`,
                   html`${tt.water.targetBoost} <b>${boostTarget === undefined ? this.noData() : `${formatNumber(boostTarget)} °C`}</b>`,
-                ])}</span>
+                ], { whole: true })}</span>
                 <svg class="chevron ${open ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>
               </button>
               <div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>${this.renderTargets(s, flowTarget, boostTarget)}</div></div>

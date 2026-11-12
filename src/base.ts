@@ -13,7 +13,8 @@ import type { I18n, Texts } from "./i18n";
 import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
-import { HEATING_KEY, NO_DATA, SOURCE_VAR, attribute, joined } from "./view";
+import { HEATING_KEY, NO_DATA, SOURCE_VAR, attribute } from "./view";
+import { fitJoined, joined } from "ha-dashboard-kit/joined";
 import type { BatEntry, BatRow, BatTab, Panel, SunTab, TileKey } from "./view";
 import type { Range } from "./battery-data";
 
@@ -189,25 +190,9 @@ export class CardBase extends LitElement {
     }
   }
 
-  /** One line with dots, one part per line without them, or one flowing text (`joined` in view.ts); measured again when the width, the font or the text changes. */
+  /** Texts joined by a dot: one line, one part per line or one flowing text (ha-dashboard-kit/joined). */
   fitJoined(): void {
-    this.renderRoot.querySelectorAll<HTMLElement>(".joined").forEach((el) => {
-      const key = `${this._width}|${this._fonts}|${el.textContent}`;
-      if (el.dataset.fit === key) return;
-      el.classList.remove("stacked", "flow");
-      const parts = el.querySelectorAll<HTMLElement>(":scope > .joined-part");
-      const first = parts[0]?.getBoundingClientRect();
-      const last = parts[parts.length - 1]?.getBoundingClientRect();
-      if (!first || !last || !first.width) {
-        delete el.dataset.fit;
-        return;
-      }
-      el.dataset.fit = key;
-      if (last.top <= first.top + 1) return;
-      el.classList.add("stacked");
-      // A part longer than its own line ("The boiler heats from the battery and the grid") would leave an orphan: one flowing text.
-      if (!el.closest(".rowbtn-value") && [...parts].some((part) => part.scrollWidth > part.clientWidth + 0.5)) el.classList.replace("stacked", "flow");
-    });
+    fitJoined(this.renderRoot, `${this._width}|${this._fonts}`);
   }
 
   /** The colour of a source text: the grid beyond its share is a deviation (orange). */
@@ -215,7 +200,7 @@ export class CardBase extends LitElement {
     return text.deviation ? "var(--ed-warning)" : `var(${SOURCE_VAR[text.main]})`;
   }
 
-  /** The state under a panel title; parts ("Bojler ohřívá ze slunce", "Boost") are joined by a dot (`joined` in view.ts). */
+  /** The state under a panel title; parts ("Bojler ohřívá ze slunce", "Boost") are joined by a dot (ha-dashboard-kit/joined). */
   stateLine(text: string | readonly string[] | undefined, color: string | undefined): TemplateResult {
     return html`<p class="state ${color ? "tinted" : ""}" style="--sc:${color ?? "var(--ed-secondary)"}">
       <span class="dot" aria-hidden="true"></span>${text === undefined ? html`<span>${this.noData()}</span>` : typeof text === "string" ? html`<span>${text}</span>` : joined(text)}

@@ -2,6 +2,7 @@ import { html, nothing } from "lit";
 import type { TemplateResult } from "lit";
 import { buildModel } from "./model";
 import { styles } from "./styles";
+import { joinedStyles } from "ha-dashboard-kit/joined";
 import { CardBase } from "./base";
 import { withControls } from "./controls";
 import { withBattery } from "./battery";
@@ -18,7 +19,7 @@ import { withWater } from "./water";
  * colour comes from the configuration (config.ts).
  */
 export class HaEnergieDashboard extends withWater(withCar(withElectricity(withHouse(withSun(withBattery(withControls(CardBase))))))) {
-  static styles = styles;
+  static styles = [joinedStyles, styles];
 
   // ----------------------------------------------------------------- render
 

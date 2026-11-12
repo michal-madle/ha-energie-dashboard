@@ -12,6 +12,7 @@ import { ICON } from "./icons";
 import type { Housed } from "./house";
 import { NO_DATA, SOURCE_VAR, TILE_VAR, clamp, mix, segments, tint } from "./view";
 import type { Alert, Constructor, Level, PopInfo, Tile, TileKey } from "./view";
+import { joined } from "ha-dashboard-kit/joined";
 
 /** The strength of the colour of an active tile (percent of the source colour over black or white): the stronger the flow, the stronger the colour. */
 const TINT_MIN = 42;
@@ -374,7 +375,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       </div>`;
       return html`<div class="pop day" role="dialog" aria-labelledby="day-h" tabindex="-1">
         <i class="arrow up" aria-hidden="true" style="left:30px"></i>
-        <h3 id="day-h">${t.pop.day} <span>· kWh</span></h3>
+        <h3 id="day-h">${joined([t.pop.day, html`<span class="unit">kWh</span>`])}</h3>
         <div class="day-cols">${column(t.pop.sources, srcTotal, src)} ${column(t.pop.consumption, useTotal, use)}</div>
       </div>`;
     }

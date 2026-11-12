@@ -11,6 +11,7 @@ import { ICON } from "./icons";
 import type { Controlled } from "./controls";
 import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages, segments } from "./view";
 import type { Constructor } from "./view";
+import { joinedText } from "ha-dashboard-kit/joined";
 
 export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
   class extends Base {
@@ -133,7 +134,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         ${charging ? this.renderCarSources(model, flows, formatPower(model.car ?? 0, unit), boost === "on") : nothing}
         ${w.boost
           ? html`<div class="mode">
-              <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${modeSub}</span></div>
+              <div class="mode-head"><span id="mode-l">${t.car.mode}</span><span class="mode-sub ${boost === "on" ? "warn" : ""}">${joinedText(modeSub)}</span></div>
               <ed-segmented
                 guarded .options=${modeOptions} .value=${mode} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${boost === undefined}
                 .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
