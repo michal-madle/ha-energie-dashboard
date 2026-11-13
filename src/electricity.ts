@@ -12,7 +12,6 @@ import { ICON } from "./icons";
 import type { Housed } from "./house";
 import { NO_DATA, SOURCE_VAR, TILE_VAR, clamp, mix, segments, tint } from "./view";
 import type { Alert, Constructor, Level, PopInfo, Tile, TileKey } from "./view";
-import { joined } from "ha-dashboard-kit/joined";
 
 /** The strength of the colour of an active tile (percent of the source colour over black or white): the stronger the flow, the stronger the colour. */
 const TINT_MIN = 42;
@@ -88,7 +87,6 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
           ${this.stateLine(model.summary, color)}
         </div>
         ${this.renderFlow(s, model)} ${this._all ? this.renderDayPopup(s, model) : nothing}
-        ${this._pop || this._all ? html`<button type="button" class="scrim" aria-label=${this.t.close} @click=${() => this.closePop()}></button>` : nothing}
       </section>`;
     }
 
@@ -179,7 +177,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
           <defs>${SOURCES.map(stops)}</defs>
           ${band.map((b) => svg`<path d=${b.d} fill="url(#rg-${b.from})"></path>`)}
         </svg>
-        ${tiles.map((tile) => this.renderTile(tile, lay, unit, s))} ${popTile ? this.renderTilePopup(popTile, lay, s, model, unit) : nothing}
+        ${tiles.map((tile) => this.renderTile(tile, lay, unit, s))} ${popTile ? this.renderTilePopup(popTile, s, model, unit) : nothing}
       </div>`;
     }
 
@@ -270,13 +268,13 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       if (this._pop === "house" && s) this.freezeHouse(s);
     }
 
-    renderTilePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
+    renderTilePopup(tile: Tile, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
       // The battery has a popup of its own with the gauge, the estimate and the trend (CURRENT_SPEC.md, Baterie).
-      if (tile.key === "bat" || tile.key === "batIn") return this.renderBatteryPopup(tile, lay, s, model, unit);
+      if (tile.key === "bat" || tile.key === "batIn") return this.renderBatteryPopup(tile, s, model, unit);
       // The sun has one too, with the day so far and the detail (CURRENT_SPEC.md, Slunce).
-      if (tile.key === "sun") return this.renderSunPopup(tile, lay, s, model, unit);
+      if (tile.key === "sun") return this.renderSunPopup(tile, s, model, unit);
       // The house has one too, with the running appliances and the detail (CURRENT_SPEC.md, Dům: popup a detail).
-      if (tile.key === "house") return this.renderHousePopup(tile, lay, s, model);
+      if (tile.key === "house") return this.renderHousePopup(tile, s, model);
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const day = this.today(s);
@@ -324,17 +322,8 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
         },
       };
       const pop = info[tile.key];
-      // Below the tile, or above it for the lower tiles; the arrow points at the tile.
-      const width = 236;
-      const centreX = tile.side === "L" ? lay.tile.w / 2 : lay.width - lay.tile.w / 2;
-      const centreY = tile.side === "L" ? lay.left[tile.key as Source] : lay.right[tile.key as Sink];
-      const top = centreY - lay.tile.h / 2;
-      const below = centreY < lay.height / 2;
-      const left = clamp(centreX - width / 2, 0, lay.width - width);
-      const place = below ? `top:${(top + lay.tile.h + 8).toFixed(0)}px` : `bottom:${(lay.height - top + 8).toFixed(0)}px`;
-      return html`<div class="pop" role="dialog" aria-label=${pop.title} tabindex="-1" style="left:${left.toFixed(0)}px;${place};width:${Math.min(width, lay.width)}px">
-        <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - left - 6).toFixed(0)}px"></i>
-        <div class="pop-head"><span class="pop-title">${pop.title}</span><span class="pop-now">${pop.now}</span></div>
+      // A sheet from the bottom of the kit, as every popup of the cards (uživatel 13. 11. 2026: „Preved vsechno na novy vzhled“).
+      return html`<ed-sheet open .heading=${pop.title} .sub=${pop.now} .closeLabel=${t.close} @hdk-close=${() => this.closePop()}><div class="pop">
         ${pop.level
           ? html`<div class="pop-level">
               <div class="pop-level-row">
@@ -345,7 +334,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
             </div>`
           : nothing}
         <div class="pop-rows">${pop.rows.map((row) => html`<div class="pop-row"><span>${row.label}</span><b>${row.value}</b></div>`)}</div>
-      </div>`;
+      </div></ed-sheet>`;
     }
 
     /** The big popup of the heading: today's totals of everything (sources = consumption, the house is the rest). */
@@ -373,10 +362,8 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
         <div class="day-total"><span>${title}</span><b>${item(total)}</b></div>
         ${items.map((row) => html`<div role="listitem" class="day-item"><i style="background:${row.color}" aria-hidden="true"></i><span>${row.label}</span><b>${item(row.value)}</b></div>`)}
       </div>`;
-      return html`<div class="pop day" role="dialog" aria-labelledby="day-h" tabindex="-1">
-        <i class="arrow up" aria-hidden="true" style="left:30px"></i>
-        <h3 id="day-h">${joined([t.pop.day, html`<span class="unit">kWh</span>`])}</h3>
+      return html`<ed-sheet open .heading=${t.pop.day} sub="kWh" .closeLabel=${t.close} @hdk-close=${() => this.closePop()}><div class="pop day">
         <div class="day-cols">${column(t.pop.sources, srcTotal, src)} ${column(t.pop.consumption, useTotal, use)}</div>
-      </div>`;
+      </div></ed-sheet>`;
     }
   };

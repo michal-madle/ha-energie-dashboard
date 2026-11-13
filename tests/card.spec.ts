@@ -13,6 +13,10 @@ const WIDTHS = [320, 360, 375, 393, 430, 768];
 const LANDSCAPE = [852, 393] as const;
 const TILES = ["sun", "bat", "grid", "house", "car", "boil", "batIn", "gridOut"];
 const CARD = "ha-energie-dashboard";
+/** A popup of a tile or of the heading: the sheet from the bottom of the kit with this title (its content is slotted in). */
+const popup = (page: Page, name: string | RegExp) => page.locator("ed-sheet").filter({ has: page.getByRole("dialog", { name }) });
+/** A tap on the dimmed area above the sheet closes it. */
+const tapOutside = (page: Page) => page.mouse.click(5, 5);
 
 // ------------------------------------------------------------------ helpers
 
@@ -570,7 +574,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       // Na rezervě (20 %), ne „pod“: střídač pod rezervu nevybije (uživatel 29. 10.).
       await update(page, { "sensor.goodwe_battery_state_of_charge": "20" });
       await page.locator('.tile[data-tile="batIn"]').click();
-      const pop = page.getByRole("dialog", { name: "Baterie" });
+      const pop = popup(page, "Baterie");
       await expect(pop).toContainText("na rezervě");
       await expect(pop).not.toContainText("pod rezervou");
       await page.keyboard.press("Escape");
@@ -650,7 +654,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await open(page, "day", 393, 852, "dark", "cs", "&stats=none");
       const sun = page.locator('.tile[data-tile="sun"]');
       await sun.click();
-      const pop = page.getByRole("dialog", { name: "Slunce" });
+      const pop = popup(page, "Slunce");
       await expect(pop).toBeVisible();
       await expect(pop).toContainText("Dnes zatím");
       await expect(pop).toContainText("18,4 kWh");
@@ -658,37 +662,37 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await page.keyboard.press("Escape");
       await expect(pop).toHaveCount(0);
       await page.locator('.tile[data-tile="batIn"]').click();
-      const battery = page.getByRole("dialog", { name: "Baterie" });
+      const battery = popup(page, "Baterie");
       await expect(battery).toContainText("88 %");
       await expect(battery).toContainText("Dnes nabito");
       await expect(battery).toContainText("5,20 kWh");
       // Jen směr dlaždice: Do baterie ukáže nabito, ne vybito (a obráceně u Baterie).
       await expect(battery).not.toContainText("Dnes vybito");
-      await page.locator(".scrim").click({ position: { x: 5, y: 5 } });
+      await tapOutside(page);
       await page.locator('.tile[data-tile="bat"]').click();
-      const discharge = page.getByRole("dialog", { name: "Baterie" });
+      const discharge = popup(page, "Baterie");
       await expect(discharge).toContainText("Dnes vybito");
       await expect(discharge).not.toContainText("Dnes nabito");
-      await page.locator(".scrim").click({ position: { x: 5, y: 5 } });
+      await tapOutside(page);
       await expect(discharge).toHaveCount(0);
       await page.locator('.tile[data-tile="grid"]').click();
-      const grid = page.getByRole("dialog", { name: "Síť" });
+      const grid = popup(page, "Síť");
       await expect(grid).toContainText("Dnes odebráno");
       await expect(grid).not.toContainText("Dnes dodáno");
       await page.keyboard.press("Escape");
       await page.locator('.tile[data-tile="gridOut"]').click();
-      const feedIn = page.getByRole("dialog", { name: "Do sítě" });
+      const feedIn = popup(page, "Do sítě");
       await expect(feedIn).toContainText("Dnes dodáno");
       await expect(feedIn).not.toContainText("Dnes odebráno");
       await page.keyboard.press("Escape");
       // Auto bez čítače: „––“, ne vymyšlené číslo.
       await page.locator('.tile[data-tile="car"]').click();
-      await expect(page.getByRole("dialog", { name: "Auto" })).toContainText("––");
+      await expect(popup(page, "Auto")).toContainText("––");
     });
     await test.step("klepnutí na záhlaví: Dnes · kWh, Zdroje a Spotřeba; Dům je zbytek; bez čítačů auta a bojleru „––“", async () => {
       await open(page, "day", 393, 852, "dark", "cs", "&stats=none");
       await page.locator(".title-btn").click();
-      const day = page.getByRole("dialog", { name: /Dnes/ });
+      const day = popup(page, /Dnes/);
       await expect(day).toBeVisible();
       await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("18,4");
       await expect(day.getByRole("list", { name: "Spotřeba" })).toContainText("––");
@@ -713,7 +717,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
     await test.step("popup (uživatel 9. 11.): běžící spotřebiče i členové skupin od největšího výkonu, doba jen s pomocným senzorem, vše ve W, Dnes dole; bez „Ostatní“", async () => {
       await open(page, "full", 393, 852, "dark", "cs", "&appliances=1");
       await page.locator('.tile[data-tile="house"]').click();
-      const pop = page.getByRole("dialog", { name: "Dům" });
+      const pop = popup(page, "Dům");
       await expect(pop).toBeVisible();
       // The oven is a member of the group Kuchyně: its helper has been on since 55 minutes ago (the restart of Home Assistant in between is not a start);
       // the washing machine is a cycle; the refrigerator (80 W) is above the threshold of 25 W and has no helper, so no duration.
@@ -740,7 +744,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
         "sensor.kuchyne_lednice": "60", "binary_sensor.kuchyne_varna_deska_bezi": "on",
       });
       await page.locator('.tile[data-tile="house"]').click();
-      const pop = page.getByRole("dialog", { name: "Dům" });
+      const pop = popup(page, "Dům");
       const rows = pop.locator(".house-app");
       await expect(rows).toHaveCount(5);
       const names = await rows.locator(".ell").allInnerTexts();
@@ -750,7 +754,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // The narrowest phone: the value never wraps and never overlaps the name (a long name is cut with an ellipsis).
       await page.setViewportSize({ width: 320, height: 852 });
       await page.locator(".house-app .ell").first().evaluate((el) => { el.lastChild!.textContent = "Varná deska s dlouhým názvem · 1 h 40 min"; });
-      const popBox = (await pop.boundingBox())!;
+      const popBox = (await pop.getByRole("dialog").boundingBox())!;
       for (const row of await rows.all()) {
         const name = (await row.locator(".ell").boundingBox())!;
         const value = (await row.locator("b").boundingBox())!;
@@ -881,10 +885,10 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // s denní dobou roste (večer přes 80 kWh), proto vysoká výroba dnes, aby test nezávisel na hodině spuštění.
       await update(page, { "sensor.energie_fve_dnes": "400" });
       await page.locator('.tile[data-tile="house"]').click();
-      const pop = page.getByRole("dialog", { name: "Dům" });
+      const pop = popup(page, "Dům");
       const today = pop.locator(".pop-row b");
       await expect.poll(async () => (await today.innerText()).trim()).toMatch(/^\d/);
-      const popup = (await today.innerText()).replace(/\s+/g, " ").trim();
+      const popupToday = (await today.innerText()).replace(/\s+/g, " ").trim();
       expect(await pop.locator(".bat-open").evaluate((el) => getComputedStyle(el).borderTopWidth)).toBe("0px");
       await pop.getByRole("button", { name: /Detail domu/ }).click();
       const detail = page.getByRole("dialog", { name: "Detail domu" });
@@ -892,7 +896,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
       // The last range is remembered by the card: ask for 1 den explicitly.
       await detail.getByRole("radio", { name: "1 den" }).click();
       await expect(detail.locator(".house-panel-head")).toContainText("Dnes");
-      expect((await detail.locator(".house-panel-head b").innerText()).replace(/\s+/g, " ").replace("Celkem", "").trim()).toBe(popup);
+      expect((await detail.locator(".house-panel-head b").innerText()).replace(/\s+/g, " ").replace("Celkem", "").trim()).toBe(popupToday);
     });
     await test.step("paleta devíti barev (uživatel 9. 11.: „Q13 ano“): devět různých barev, každá aspoň 3 : 1 na kartě v tmavém i světlém režimu; stopa segmentů v detailu ve světlém režimu #e3e3e8 (Q18)", async () => {
       const config = example();
@@ -991,7 +995,7 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
     await test.step("bez štítků nic nespadne: popup má jen hlavičku, Dnes a Detail", async () => {
       await open(page, "full");
       await page.locator('.tile[data-tile="house"]').click();
-      const pop = page.getByRole("dialog", { name: "Dům" });
+      const pop = popup(page, "Dům");
       await expect(pop).toBeVisible();
       await expect(pop.locator(".pop-row")).toHaveCount(1);
     });
@@ -1286,7 +1290,7 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
     await test.step("denní součty bez čítačů: „––“ v popoveru i v záhlaví, žádné odhady", async () => {
       await open(page, "unavailable");
       await page.locator(".title-btn").click();
-      const day = page.getByRole("dialog", { name: /Dnes/ });
+      const day = popup(page, /Dnes/);
       await expect(day.locator(".day-total b")).toHaveText(["––", "––"]);
     });
   });
@@ -1628,6 +1632,8 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
 test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", () => {
   test("axe (tmavý i světlý režim): karta bez porušení, i bez dat, bez nadpisu, s rozbalenými detaily a s popoverem", async ({ page }) => {
     test.setTimeout(120000);
+    // Axe measures the finished sheets, not their fade-in.
+    await page.emulateMedia({ reducedMotion: "reduce" });
     for (const theme of ["dark", "light"] as const) {
       for (const scenario of ["full", "day", "grid", "unavailable", "missing"]) {
         await open(page, scenario, 393, 852, theme);
@@ -1674,7 +1680,7 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
       const sun = page.locator('.tile[data-tile="sun"]');
       await sun.focus();
       await page.keyboard.press("Enter");
-      await expect(page.getByRole("dialog", { name: "Slunce" })).toBeVisible();
+      await expect(popup(page, "Slunce")).toBeVisible();
       await page.keyboard.press("Escape");
       await expect(page.getByRole("dialog")).toHaveCount(0);
     });
@@ -1913,7 +1919,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
   test("popup baterie: nabití, gauge z deseti pilulek s rezervou, odhad času, mikrotrend a jen směr dlaždice", async ({ page }) => {
     await open(page, "day");
     await page.locator('.tile[data-tile="batIn"]').click();
-    const pop = page.getByRole("dialog", { name: "Baterie" });
+    const pop = popup(page, "Baterie");
     await expect(pop).toContainText("nabíjí 0,80 kW");
     await expect(pop.locator(".pop-big")).toHaveText("88 %");
     await expect(pop.getByRole("img", { name: "Nabití 88 %, rezerva 20 %" })).toBeVisible();
@@ -1939,13 +1945,13 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     expect(pills[9].radius).toBe("0px 8px 8px 0px");
     expect(pills.slice(1, 9).every((pill) => pill.radius === "0px")).toBe(true);
     expect(pills.every((pill) => pill.motion === "0s")).toBe(true);
-    // Popup je malý jako ostatní a nestahuje statistiky.
-    expect((await page.locator(".bat-pop").boundingBox())!.width).toBeLessThanOrEqual(236);
+    // Popup je list odspodu z kitu jako všechny popupy (uživatel 13. 11. 2026: „Preved vsechno na novy vzhled“).
+    await expect(popup(page, "Baterie").getByRole("dialog")).toBeVisible();
     await page.keyboard.press("Escape");
     // Vybíjení (Baterie vlevo): jiná věta a jen „Dnes vybito“.
     await open(page, "full");
     await page.locator('.tile[data-tile="bat"]').click();
-    const out = page.getByRole("dialog", { name: "Baterie" });
+    const out = popup(page, "Baterie");
     await expect(out).toContainText("vybíjí 351 W");
     await expect(out).toContainText("Vydrží asi 14 h 20 min");
     await expect(out).toContainText("Dnes vybito");
@@ -1953,7 +1959,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     // Bez toku (pod prahem) věta s časem není; na rezervě je poznámka.
     await open(page, "grid");
     await page.locator('.tile[data-tile="bat"]').click();
-    const rest = page.getByRole("dialog", { name: "Baterie" });
+    const rest = popup(page, "Baterie");
     await expect(rest).not.toContainText(/Plná za|Vydrží/);
     await update(page, { "sensor.goodwe_battery_state_of_charge": "15" });
     await expect(rest).toContainText("na rezervě");
@@ -2158,7 +2164,8 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
         }
       }
     }
-    // Popup baterie: také bez porušení.
+    // Popup baterie: také bez porušení (axe měří hotový list, ne jeho náběh).
+    await page.emulateMedia({ reducedMotion: "reduce" });
     for (const theme of ["dark", "light"] as const) {
       await open(page, "day", 393, 852, theme);
       await page.locator('.tile[data-tile="batIn"]').click();
@@ -2202,7 +2209,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     test("popup: výkon teď, kam slunce jde, dnes zatím s kolečkem a podílem možného do teď, začátek a konec výroby", async ({ page }) => {
       await open(page, "day");
       await page.locator('.tile[data-tile="sun"]').click();
-      const pop = page.getByRole("dialog", { name: "Slunce" });
+      const pop = popup(page, "Slunce");
       await expect(pop).toContainText("Vyrábí");
       await expect(pop.locator(".pop-big")).toHaveText("6,80 kW");
       // Kam teď slunce jde: jen pruh v barvách dlaždic (dům, auto, bojler, baterie, síť), bez legendy, aby popup nebyl roztažený.
@@ -2228,7 +2235,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       // Večer bez výroby: „bez výroby“, žádný tok.
       await open(page, "full");
       await page.locator('.tile[data-tile="sun"]').click();
-      await expect(page.getByRole("dialog", { name: "Slunce" })).toContainText("bez výroby");
+      await expect(popup(page, "Slunce")).toContainText("bez výroby");
     });
 
     test("detail Dnes: výkon teď, graf s křivkou možného, dlaždice, kam slunce šlo, ⓘ otevře a zavře bublinu; Zpět a Hotovo", async ({ page }) => {
@@ -2348,7 +2355,7 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
       }
       await open(page, "unavailable");
       await page.locator('.tile[data-tile="sun"]').click();
-      const pop = page.getByRole("dialog", { name: "Slunce" });
+      const pop = popup(page, "Slunce");
       await expect(pop.locator(".pop-big")).toHaveText("––");
     });
 

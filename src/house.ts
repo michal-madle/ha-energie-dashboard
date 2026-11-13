@@ -3,7 +3,6 @@ import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import { isOn } from "./model";
 import type { FlowModel } from "./model";
-import type { Layout } from "./sankey";
 import type { Sunned } from "./sun";
 import type { Chart } from "./battery";
 import type { GroupConfig, Settings } from "./types";
@@ -14,7 +13,7 @@ import type { Period, Range, StatRow, Stats } from "./battery-data";
 import { GUTTER, timeTicks } from "./chart-grid";
 import { formatClock, formatDayName, formatKwh, formatNumber, formatPower, powerUnit, readEnergy, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
-import { NO_DATA, clamp } from "./view";
+import { NO_DATA } from "./view";
 import type { Alert, BatEntry, Constructor, Tile } from "./view";
 import { joined, joinedText } from "ha-dashboard-kit/joined";
 
@@ -306,26 +305,16 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       );
     }
 
-    renderHousePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel): TemplateResult {
+    renderHousePopup(tile: Tile, s: Settings, model: FlowModel): TemplateResult {
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const on = isOn(model.other, idle);
       const day = this.today(s);
       const all = this.popupItems(s);
       const rows = (this._houseFrozen ?? []).map((key) => all.find((item) => item.key === key)).filter((item): item is PopupItem => !!item);
-      // Wider than the other popups (uživatel 2. 11.): a value never wraps.
-      const width = Math.min(300, lay.width);
-      const centreX = tile.side === "L" ? lay.tile.w / 2 : lay.width - lay.tile.w / 2;
-      const left = clamp(centreX - width / 2, 0, lay.width - width);
-      const centreY = tile.side === "L" ? lay.left[tile.key as "sun"] : lay.right[tile.key as "house"];
-      const top = centreY - lay.tile.h / 2;
-      const below = centreY < lay.height / 2;
-      const place = below ? `top:${(top + lay.tile.h + 8).toFixed(0)}px` : `bottom:${(lay.height - top + 8).toFixed(0)}px`;
       // Watts in the whole popup (uživatel 9. 11. 2026, "Q10 ano").
       const now = on ? formatPower(model.other!, "W").replace(" ", "\u00a0") : model.other === undefined ? NO_DATA : t.idle.house;
-      return html`<div class="pop bat-pop house-pop" role="dialog" aria-label=${tile.name} tabindex="-1" style="left:${left.toFixed(0)}px;${place};width:${width}px">
-        <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - left - 6).toFixed(0)}px"></i>
-        <div class="pop-head"><span class="pop-title">${tile.name}</span><span class="pop-now">${now}</span></div>
+      return html`<ed-sheet open .heading=${tile.name} .sub=${now} .closeLabel=${t.close} @hdk-close=${() => (this._pop = undefined)}><div class="pop bat-pop house-pop">
         <div class="pop-rows">
           ${rows.map((item) => {
             const watts = readNumber(this.hass, item.power);
@@ -342,7 +331,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
           <div class="pop-row"><span>${t.pop.rows.consumed}</span><b>${day.house === undefined ? NO_DATA : `${formatKwh(day.house)}\u00a0kWh`}</b></div>
         </div>
         <button type="button" class="bat-open" @click=${() => this.openHouseDetail()}><span>${t.house.open}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg></button>
-      </div>`;
+      </div></ed-sheet>`;
     }
 
     // ----------------------------------------------------------------- state and history

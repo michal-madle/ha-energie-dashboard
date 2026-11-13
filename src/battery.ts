@@ -3,7 +3,6 @@ import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
 import type { FlowModel } from "./model";
 import { isOn } from "./model";
-import type { Layout } from "./sankey";
 import type { Settings } from "./types";
 import { entityState, formatFixed, formatKwh, formatNumber, formatPercent, formatPower, formatWeekday, formatClock, readEnergy, readNumber } from "./utils";
 import type { PowerUnit } from "./utils";
@@ -249,7 +248,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
 
     // ----------------------------------------------------------------- popup
 
-    renderBatteryPopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
+    renderBatteryPopup(tile: Tile, s: Settings, model: FlowModel, unit: PowerUnit): TemplateResult {
       const t = this.t;
       const idle = s.num.flows.idle_threshold;
       const out = tile.key === "bat";
@@ -263,16 +262,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
       const day = this.today(s);
       const total = out ? day.bdis : day.bchg;
       const estimate = this.batEstimate(model, s);
-      const width = Math.min(236, lay.width);
-      const centreX = tile.side === "L" ? lay.tile.w / 2 : lay.width - lay.tile.w / 2;
-      const left = clamp(centreX - width / 2, 0, lay.width - width);
-      const centreY = tile.side === "L" ? lay.left[tile.key as "bat"] : lay.right[tile.key as "batIn"];
-      const top = centreY - lay.tile.h / 2;
-      const below = centreY < lay.height / 2;
-      const place = below ? `top:${(top + lay.tile.h + 8).toFixed(0)}px` : `bottom:${(lay.height - top + 8).toFixed(0)}px`;
-      return html`<div class="pop bat-pop" role="dialog" aria-label=${tile.name} tabindex="-1" style="left:${left.toFixed(0)}px;${place};width:${width}px">
-        <i class="arrow ${below ? "up" : "down"}" aria-hidden="true" style="left:${(centreX - left - 6).toFixed(0)}px"></i>
-        <div class="pop-head"><span class="pop-title">${tile.name}</span><span class="pop-now">${now}</span></div>
+      return html`<ed-sheet open .heading=${tile.name} .sub=${now} .closeLabel=${t.close} @hdk-close=${() => (this._pop = undefined)}><div class="pop bat-pop">
         <div class="pop-level">
           <div class="pop-level-row">
             <span class="pop-label">${t.pop.level}${low ? html`<span class="note"> ${t.pop.atReserve}</span>` : nothing}</span>
@@ -283,7 +273,7 @@ export const withBattery = <T extends Constructor<CardBase>>(Base: T) =>
         ${estimate ? html`<p class="bat-estimate"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 4.5V8l2.4 1.6"></path></svg>${estimate}</p>` : nothing}
         <div class="pop-rows"><div class="pop-row"><span>${out ? t.pop.rows.discharged : t.pop.rows.charged}</span><b>${total === undefined ? NO_DATA : `${formatKwh(total)} kWh`}</b></div></div>
         <button type="button" class="bat-open" @click=${() => this.openBatteryDetail()}><span>${t.bat.open}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg></button>
-      </div>`;
+      </div></ed-sheet>`;
     }
 
     // ----------------------------------------------------------------- charts

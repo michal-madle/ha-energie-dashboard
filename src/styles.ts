@@ -447,91 +447,24 @@ export const styles = css`
   .house-idle { display: inline-flex; align-items: center; padding: 0 4px; }
   .house-idle svg { width: 22px; height: 22px; fill: var(--ed-text); }
   .pop-row span.ell { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .scrim {
-    position: absolute;
-    inset: 0;
-    z-index: 5;
-    padding: 0;
-    border: 0;
-    border-radius: 12px;
-    background: rgb(0 0 0 / 0.1%);
-    cursor: default;
+  /* The popups are sheets from the bottom of the kit (one look in every card); their colours are those of the popups. */
+  ed-sheet {
+    --hdk-sheet-bg: var(--ed-pop);
+    --hdk-sheet-text: var(--ed-text);
+    --hdk-secondary: var(--ed-pop-sec);
+    --hdk-sheet-button: var(--ed-pop-line);
   }
 
   .pop {
-    position: absolute;
-    z-index: 10;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    background: var(--ed-pop);
-    box-shadow: 0 8px 30px var(--ed-pop-shadow);
-    animation: pop-in 0.18s ease-out;
   }
 
-  @keyframes pop-in {
-    from {
-      opacity: 0;
-      transform: scale(0.96);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .pop {
-      animation: none;
-    }
-  }
-
-  .pop > * {
-    position: relative;
-  }
-
-  .pop .arrow {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    border-radius: 2px;
-    background: var(--ed-pop);
-    transform: rotate(45deg);
-  }
-
-  .pop .arrow.up {
-    top: -6px;
-  }
-
-  .pop .arrow.down {
-    bottom: -6px;
-  }
-
-  .pop-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 8px;
-  }
-
-  .pop-title {
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 22px;
-  }
-
-  .pop-now,
   .pop-label {
     color: var(--ed-pop-sec);
     font-size: 13px;
     line-height: 18px;
-  }
-
-  .pop-now {
-    text-align: right;
   }
 
   .pop-label .note {
@@ -607,26 +540,7 @@ export const styles = css`
   }
 
   .pop.day {
-    z-index: 20;
-    top: 72px;
-    right: 12px;
-    left: 12px;
     gap: 6px;
-    padding: 14px 14px 8px;
-    border-radius: 16px;
-  }
-
-  .pop.day h3 {
-    font-size: 17px;
-    font-weight: 600;
-    line-height: 22px;
-  }
-
-  .pop.day h3 .joined-sep,
-  .pop.day h3 .unit {
-    color: var(--ed-pop-sec);
-    font-size: 15px;
-    font-weight: 400;
   }
 
   .day-cols {
