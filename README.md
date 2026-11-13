@@ -31,7 +31,7 @@ Popup a Detail Dům (spotřebiče, jejich cykly a historie) používají sekci `
 
 Detail baterie používá navíc entity `battery.*` (zdraví, napětí, teploty článků, čítače, limity, chyby) a klíče `battery.default_range` (`1d`, `7d`, `30d`; zvolený rozsah si prohlížeč pamatuje), `battery.capacity` a `battery.imbalance_*`; všechny jsou v příkladu.
 
-Klíče jsou po systémech: `language`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení volby, kterou Home Assistant nepotvrdil) a `colors`. Výchozí hodnoty a význam každého klíče jsou v [příkladu](./examples/energie.yaml) (komentáře u klíčů).
+Klíče jsou po systémech: `language`, `titles`, `pv`, `battery`, `grid`, `house`, `car`, `wallbox`, `boiler`, `water`, `tank`, `mixing`, `daily` (denní čítače pro popupy), `flows` (práh toků `idle_threshold`, výchozí 15 W, pásy toků, počet desetinných míst kW: `auto` = aspoň tři číslice, výchozí, nebo 1 či 2), `scale`, `ui` (podržení, dvojklep, nápověda, vrácení volby, kterou Home Assistant nepotvrdil) a `colors`. Výchozí hodnoty a význam každého klíče jsou v [příkladu](./examples/energie.yaml) (komentáře u klíčů).
 
 ID entit v příkladu odpovídají entitám z Home Assistantu autora karty (export a mapa entit nejsou součástí repozitáře), kromě zástupných názvů (předpověď, denní čítače podle [examples/denni_soucty.yaml](./examples/denni_soucty.yaml), entity auta), které si upravte podle svých entit. Odhadnutá ID nepoužívejte.
 

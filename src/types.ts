@@ -81,6 +81,7 @@ export interface NumberSettings {
   water: { gauge_min: number; gauge_max: number };
   tank: { temp_min: number; temp_max: number; temp_step: number };
   flows: {
+    idle_threshold: number;
     kw_from: number;
     export_notice: number;
     source_min_share: number;

@@ -236,6 +236,7 @@ daily:
 
 # ------------------------------------------------------- toky: prahy a kreslení
 flows:
+  idle_threshold: 15                                    # W pod tím se tok bere jako žádný (platí i pro věty o stavu a pro popup Dům)
   kw_from: 1000                                         # W od tohoto se všechny výkony ukazují v kW
   decimals: auto                                        # desetinná místa kW: auto = aspoň 3 číslice (0,13 · 1,36 · 6,43 · 11,3 kW), 1 (6,8 kW) nebo 2 (6,81 kW)
   export_notice: 300                                    # W přetoků do sítě, od kterých je to „přebytek“

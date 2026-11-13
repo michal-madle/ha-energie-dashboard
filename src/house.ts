@@ -1,7 +1,7 @@
 /* The house: the appliances (the label of Home Assistant), their popup, alerts and the detail "Dům" (CURRENT_SPEC.md, Dům: popup a detail). */
 import { html, nothing, svg } from "lit";
 import type { TemplateResult } from "lit";
-import { isOn, SHOWN_W } from "./model";
+import { isOn } from "./model";
 import type { FlowModel } from "./model";
 import type { Layout } from "./sankey";
 import type { Sunned } from "./sun";
@@ -191,7 +191,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         if (state === "off") return false;
       }
       const watts = readNumber(this.hass, a.power);
-      return watts === undefined ? undefined : isOn(watts, SHOWN_W);
+      return watts === undefined ? undefined : isOn(watts, s.num.flows.idle_threshold);
     }
 
     /** When the helper last changed (ms); the start of the running cycle or the end of the finished one. */
@@ -294,7 +294,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
         const watts = group.appliances.map((m) => readNumber(this.hass, m.power));
         if (watts.some((value) => value === undefined)) return;
         const sum = (watts as number[]).reduce((total, value) => total + value, 0);
-        if (isOn(sum, SHOWN_W)) active.push({ key: groupKey(index), watts: sum });
+        if (isOn(sum, s.num.flows.idle_threshold)) active.push({ key: groupKey(index), watts: sum });
       });
       return active.sort((a, b) => b.watts - a.watts).map((item) => item.key);
     }
@@ -308,7 +308,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
 
     renderHousePopup(tile: Tile, lay: Layout, s: Settings, model: FlowModel): TemplateResult {
       const t = this.t;
-      const idle = SHOWN_W;
+      const idle = s.num.flows.idle_threshold;
       const on = isOn(model.other, idle);
       const day = this.today(s);
       const all = this.popupItems(s);
@@ -636,7 +636,7 @@ export const withHouse = <T extends Constructor<Sunned>>(Base: T) =>
       const watts = readNumber(this.hass, a.power);
       const on = this.applianceOn(a, s);
       const status = this.applianceStatus(a, s) ?? (on === false ? t.house.notRunning : NO_DATA);
-      const drawing = watts !== undefined && isOn(watts, SHOWN_W);
+      const drawing = watts !== undefined && isOn(watts, s.num.flows.idle_threshold);
       // A running cycle shows its power even when it is small (a pause of the programme); only a stopped appliance shows the symbol.
       const value = watts === undefined
         ? html`<span class="bat-value">${NO_DATA}</span>`

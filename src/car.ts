@@ -1,7 +1,7 @@
 /* The car panel: the picture with its link, the charge level, the sources, the mode and the wallbox. */
 import { html, nothing } from "lit";
 import type { TemplateResult } from "lit";
-import { isOn, SHOWN_W, SOURCES, sourceText } from "./model";
+import { SOURCES, isOn, sourceText } from "./model";
 import type { FlowModel, Source } from "./model";
 import type { Settings } from "./types";
 import { ago, entityState, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
@@ -76,7 +76,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const flows = s.num.flows;
       const limit = s.num.car.charge_limit;
       const link = model.carLink;
-      const charging = isOn(model.car, SHOWN_W) && link !== "disconnected";
+      const charging = isOn(model.car, flows.idle_threshold) && link !== "disconnected";
       const src = sourceText(model.loadShare.car, flows, t);
       const blocked = readText(this.hass, e.wallbox.block_charging) === "on";
       const boost = this.shown(e.wallbox.boost);
@@ -101,7 +101,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const glow = mix(stateColor ?? "#d8d8dc", stateColor ? 42 : 28);
       const picture = entityState(this.hass, e.car.image)?.attributes?.entity_picture;
       const soc = model.carSoc;
-      const unit = powerUnit([isOn(model.car, SHOWN_W) ? model.car : undefined], flows.kw_from);
+      const unit = powerUnit([isOn(model.car, flows.idle_threshold) ? model.car : undefined], flows.kw_from);
       const hasLimit = limit < 100;
       const meterLabel = t.car.chargeLevel(soc === undefined ? t.noData : formatPercent(soc), hasLimit ? formatPercent(limit) : undefined);
       const w = e.wallbox;

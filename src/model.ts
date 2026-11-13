@@ -57,12 +57,10 @@ export interface FlowModel {
 const positive = (value: number | undefined): number | undefined => (value === undefined ? undefined : Math.max(0, value));
 
 /**
- * A power counts as a flow when it shows as at least 1 W (whole W, from 0,5 W): there is no threshold, everything
- * is shown (uživatel 12. 11. 2026: „zrus threshold na zobrazovani zdroje/spotreby energie. Bude se zobrazovat vse“).
+ * Whether a power counts as a flow: from `flows.idle_threshold` W (default 15) upwards. Below it (noise, standby)
+ * there is no flow at all (CURRENT_SPEC.md, Toky energie; uživatel 13. 11. 2026: „vratit ten threshold, ale s hodnotou 15W“).
  */
-export const SHOWN_W = 0.5;
-
-export const isOn = (watts: number | undefined, idle: number = SHOWN_W): boolean => watts !== undefined && watts >= idle;
+export const isOn = (watts: number | undefined, idle: number): boolean => watts !== undefined && watts >= idle;
 
 export function carLink(status: string | undefined): CarLink {
   if (status === "Disconnected") return "disconnected";
@@ -73,7 +71,7 @@ export function carLink(status: string | undefined): CarLink {
 
 export function buildModel(hass: HomeAssistant | undefined, settings: Settings, t: Texts): FlowModel {
   const e = settings.entities;
-  const idle = SHOWN_W;
+  const idle = settings.num.flows.idle_threshold;
   const sun = positive(readNumber(hass, e.pv.power));
   const battery = readNumber(hass, e.battery.power); // + discharging, − charging (measured 15. 10.)
   const grid = readNumber(hass, e.grid.power); // − import (measured); + export (sign by definition, confirmed 28. 10.)
@@ -151,7 +149,7 @@ export function buildModel(hass: HomeAssistant | undefined, settings: Settings, 
 
 /** The sentence under the title (what the sun does; otherwise where the house gets its energy). */
 export function summarize(m: FlowModel, flows: NumberSettings["flows"], t: Texts): { summary?: string; summarySource?: Source } {
-  const idle = SHOWN_W;
+  const idle = flows.idle_threshold;
   const on = (value: number | undefined) => isOn(value, idle);
   const noData = [m.sun, m.batDis, m.imp, m.other].every((value) => value === undefined);
   if (noData) return {};

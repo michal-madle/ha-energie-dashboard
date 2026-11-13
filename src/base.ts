@@ -2,7 +2,7 @@
 import { html } from "lit";
 import type { PropertyValues, TemplateResult } from "lit";
 import { normalizeConfig } from "./config";
-import { isOn, SHOWN_W } from "./model";
+import { isOn } from "./model";
 import type { FlowModel, SourceText } from "./model";
 import type { DashboardConfig, HomeAssistant, Settings } from "./types";
 import { entityState, readEnergy, readNumber, useFormat } from "./utils";
@@ -139,7 +139,7 @@ export class CardBase extends LitElement {
     // Only the dark / light mode of Home Assistant is followed; the surfaces are the card's own.
     this.toggleAttribute("data-light", this.hass?.themes?.darkMode === false);
     const s = this._config;
-    if (s && isOn(readNumber(this.hass, s.entities.boiler.power), SHOWN_W)) {
+    if (s && isOn(readNumber(this.hass, s.entities.boiler.power), s.num.flows.idle_threshold)) {
       this._lastHeating = Date.now();
       if (this._lastHeating - this._storedHeating > 60000) {
         this._storedHeating = this._lastHeating;
@@ -219,12 +219,12 @@ export class CardBase extends LitElement {
 
   carVisible(s: Settings, model: FlowModel): boolean {
     // Hidden only when the car is known to be disconnected and the wallbox delivers nothing.
-    return !(model.carLink === "disconnected" && !isOn(model.car, SHOWN_W));
+    return !(model.carLink === "disconnected" && !isOn(model.car, s.num.flows.idle_threshold));
   }
 
   boilerVisible(s: Settings, model: FlowModel): boolean {
     if (s.boilerShow === "always" || model.boil === undefined) return true;
-    if (isOn(model.boil, SHOWN_W)) return true;
+    if (isOn(model.boil, s.num.flows.idle_threshold)) return true;
     return this._lastHeating > 0 && Date.now() - this._lastHeating < s.num.boiler.hold_minutes * 60000;
   }
 

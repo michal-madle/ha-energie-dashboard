@@ -162,7 +162,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     expect(settings.entities.boiler.boost_target_temperature).toBe("number.tuv_2_2_boost_target_temperature");
     expect(settings.entities.daily.pv_generation).toBe("sensor.energie_fve_dnes");
     expect(settings.num.wallbox.power_max).toBe(11100);
-    expect(settings.num.flows.idle_threshold).toBeUndefined(); // bez prahu (uživatel 12. 11. 2026: „Bude se zobrazovat vse“)
+    expect(settings.num.flows.idle_threshold).toBe(15); // práh toků 15 W (uživatel 13. 11. 2026: „vratit ten threshold, ale s hodnotou 15W“)
     expect(settings.num.ui).toEqual({ revert_after: 6, hold_ms: 550, double_tap_ms: 400, hint_seconds: 3 });
     expect(settings.tempScale).toHaveLength(5);
     expect(settings.boilerShow).toBe("heating");
@@ -273,15 +273,18 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
       await expect(reconfigure(page, { flows: { ...config.flows, decimals: 3 } })).rejects.toThrow();
     });
-    await test.step("limit nabíjení 100 % se v měřiči nekreslí; bez prahu je tokem každý výkon od 1 W", async () => {
+    await test.step("limit nabíjení 100 % se v měřiči nekreslí; práh toků 15 W: tokem je výkon od 15 W, klíč flows.idle_threshold ho mění", async () => {
       await open(page, "day");
       await expect(page.locator(".meter .limit")).toHaveCount(0);
-      await update(page, { "sensor.goodwe_battery_power": "-3" }); // uživatel 12. 11. 2026: „Bude se zobrazovat vse“
+      await update(page, { "sensor.goodwe_battery_power": "-14" }); // uživatel 13. 11. 2026: „vratit ten threshold, ale s hodnotou 15W“
+      expect((await tile(page, "batIn")).on).toBe(false);
+      await update(page, { "sensor.goodwe_battery_power": "-15" });
       expect((await tile(page, "batIn")).on).toBe(true);
       await update(page, { "sensor.goodwe_battery_power": "0" });
       expect((await tile(page, "batIn")).on).toBe(false);
-      // An older dashboard with the key still works: it is skipped (the card can be updated before the dashboard).
       expect(await configError(page, { flows: { idle_threshold: 100 } })).toBe("");
+      expect(await configError(page, { flows: { idle_threshold: 1001 } })).toContain("flows.idle_threshold");
+      expect(await configError(page, { flows: { idle_threshold: -1 } })).toContain("flows.idle_threshold");
     });
   });
 });
@@ -466,7 +469,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
     await update(page, { "sensor.tuv_power_total": "2000" });
     expect((await strength("boil")).rest).toBe(31);
   });
-  test("toky: poledne, večer, boost ze sítě a bez prahu", async ({ page }) => {
+  test("toky: poledne, večer, boost ze sítě a práh 15 W", async ({ page }) => {
     test.setTimeout(120000);
     await test.step("poledne: hodnoty ve všech dlaždicích v jedné jednotce, pásy podle zdrojů, věta o stavu", async () => {
       await open(page, "day");
@@ -525,7 +528,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await open(page, "full");
       const none = { "sensor.wallbox_total_power": "0", "sensor.tuv_power_total": "0" };
       // Bez slunce: dům i nabíjení baterie jdou ze sítě, ze Slunce nevede nic.
-      await update(page, { ...none, "sensor.goodwe_pv_power": "0", "sensor.goodwe_battery_power": "-10", "sensor.goodwe_meter_active_power_total": "-1030", "sensor.goodwe_house_consumption": "1020" });
+      await update(page, { ...none, "sensor.goodwe_pv_power": "0", "sensor.goodwe_battery_power": "-20", "sensor.goodwe_meter_active_power_total": "-1040", "sensor.goodwe_house_consumption": "1020" });
       const fills = () => page.locator(".flow > svg > path").evaluateAll((paths) => paths.map((path) => path.getAttribute("fill")).sort());
       expect(await fills()).toEqual(["url(#rg-grid)", "url(#rg-grid)"]);
       expect((await tile(page, "batIn")).on).toBe(true);
@@ -536,12 +539,15 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
         paths.map((path) => (path.getAttribute("d") ?? "").match(/^M[\d.]+ ([\d.]+) C[\d.]+ [\d.]+ [\d.]+ ([\d.]+)/)!.slice(1).map(Number)));
       for (const a of ends) for (const b of ends) expect((a[0] - b[0]) * (a[1] - b[1]), "pásy se nekříží").toBeGreaterThanOrEqual(0);
     });
-    await test.step("bez prahu (uživatel 12. 11. 2026: „Bude se zobrazovat vse“): nulový výkon není tok, každý další ano", async () => {
+    await test.step("práh 15 W (uživatel 13. 11. 2026: „vratit ten threshold, ale s hodnotou 15W“): nulový výkon a výkon pod prahem není tok, od 15 W ano", async () => {
       await open(page, "full");
       const zero = { "sensor.goodwe_pv_power": "0", "sensor.goodwe_battery_power": "0", "sensor.goodwe_meter_active_power_total": "0", "sensor.goodwe_house_consumption": "0", "sensor.wallbox_total_power": "0", "sensor.tuv_power_total": "0" };
       await update(page, zero);
       await expect(page.locator(".flow > svg > path")).toHaveCount(0);
       for (const item of await readTiles(page)) expect(item.on, item.key).toBe(false);
+      await update(page, { ...zero, "sensor.goodwe_battery_power": "14", "sensor.goodwe_house_consumption": "14" });
+      expect((await tile(page, "bat")).on).toBe(false);
+      expect((await tile(page, "house")).on).toBe(false);
       await update(page, { ...zero, "sensor.goodwe_battery_power": "15", "sensor.goodwe_house_consumption": "15" });
       expect((await tile(page, "bat")).on).toBe(true);
       expect((await tile(page, "house")).on).toBe(true);
