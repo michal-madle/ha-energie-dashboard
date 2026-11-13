@@ -689,12 +689,12 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await page.locator('.tile[data-tile="car"]').click();
       await expect(popup(page, "Auto")).toContainText("––");
     });
-    await test.step("klepnutí na záhlaví: Dnes · kWh, Zdroje a Spotřeba; Dům je zbytek; bez čítačů auta a bojleru „––“", async () => {
+    await test.step("klepnutí na záhlaví: Dnes, každá hodnota s kWh a dvěma desetinnými místy (Q210), Zdroje a Spotřeba; Dům je zbytek; bez čítačů auta a bojleru „––“", async () => {
       await open(page, "day", 393, 852, "dark", "cs", "&stats=none");
       await page.locator(".title-btn").click();
       const day = popup(page, /Dnes/);
       await expect(day).toBeVisible();
-      await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("18,4");
+      await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("18,40\u00a0kWh");
       await expect(day.getByRole("list", { name: "Spotřeba" })).toContainText("––");
       await page.keyboard.press("Escape");
       const config = example();
@@ -702,9 +702,12 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await page.locator(".title-btn").click();
       // 18,4 + 2,6 + 3,1 − 4,9 − 5,2 − 6,0 − 2,5 = 5,5 kWh; zdroje i spotřeba dají 24,1.
       const use = day.getByRole("list", { name: "Spotřeba" });
-      await expect(use).toContainText("24,1");
-      await expect(use.getByRole("listitem").first()).toContainText("5,50");
-      await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("24,1");
+      await expect(use).toContainText("24,10\u00a0kWh");
+      await expect(use.getByRole("listitem").first()).toContainText("5,50\u00a0kWh");
+      await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("24,10\u00a0kWh");
+      // Stejný počet desetinných míst u všech hodnot.
+      const values = await day.locator(".day-item b, .day-total b").allInnerTexts();
+      expect(values.every((value) => /^\d+,\d\d\u00a0kWh$/.test(value)), values.join(" | ")).toBe(true);
     });
   });
 });

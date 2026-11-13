@@ -6,7 +6,7 @@ import type { FlowModel, Sink, Source } from "./model";
 import { bands, layout, order } from "./sankey";
 import type { Layout } from "./sankey";
 import type { Settings } from "./types";
-import { formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
+import { formatFixed, formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { ICON } from "./icons";
 import type { Housed } from "./house";
@@ -342,7 +342,8 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       void model;
       const t = this.t;
       const day = this.today(s);
-      const item = (value: number | undefined) => (value === undefined ? NO_DATA : formatKwh(value));
+      // Every value with its unit and two decimal places (uživatel 13. 11. 2026: „Q210 ano“; dříve aspoň tři číslice a jednotka jen v nadpisu).
+      const item = (value: number | undefined) => (value === undefined ? NO_DATA : `${formatFixed(Math.max(0, value), 2)}\u00a0kWh`);
       const sources = [day.pv, day.bdis, day.gin];
       const srcTotal = sources.every((value) => value !== undefined) ? sources.reduce((sum, value) => sum! + value!, 0) : undefined;
       const useTotal = day.house === undefined ? undefined : day.house + day.car! + day.boil! + day.bchg! + day.gout!;
@@ -362,7 +363,7 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
         <div class="day-total"><span>${title}</span><b>${item(total)}</b></div>
         ${items.map((row) => html`<div role="listitem" class="day-item"><i style="background:${row.color}" aria-hidden="true"></i><span>${row.label}</span><b>${item(row.value)}</b></div>`)}
       </div>`;
-      return html`<ed-sheet open .heading=${t.pop.day} sub="kWh" .closeLabel=${t.close} @hdk-close=${() => this.closePop()}><div class="pop day">
+      return html`<ed-sheet open .heading=${t.pop.day} .closeLabel=${t.close} @hdk-close=${() => this.closePop()}><div class="pop day">
         <div class="day-cols">${column(t.pop.sources, srcTotal, src)} ${column(t.pop.consumption, useTotal, use)}</div>
       </div></ed-sheet>`;
     }

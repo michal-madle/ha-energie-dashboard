@@ -1193,15 +1193,16 @@ _a.styles = [gn, zt`
       gap: 8px;
       margin-bottom: 12px;
     }
+    /* The type scale of DASHBOARD_UX_SYSTEM.md (Písmo): Title 2 22/28 and Subhead 15/20 (uživatel 13. 11. 2026: „Q209 ano“). */
     h2 {
       margin: 0;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 600;
-      line-height: 26px;
+      line-height: 28px;
     }
     .sub {
       color: var(--hdk-secondary, #9a9aa0);
-      font-size: 14px;
+      font-size: 15px;
       line-height: 20px;
     }
     .close {
@@ -8667,7 +8668,7 @@ const et = {
   }
   /** The big popup of the heading: today's totals of everything (sources = consumption, the house is the rest). */
   renderDayPopup(t, e) {
-    const s = this.t, n = this.today(t), o = (p) => p === void 0 ? T : at(p), i = [n.pv, n.bdis, n.gin], r = i.every((p) => p !== void 0) ? i.reduce((p, b) => p + b, 0) : void 0, l = n.house === void 0 ? void 0 : n.house + n.car + n.boil + n.bchg + n.gout, h = [
+    const s = this.t, n = this.today(t), o = (p) => p === void 0 ? T : `${Y(Math.max(0, p), 2)} kWh`, i = [n.pv, n.bdis, n.gin], r = i.every((p) => p !== void 0) ? i.reduce((p, b) => p + b, 0) : void 0, l = n.house === void 0 ? void 0 : n.house + n.car + n.boil + n.bchg + n.gout, h = [
       { label: s.tile.sun, color: "var(--ed-sun)", value: n.pv },
       { label: s.pop.fromBattery, color: "var(--ed-battery)", value: n.bdis },
       { label: s.pop.fromGrid, color: "var(--ed-grid)", value: n.gin }
@@ -8681,7 +8682,7 @@ const et = {
         <div class="day-total"><span>${p}</span><b>${o(b)}</b></div>
         ${y.map((f) => v`<div role="listitem" class="day-item"><i style="background:${f.color}" aria-hidden="true"></i><span>${f.label}</span><b>${o(f.value)}</b></div>`)}
       </div>`;
-    return v`<ed-sheet open .heading=${s.pop.day} sub="kWh" .closeLabel=${s.close} @hdk-close=${() => this.closePop()}><div class="pop day">
+    return v`<ed-sheet open .heading=${s.pop.day} .closeLabel=${s.close} @hdk-close=${() => this.closePop()}><div class="pop day">
         <div class="day-cols">${d(s.pop.sources, r, h)} ${d(s.pop.consumption, l, c)}</div>
       </div></ed-sheet>`;
   }
@@ -9004,4 +9005,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ne(Tn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.2.2 · 2026-11-13 17:52 UTC · po e0212e4 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.2.3 · 2026-11-13 18:21 UTC · po 24ae282 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
