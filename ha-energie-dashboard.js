@@ -3860,7 +3860,7 @@ const Gn = zt`
     color: var(--ed-text);
   }
 
-  /* Popups: a tile popover with an arrow, and the big one of the heading. */
+  /* Popups (sheets from the bottom): the house popup keeps every value on one line. */
   .house-pop .pop-row, .house-pop .pop-row span, .house-pop .pop-row b { white-space: nowrap; }
   .house-app { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; }
   .house-app .ell { color: var(--ed-pop-sec); font-size: 15px; line-height: 20px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -3902,12 +3902,22 @@ const Gn = zt`
   .house-idle { display: inline-flex; align-items: center; padding: 0 4px; }
   .house-idle svg { width: 22px; height: 22px; fill: var(--ed-text); }
   .pop-row span.ell { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  /* The popups are sheets from the bottom of the kit (one look in every card); their colours are those of the popups. */
+  /* The popups are sheets from the bottom of the kit. One look in every card: the values of Klima, where the sheet comes from
+     (surface #1C1C1E / white, secondary text, ✕ circle, grabber, edge and dimming). */
   ed-sheet {
-    --hdk-sheet-bg: var(--ed-pop);
+    --hdk-sheet-bg: var(--ed-card);
     --hdk-sheet-text: var(--ed-text);
-    --hdk-secondary: var(--ed-pop-sec);
-    --hdk-sheet-button: var(--ed-pop-line);
+    --hdk-secondary: var(--ed-secondary);
+    --hdk-sheet-button: rgb(118 118 128 / 24%);
+    --hdk-sheet-grabber: rgb(255 255 255 / 28%);
+    --hdk-sheet-border: rgb(255 255 255 / 10%);
+    --hdk-sheet-backdrop: 60%;
+  }
+  :host([data-light]) ed-sheet {
+    --hdk-sheet-button: rgb(118 118 128 / 12%);
+    --hdk-sheet-grabber: rgb(60 60 67 / 30%);
+    --hdk-sheet-border: rgb(0 0 0 / 8%);
+    --hdk-sheet-backdrop: 35%;
   }
 
   .pop {
@@ -8994,4 +9004,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ne(Tn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.2.1 · 2026-11-13 17:43 UTC · po 39db192 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.2.2 · 2026-11-13 17:52 UTC · po e0212e4 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
