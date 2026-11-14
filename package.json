@@ -1,5 +1,7 @@
 {
   "name": "ha-energie-dashboard",
+  "description": "Energie Dashboard: Lovelace card for Home Assistant (PV, battery, grid, car, wallbox, hot water)",
+  "license": "MIT",
   "version": "0.2.4",
   "private": true,
   "type": "module",
