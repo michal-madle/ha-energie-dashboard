@@ -81,7 +81,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
             </div>
             ${b.boost
               ? html`<ed-segmented
-                  compact guarded .options=${this.boostOptions} .value=${boost ?? ""} label=${tt.water.boostMode} .hint=${tt.hint.holdDragOrDouble} ?disabled=${boost === undefined}
+                  compact guarded .options=${this.boostOptions} .value=${boost ?? ""} .pending=${this.isPending(b.boost)} label=${tt.water.boostMode} .hint=${tt.hint.holdDragOrDouble} ?disabled=${boost === undefined}
                   .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
                   @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("boiler", event.detail.value === "on")}
                 ></ed-segmented>`
@@ -204,7 +204,7 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
               <div class="source-line">${joined([html`<span class="src" style="--c:${manual ? "var(--ed-text)" : "var(--ed-secondary)"}">${mode === undefined ? this.noData() : modeName}</span>`, ...(mode === undefined || plan === undefined ? [] : [html`<span class="dim">${plan}</span>`])])}</div>
             </div>
             ${id
-              ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`
+              ? html`<ed-segmented compact .options=${options} .value=${mode ?? ""} .pending=${this.isPending(id)} label=${tt.tank.modeLabel} ?disabled=${mode === undefined} @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setTank(id, event.detail.value)}></ed-segmented>`
               : nothing}
           </div>
         </div>

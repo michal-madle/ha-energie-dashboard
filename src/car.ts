@@ -142,7 +142,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
                   [t.car.modeSurplus, t.car.modeBoost].map((text, i) => html`<span class=${(i === 1) === (boost === "on") ? "shown" : "spare"}>${joinedText(text)}</span>`)
                 : modeSub}</span></div>
               <ed-segmented
-                guarded .options=${modeOptions} .value=${mode} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${boost === undefined}
+                guarded .options=${modeOptions} .value=${mode} .pending=${this.isPending(e.wallbox.boost)} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${boost === undefined}
                 .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
                 @hdk-select=${(event: CustomEvent<{ value: string }>) => this.setBoost("wallbox", event.detail.value === "on")}
               ></ed-segmented>

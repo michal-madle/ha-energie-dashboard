@@ -15,6 +15,11 @@ export const withControls = <T extends Constructor<CardBase>>(Base: T) =>
       return this._optimistic[id] ?? readText(this.hass, id);
     }
 
+    /** A change on its way (spec kitu, Odezva): chosen here, not yet reported by Home Assistant. The control pulses. */
+    isPending(id: string | undefined): boolean {
+      return id !== undefined && this._optimistic[id] !== undefined;
+    }
+
     toggle(panel: Panel): void {
       this._open = { ...this._open, [panel]: !this._open[panel] };
     }
@@ -24,7 +29,7 @@ export const withControls = <T extends Constructor<CardBase>>(Base: T) =>
       return html`<div class="switch-row">
         <span class="switch-text"><span class="switch-title" id="l-${id.replace(/\W/g, "-")}">${title}</span><span class="hint ${warn ? "warn" : ""}">${value === undefined ? NO_DATA : hint}</span></span>
         <ed-switch
-          label=${title} .checked=${value === "on"} ?disabled=${value === undefined}
+          label=${title} .checked=${value === "on"} .pending=${this.isPending(id)} ?disabled=${value === undefined}
           @hdk-toggle=${(event: CustomEvent<{ checked: boolean }>) => this.setSwitch(id, event.detail.checked, title)}
         ></ed-switch>
       </div>`;

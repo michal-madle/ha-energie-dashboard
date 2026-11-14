@@ -35,7 +35,7 @@ const us = (a) => new ps(typeof a == "string" ? a : a + "", void 0, da), zt = (a
   for (const s of t.cssRules) e += s.cssText;
   return us(e);
 })(a) : a;
-const { is: Fs, defineProperty: Us, getOwnPropertyDescriptor: Vs, getOwnPropertyNames: Gs, getOwnPropertySymbols: Ks, getPrototypeOf: Zs } = Object, Ze = globalThis, Ea = Ze.trustedTypes, Ys = Ea ? Ea.emptyScript : "", qs = Ze.reactiveElementPolyfillSupport, ke = (a, t) => a, Re = { toAttribute(a, t) {
+const { is: Fs, defineProperty: Us, getOwnPropertyDescriptor: Vs, getOwnPropertyNames: Gs, getOwnPropertySymbols: Ks, getPrototypeOf: Zs } = Object, Ze = globalThis, Ea = Ze.trustedTypes, Ys = Ea ? Ea.emptyScript : "", qs = Ze.reactiveElementPolyfillSupport, ke = (a, t) => a, Pe = { toAttribute(a, t) {
   switch (t) {
     case Boolean:
       a = a ? Ys : null;
@@ -63,7 +63,7 @@ const { is: Fs, defineProperty: Us, getOwnPropertyDescriptor: Vs, getOwnProperty
       }
   }
   return e;
-} }, ca = (a, t) => !Fs(a, t), Oa = { attribute: !0, type: String, converter: Re, reflect: !1, useDefault: !1, hasChanged: ca };
+} }, ca = (a, t) => !Fs(a, t), Oa = { attribute: !0, type: String, converter: Pe, reflect: !1, useDefault: !1, hasChanged: ca };
 Symbol.metadata ??= /* @__PURE__ */ Symbol("metadata"), Ze.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
 let le = class extends HTMLElement {
   static addInitializer(t) {
@@ -162,14 +162,14 @@ let le = class extends HTMLElement {
   _$ET(t, e) {
     const s = this.constructor.elementProperties.get(t), n = this.constructor._$Eu(t, s);
     if (n !== void 0 && s.reflect === !0) {
-      const o = (s.converter?.toAttribute !== void 0 ? s.converter : Re).toAttribute(e, s.type);
+      const o = (s.converter?.toAttribute !== void 0 ? s.converter : Pe).toAttribute(e, s.type);
       this._$Em = t, o == null ? this.removeAttribute(n) : this.setAttribute(n, o), this._$Em = null;
     }
   }
   _$AK(t, e) {
     const s = this.constructor, n = s._$Eh.get(t);
     if (n !== void 0 && this._$Em !== n) {
-      const o = s.getPropertyOptions(n), i = typeof o.converter == "function" ? { fromAttribute: o.converter } : o.converter?.fromAttribute !== void 0 ? o.converter : Re;
+      const o = s.getPropertyOptions(n), i = typeof o.converter == "function" ? { fromAttribute: o.converter } : o.converter?.fromAttribute !== void 0 ? o.converter : Pe;
       this._$Em = n;
       const r = i.fromAttribute(e, o.type);
       this[n] = r ?? this._$Ej?.get(n) ?? r, this._$Em = null;
@@ -247,9 +247,9 @@ let le = class extends HTMLElement {
   }
 };
 le.elementStyles = [], le.shadowRootOptions = { mode: "open" }, le[ke("elementProperties")] = /* @__PURE__ */ new Map(), le[ke("finalized")] = /* @__PURE__ */ new Map(), qs?.({ ReactiveElement: le }), (Ze.reactiveElementVersions ??= []).push("2.1.2");
-const ha = globalThis, ja = (a) => a, Pe = ha.trustedTypes, za = Pe ? Pe.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, gs = "$lit$", Ut = `lit$${Math.random().toFixed(9).slice(2)}$`, bs = "?" + Ut, Xs = `<${bs}>`, te = document, Se = () => te.createComment(""), Me = (a) => a === null || typeof a != "object" && typeof a != "function", pa = Array.isArray, Js = (a) => pa(a) || typeof a?.[Symbol.iterator] == "function", Je = `[ 	
+const ha = globalThis, ja = (a) => a, Re = ha.trustedTypes, za = Re ? Re.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, gs = "$lit$", Ut = `lit$${Math.random().toFixed(9).slice(2)}$`, bs = "?" + Ut, Xs = `<${bs}>`, te = document, Se = () => te.createComment(""), Me = (a) => a === null || typeof a != "object" && typeof a != "function", pa = Array.isArray, Js = (a) => pa(a) || typeof a?.[Symbol.iterator] == "function", Je = `[ 	
 \f\r]`, $e = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Ba = /-->/g, Ha = />/g, Zt = RegExp(`>|${Je}(?:([^\\s"'>=/]+)(${Je}*=${Je}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Ra = /'/g, Pa = /"/g, fs = /^(?:script|style|textarea|title)$/i, ms = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), v = ms(1), V = ms(2), ge = /* @__PURE__ */ Symbol.for("lit-noChange"), M = /* @__PURE__ */ Symbol.for("lit-nothing"), Na = /* @__PURE__ */ new WeakMap(), qt = te.createTreeWalker(te, 129);
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Pa = /'/g, Ra = /"/g, fs = /^(?:script|style|textarea|title)$/i, ms = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), v = ms(1), V = ms(2), ge = /* @__PURE__ */ Symbol.for("lit-noChange"), S = /* @__PURE__ */ Symbol.for("lit-nothing"), Na = /* @__PURE__ */ new WeakMap(), qt = te.createTreeWalker(te, 129);
 function vs(a, t) {
   if (!pa(a) || !a.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return za !== void 0 ? za.createHTML(t) : t;
@@ -260,7 +260,7 @@ const Qs = (a, t) => {
   for (let r = 0; r < e; r++) {
     const l = a[r];
     let h, c, d = -1, p = 0;
-    for (; p < l.length && (i.lastIndex = p, c = i.exec(l), c !== null); ) p = i.lastIndex, i === $e ? c[1] === "!--" ? i = Ba : c[1] !== void 0 ? i = Ha : c[2] !== void 0 ? (fs.test(c[2]) && (n = RegExp("</" + c[2], "g")), i = Zt) : c[3] !== void 0 && (i = Zt) : i === Zt ? c[0] === ">" ? (i = n ?? $e, d = -1) : c[1] === void 0 ? d = -2 : (d = i.lastIndex - c[2].length, h = c[1], i = c[3] === void 0 ? Zt : c[3] === '"' ? Pa : Ra) : i === Pa || i === Ra ? i = Zt : i === Ba || i === Ha ? i = $e : (i = Zt, n = void 0);
+    for (; p < l.length && (i.lastIndex = p, c = i.exec(l), c !== null); ) p = i.lastIndex, i === $e ? c[1] === "!--" ? i = Ba : c[1] !== void 0 ? i = Ha : c[2] !== void 0 ? (fs.test(c[2]) && (n = RegExp("</" + c[2], "g")), i = Zt) : c[3] !== void 0 && (i = Zt) : i === Zt ? c[0] === ">" ? (i = n ?? $e, d = -1) : c[1] === void 0 ? d = -2 : (d = i.lastIndex - c[2].length, h = c[1], i = c[3] === void 0 ? Zt : c[3] === '"' ? Ra : Pa) : i === Ra || i === Pa ? i = Zt : i === Ba || i === Ha ? i = $e : (i = Zt, n = void 0);
     const b = i === Zt && a[r + 1].startsWith("/>") ? " " : "";
     o += i === $e ? l + Xs : d >= 0 ? (s.push(h), l.slice(0, d) + gs + l.slice(d) + Ut + b) : l + Ut + (d === -2 ? r : b);
   }
@@ -285,7 +285,7 @@ class Te {
         if (fs.test(n.tagName)) {
           const d = n.textContent.split(Ut), p = d.length - 1;
           if (p > 0) {
-            n.textContent = Pe ? Pe.emptyScript : "";
+            n.textContent = Re ? Re.emptyScript : "";
             for (let b = 0; b < p; b++) n.append(d[b], Se()), qt.nextNode(), l.push({ type: 2, index: ++o });
             n.append(d[p], Se());
           }
@@ -342,7 +342,7 @@ class De {
     return this._$AM?._$AU ?? this._$Cv;
   }
   constructor(t, e, s, n) {
-    this.type = 2, this._$AH = M, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = s, this.options = n, this._$Cv = n?.isConnected ?? !0;
+    this.type = 2, this._$AH = S, this._$AN = void 0, this._$AA = t, this._$AB = e, this._$AM = s, this.options = n, this._$Cv = n?.isConnected ?? !0;
   }
   get parentNode() {
     let t = this._$AA.parentNode;
@@ -356,7 +356,7 @@ class De {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = be(this, t, e), Me(t) ? t === M || t == null || t === "" ? (this._$AH !== M && this._$AR(), this._$AH = M) : t !== this._$AH && t !== ge && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Js(t) ? this.k(t) : this._(t);
+    t = be(this, t, e), Me(t) ? t === S || t == null || t === "" ? (this._$AH !== S && this._$AR(), this._$AH = S) : t !== this._$AH && t !== ge && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Js(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -365,7 +365,7 @@ class De {
     this._$AH !== t && (this._$AR(), this._$AH = this.O(t));
   }
   _(t) {
-    this._$AH !== M && Me(this._$AH) ? this._$AA.nextSibling.data = t : this.T(te.createTextNode(t)), this._$AH = t;
+    this._$AH !== S && Me(this._$AH) ? this._$AA.nextSibling.data = t : this.T(te.createTextNode(t)), this._$AH = t;
   }
   $(t) {
     const { values: e, _$litType$: s } = t, n = typeof s == "number" ? this._$AC(t) : (s.el === void 0 && (s.el = Te.createElement(vs(s.h, s.h[0]), this.options)), s);
@@ -404,7 +404,7 @@ class Ye {
     return this._$AM._$AU;
   }
   constructor(t, e, s, n, o) {
-    this.type = 1, this._$AH = M, this._$AN = void 0, this.element = t, this.name = e, this._$AM = n, this.options = o, s.length > 2 || s[0] !== "" || s[1] !== "" ? (this._$AH = Array(s.length - 1).fill(new String()), this.strings = s) : this._$AH = M;
+    this.type = 1, this._$AH = S, this._$AN = void 0, this.element = t, this.name = e, this._$AM = n, this.options = o, s.length > 2 || s[0] !== "" || s[1] !== "" ? (this._$AH = Array(s.length - 1).fill(new String()), this.strings = s) : this._$AH = S;
   }
   _$AI(t, e = this, s, n) {
     const o = this.strings;
@@ -413,12 +413,12 @@ class Ye {
     else {
       const r = t;
       let l, h;
-      for (t = o[0], l = 0; l < o.length - 1; l++) h = be(this, r[s + l], e, l), h === ge && (h = this._$AH[l]), i ||= !Me(h) || h !== this._$AH[l], h === M ? t = M : t !== M && (t += (h ?? "") + o[l + 1]), this._$AH[l] = h;
+      for (t = o[0], l = 0; l < o.length - 1; l++) h = be(this, r[s + l], e, l), h === ge && (h = this._$AH[l]), i ||= !Me(h) || h !== this._$AH[l], h === S ? t = S : t !== S && (t += (h ?? "") + o[l + 1]), this._$AH[l] = h;
     }
     i && !n && this.j(t);
   }
   j(t) {
-    t === M ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
+    t === S ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, t ?? "");
   }
 }
 class en extends Ye {
@@ -426,7 +426,7 @@ class en extends Ye {
     super(...arguments), this.type = 3;
   }
   j(t) {
-    this.element[this.name] = t === M ? void 0 : t;
+    this.element[this.name] = t === S ? void 0 : t;
   }
 }
 class an extends Ye {
@@ -434,7 +434,7 @@ class an extends Ye {
     super(...arguments), this.type = 4;
   }
   j(t) {
-    this.element.toggleAttribute(this.name, !!t && t !== M);
+    this.element.toggleAttribute(this.name, !!t && t !== S);
   }
 }
 class sn extends Ye {
@@ -442,8 +442,8 @@ class sn extends Ye {
     super(t, e, s, n, o), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = be(this, t, e, 0) ?? M) === ge) return;
-    const s = this._$AH, n = t === M && s !== M || t.capture !== s.capture || t.once !== s.once || t.passive !== s.passive, o = t !== M && (s === M || n);
+    if ((t = be(this, t, e, 0) ?? S) === ge) return;
+    const s = this._$AH, n = t === S && s !== S || t.capture !== s.capture || t.once !== s.once || t.passive !== s.passive, o = t !== S && (s === S || n);
     n && this.element.removeEventListener(this.name, this, s), o && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
   handleEvent(t) {
@@ -499,7 +499,7 @@ Ct._$litElement$ = !0, Ct.finalized = !0, ua.litElementHydrateSupport?.({ LitEle
 const ln = ua.litElementPolyfillSupport;
 ln?.({ LitElement: Ct });
 (ua.litElementVersions ??= []).push("4.2.2");
-const dn = { attribute: !0, type: String, converter: Re, reflect: !1, hasChanged: ca }, cn = (a = dn, t, e) => {
+const dn = { attribute: !0, type: String, converter: Pe, reflect: !1, hasChanged: ca }, cn = (a = dn, t, e) => {
   const { kind: s, metadata: n } = e;
   let o = globalThis.litPropertyMetadata.get(n);
   if (o === void 0 && globalThis.litPropertyMetadata.set(n, o = /* @__PURE__ */ new Map()), s === "setter" && ((a = Object.create(a)).wrapped = !0), o.set(e.name, a), s === "accessor") {
@@ -520,14 +520,14 @@ const dn = { attribute: !0, type: String, converter: Re, reflect: !1, hasChanged
   }
   throw Error("Unsupported decorator location: " + s);
 };
-function B(a) {
+function z(a) {
   return (t, e) => typeof e == "object" ? cn(a, t, e) : ((s, n, o) => {
     const i = n.hasOwnProperty(o);
     return n.constructor.createProperty(o, s), i ? Object.getOwnPropertyDescriptor(n, o) : void 0;
   })(a, t, e);
 }
 function Z(a) {
-  return B({ ...a, state: !0, attribute: !1 });
+  return z({ ...a, state: !0, attribute: !1 });
 }
 var hn = Object.defineProperty, ve = (a, t, e, s) => {
   for (var n = void 0, o = a.length - 1, i; o >= 0; o--)
@@ -555,7 +555,7 @@ const wa = class wa extends Ct {
           transform="rotate(-90 ${i} ${i})"
         ></circle>
       </svg>
-      ${this.num ? v`<span class="num ${this.unit ? "with-unit" : ""}" style="font-size:${Math.round(t * (t <= 44 ? 0.3 : 0.27))}px">${this.num}</span>${this.unit ? v`<span class="unit">${this.unit}</span>` : M}` : M}
+      ${this.num ? v`<span class="num ${this.unit ? "with-unit" : ""}" style="font-size:${Math.round(t * (t <= 44 ? 0.3 : 0.27))}px">${this.num}</span>${this.unit ? v`<span class="unit">${this.unit}</span>` : S}` : S}
     </div>`;
   }
 };
@@ -604,25 +604,25 @@ wa.styles = zt`
       line-height: 1;
     }
   `;
-let It = wa;
+let Wt = wa;
 ve([
-  B({ type: Number })
-], It.prototype, "fraction");
+  z({ type: Number })
+], Wt.prototype, "fraction");
 ve([
-  B({ type: Number })
-], It.prototype, "size");
+  z({ type: Number })
+], Wt.prototype, "size");
 ve([
-  B({ type: Number })
-], It.prototype, "stroke");
+  z({ type: Number })
+], Wt.prototype, "stroke");
 ve([
-  B()
-], It.prototype, "num");
+  z()
+], Wt.prototype, "num");
 ve([
-  B()
-], It.prototype, "unit");
+  z()
+], Wt.prototype, "unit");
 ve([
-  B()
-], It.prototype, "label");
+  z()
+], Wt.prototype, "label");
 class qe {
   /** `times` is read at every press, so changed properties apply at once. */
   constructor(t) {
@@ -757,14 +757,14 @@ const ba = zt`
     }
   }
 `;
-var pn = Object.defineProperty, xt = (a, t, e, s) => {
+var pn = Object.defineProperty, yt = (a, t, e, s) => {
   for (var n = void 0, o = a.length - 1, i; o >= 0; o--)
     (i = a[o]) && (n = i(t, e, n) || n);
   return n && pn(t, e, n), n;
 };
 const ka = class ka extends Ct {
   constructor() {
-    super(...arguments), this.options = [], this.value = "", this.label = "", this.disabled = !1, this.compact = !1, this.wrap = !1, this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hint = "Press and hold, drag, or tap twice.", this._dx = 0, this._dragging = !1, this.hints = new ga(this), this.nudgeIndex = 0, this.gesture = new qe(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.swallowClick = !1;
+    super(...arguments), this.options = [], this.value = "", this.label = "", this.disabled = !1, this.pending = !1, this.compact = !1, this.wrap = !1, this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hint = "Press and hold, drag, or tap twice.", this._dx = 0, this._dragging = !1, this.hints = new ga(this), this.nudgeIndex = 0, this.gesture = new qe(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.swallowClick = !1;
   }
   disconnectedCallback() {
     super.disconnectedCallback(), this.gesture.dispose(), this.hints.dispose();
@@ -774,6 +774,7 @@ const ka = class ka extends Ct {
     return v`<div
         class="track ${this.compact ? "compact" : ""} ${this.guarded ? "guarded" : ""} ${this._dragging ? "dragging" : ""} ${this.options.some((r) => r.detail) || this.wrap ? "tall" : ""} ${this.wrap ? "wrap" : ""} ${this.disabled ? "off" : ""}"
         role="radiogroup"
+        aria-busy=${this.pending ? "true" : S}
         aria-label=${this.label}
         style="--n:${Math.max(1, this.options.length)};--i:${Math.max(0, t)};--dx:${i}px"
         @keydown=${this.onKey}
@@ -916,6 +917,21 @@ ka.styles = [
       .track.dragging .thumb {
         transition: none;
       }
+      :host([pending]) .thumb {
+        animation: hdk-seg-pending 1.3s ease-in-out infinite alternate;
+      }
+      @keyframes hdk-seg-pending {
+        to {
+          opacity: 0.45;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :host([pending]) .thumb {
+          animation: none;
+          outline: 1.5px dashed var(--hdk-accent, #0a84ff);
+          outline-offset: -1.5px;
+        }
+      }
       .thumb[hidden] {
         display: none;
       }
@@ -984,43 +1000,46 @@ ka.styles = [
     `
 ];
 let pt = ka;
-xt([
-  B({ attribute: !1 })
+yt([
+  z({ attribute: !1 })
 ], pt.prototype, "options");
-xt([
-  B()
+yt([
+  z()
 ], pt.prototype, "value");
-xt([
-  B()
+yt([
+  z()
 ], pt.prototype, "label");
-xt([
-  B({ type: Boolean })
+yt([
+  z({ type: Boolean })
 ], pt.prototype, "disabled");
-xt([
-  B({ type: Boolean })
+yt([
+  z({ type: Boolean, reflect: !0 })
+], pt.prototype, "pending");
+yt([
+  z({ type: Boolean })
 ], pt.prototype, "compact");
-xt([
-  B({ type: Boolean })
+yt([
+  z({ type: Boolean })
 ], pt.prototype, "wrap");
-xt([
-  B({ type: Boolean })
+yt([
+  z({ type: Boolean })
 ], pt.prototype, "guarded");
-xt([
-  B({ type: Number })
+yt([
+  z({ type: Number })
 ], pt.prototype, "holdMs");
-xt([
-  B({ type: Number })
+yt([
+  z({ type: Number })
 ], pt.prototype, "doubleTapMs");
-xt([
-  B({ type: Number })
+yt([
+  z({ type: Number })
 ], pt.prototype, "hintSeconds");
-xt([
-  B()
+yt([
+  z()
 ], pt.prototype, "hint");
-xt([
+yt([
   Z()
 ], pt.prototype, "_dx");
-xt([
+yt([
   Z()
 ], pt.prototype, "_dragging");
 const un = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", Inter, Roboto, "Helvetica Neue", sans-serif', gn = zt`
@@ -1124,7 +1143,7 @@ const fn = 100, mn = 0.6, vn = 6, _a = class _a extends Ct {
           <div class="head">
             <div>
               <h2 id="title">${this.heading}</h2>
-              ${this.sub ? v`<div class="sub">${this.sub}</div>` : M}
+              ${this.sub ? v`<div class="sub">${this.sub}</div>` : S}
             </div>
             <button type="button" class="close" aria-label=${this.closeLabel} @click=${() => this.close()}>
               <span aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M2 2l8 8M10 2l-8 8"></path></svg></span>
@@ -1133,7 +1152,7 @@ const fn = 100, mn = 0.6, vn = 6, _a = class _a extends Ct {
         </div>
         <slot></slot>
       </div>
-    </div>` : M;
+    </div>` : S;
   }
 };
 _a.styles = [gn, zt`
@@ -1270,19 +1289,19 @@ _a.styles = [gn, zt`
   `];
 let jt = _a;
 ae([
-  B({ type: Boolean, reflect: !0 })
+  z({ type: Boolean, reflect: !0 })
 ], jt.prototype, "open");
 ae([
-  B()
+  z()
 ], jt.prototype, "heading");
 ae([
-  B()
+  z()
 ], jt.prototype, "sub");
 ae([
-  B()
+  z()
 ], jt.prototype, "closeLabel");
 ae([
-  B({ type: Boolean })
+  z({ type: Boolean })
 ], jt.prototype, "wide");
 ae([
   Z()
@@ -1290,7 +1309,7 @@ ae([
 ae([
   Z()
 ], jt.prototype, "dragging");
-var yn = Object.defineProperty, wt = (a, t, e, s) => {
+var yn = Object.defineProperty, kt = (a, t, e, s) => {
   for (var n = void 0, o = a.length - 1, i; o >= 0; o--)
     (i = a[o]) && (n = i(t, e, n) || n);
   return n && yn(t, e, n), n;
@@ -1448,53 +1467,53 @@ Sa.styles = zt`
     }
   `;
 let ut = Sa;
-wt([
-  B({ type: Number })
+kt([
+  z({ type: Number })
 ], ut.prototype, "min");
-wt([
-  B({ type: Number })
+kt([
+  z({ type: Number })
 ], ut.prototype, "max");
-wt([
-  B({ type: Number })
+kt([
+  z({ type: Number })
 ], ut.prototype, "step");
-wt([
-  B({ type: Number })
+kt([
+  z({ type: Number })
 ], ut.prototype, "tickStep");
-wt([
-  B({ type: Number })
+kt([
+  z({ type: Number })
 ], ut.prototype, "value");
-wt([
-  B()
+kt([
+  z()
 ], ut.prototype, "label");
-wt([
-  B()
+kt([
+  z()
 ], ut.prototype, "valueText");
-wt([
-  B()
+kt([
+  z()
 ], ut.prototype, "minLabel");
-wt([
-  B()
+kt([
+  z()
 ], ut.prototype, "maxLabel");
-wt([
-  B({ type: Boolean })
+kt([
+  z({ type: Boolean })
 ], ut.prototype, "disabled");
-wt([
-  B({ type: Boolean, reflect: !0 })
+kt([
+  z({ type: Boolean, reflect: !0 })
 ], ut.prototype, "mixed");
-wt([
-  B({ attribute: !1 })
+kt([
+  z({ attribute: !1 })
 ], ut.prototype, "marks");
-wt([
+kt([
   Z()
 ], ut.prototype, "_drag");
-var $n = Object.defineProperty, Wt = (a, t, e, s) => {
+var $n = Object.defineProperty, Bt = (a, t, e, s) => {
   for (var n = void 0, o = a.length - 1, i; o >= 0; o--)
     (i = a[o]) && (n = i(t, e, n) || n);
   return n && $n(t, e, n), n;
 };
 const Ma = class Ma extends Ct {
   constructor() {
-    super(...arguments), this.checked = !1, this.disabled = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hintPlacement = "above", this.hint = "Press and hold, or tap twice.", this.hints = new ga(this), this.gesture = new qe(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.release = () => {
+    super(...arguments), this.checked = !1, this.disabled = !1, this.pending = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hintPlacement = "above", this.hint = "Press and hold, or tap twice.", this.hints = new ga(this), this.gesture = new qe(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.release = () => {
       this.gesture.release();
     };
   }
@@ -1507,6 +1526,7 @@ const Ma = class Ma extends Ct {
         role="switch"
         class=${this.hints.nudge ? "nudge" : ""}
         aria-checked=${this.checked ? "true" : "false"}
+        aria-busy=${this.pending ? "true" : S}
         aria-label=${this.label}
         ?disabled=${this.disabled}
         @click=${this.onClick}
@@ -1567,6 +1587,21 @@ Ma.styles = [
       button[aria-checked="true"] {
         background: var(--hdk-accent, #0a84ff);
       }
+      :host([pending]) button {
+        animation: hdk-switch-pending 1.3s ease-in-out infinite alternate;
+      }
+      @keyframes hdk-switch-pending {
+        to {
+          opacity: 0.5;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :host([pending]) button {
+          animation: none;
+          outline: 1.5px dashed var(--hdk-accent, #0a84ff);
+          outline-offset: 2px;
+        }
+      }
       /* Invisible extension of the touch target to 44 px. */
       button::after {
         content: "";
@@ -1625,40 +1660,43 @@ Ma.styles = [
       }
     `
 ];
-let Mt = Ma;
-Wt([
-  B({ type: Boolean })
-], Mt.prototype, "checked");
-Wt([
-  B({ type: Boolean })
-], Mt.prototype, "disabled");
-Wt([
-  B()
-], Mt.prototype, "label");
-Wt([
-  B({ type: Boolean })
-], Mt.prototype, "guarded");
-Wt([
-  B({ type: Number })
-], Mt.prototype, "holdMs");
-Wt([
-  B({ type: Number })
-], Mt.prototype, "doubleTapMs");
-Wt([
-  B({ type: Number })
-], Mt.prototype, "hintSeconds");
-Wt([
-  B()
-], Mt.prototype, "hintPlacement");
-Wt([
-  B()
-], Mt.prototype, "hint");
+let wt = Ma;
+Bt([
+  z({ type: Boolean })
+], wt.prototype, "checked");
+Bt([
+  z({ type: Boolean })
+], wt.prototype, "disabled");
+Bt([
+  z({ type: Boolean, reflect: !0 })
+], wt.prototype, "pending");
+Bt([
+  z()
+], wt.prototype, "label");
+Bt([
+  z({ type: Boolean })
+], wt.prototype, "guarded");
+Bt([
+  z({ type: Number })
+], wt.prototype, "holdMs");
+Bt([
+  z({ type: Number })
+], wt.prototype, "doubleTapMs");
+Bt([
+  z({ type: Number })
+], wt.prototype, "hintSeconds");
+Bt([
+  z()
+], wt.prototype, "hintPlacement");
+Bt([
+  z()
+], wt.prototype, "hint");
 function Lt(a, t = {}) {
-  return a.length < 2 ? v`${a[0] ?? M}` : v`<span class="joined ${t.whole ? "whole" : ""}">${a.map(
-    (e, s) => v`${s ? v`<span class="joined-sep"><span class="joined-dot">\u00a0·</span> </span>` : M}<span class="joined-part">${e}</span>`
+  return a.length < 2 ? v`${a[0] ?? S}` : v`<span class="joined ${t.whole ? "whole" : ""}">${a.map(
+    (e, s) => v`${s ? v`<span class="joined-sep"><span class="joined-dot">\u00a0·</span> </span>` : S}<span class="joined-part">${e}</span>`
   )}</span>`;
 }
-function Pt(a, t = {}) {
+function Nt(a, t = {}) {
   return Lt(a.split(" · "), t);
 }
 function ys(a, t) {
@@ -1728,6 +1766,12 @@ const $s = zt`
     white-space: normal;
   }
 
+  /* A part on its own line that is still too long (measured before the font or the width settled, iPhone) wraps
+     rather than pushing the card wider than the screen. */
+  .joined.stacked .joined-part {
+    white-space: normal;
+  }
+
   .joined.flow .joined-sep {
     white-space: nowrap;
   }
@@ -1739,7 +1783,7 @@ var xn = Object.defineProperty, gt = (a, t, e, s) => {
 };
 const Ta = class Ta extends Ct {
   constructor() {
-    super(...arguments), this.name = "", this.text = "", this.state = "idle", this.kind = "toggle", this.centered = !1, this.disabled = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hint = "Press and hold, or tap twice.", this.hintAlign = "center", this.hints = new ga(this), this.gesture = new qe(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.release = () => {
+    super(...arguments), this.name = "", this.text = "", this.state = "idle", this.kind = "toggle", this.centered = !1, this.disabled = !1, this.pending = !1, this.label = "", this.guarded = !1, this.holdMs = 550, this.doubleTapMs = 400, this.hintSeconds = 3, this.hint = "Press and hold, or tap twice.", this.hintAlign = "center", this.hints = new ga(this), this.gesture = new qe(() => ({ holdMs: this.holdMs, doubleTapMs: this.doubleTapMs })), this.release = () => {
       this.gesture.release();
     };
   }
@@ -1756,10 +1800,11 @@ const Ta = class Ta extends Ct {
         type="button"
         role=${t ? "switch" : "button"}
         class=${this.hints.nudge ? "nudge" : ""}
-        aria-checked=${t ? this.state === "on" ? "true" : "false" : M}
-        aria-pressed=${this.kind === "action" && this.pressed !== void 0 ? this.pressed ? "true" : "false" : M}
-        aria-haspopup=${this.kind === "open" ? "dialog" : M}
-        aria-label=${this.label || M}
+        aria-checked=${t ? this.state === "on" ? "true" : "false" : S}
+        aria-pressed=${this.kind === "action" && this.pressed !== void 0 ? this.pressed ? "true" : "false" : S}
+        aria-busy=${this.pending ? "true" : S}
+        aria-haspopup=${this.kind === "open" ? "dialog" : S}
+        aria-label=${this.label || S}
         ?disabled=${this.disabled}
         @click=${this.onClick}
         @pointerdown=${this.onDown}
@@ -1767,7 +1812,7 @@ const Ta = class Ta extends Ct {
         @pointerleave=${this.release}
         @pointercancel=${this.release}
         @contextmenu=${(s) => this.protected && s.preventDefault()}
-      ><span class="name"><span>${this.name}</span>${this.kind === "open" ? v`<span class="chevron" aria-hidden="true">›</span>` : null}</span>${this.centered ? e : v`<span class="text">${Pt(this.text)}${e}</span>`}</button>
+      ><span class="name"><span>${this.name}</span>${this.kind === "open" ? v`<span class="chevron" aria-hidden="true">›</span>` : null}</span>${this.centered ? e : v`<span class="text">${Nt(this.text)}${e}</span>`}</button>
       <span class="sr" aria-live="polite">${this.hints.hint ? this.hint : ""}</span>
       ${this.hints.hint ? v`<div class="hint above ${this.hintAlign}" aria-hidden="true"><i></i><span style="position: relative">${this.hint}</span></div>` : null}`;
   }
@@ -1841,6 +1886,25 @@ Ta.styles = [
       }
       :host([state="mixed"]) button {
         background: var(--hdk-tile-mixed, #17395d);
+      }
+      /* Sent and on its way: the fill goes between its own and the accent until Home Assistant reports the result. */
+      :host([pending]) button {
+        animation: hdk-pending 1.3s ease-in-out infinite alternate;
+      }
+      @keyframes hdk-pending {
+        to {
+          background: var(--hdk-tile-on, #0a6ed1);
+          color: var(--hdk-tile-on-text, #fff);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        :host([pending]) button {
+          animation: none;
+          background: var(--hdk-tile-mixed, #17395d);
+          /* Not by colour alone: a dashed accent outline marks the command on its way. */
+          outline: 1.5px dashed var(--hdk-tile-on, #0a6ed1);
+          outline-offset: -1.5px;
+        }
       }
       .name {
         display: flex;
@@ -1928,59 +1992,62 @@ Ta.styles = [
       }
     `
 ];
-let ht = Ta;
+let dt = Ta;
 gt([
-  B()
-], ht.prototype, "name");
+  z()
+], dt.prototype, "name");
 gt([
-  B()
-], ht.prototype, "text");
+  z()
+], dt.prototype, "text");
 gt([
-  B({ reflect: !0 })
-], ht.prototype, "state");
+  z({ reflect: !0 })
+], dt.prototype, "state");
 gt([
-  B()
-], ht.prototype, "kind");
+  z()
+], dt.prototype, "kind");
 gt([
-  B({ type: Number })
-], ht.prototype, "count");
+  z({ type: Number })
+], dt.prototype, "count");
 gt([
-  B({ type: Boolean, reflect: !0 })
-], ht.prototype, "centered");
+  z({ type: Boolean, reflect: !0 })
+], dt.prototype, "centered");
 gt([
-  B({ type: Boolean })
-], ht.prototype, "disabled");
+  z({ type: Boolean })
+], dt.prototype, "disabled");
 gt([
-  B({ type: Boolean })
-], ht.prototype, "pressed");
+  z({ type: Boolean, reflect: !0 })
+], dt.prototype, "pending");
 gt([
-  B()
-], ht.prototype, "label");
+  z({ type: Boolean })
+], dt.prototype, "pressed");
 gt([
-  B({ type: Boolean })
-], ht.prototype, "guarded");
+  z()
+], dt.prototype, "label");
 gt([
-  B({ type: Number })
-], ht.prototype, "holdMs");
+  z({ type: Boolean })
+], dt.prototype, "guarded");
 gt([
-  B({ type: Number })
-], ht.prototype, "doubleTapMs");
+  z({ type: Number })
+], dt.prototype, "holdMs");
 gt([
-  B({ type: Number })
-], ht.prototype, "hintSeconds");
+  z({ type: Number })
+], dt.prototype, "doubleTapMs");
 gt([
-  B()
-], ht.prototype, "hint");
+  z({ type: Number })
+], dt.prototype, "hintSeconds");
 gt([
-  B()
-], ht.prototype, "hintAlign");
+  z()
+], dt.prototype, "hint");
+gt([
+  z()
+], dt.prototype, "hintAlign");
 function wn(a) {
   const t = [
-    [`${a}-switch`, Mt],
+    [`${a}-switch`, wt],
     [`${a}-segmented`, pt],
     [`${a}-slider`, ut],
-    [`${a}-ring`, It],
-    [`${a}-tile`, ht],
+    [`${a}-ring`, Wt],
+    [`${a}-tile`, dt],
     [`${a}-sheet`, jt]
   ];
   for (const [e, s] of t)
@@ -1993,12 +2060,12 @@ function _n(a) {
 function vt(a, t) {
   return t ? a?.states?.[t] : void 0;
 }
-function ct(a, t) {
+function ht(a, t) {
   const e = vt(a, t)?.state;
   return e === void 0 || _n(e) ? void 0 : e;
 }
 function Sn(a, t) {
-  const e = ct(a, t);
+  const e = ht(a, t);
   if (e === void 0)
     return;
   const s = Number(e);
@@ -2053,7 +2120,7 @@ function jn(a, t, e, s, n, o) {
   const i = En(e), r = s === "system" ? void 0 : s === "none" ? "en-US" : Ln[s] ?? i, l = s === "none" ? { useGrouping: !1 } : {}, h = new Intl.NumberFormat(r, { minimumFractionDigits: 1, maximumFractionDigits: 1, ...l }), c = new Intl.NumberFormat(r, { minimumFractionDigits: 2, maximumFractionDigits: 2, ...l }), d = new Intl.NumberFormat(r, { maximumFractionDigits: 1, ...l }), p = new Intl.NumberFormat(r, { maximumFractionDigits: 0, ...l }), b = On(n, i), y = b ? "h12" : "h23", f = new Intl.DateTimeFormat(i, { hour: b ? "numeric" : "2-digit", minute: "2-digit", hourCycle: y }), u = new Intl.DateTimeFormat(i, b ? { hour: "numeric", hourCycle: y } : { hour: "2-digit", minute: "2-digit", hourCycle: y }), g = o === "system" ? void 0 : i, m = new Intl.DateTimeFormat(g, { day: "numeric", month: "numeric" }), x = ($) => {
     if (!["DMY", "MDY", "YMD"].includes(o))
       return m.format($);
-    const O = m.formatToParts($), A = O.find((C) => C.type === "literal")?.value ?? "/", S = O[O.length - 1], D = S?.type === "literal" ? S.value : "", E = O.find((C) => C.type === "day")?.value ?? "", k = O.find((C) => C.type === "month")?.value ?? "";
+    const O = m.formatToParts($), A = O.find((C) => C.type === "literal")?.value ?? "/", M = O[O.length - 1], D = M?.type === "literal" ? M.value : "", E = O.find((C) => C.type === "day")?.value ?? "", k = O.find((C) => C.type === "month")?.value ?? "";
     return o === "DMY" ? `${E}${A}${k}${D}` : `${k}${A}${E}${D}`;
   }, _ = Cn.has(i.toLowerCase().split("-")[0]) ? " " : "";
   return {
@@ -3300,9 +3367,9 @@ const zn = {
       hoursMinutes: (a, t) => `${a} h ${t} min`
     }
   }
-}, Rn = { cs: zn, en: Bn, sv: Hn };
+}, Pn = { cs: zn, en: Bn, sv: Hn };
 function Ne(a, t) {
-  return An(Rn, a, t);
+  return An(Pn, a, t);
 }
 function F(a, t) {
   const e = Sn(a, t);
@@ -3310,7 +3377,7 @@ function F(a, t) {
     return vt(a, t)?.attributes?.unit_of_measurement === "kW" ? e * 1e3 : e;
 }
 let rt = Ne("cs"), Ie = "auto";
-function Pn(a, t = "auto") {
+function Rn(a, t = "auto") {
   rt = a, Ie = t;
 }
 function ma(a, t = 1e3) {
@@ -3323,7 +3390,7 @@ function ws(a) {
 function nt(a, t) {
   return t === "kW" ? `${ws(a / 1e3)} kW` : `${rt.whole(Math.round(a))} W`;
 }
-function R(a, t = 0) {
+function P(a, t = 0) {
   return t === 0 ? rt.whole(a) : rt.one(a);
 }
 function Y(a, t) {
@@ -3350,10 +3417,10 @@ function it(a) {
   return rt.time(a);
 }
 function K(a) {
-  return rt.percent(typeof a == "number" ? R(a) : a);
+  return rt.percent(typeof a == "number" ? P(a) : a);
 }
 function Jt(a, t) {
-  const e = vt(a, t), s = ct(a, t);
+  const e = vt(a, t), s = ht(a, t);
   if (s === void 0) return;
   const n = Number(s);
   if (!Number.isFinite(n)) return;
@@ -3384,20 +3451,20 @@ function Fn(a, t, e) {
     ["gridOut", y]
   ], _ = x.reduce((j, [, w]) => j + u(w), 0), $ = { sun: 0, bat: 0, grid: 0 };
   for (const j of mt) $[j] = m > 0 ? g[j] * _ / m : 0;
-  const O = [], A = {}, S = { sun: 0, bat: 0, grid: 0 };
+  const O = [], A = {}, M = { sun: 0, bat: 0, grid: 0 };
   for (const [j, w] of x) {
     if (!ot(w, n)) continue;
-    let z = w;
+    let B = w;
     const tt = { sun: 0, bat: 0, grid: 0 };
-    for (const P of mt) {
-      const L = Math.min($[P], z);
-      $[P] -= L, z -= L, tt[P] = L / w, (j === "house" || j === "car" || j === "boil") && (S[P] += L), L > 0.5 && O.push({ from: P, to: j, watts: L });
+    for (const R of mt) {
+      const L = Math.min($[R], B);
+      $[R] -= L, B -= L, tt[R] = L / w, (j === "house" || j === "car" || j === "boil") && (M[R] += L), L > 0.5 && O.push({ from: R, to: j, watts: L });
     }
     A[j] = tt;
   }
-  const D = S.sun + S.bat + S.grid, E = { sun: 0, bat: 0, grid: 0 };
+  const D = M.sun + M.bat + M.grid, E = { sun: 0, bat: 0, grid: 0 };
   if (D > 0)
-    for (const j of mt) E[j] = S[j] / D;
+    for (const j of mt) E[j] = M[j] / D;
   else if (m > 0)
     for (const j of mt) E[j] = g[j] / m;
   const k = { house: { ...E }, car: { ...E }, boil: { ...E } };
@@ -3421,7 +3488,7 @@ function Fn(a, t, e) {
     carSoc: F(a, s.car.state_of_charge),
     carRange: F(a, s.car.range),
     boilTemp: F(a, s.boiler.temperature),
-    carLink: ks(ct(a, s.wallbox.status))
+    carLink: ks(ht(a, s.wallbox.status))
   };
   return Object.assign(C, Un(C, t.num.flows, e)), C;
 }
@@ -5884,7 +5951,7 @@ function Zn(a, t) {
 function ee(a) {
   return typeof a == "object" && a !== null && !Array.isArray(a);
 }
-function yt(a, t) {
+function $t(a, t) {
   return a == null ? {} : (ee(a) || G(`"${t}" must be a mapping of keys.`), a);
 }
 function Gt(a, t, e) {
@@ -6055,7 +6122,7 @@ const Xe = {
   ...Object.keys(Be).map((a) => `colors.${a}`)
 ];
 function ao(a, t) {
-  const e = yt(a[t], t), s = Xe[t], n = [...Object.keys(ya[t] ?? {}), ...Ts[t] ?? []];
+  const e = $t(a[t], t), s = Xe[t], n = [...Object.keys(ya[t] ?? {}), ...Ts[t] ?? []];
   Gt(e, [...Object.keys(s), ...n], t);
   const o = {};
   for (const [i, r] of Object.entries(s)) {
@@ -6067,7 +6134,7 @@ function ao(a, t) {
 function so(a) {
   const t = {};
   for (const [e, s] of Object.entries(ya)) {
-    const n = yt(a[e], e), o = Object.keys(Xe[e] ?? {});
+    const n = $t(a[e], e), o = Object.keys(Xe[e] ?? {});
     Gt(n, [...o, ...Object.keys(s), ...Ts[e] ?? []], e), t[e] = {};
     for (const [i, r] of Object.entries(s)) {
       const l = n[i], h = `${e}.${i}`;
@@ -6081,7 +6148,7 @@ function so(a) {
   return t;
 }
 function no(a) {
-  const t = yt(a.colors, "colors");
+  const t = $t(a.colors, "colors");
   Gt(t, [...Object.keys(Be), "temp_scale"], "colors");
   const e = { ...Be };
   for (const s of Object.keys(Be)) {
@@ -6091,7 +6158,7 @@ function no(a) {
   return e;
 }
 function oo(a) {
-  const t = yt(a.colors, "colors").temp_scale;
+  const t = $t(a.colors, "colors").temp_scale;
   if (t == null)
     return eo.map((n) => ({ ...n }));
   const e = "colors.temp_scale";
@@ -6102,28 +6169,28 @@ function oo(a) {
   }), s;
 }
 function io(a) {
-  const t = yt(a.boiler, "boiler").show;
+  const t = $t(a.boiler, "boiler").show;
   return t == null ? Qn : ((typeof t != "string" || !Va.includes(t)) && G(`boiler.show must be one of ${Va.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
 function ro(a) {
-  const t = yt(a.battery, "battery").default_range;
+  const t = $t(a.battery, "battery").default_range;
   return t == null ? Ds : ((typeof t != "string" || !Fe.includes(t)) && G(`battery.default_range must be one of ${Fe.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
 function lo(a) {
-  const t = yt(a.forecast, "forecast").default_range;
+  const t = $t(a.forecast, "forecast").default_range;
   return t == null ? Jn : ((typeof t != "string" || !Ua.includes(t)) && G(`forecast.default_range must be one of ${Ua.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
 function co(a) {
-  const t = yt(a.house, "house").label;
+  const t = $t(a.house, "house").label;
   return t == null ? Xn : ((typeof t != "string" || t.trim() === "") && G("house.label must be a non-empty text (the label of the appliances in Home Assistant)."), t.trim());
 }
 function ho(a) {
-  const t = yt(a.house, "house").default_range;
+  const t = $t(a.house, "house").default_range;
   return t == null ? Ds : ((typeof t != "string" || !Fe.includes(t)) && G(`house.default_range must be one of ${Fe.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
 const po = "mdi:power-plug";
 function uo(a) {
-  const t = yt(a.house, "house").appliances;
+  const t = $t(a.house, "house").appliances;
   return t == null ? [] : (Array.isArray(t) || G("house.appliances must be a list of {name, icon, power, energy, running, start_energy, warn_after}."), t.map((e, s) => {
     const n = `house.appliances[${s}]`;
     ee(e) || G(`${n} must be a mapping like {name: Pračka, running: input_boolean.…, start_energy: input_number.…}.`), Gt(e, ["name", "power", "energy", "running", "start_energy", "icon", "warn_after"], n);
@@ -6149,7 +6216,7 @@ function Es(a, t) {
     return (typeof a != "string" || !/^[a-z0-9]+:[a-z0-9-]+$/i.test(a)) && G(`${t} must be an icon such as mdi:washing-machine.`), a;
 }
 function go(a) {
-  const t = yt(a.house, "house").groups;
+  const t = $t(a.house, "house").groups;
   return t == null ? [] : (Array.isArray(t) || G("house.groups must be a list of {name, icon, appliances}."), t.map((e, s) => {
     const n = `house.groups[${s}]`;
     ee(e) || G(`${n} must be a mapping like {name: Vaření, icon: mdi:silverware-fork-knife, appliances: [...]}.`), Gt(e, ["name", "icon", "appliances"], n), (!Array.isArray(e.appliances) || e.appliances.length === 0) && G(`${n}.appliances must be a list of {name, power, energy, running}.`);
@@ -6165,16 +6232,16 @@ function go(a) {
   }));
 }
 function bo(a) {
-  const t = yt(a.flows, "flows").decimals;
+  const t = $t(a.flows, "flows").decimals;
   return t == null ? to : (Ga.includes(t) || G(`flows.decimals must be one of ${Ga.join(", ")}, not ${JSON.stringify(t)}.`), t);
 }
 const fo = "/dashboard-bmw";
 function mo(a) {
-  const t = yt(a.car, "car").link;
+  const t = $t(a.car, "car").link;
   return t == null ? fo : ((typeof t != "string" || t !== "" && !/^(\/(?!\/)\S*|https?:\/\/\S+)$/.test(t)) && G(`car.link must be a path such as /dashboard-bmw, an address starting with http:// or https://, or an empty text, not ${JSON.stringify(t)}.`), t);
 }
 function vo(a) {
-  const t = yt(a.titles, "titles");
+  const t = $t(a.titles, "titles");
   Gt(t, [...oa], "titles");
   const e = {};
   for (const s of oa) {
@@ -6218,7 +6285,7 @@ const T = "––", Xt = { sun: "--ed-sun", bat: "--ed-battery", grid: "--ed-gri
   batIn: "--ed-battery",
   gridOut: "--ed-grid"
 }, Za = "ha-energie-dashboard:boiler-heating", Ya = "ha-energie-dashboard:battery-range", qa = "ha-energie-dashboard:sun-range";
-function Nt(a, t) {
+function It(a, t) {
   const e = a?.attributes?.[t];
   return typeof e == "number" && Number.isFinite(e) ? e : void 0;
 }
@@ -6272,7 +6339,7 @@ class X extends Ct {
     return [{ value: "off", label: this.t.boostOptions.off }, { value: "on", label: this.t.boostOptions.on }];
   }
   willUpdate() {
-    this._i18n = Ne(Mn(this._config?.language ?? "auto", this.hass), this.hass), Pn(this._i18n, this._config?.powerDecimals), this.lang !== this._i18n.language && (this.lang = this._i18n.language), this.toggleAttribute("data-light", this.hass?.themes?.darkMode === !1);
+    this._i18n = Ne(Mn(this._config?.language ?? "auto", this.hass), this.hass), Rn(this._i18n, this._config?.powerDecimals), this.lang !== this._i18n.language && (this.lang = this._i18n.language), this.toggleAttribute("data-light", this.hass?.themes?.darkMode === !1);
     const t = this._config;
     if (t && ot(F(this.hass, t.entities.boiler.power), t.num.flows.idle_threshold) && (this._lastHeating = Date.now(), this._lastHeating - this._storedHeating > 6e4)) {
       this._storedHeating = this._lastHeating;
@@ -6300,7 +6367,7 @@ class X extends Ct {
         n.forEach(([i]) => delete o[i]), this._optimistic = o;
       }
     }
-    t.has("hass") && this._tankTemp && Nt(vt(this.hass, this._tankTemp.id), "temperature") === this._tankTemp.value && (this._tankTemp = void 0);
+    t.has("hass") && this._tankTemp && It(vt(this.hass, this._tankTemp.id), "temperature") === this._tankTemp.value && (this._tankTemp = void 0);
     const s = this._config;
     if (window.clearTimeout(this._timers.get("hold")), s && s.boilerShow === "heating" && this._lastHeating) {
       const n = this._lastHeating + s.num.boiler.hold_minutes * 6e4 - Date.now();
@@ -6358,7 +6425,7 @@ J([
   Z()
 ], X.prototype, "_config");
 J([
-  B({ attribute: !1 })
+  z({ attribute: !1 })
 ], X.prototype, "hass");
 J([
   Z()
@@ -6451,7 +6518,11 @@ const _o = (a) => class extends a {
   /** The state shown: a just chosen value, until Home Assistant reports it. */
   shown(t) {
     if (t)
-      return this._optimistic[t] ?? ct(this.hass, t);
+      return this._optimistic[t] ?? ht(this.hass, t);
+  }
+  /** A change on its way (spec kitu, Odezva): chosen here, not yet reported by Home Assistant. The control pulses. */
+  isPending(t) {
+    return t !== void 0 && this._optimistic[t] !== void 0;
   }
   toggle(t) {
     this._open = { ...this._open, [t]: !this._open[t] };
@@ -6461,7 +6532,7 @@ const _o = (a) => class extends a {
     return v`<div class="switch-row">
         <span class="switch-text"><span class="switch-title" id="l-${e.replace(/\W/g, "-")}">${t}</span><span class="hint ${n ? "warn" : ""}">${o === void 0 ? T : s}</span></span>
         <ed-switch
-          label=${t} .checked=${o === "on"} ?disabled=${o === void 0}
+          label=${t} .checked=${o === "on"} .pending=${this.isPending(e)} ?disabled=${o === void 0}
           @hdk-toggle=${(i) => this.setSwitch(e, i.detail.checked, t)}
         ></ed-switch>
       </div>`;
@@ -6475,7 +6546,7 @@ const _o = (a) => class extends a {
   }
   /** Calls a service on an entity that is reported; never on a missing or unavailable one (CURRENT_SPEC.md, Pojistky). */
   async call(t, e, s, n, o) {
-    if (!this.hass || ct(this.hass, n) === void 0)
+    if (!this.hass || ht(this.hass, n) === void 0)
       return this._feedback = this.t.feedback.noData(o), !1;
     try {
       return await this.hass.callService(t, e, s), !0;
@@ -6488,14 +6559,14 @@ const _o = (a) => class extends a {
   }
   async setBoost(t, e) {
     const s = this._config.entities, n = t === "wallbox" ? s.wallbox.boost : s.boiler.boost;
-    n && (this._feedback = "", t === "wallbox" && e && s.wallbox.block_charging && ct(this.hass, s.wallbox.block_charging) === "on" && (await this.setSwitch(s.wallbox.block_charging, !1, this.t.wallbox.block), this._feedback = this.t.feedback.unblocked), this.choose(n, e ? "on" : "off"), await this.call("switch", e ? "turn_on" : "turn_off", { entity_id: n }, n, t === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title));
+    n && (this._feedback = "", t === "wallbox" && e && s.wallbox.block_charging && ht(this.hass, s.wallbox.block_charging) === "on" && (await this.setSwitch(s.wallbox.block_charging, !1, this.t.wallbox.block), this._feedback = this.t.feedback.unblocked), this.choose(n, e ? "on" : "off"), await this.call("switch", e ? "turn_on" : "turn_off", { entity_id: n }, n, t === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title));
   }
   async setNumber(t, e, s) {
     this._feedback = "", await this.call("number", "set_value", { entity_id: t, value: e }, t, s);
   }
   async setTank(t, e) {
     if (this._feedback = "", this.choose(t, e), !!await this.call("water_heater", "set_operation_mode", { entity_id: t, operation_mode: e }, t, this.t.tank.modeLabel) && e === "heat") {
-      const { min: s, max: n } = this.tankRange(this._config), o = Nt(vt(this.hass, t), "temperature");
+      const { min: s, max: n } = this.tankRange(this._config), o = It(vt(this.hass, t), "temperature");
       (o === void 0 || o < s || o > n) && await this.setTemperature(t, st(o ?? s, s, n));
     }
   }
@@ -6503,8 +6574,8 @@ const _o = (a) => class extends a {
   tankRange(t) {
     const e = vt(this.hass, t.entities.tank.water_heater);
     return {
-      min: Math.max(t.num.tank.temp_min, Nt(e, "min_temp") ?? t.num.tank.temp_min),
-      max: Math.min(t.num.tank.temp_max, Nt(e, "max_temp") ?? t.num.tank.temp_max)
+      min: Math.max(t.num.tank.temp_min, It(e, "min_temp") ?? t.num.tank.temp_min),
+      max: Math.min(t.num.tank.temp_max, It(e, "max_temp") ?? t.num.tank.temp_max)
     };
   }
   async setTemperature(t, e) {
@@ -6539,7 +6610,7 @@ async function Ft(a, t, e, s, n, o) {
     types: o
   }) ?? {} : {};
 }
-function Ht(a) {
+function Pt(a) {
   const t = new Date(a);
   return t.setHours(0, 0, 0, 0), t.getTime();
 }
@@ -6818,12 +6889,12 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     return v`<ed-sheet open .heading=${t.name} .sub=${p} .closeLabel=${o.close} @hdk-close=${() => this._pop = void 0}><div class="pop bat-pop">
         <div class="pop-level">
           <div class="pop-level-row">
-            <span class="pop-label">${o.pop.level}${h ? v`<span class="note"> ${o.pop.atReserve}</span>` : M}</span>
+            <span class="pop-label">${o.pop.level}${h ? v`<span class="note"> ${o.pop.atReserve}</span>` : S}</span>
             <span class="pop-big" style="color:${h ? "var(--ed-warning)" : "var(--ed-text)"}">${l === void 0 ? T : K(l)}</span>
           </div>
           ${this.renderGauge(l, e, 12)}
         </div>
-        ${f ? v`<p class="bat-estimate"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 4.5V8l2.4 1.6"></path></svg>${f}</p>` : M}
+        ${f ? v`<p class="bat-estimate"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"></circle><path d="M8 4.5V8l2.4 1.6"></path></svg>${f}</p>` : S}
         <div class="pop-rows"><div class="pop-row"><span>${r ? o.pop.rows.discharged : o.pop.rows.charged}</span><b>${y === void 0 ? T : `${at(y)} kWh`}</b></div></div>
         <button type="button" class="bat-open" @click=${() => this.openBatteryDetail()}><span>${o.bat.open}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg></button>
       </div></ed-sheet>`;
@@ -6855,7 +6926,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
       const x = n ? r : st(r + m, 0, t.n - 1);
       this._batScrub = { ...this._batScrub, [t.id]: t.x(x) / U * 100 };
     }, c = t.x(r), d = t.dot?.(r), p = n && t.wholeText ? t.wholeText : t.read(r), b = (g) => `${(g / t.h * 100).toFixed(2)}%`, y = t.ticks ?? (t.time ? xa(t.time) : void 0), f = Ao(t.grid, Bs(y), t.valueAt, t.valueNum), u = [...t.labels, ...f.labels.filter((g) => t.labels.every((m) => Math.abs(m.y - g.y) > 13))];
-    return v`${t.panel ? M : v`<div class="bat-read">${Pt(p)}</div>`}
+    return v`${t.panel ? S : v`<div class="bat-read">${Nt(p)}</div>`}
         <div class="bat-chart" style="aspect-ratio:${U + Vt} / ${t.h}">
           <svg viewBox="0 0 ${U + Vt} ${t.h}" aria-hidden="true">
             <defs>
@@ -6864,9 +6935,9 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
             </defs>
             ${f.grid.map((g) => V`<line x1="0" y1=${g.y} x2=${U} y2=${g.y} class=${g.strong ? "axis" : "grid"}></line>`)}
             ${(y ?? []).map((g) => V`<line x1=${g.x} y1="0" x2=${g.x} y2=${t.h} class="grid"></line>`)}
-            <g mask=${o > 0 ? `url(#bm-${t.id})` : M}>${t.body}</g>
-            ${n ? M : V`<line x1=${c} y1="0" x2=${c} y2=${t.h} class="cursor"></line>`}
-            ${d && !n ? V`<circle cx=${c} cy=${d.y} r="6" style="fill:var(--ed-text)"></circle>` : M}
+            <g mask=${o > 0 ? `url(#bm-${t.id})` : S}>${t.body}</g>
+            ${n ? S : V`<line x1=${c} y1="0" x2=${c} y2=${t.h} class="cursor"></line>`}
+            ${d && !n ? V`<circle cx=${c} cy=${d.y} r="6" style="fill:var(--ed-text)"></circle>` : S}
           </svg>
           ${u.map((g) => v`<span class="bat-ylabel" style="top:calc(${b(g.y)} - 7px);left:calc(${(U / (U + Vt) * 100).toFixed(2)}% + 8px)">${g.text}</span>`)}
           <input type="range" style="width:${(U / (U + Vt) * 100).toFixed(2)}%" min="0" max="100" step="1" .value=${String(s)} aria-label=${e.bat.scrubLabel} aria-valuetext=${p}
@@ -6886,7 +6957,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     }} @keydown=${h} />
         </div>
         ${y ? v`<div class="bat-axis ticks">${y.map((g) => v`<span style="left:${((g.labelX ?? g.x) / (U + Vt) * 100).toFixed(2)}%;transform:translateX(${g.labelX === void 0 && g.x < 8 ? "0" : g.labelX === void 0 && g.x > U - 8 ? "-100%" : "-50%"})">${g.text}</span>`)}</div>` : v`<div class="bat-axis"><span>${t.from}</span><span>${t.to}</span></div>`}
-        ${t.panel ? n ? t.whole() : t.panel(r) : t.legend ?? M}`;
+        ${t.panel ? n ? t.whole() : t.panel(r) : t.legend ?? S}`;
   }
   renderChartOrEmpty(t, e, s) {
     if (s) return this.renderChart(s);
@@ -6901,10 +6972,10 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     if (!l.some((A) => A !== void 0) && !h.some((A) => A !== void 0)) return;
     const c = F(this.hass, e.state_of_charge), d = F(this.hass, e.power);
     c !== void 0 && (l[xe - 1] = c), d !== void 0 && (h[xe - 1] = -d / 1e3);
-    const p = xe, b = (A) => N(A / (p - 1) * U), y = (A) => N(98 - st(A, 0, 100) / 100 * 90), f = me(Math.max(1, ...h.map((A) => Math.abs(A ?? 0)))), u = 172, g = (A) => N(u - st(A, -f, f) / f * 44), m = 4.2, x = h.map((A, S) => {
-      if (A === void 0) return M;
+    const p = xe, b = (A) => N(A / (p - 1) * U), y = (A) => N(98 - st(A, 0, 100) / 100 * 90), f = me(Math.max(1, ...h.map((A) => Math.abs(A ?? 0)))), u = 172, g = (A) => N(u - st(A, -f, f) / f * 44), m = 4.2, x = h.map((A, M) => {
+      if (A === void 0) return S;
       const D = Math.min(u, g(A)), E = Math.max(1.5, Math.abs(g(A) - u));
-      return V`<rect x=${N(b(S) - m / 2)} y=${A >= 0 ? D : u} width=${m} height=${N(E)} rx="1.5" style="fill:${A >= 0 ? "var(--ed-battery)" : "var(--ed-discharge)"}"></rect>`;
+      return V`<rect x=${N(b(M) - m / 2)} y=${A >= 0 ? D : u} width=${m} height=${N(E)} rx="1.5" style="fill:${A >= 0 ? "var(--ed-battery)" : "var(--ed-discharge)"}"></rect>`;
     }), _ = he(l, b, y), $ = Ve(l, b, y, 98), O = (A) => `${Y(A, A % 1 === 0 ? 0 : 1)} kW`;
     return {
       id: "level",
@@ -6926,7 +6997,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
           <path d=${_} fill="none" style="stroke:var(--ed-text)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>${x}`,
       dot: (A) => l[A] === void 0 ? void 0 : { y: y(l[A]), color: "var(--ed-text)" },
       read: (A) => {
-        const S = h[A], D = S === void 0 ? T : Math.abs(S) < t.num.flows.idle_threshold / 1e3 ? this.t.bat.status.idle.toLowerCase() : `${S > 0 ? this.t.bat.charging : this.t.bat.discharging} ${nt(Math.abs(S) * 1e3, "kW")}`;
+        const M = h[A], D = M === void 0 ? T : Math.abs(M) < t.num.flows.idle_threshold / 1e3 ? this.t.bat.status.idle.toLowerCase() : `${M > 0 ? this.t.bat.charging : this.t.bat.discharging} ${nt(Math.abs(M) * 1e3, "kW")}`;
         return `${this.back((1 - A / (p - 1)) * o * 60)} · ${l[A] === void 0 ? T : K(l[A])} · ${D}`;
       },
       from: `−${o} h`,
@@ -6940,13 +7011,13 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     if (!o) return;
     const i = this.histWindow(e, o.at), r = e === "1d", l = i.bins, h = r ? Q : Rt, c = i.start + l * h, d = r ? 0 : 6 * Q, p = this.batRows(n, "energy", s.total_charge), b = this.batRows(n, "energy", s.total_discharge), y = Tt(p, "change", i.start, c, l, "sum", d), f = Tt(b, "change", i.start, c, l, "sum", d);
     if (!y.some((w) => w !== void 0) && !f.some((w) => w !== void 0)) return;
-    const u = y.map((w) => w ?? 0), g = f.map((w) => w ?? 0), m = me(Math.max(0.5, ...u, ...g)), x = r ? 3 : l <= 7 ? 10 : 2, _ = (U - (l - 1) * x) / l, $ = (w) => N(w * (_ + x) + _ / 2), O = 100, A = (w) => st(w, 0, m) / m * 92, S = u.flatMap((w, z) => {
-      const tt = g[z], P = z === l - 1 ? 1 : 0.85;
+    const u = y.map((w) => w ?? 0), g = f.map((w) => w ?? 0), m = me(Math.max(0.5, ...u, ...g)), x = r ? 3 : l <= 7 ? 10 : 2, _ = (U - (l - 1) * x) / l, $ = (w) => N(w * (_ + x) + _ / 2), O = 100, A = (w) => st(w, 0, m) / m * 92, M = u.flatMap((w, B) => {
+      const tt = g[B], R = B === l - 1 ? 1 : 0.85;
       return [
-        V`<rect x=${N(z * (_ + x))} y=${N(O - Math.max(w > 0 ? 1 : 0, A(w)))} width=${N(_)} height=${N(Math.max(w > 0 ? 1 : 0, A(w)))} rx="2" style="fill:var(--ed-battery);fill-opacity:${P}"></rect>`,
-        V`<rect x=${N(z * (_ + x))} y=${O} width=${N(_)} height=${N(Math.max(tt > 0 ? 1 : 0, A(tt)))} rx="2" style="fill:var(--ed-discharge);fill-opacity:${P}"></rect>`
+        V`<rect x=${N(B * (_ + x))} y=${N(O - Math.max(w > 0 ? 1 : 0, A(w)))} width=${N(_)} height=${N(Math.max(w > 0 ? 1 : 0, A(w)))} rx="2" style="fill:var(--ed-battery);fill-opacity:${R}"></rect>`,
+        V`<rect x=${N(B * (_ + x))} y=${O} width=${N(_)} height=${N(Math.max(tt > 0 ? 1 : 0, A(tt)))} rx="2" style="fill:var(--ed-discharge);fill-opacity:${R}"></rect>`
       ];
-    }), D = (w) => N(O - st(w, -m, m) / m * 92), E = u.map((w, z) => w - g[z]), k = r ? 2 : 1, C = (w) => `${w >= 0 ? "+" : "−"}${Y(Math.abs(w), k)}`, j = (w) => r ? it(i.start + w * Q) : _e(i.start + w * Rt);
+    }), D = (w) => N(O - st(w, -m, m) / m * 92), E = u.map((w, B) => w - g[B]), k = r ? 2 : 1, C = (w) => `${w >= 0 ? "+" : "−"}${Y(Math.abs(w), k)}`, j = (w) => r ? it(i.start + w * Q) : _e(i.start + w * Rt);
     return {
       charged: u,
       discharged: g,
@@ -6960,10 +7031,10 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
         time: { start: i.start, end: c, slot: h },
         valueNum: (w) => (O - w) / 92 * m,
         valueAt: (w) => {
-          const z = (O - w) / 92 * m;
-          return Math.abs(z) < 1e-9 ? void 0 : `${z > 0 ? "+" : "−"}${Y(Math.abs(z), Math.abs(z) % 1 === 0 ? 0 : Math.abs(z * 10) % 1 < 1e-6 ? 1 : 2)}`;
+          const B = (O - w) / 92 * m;
+          return Math.abs(B) < 1e-9 ? void 0 : `${B > 0 ? "+" : "−"}${Y(Math.abs(B), Math.abs(B) % 1 === 0 ? 0 : Math.abs(B * 10) % 1 < 1e-6 ? 1 : 2)}`;
         },
-        body: V`${S}<path d=${he(E, $, D)} fill="none" style="stroke:var(--ed-text)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>`,
+        body: V`${M}<path d=${he(E, $, D)} fill="none" style="stroke:var(--ed-text)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></path>`,
         dot: (w) => ({ y: D(E[w]), color: "var(--ed-text)" }),
         read: (w) => `${j(w)} · ${C(u[w])} / ${C(-g[w])} · ${this.t.bat.net} ${C(E[w])} kWh`,
         from: r ? "−24 h" : _e(i.start),
@@ -6982,7 +7053,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     if (!o) return;
     const i = oe[e], r = o.at, l = r - i * Rt, h = ss, c = (k) => Tt(this.batRows(n, "health", k), "mean", l, r, h), d = c(s.min_cell_voltage), p = c(s.max_cell_voltage), b = d.map((k, C) => k === void 0 || p[C] === void 0 ? void 0 : Math.max(0, (p[C] - k) * 1e3)), y = b.filter((k) => k !== void 0);
     if (!y.length) return;
-    const { imbalance_good: f, imbalance_warn: u } = t.num.battery, g = Math.max(f > 0 ? f * 1.5 : 10, Math.max(...y) * 1.2), m = (k) => N(130 - st(k, 0, g) / g * 120), x = (k) => N(k / (h - 1) * U), _ = (k) => this.back((1 - k / (h - 1)) * i * 24 * 60), $ = this.t.bat.health, O = "var(--ed-battery)", A = "var(--ed-warning)", S = (k) => k > u ? A : O, D = `bg-${e}`, E = st(1 - (130 - m(u)) / 120, 0, 1);
+    const { imbalance_good: f, imbalance_warn: u } = t.num.battery, g = Math.max(f > 0 ? f * 1.5 : 10, Math.max(...y) * 1.2), m = (k) => N(130 - st(k, 0, g) / g * 120), x = (k) => N(k / (h - 1) * U), _ = (k) => this.back((1 - k / (h - 1)) * i * 24 * 60), $ = this.t.bat.health, O = "var(--ed-battery)", A = "var(--ed-warning)", M = (k) => k > u ? A : O, D = `bg-${e}`, E = st(1 - (130 - m(u)) / 120, 0, 1);
     return {
       id: "health-gap",
       h: 140,
@@ -6990,7 +7061,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
       x,
       time: { start: l, end: r },
       grid: [{ y: 10 }, { y: m(f) }, { y: 130, strong: !0 }],
-      labels: [{ y: 10, text: `${R(g)} mV` }, { y: m(f), text: `${R(f)} mV` }, { y: 130, text: "0" }],
+      labels: [{ y: 10, text: `${P(g)} mV` }, { y: m(f), text: `${P(f)} mV` }, { y: 130, text: "0" }],
       body: V`<defs>
             <linearGradient id=${D} gradientUnits="userSpaceOnUse" x1="0" y1="10" x2="0" y2="130">
               <stop offset=${E} stop-color="#FF9230"></stop><stop offset=${E} stop-color="#30D158"></stop>
@@ -7000,11 +7071,11 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
           <rect x="0" y=${m(f)} width=${U} height=${N(130 - m(f))} style="fill:${O};fill-opacity:0.12"></rect>
           <path d=${Ve(b, x, m, 130)} fill="url(#${D}-area)"></path>
           <path d=${he(b, x, m)} fill="none" stroke="url(#${D})" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
-      dot: (k) => b[k] === void 0 ? void 0 : { y: m(b[k]), color: S(b[k]) },
-      read: (k) => b[k] === void 0 ? `${_(k)} · ${T}` : `${_(k)} · ${$.difference} ${R(b[k])} mV · ${$.min} ${Y(d[k], 3)} V · ${$.max} ${Y(p[k], 3)} V`,
+      dot: (k) => b[k] === void 0 ? void 0 : { y: m(b[k]), color: M(b[k]) },
+      read: (k) => b[k] === void 0 ? `${_(k)} · ${T}` : `${_(k)} · ${$.difference} ${P(b[k])} mV · ${$.min} ${Y(d[k], 3)} V · ${$.max} ${Y(p[k], 3)} V`,
       from: i === 1 ? "−24 h" : `−${i} d`,
       to: this.t.bat.today,
-      legend: v`<div class="bat-legend"><span><i class="swatch" style="background:${O};opacity:0.35"></i>${$.excellentZone(`${R(f)} mV`)}</span></div>`
+      legend: v`<div class="bat-legend"><span><i class="swatch" style="background:${O};opacity:0.35"></i>${$.excellentZone(`${P(f)} mV`)}</span></div>`
     };
   }
   /** A line (and band) chart of the health rows (temperature, life) with an auto-scaled vertical axis. */
@@ -7022,8 +7093,8 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
         line: C,
         minSpan: 6,
         colour: "var(--ed-sun)",
-        text: (j) => `${R(j)} °C`,
-        mid: (j) => `${R(j)} °C`,
+        text: (j) => `${P(j)} °C`,
+        mid: (j) => `${P(j)} °C`,
         read: (j) => {
           const w = [E[j] === void 0 ? void 0 : `${this.t.bat.health.min} ${Y(E[j], 1)}`, C[j] === void 0 ? void 0 : `${this.t.bat.health.battery.toLowerCase()} ${Y(C[j], 1)}`, k[j] === void 0 ? void 0 : `${this.t.bat.health.max} ${Y(k[j], 1)}`].filter(Boolean);
           return `${y(j)} · ${w.length ? `${w.join(" · ")} °C` : T}`;
@@ -7038,8 +7109,8 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
         line: E,
         minSpan: 1,
         colour: "var(--ed-battery)",
-        text: (k) => R(k, 1),
-        mid: (k) => R(k, 1),
+        text: (k) => P(k, 1),
+        mid: (k) => P(k, 1),
         read: (k) => `${y(k)} · ${E[k] === void 0 ? T : this.t.bat.health.cycles(Y(E[k], 1))}`
       };
     }
@@ -7048,7 +7119,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     const m = Hs(g.hi - g.lo, 4), x = Math.floor(g.lo / m + 1e-9) * m;
     let _ = Math.ceil(g.hi / m - 1e-9) * m;
     Math.round((_ - x) / m) % 2 === 1 && (_ += m);
-    const $ = { lo: x, hi: _ }, O = (E) => N(130 - (st(E, $.lo, $.hi) - $.lo) / ($.hi - $.lo) * 120), A = t === "life" ? "" : js(u.low, u.high, b, O), S = u.line ? he(u.line, b, O) : "", D = u.colour;
+    const $ = { lo: x, hi: _ }, O = (E) => N(130 - (st(E, $.lo, $.hi) - $.lo) / ($.hi - $.lo) * 120), A = t === "life" ? "" : js(u.low, u.high, b, O), M = u.line ? he(u.line, b, O) : "", D = u.colour;
     return {
       id: `health-${t}`,
       h: 140,
@@ -7057,7 +7128,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
       time: { start: h, end: l },
       grid: [{ y: 10 }, { y: 70 }, { y: 130 }],
       labels: [{ y: 10, text: u.text($.hi) }, { y: 70, text: u.mid(($.hi + $.lo) / 2) }, { y: 130, text: u.text($.lo) }],
-      body: V`<path d=${A} style="fill:${D};fill-opacity:0.22"></path><path d=${S} fill="none" style="stroke:${D}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+      body: V`<path d=${A} style="fill:${D};fill-opacity:0.22"></path><path d=${M} fill="none" style="stroke:${D}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
       dot: (E) => u.line?.[E] === void 0 ? void 0 : { y: O(u.line[E]), color: D },
       read: u.read,
       from: f,
@@ -7095,7 +7166,7 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
     return v`<div class="bat-card">
           <div class="bat-card-head"><div><span class="bat-cap">${s.bat.level}</span><span class="bat-sub">${y}</span></div><span class="bat-huge">${o === void 0 ? T : K(o)}</span></div>
           ${this.renderGauge(o, t, 32)}
-          ${f ? v`<p class="bat-estimate plain">${f}</p>` : M}
+          ${f ? v`<p class="bat-estimate plain">${f}</p>` : S}
         </div>
         <div class="bat-kpis">${g.map((O) => v`<div class="bat-kpi"><span class="sub">${O.label}</span><span class="val">${O.value}</span><span class="sub">${O.sub}</span></div>`)}</div>
         <div class="bat-card">
@@ -7108,25 +7179,25 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
         <div class="bat-card">
           <span class="bat-cap">${s.bat.energyToday}</span>
           <div class="bat-two"><div><span class="sub">${s.bat.charged}</span><span class="val">${m === void 0 ? T : `${at(m)} kWh`}</span></div><div><span class="sub">${s.bat.discharged}</span><span class="val">${x === void 0 ? T : `${at(x)} kWh`}</span></div></div>
-          <div class="bat-split" aria-hidden="true">${m !== void 0 && x !== void 0 && m + x > 0 ? v`${m > 0 ? v`<i style="flex:${m.toFixed(3)} 1 0;background:var(--ed-battery)"></i>` : M}${x > 0 ? v`<i style="flex:${x.toFixed(3)} 1 0;background:var(--ed-discharge)"></i>` : M}` : M}</div>
+          <div class="bat-split" aria-hidden="true">${m !== void 0 && x !== void 0 && m + x > 0 ? v`${m > 0 ? v`<i style="flex:${m.toFixed(3)} 1 0;background:var(--ed-battery)"></i>` : S}${x > 0 ? v`<i style="flex:${x.toFixed(3)} 1 0;background:var(--ed-discharge)"></i>` : S}` : S}</div>
           <p class="bat-sub">${_ === void 0 ? T : s.bat.netStored(`${_ >= 0 ? "+" : "−"}${at(Math.abs(_))} kWh`)}</p>
         </div>`;
   }
   renderBatteryHistory(t, e) {
-    const s = this.t, n = t.entities.battery, o = this.batRange(t), i = `hist:${o}`, r = this.energyChart(t, o), l = r ? r.charged.reduce((S, D) => S + D, 0) : void 0, h = r ? r.discharged.reduce((S, D) => S + D, 0) : void 0, c = s.bat.kpi.over(o === "1d" ? "24 h" : s.bat.ranges[o].toLowerCase()), d = this._batData[i], p = oe[o], b = this.batRows(i, "level", n.state_of_charge), y = this.batRows(i, "level", n.power), f = Dt(b, "min") ? Math.min(...(b ?? []).map((S) => S.min).filter((S) => typeof S == "number")) : void 0, u = Dt(y, "max") || Dt(y, "min") ? Math.max(...(y ?? []).flatMap((S) => [S.max, S.min]).filter((S) => typeof S == "number").map((S) => Math.abs(S))) : void 0, g = `${Y(t.num.battery.capacity, t.num.battery.capacity % 1 === 0 ? 0 : 1)} kWh`, m = T, x = [
+    const s = this.t, n = t.entities.battery, o = this.batRange(t), i = `hist:${o}`, r = this.energyChart(t, o), l = r ? r.charged.reduce((M, D) => M + D, 0) : void 0, h = r ? r.discharged.reduce((M, D) => M + D, 0) : void 0, c = s.bat.kpi.over(o === "1d" ? "24 h" : s.bat.ranges[o].toLowerCase()), d = this._batData[i], p = oe[o], b = this.batRows(i, "level", n.state_of_charge), y = this.batRows(i, "level", n.power), f = Dt(b, "min") ? Math.min(...(b ?? []).map((M) => M.min).filter((M) => typeof M == "number")) : void 0, u = Dt(y, "max") || Dt(y, "min") ? Math.max(...(y ?? []).flatMap((M) => [M.max, M.min]).filter((M) => typeof M == "number").map((M) => Math.abs(M))) : void 0, g = `${Y(t.num.battery.capacity, t.num.battery.capacity % 1 === 0 ? 0 : 1)} kWh`, m = T, x = [
       { label: s.bat.charged, value: l === void 0 ? m : `${Y(l, o === "1d" ? 1 : 0)} kWh`, sub: c },
       { label: s.bat.discharged, value: h === void 0 ? m : `${Y(h, o === "1d" ? 1 : 0)} kWh`, sub: c },
       { label: s.bat.kpi.efficiency, value: l && h !== void 0 ? K(Y(h / l * 100, 1)) : m, sub: s.bat.kpi.efficiencySub },
       { label: s.bat.kpi.cycles, value: h === void 0 ? m : Y(h / t.num.battery.capacity, 1), sub: s.bat.kpi.cyclesSub(g) },
       { label: s.bat.kpi.lowest, value: f === void 0 ? m : K(f), sub: s.bat.kpi.lowestSub },
       { label: s.bat.kpi.peak, value: u === void 0 ? m : nt(u, "kW"), sub: s.bat.kpi.peakSub }
-    ], $ = Tt(b, "mean", this.histWindow(o, d?.at ?? Date.now()).start, d?.at ?? Date.now(), Math.max(1, p * 24)).filter((S) => S !== void 0), O = [0, 20, 40, 60, 80, 100], A = O.slice(0, 5).map((S, D) => $.length ? Math.round($.filter((E) => D === 4 ? E >= S : E >= S && E < O[D + 1]).length / $.length * 100) : void 0);
+    ], $ = Tt(b, "mean", this.histWindow(o, d?.at ?? Date.now()).start, d?.at ?? Date.now(), Math.max(1, p * 24)).filter((M) => M !== void 0), O = [0, 20, 40, 60, 80, 100], A = O.slice(0, 5).map((M, D) => $.length ? Math.round($.filter((E) => D === 4 ? E >= M : E >= M && E < O[D + 1]).length / $.length * 100) : void 0);
     return v`${this.renderRange(t)}
         <div class="bat-card"><span class="bat-cap">${Lt([o === "1d" ? s.bat.energyHours : s.bat.energyDays, v`<span class="unit">kWh</span>`])}</span>${this.renderChartOrEmpty(i, 200, r?.chart)}</div>
-        <div class="bat-kpis">${x.map((S) => v`<div class="bat-kpi"><span class="sub">${S.label}</span><span class="val">${S.value}</span><span class="sub">${S.sub}</span></div>`)}</div>
+        <div class="bat-kpis">${x.map((M) => v`<div class="bat-kpi"><span class="sub">${M.label}</span><span class="val">${M.value}</span><span class="sub">${M.sub}</span></div>`)}</div>
         <div class="bat-card">
           <span class="bat-cap">${s.bat.bandsTitle}</span>
-          ${A.map((S, D) => v`<div class="bat-band"><span class="name">${O[D]}–${O[D + 1]} %</span><span class="track"><i style="width:${S ?? 0}%;background:${D === 0 ? "var(--ed-warning)" : "var(--ed-battery)"}"></i></span><span class="pct">${S === void 0 ? T : K(S)}</span></div>`)}
+          ${A.map((M, D) => v`<div class="bat-band"><span class="name">${O[D]}–${O[D + 1]} %</span><span class="track"><i style="width:${M ?? 0}%;background:${D === 0 ? "var(--ed-warning)" : "var(--ed-battery)"}"></i></span><span class="pct">${M === void 0 ? T : K(M)}</span></div>`)}
           <p class="bat-sub">${s.bat.bandsNote}</p>
         </div>`;
   }
@@ -7137,14 +7208,14 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
       return e === "" || e === "0" ? "" : e;
   }
   renderBatteryHealth(t, e) {
-    const s = this.t, n = t.entities.battery, o = s.bat.health, i = this.batRange(t), r = (C) => F(this.hass, C), l = r(n.state_of_health), h = r(n.min_cell_voltage), c = r(n.max_cell_voltage), d = r(n.min_cell_temperature), p = r(n.max_cell_temperature), b = this.batProblem(n.error), y = this.batProblem(n.warning), f = Jt(this.hass, n.total_charge), u = Jt(this.hass, n.total_discharge), g = t.num.battery, m = h !== void 0 && c !== void 0 ? (c - h) * 1e3 : void 0, x = m === void 0 ? void 0 : m <= g.imbalance_good ? "good" : m <= g.imbalance_warn ? "ok" : m <= g.imbalance_fault ? "warn" : "fault", _ = x === "warn" || x === "fault" ? "var(--ed-warning)" : "var(--ed-pop-sec)", A = [l, h, c, d, p, e.soc].every((C) => C === void 0) && b === void 0 && y === void 0 ? { title: o.noData, sub: o.noDataSub, tone: "off", icon: "M5 12h14" } : b || y ? { title: b ? o.error(b) : o.warning(y), sub: o.problemSub, tone: "warn", icon: "M12 7v6M12 17h.01" } : { title: o.ok, sub: o.okSub, tone: "ok", icon: "M5 12.5l4.5 4.5L19 7.5" }, S = u === void 0 ? void 0 : u / g.capacity, D = [
+    const s = this.t, n = t.entities.battery, o = s.bat.health, i = this.batRange(t), r = (C) => F(this.hass, C), l = r(n.state_of_health), h = r(n.min_cell_voltage), c = r(n.max_cell_voltage), d = r(n.min_cell_temperature), p = r(n.max_cell_temperature), b = this.batProblem(n.error), y = this.batProblem(n.warning), f = Jt(this.hass, n.total_charge), u = Jt(this.hass, n.total_discharge), g = t.num.battery, m = h !== void 0 && c !== void 0 ? (c - h) * 1e3 : void 0, x = m === void 0 ? void 0 : m <= g.imbalance_good ? "good" : m <= g.imbalance_warn ? "ok" : m <= g.imbalance_fault ? "warn" : "fault", _ = x === "warn" || x === "fault" ? "var(--ed-warning)" : "var(--ed-pop-sec)", A = [l, h, c, d, p, e.soc].every((C) => C === void 0) && b === void 0 && y === void 0 ? { title: o.noData, sub: o.noDataSub, tone: "off", icon: "M5 12h14" } : b || y ? { title: b ? o.error(b) : o.warning(y), sub: o.problemSub, tone: "warn", icon: "M12 7v6M12 17h.01" } : { title: o.ok, sub: o.okSub, tone: "ok", icon: "M5 12.5l4.5 4.5L19 7.5" }, M = u === void 0 ? void 0 : u / g.capacity, D = [
       { key: "soh", label: o.capacity, value: l === void 0 ? T : K(l), sub: l === void 0 ? s.noData : o.capacitySub(`${Y(g.capacity * l / 100, 1)} kWh`, `${Y(g.capacity, g.capacity % 1 === 0 ? 0 : 1)} kWh`), details: [] },
-      { key: "gap", label: o.balance, value: m === void 0 ? T : `${R(m)} mV`, word: x ? o.words[x] : void 0, sub: o.balanceSub, details: [] },
+      { key: "gap", label: o.balance, value: m === void 0 ? T : `${P(m)} mV`, word: x ? o.words[x] : void 0, sub: o.balanceSub, details: [] },
       {
         key: "temp",
         label: o.temperature,
-        value: p === void 0 ? T : `${R(p)} °C`,
-        sub: p !== void 0 && d !== void 0 ? o.temperatureSub(`${R(p - d)} °C`) : s.noData,
+        value: p === void 0 ? T : `${P(p)} °C`,
+        sub: p !== void 0 && d !== void 0 ? o.temperatureSub(`${P(p - d)} °C`) : s.noData,
         details: [
           [o.battery, n.temperature],
           [o.inverterAir, n.inverter_temperature_air],
@@ -7154,15 +7225,15 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
       {
         key: "life",
         label: o.life,
-        value: S === void 0 ? T : o.cycles(R(S)),
+        value: M === void 0 ? T : o.cycles(P(M)),
         sub: f && u !== void 0 ? o.lifeSub(K(Y(u / f * 100, 1))) : s.noData,
         details: [
-          { label: o.totalCharged, value: f === void 0 ? T : `${R(f)} kWh` },
-          { label: o.totalDischarged, value: u === void 0 ? T : `${R(u)} kWh` }
+          { label: o.totalCharged, value: f === void 0 ? T : `${P(f)} kWh` },
+          { label: o.totalDischarged, value: u === void 0 ? T : `${P(u)} kWh` }
         ]
       }
     ], E = (C) => C ? zo(this.hass, C) : void 0, k = [];
-    if (n.mode && k.push({ label: o.mode, value: E(n.mode) ?? T }), n.charge_limit && k.push({ label: o.chargeLimit, value: r(n.charge_limit) === void 0 ? T : `${R(r(n.charge_limit))} A` }), n.discharge_limit && k.push({ label: o.dischargeLimit, value: r(n.discharge_limit) === void 0 ? T : `${R(r(n.discharge_limit))} A` }), n.error || n.warning) {
+    if (n.mode && k.push({ label: o.mode, value: E(n.mode) ?? T }), n.charge_limit && k.push({ label: o.chargeLimit, value: r(n.charge_limit) === void 0 ? T : `${P(r(n.charge_limit))} A` }), n.discharge_limit && k.push({ label: o.dischargeLimit, value: r(n.discharge_limit) === void 0 ? T : `${P(r(n.discharge_limit))} A` }), n.error || n.warning) {
       const C = [b, y].filter(Boolean).join(", ");
       k.push({ label: o.errors, value: b === void 0 && y === void 0 ? T : C || o.none, warn: !!C });
     }
@@ -7174,21 +7245,21 @@ const Eo = 5 * 6e4, xe = 48, ss = 60, Oo = 0, jo = (a) => class extends a {
         ${D.map((C) => {
       const j = C.key !== "soh" && this._batOpen === C.key, w = j ? this.healthChart(C.key, t, i) : void 0;
       return v`<div class="bat-card flush">
-            <button type="button" class="bat-row" ?disabled=${C.key === "soh"} aria-expanded=${C.key === "soh" ? M : j ? "true" : "false"}
+            <button type="button" class="bat-row" ?disabled=${C.key === "soh"} aria-expanded=${C.key === "soh" ? S : j ? "true" : "false"}
               @click=${() => {
         C.key !== "soh" && (this._batOpen = j ? void 0 : C.key, this._batScrub = {});
       }}>
               <span class="bat-col"><span class="bat-label">${C.label}</span><span class="bat-sub">${C.sub}</span></span>
-              <span class="bat-value">${C.value}</span>${C.word ? v`<span class="bat-word" style="color:${_}">${C.word}</span>` : M}
-              ${C.key === "soh" ? M : v`<svg class="chev ${j ? "open" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg>`}
+              <span class="bat-value">${C.value}</span>${C.word ? v`<span class="bat-word" style="color:${_}">${C.word}</span>` : S}
+              ${C.key === "soh" ? S : v`<svg class="chev ${j ? "open" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg>`}
             </button>
             ${j ? v`<div class="bat-body">
                   ${this.renderChartOrEmpty(`health:${i}`, 140, w)}
-                  ${C.details.length ? v`<div class="bat-list">${C.details.map((z) => v`<div class="bat-line"><span>${z.label}</span><b>${z.value}</b></div>`)}</div>` : M}
-                </div>` : M}
+                  ${C.details.length ? v`<div class="bat-list">${C.details.map((B) => v`<div class="bat-line"><span>${B.label}</span><b>${B.value}</b></div>`)}</div>` : S}
+                </div>` : S}
           </div>`;
     })}
-        ${k.length ? v`<div class="bat-card flush"><span class="bat-cap pad">${o.diagnostics}</span><div class="bat-list pad">${k.map((C) => v`<div class="bat-line"><span>${C.label}</span><b style="color:${C.warn ? "var(--ed-warning)" : "var(--ed-pop-sec)"}">${C.value}</b></div>`)}</div></div>` : M}`;
+        ${k.length ? v`<div class="bat-card flush"><span class="bat-cap pad">${o.diagnostics}</span><div class="bat-list pad">${k.map((C) => v`<div class="bat-line"><span>${C.label}</span><b style="color:${C.warn ? "var(--ed-warning)" : "var(--ed-pop-sec)"}">${C.value}</b></div>`)}</div></div>` : S}`;
   }
 };
 function zo(a, t) {
@@ -7201,7 +7272,7 @@ function ta(a, t) {
   for (const s of a ?? []) {
     const n = s[t];
     if (!ns(n) || !ns(s.start)) continue;
-    const o = new Date(s.start), i = Ht(s.start), r = e.get(i) ?? new Array(24).fill(void 0);
+    const o = new Date(s.start), i = Pt(s.start), r = e.get(i) ?? new Array(24).fill(void 0);
     r[o.getHours()] = Math.max(0, t === "mean" ? n / 1e3 : n), e.set(i, r);
   }
   return e;
@@ -7217,7 +7288,7 @@ function Ke(a, t) {
   return e[n] + (e[o] - e[n]) * (s - n);
 }
 const os = (a) => Ke(a, 50);
-function Rs(a, t) {
+function Ps(a, t) {
   const e = [], s = new Date(a);
   for (let n = 0; n < t; n++)
     s.setDate(s.getDate() - 1), e.push(s.getTime());
@@ -7228,7 +7299,7 @@ function At(a, t) {
   return e.setDate(e.getDate() + t), e.setHours(0, 0, 0, 0), e.getTime();
 }
 function Bo(a, t, e, s) {
-  const n = Rs(t, e).filter((r) => a.has(r)), o = Array.from({ length: 24 }, (r, l) => {
+  const n = Ps(t, e).filter((r) => a.has(r)), o = Array.from({ length: 24 }, (r, l) => {
     const h = n.map((c) => a.get(c)[l]).filter((c) => c !== void 0);
     return h.length >= 3 ? Ke(h, s) : void 0;
   }), i = n.map((r) => Ge(a.get(r), 20)).filter((r) => r !== void 0);
@@ -7238,11 +7309,11 @@ function Ho(a) {
   const t = a.reduce((e, s) => e + (s ?? 0), 0);
   return t > 0 ? a.map((e) => (e ?? 0) / t) : void 0;
 }
-function Ro(a, t) {
+function Po(a, t) {
   const e = Ho(t);
   return e ? e.map((s) => s * a) : void 0;
 }
-function Po(a, t, e, s) {
+function Ro(a, t, e, s) {
   const n = new Date(s), o = n.getHours(), i = 1 - (n.getMinutes() * 60 + n.getSeconds()) / 3600, r = e.map((h, c) => c < o ? 0 : c === o ? (h ?? 0) * i : h ?? 0), l = r.reduce((h, c) => h + c, 0);
   return Array.from({ length: 24 }, (h, c) => c < o ? a?.[c] : l > 0 ? r[c] / l * Math.max(0, t) : void 0);
 }
@@ -7301,7 +7372,7 @@ function Vo(a) {
   let s = a.soc / 100 * t;
   const n = a.reserve / 100 * t, o = { carSun: 0, carTotal: 0, sunUntilEvening: 0, houseUntilEvening: 0 };
   let i = Math.ceil(a.now / (Q / 4)) * (Q / 4);
-  const r = Ht(a.now), l = r + a.eveningHour * Q, h = At(r, 1) + a.morningHour * Q;
+  const r = Pt(a.now), l = r + a.eveningHour * Q, h = At(r, 1) + a.morningHour * Q;
   let c = !1, d = s >= t - 0.01;
   for (; i <= h; i += Q / 4) {
     !o.socAtEvening && i >= l && a.now < l && (o.socAtEvening = s / t * 100);
@@ -7336,7 +7407,7 @@ function Go(a, t, e = 8) {
   return i.push([a[s - 1], t[s - 1]]), i;
 }
 function Ko(a, t, e, s) {
-  const n = Rs(t, e).map((o) => Ge(a.get(o), 20)).filter((o) => o !== void 0);
+  const n = Ps(t, e).map((o) => Ge(a.get(o), 20)).filter((o) => o !== void 0);
   return n.length >= 3 ? Ke(n, s) : void 0;
 }
 const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
@@ -7371,7 +7442,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     return this._sunDetail || this._pop === "sun" ? ["sun:hist", "sun:five"] : [];
   }
   sunRequests(t, e, s) {
-    const n = t.entities, o = (...l) => l.filter((h) => !!h), i = Ht(s);
+    const n = t.entities, o = (...l) => l.filter((h) => !!h), i = Pt(s);
     if (e === "sun:five")
       return [{ part: "power", ids: o(n.pv.power), start: At(i, -10), end: s, period: "5minute", types: ["mean"] }];
     const r = At(i, -(Math.max(30, t.num.forecast.learn_days) + t.num.forecast.learn_days + 1));
@@ -7419,7 +7490,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
         target: { entity_id: e },
         return_response: !0
       }))?.response?.[e]?.forecast ?? [];
-      this._sunWeather = { at: n, days: i.filter((r) => r.datetime).map((r) => ({ day: Ht(Date.parse(r.datetime)), condition: r.condition })) };
+      this._sunWeather = { at: n, days: i.filter((r) => r.datetime).map((r) => ({ day: Pt(Date.parse(r.datetime)), condition: r.condition })) };
     } catch {
       this._sunWeather = { at: n, days: [] };
     } finally {
@@ -7448,51 +7519,51 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     return typeof t?.latitude == "number" && typeof t.longitude == "number" ? { latitude: t.latitude, longitude: t.longitude } : void 0;
   }
   sunView(t) {
-    const e = Date.now(), s = Ht(e), n = t.num.forecast, o = this._batData["sun:hist"], i = this._batData["sun:five"], r = t.entities;
+    const e = Date.now(), s = Pt(e), n = t.num.forecast, o = this._batData["sun:hist"], i = this._batData["sun:five"], r = t.entities;
     let l = /* @__PURE__ */ new Map(), h = new Array(24).fill(void 0), c = [];
     if (o && Object.keys(o.parts).length) {
       if (this._sunCache?.entry !== o) {
-        const P = r.pv.total_generation ? o.parts.energy?.[r.pv.total_generation] : void 0;
-        let L = ta(P, "change");
+        const R = r.pv.total_generation ? o.parts.energy?.[r.pv.total_generation] : void 0;
+        let L = ta(R, "change");
         L.size || (L = ta(r.pv.power ? o.parts.power?.[r.pv.power] : void 0, "mean"));
-        const q = ta(r.house.power ? o.parts.house?.[r.house.power] : void 0, "mean"), kt = Array.from({ length: 24 }, (lt, Bt) => {
-          const se = [...q.entries()].filter(([Kt]) => Kt < s).map(([, Kt]) => Kt[Bt]).filter((Kt) => Kt !== void 0);
+        const q = ta(r.house.power ? o.parts.house?.[r.house.power] : void 0, "mean"), _t = Array.from({ length: 24 }, (lt, Ht) => {
+          const se = [...q.entries()].filter(([Kt]) => Kt < s).map(([, Kt]) => Kt[Ht]).filter((Kt) => Kt !== void 0);
           return se.length >= 3 ? os(se) : void 0;
-        }), bt = ((r.forecast.energy_today ? o.parts.forecast?.[r.forecast.energy_today] : void 0) ?? []).filter((lt) => typeof lt.mean == "number" && new Date(lt.start).getHours() === 8).map((lt) => ({ day: Ht(lt.start), forecast: lt.mean, actual: Ge(L.get(Ht(lt.start)), 20) })).filter((lt) => lt.actual !== void 0 && lt.day < s);
-        this._sunCache = { entry: o, days: L, houseCurve: kt, pairs: bt };
+        }), bt = ((r.forecast.energy_today ? o.parts.forecast?.[r.forecast.energy_today] : void 0) ?? []).filter((lt) => typeof lt.mean == "number" && new Date(lt.start).getHours() === 8).map((lt) => ({ day: Pt(lt.start), forecast: lt.mean, actual: Ge(L.get(Pt(lt.start)), 20) })).filter((lt) => lt.actual !== void 0 && lt.day < s);
+        this._sunCache = { entry: o, days: L, houseCurve: _t, pairs: bt };
       }
       l = this._sunCache.days, h = this._sunCache.houseCurve, c = this._sunCache.pairs;
     }
     const d = Bo(l, s, n.learn_days, n.possible_percentile), p = r.pv.power ? i?.parts.power?.[r.pv.power] : void 0;
     let b = l.get(s);
     if (p?.length) {
-      const P = new Array(24).fill(void 0);
+      const R = new Array(24).fill(void 0);
       for (const L of p) {
         if (L.start < s || typeof L.mean != "number") continue;
         const q = new Date(L.start).getHours();
-        P[q] = (P[q] ?? 0) + Math.max(0, L.mean) / 1e3 / we;
+        R[q] = (R[q] ?? 0) + Math.max(0, L.mean) / 1e3 / we;
       }
-      b = P;
+      b = R;
     }
-    const f = Jt(this.hass, t.entities.daily.pv_generation) ?? (b && b.some((P) => P !== void 0) ? b.reduce((P, L) => P + (L ?? 0), 0) : void 0), u = Jt(this.hass, r.forecast.energy_today), g = new Date(e), m = g.getHours() + g.getMinutes() / 60, x = d.curve.some((P) => P !== void 0) ? d.curve.reduce((P, L, q) => P + (L ?? 0) * st(m - q, 0, 1), 0) : void 0, _ = Io(c) ?? n.typical_deviation / 100;
+    const f = Jt(this.hass, t.entities.daily.pv_generation) ?? (b && b.some((R) => R !== void 0) ? b.reduce((R, L) => R + (L ?? 0), 0) : void 0), u = Jt(this.hass, r.forecast.energy_today), g = new Date(e), m = g.getHours() + g.getMinutes() / 60, x = d.curve.some((R) => R !== void 0) ? d.curve.reduce((R, L, q) => R + (L ?? 0) * st(m - q, 0, 1), 0) : void 0, _ = Io(c) ?? n.typical_deviation / 100;
     let $;
     if (p?.length) {
-      let P = 0, L = 0;
+      let R = 0, L = 0;
       for (const q of p)
-        q.start < e - Q || q.start >= e || typeof q.mean != "number" || (P += Math.max(0, q.mean) / 1e3 / we, L += (d.curve[new Date(q.start).getHours()] ?? 0) / we);
-      $ = { actual: P, possible: L };
+        q.start < e - Q || q.start >= e || typeof q.mean != "number" || (R += Math.max(0, q.mean) / 1e3 / we, L += (d.curve[new Date(q.start).getHours()] ?? 0) / we);
+      $ = { actual: R, possible: L };
     }
-    const O = No(f, u, d.curve, e, _, $), A = O ? Math.max(0, O.value - (f ?? 0)) : 0, S = Po(b, O ? A : 0, d.curve, e);
-    if (!O) for (let P = new Date(e).getHours(); P < 24; P++) S[P] = void 0;
-    const D = this.place(), E = D ? Ae(s, D.latitude, D.longitude) : void 0, k = t.num.flows.idle_threshold, C = (p ?? []).filter((P) => P.start >= s && typeof P.mean == "number"), j = C.filter((P) => P.mean >= k), w = j.length ? j[0].start : void 0, z = C.reduce((P, L) => !P || L.mean > P.mean ? L : P, void 0);
+    const O = No(f, u, d.curve, e, _, $), A = O ? Math.max(0, O.value - (f ?? 0)) : 0, M = Ro(b, O ? A : 0, d.curve, e);
+    if (!O) for (let R = new Date(e).getHours(); R < 24; R++) M[R] = void 0;
+    const D = this.place(), E = D ? Ae(s, D.latitude, D.longitude) : void 0, k = t.num.flows.idle_threshold, C = (p ?? []).filter((R) => R.start >= s && typeof R.mean == "number"), j = C.filter((R) => R.mean >= k), w = j.length ? j[0].start : void 0, B = C.reduce((R, L) => !R || L.mean > R.mean ? L : R, void 0);
     let tt;
     if (E) {
-      const P = [];
-      for (const _t of [...new Set((p ?? []).map((bt) => Ht(bt.start)))].filter((bt) => bt < s)) {
-        const bt = (p ?? []).filter((Bt) => Ht(Bt.start) === _t && Bt.mean >= k).pop(), lt = D ? Ae(_t, D.latitude, D.longitude) : void 0;
-        bt && lt && P.push(lt.set - (bt.start + 5 * 6e4));
+      const R = [];
+      for (const St of [...new Set((p ?? []).map((bt) => Pt(bt.start)))].filter((bt) => bt < s)) {
+        const bt = (p ?? []).filter((Ht) => Pt(Ht.start) === St && Ht.mean >= k).pop(), lt = D ? Ae(St, D.latitude, D.longitude) : void 0;
+        bt && lt && R.push(lt.set - (bt.start + 5 * 6e4));
       }
-      const L = P.length >= 3 ? os(P) : 0, q = j.length ? j[j.length - 1].start + 5 * 6e4 : void 0;
+      const L = R.length >= 3 ? os(R) : 0, q = j.length ? j[j.length - 1].start + 5 * 6e4 : void 0;
       tt = e > E.set && (q === void 0 || e - q > 15 * 6e4) && q !== void 0 ? { at: q, over: !0 } : { at: E.set - L, over: !1 };
     }
     return {
@@ -7507,13 +7578,13 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       deviation: _,
       pairs: c,
       estimate: O,
-      hours: S,
+      hours: M,
       rise: E?.rise,
       set: E?.set,
       started: w,
       ends: tt,
       fiveRows: p,
-      peak: z ? { kw: z.mean / 1e3, at: z.start } : void 0,
+      peak: B ? { kw: B.mean / 1e3, at: B.start } : void 0,
       houseCurve: h
     };
   }
@@ -7531,7 +7602,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.2"></circle><path d="M12 11v5.2"></path><circle cx="12" cy="7.6" r="0.7"></circle></svg>
         </button>${s ? v`<div class="sun-note" role="note" @click=${() => {
       this._sunHint = void 0;
-    }}>${e}</div>` : M}`;
+    }}>${e}</div>` : S}`;
   }
   /** A ring with the number centred in it and the unit under the number: the shared ring of the kit (`<ed-ring>`). */
   ring(t, e, s, n, o, i) {
@@ -7541,8 +7612,8 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   renderSoFar(t) {
     const e = this.t.sun, s = t.estimate, n = s && t.done !== void 0 && s.value > 0 ? Math.min(100, Math.round(t.done / s.value * 100)) : void 0, o = t.done !== void 0 && t.possibleSoFar !== void 0 && t.possibleSoFar >= 0.3 ? Math.round(t.done / t.possibleSoFar * 100) : void 0;
     return v`<div class="sun-sofar">
-        <div class="text"><span class="sub">${e.soFar}</span><span class="val">${t.done === void 0 ? T : `${at(t.done)} kWh`}</span><span class="sub">${s ? e.ofEstimate(at(s.value)) : T}</span>${o === void 0 ? M : v`<span class="sub">${e.ofPossibleSoFar(K(o))}</span>`}</div>
-        ${n === void 0 ? M : this.ring(n / 100, 40, 6, String(n), "", e.ringLabel(K(n)))}
+        <div class="text"><span class="sub">${e.soFar}</span><span class="val">${t.done === void 0 ? T : `${at(t.done)} kWh`}</span><span class="sub">${s ? e.ofEstimate(at(s.value)) : T}</span>${o === void 0 ? S : v`<span class="sub">${e.ofPossibleSoFar(K(o))}</span>`}</div>
+        ${n === void 0 ? S : this.ring(n / 100, 40, 6, String(n), "", e.ringLabel(K(n)))}
       </div>`;
   }
   /** Where the sun goes now: the bar and the legend of the sinks (house, car, boiler, battery, grid). */
@@ -7551,7 +7622,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     if (!i.length) return v`<p class="bat-sub">${t.sun === void 0 ? T : n.sun.flowNone}</p>`;
     const r = "kW";
     return v`<div class="mix-bar sun-bar ${s ? "large" : ""}" role="img" aria-label=${i.map((l) => `${n.tile[l.sink]} ${nt(l.watts, r)}`).join(", ")}>${i.map((l) => v`<div style="flex:${l.watts.toFixed(0)} 1 0;background:var(${ce[l.sink]})"></div>`)}</div>
-        ${s ? v`<div class="sun-legend" role="group" aria-label=${n.sun.flowTitle}>${i.map((l) => v`<span><span class="name"><i style="background:var(${ce[l.sink]})"></i>${n.tile[l.sink]}</span><b>${nt(l.watts, r)}</b></span>`)}</div>` : M}`;
+        ${s ? v`<div class="sun-legend" role="group" aria-label=${n.sun.flowTitle}>${i.map((l) => v`<span><span class="name"><i style="background:var(${ce[l.sink]})"></i>${n.tile[l.sink]}</span><b>${nt(l.watts, r)}</b></span>`)}</div>` : S}`;
   }
   /** The condition of the weather entity as a group of the card's texts ("partly", "rain" …). */
   weatherGroup(t) {
@@ -7576,7 +7647,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     return v`<ed-sheet open .heading=${t.name} .sub=${h} .closeLabel=${o.close} @hdk-close=${() => this._pop = void 0}><div class="pop bat-pop sun-pop">
         <div class="pop-level">
           <div class="pop-level-row"><span class="pop-label">${o.sun.powerNow}</span><span class="pop-big">${s.sun === void 0 ? T : nt(s.sun, n === "W" && s.sun >= e.num.flows.kw_from ? "kW" : n)}</span></div>
-          ${r ? this.renderSunFlow(s, e, !1) : M}
+          ${r ? this.renderSunFlow(s, e, !1) : S}
         </div>
         ${this.renderSoFar(i)}
         <div class="pop-rows">
@@ -7613,11 +7684,11 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     const n = this.t.sun, o = e.rise !== void 0 ? st(Math.floor(this.hourOf(e.rise) - 0.5), 0, 22) : 6, i = e.set !== void 0 ? st(Math.ceil(this.hourOf(e.set) + 0.5), o + 2, 24) : 18, r = (i - o) * we, l = e.today + o * Q, h = e.today + i * Q, c = (L) => N(ie + L / (r - 1) * (U - ie)), d = Tt(e.fiveRows, "mean", l, h, r).map((L) => L === void 0 ? void 0 : L / 1e3), p = (L) => o + (L + 0.5) / we, b = Math.floor((e.now - l) / (h - l) * r), y = F(this.hass, t.entities.pv.power);
     y !== void 0 && d.some((L) => L !== void 0) && b >= 0 && b < r && (d[b] = Math.max(0, y) / 1e3);
     const f = (L, q) => {
-      const kt = q - 0.5, _t = Math.floor(kt), bt = L[_t], lt = L[_t + 1];
+      const _t = q - 0.5, St = Math.floor(_t), bt = L[St], lt = L[St + 1];
       if (bt === void 0 && lt === void 0) return;
-      const Bt = kt - _t;
-      return (bt ?? 0) * (1 - Bt) + (lt ?? 0) * Bt;
-    }, u = e.learned.curve.some((L) => L !== void 0), g = Array.from({ length: r }, (L, q) => u ? f(e.learned.curve, p(q)) : void 0), m = e.estimate, x = m ? Math.max(0, m.value - (e.done ?? 0)) : 0, _ = m && x > 0 ? (m.low - (e.done ?? 0)) / x : 1, $ = m && x > 0 ? (m.high - (e.done ?? 0)) / x : 1, O = (L) => L >= b, A = Array.from({ length: r }, (L, q) => m && O(q) ? f(e.hours.map((kt, _t) => _t >= new Date(e.now).getHours() ? kt : void 0), p(q)) : void 0), S = A.map((L) => L === void 0 ? void 0 : L * _), D = A.map((L, q) => L === void 0 ? void 0 : Math.min(L * $, Math.max(L, g[q] ?? 1 / 0))), E = Math.max(1, ...d.map((L) => L ?? 0), ...g.map((L) => L ?? 0), ...D.map((L) => L ?? 0)), k = { start: l, end: h, x0: ie, x1: U }, C = 150, j = Hs(E, Math.round((C - 12) / Bs(xa(k)))), w = Math.ceil(E / j) * j, z = (L) => N(C - st(L, 0, w) / w * (C - 12)), tt = (L) => nt(L * 1e3, "kW"), P = Array.from({ length: Math.round(w / j) }, (L, q) => (q + 1) * j);
+      const Ht = _t - St;
+      return (bt ?? 0) * (1 - Ht) + (lt ?? 0) * Ht;
+    }, u = e.learned.curve.some((L) => L !== void 0), g = Array.from({ length: r }, (L, q) => u ? f(e.learned.curve, p(q)) : void 0), m = e.estimate, x = m ? Math.max(0, m.value - (e.done ?? 0)) : 0, _ = m && x > 0 ? (m.low - (e.done ?? 0)) / x : 1, $ = m && x > 0 ? (m.high - (e.done ?? 0)) / x : 1, O = (L) => L >= b, A = Array.from({ length: r }, (L, q) => m && O(q) ? f(e.hours.map((_t, St) => St >= new Date(e.now).getHours() ? _t : void 0), p(q)) : void 0), M = A.map((L) => L === void 0 ? void 0 : L * _), D = A.map((L, q) => L === void 0 ? void 0 : Math.min(L * $, Math.max(L, g[q] ?? 1 / 0))), E = Math.max(1, ...d.map((L) => L ?? 0), ...g.map((L) => L ?? 0), ...D.map((L) => L ?? 0)), k = { start: l, end: h, x0: ie, x1: U }, C = 150, j = Hs(E, Math.round((C - 12) / Bs(xa(k)))), w = Math.ceil(E / j) * j, B = (L) => N(C - st(L, 0, w) / w * (C - 12)), tt = (L) => nt(L * 1e3, "kW"), R = Array.from({ length: Math.round(w / j) }, (L, q) => (q + 1) * j);
     return {
       id: "sun-today",
       h: 170,
@@ -7625,17 +7696,17 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       x: c,
       fade: 0,
       start: st(b / (r - 1) * 100, 0, 100),
-      grid: [{ y: C, strong: !0 }, ...P.map((L) => ({ y: z(L) }))],
-      labels: [...P.map((L) => ({ y: z(L), text: R(L, L % 1 ? 1 : 0) })), { y: C, text: "0" }],
+      grid: [{ y: C, strong: !0 }, ...R.map((L) => ({ y: B(L) }))],
+      labels: [...R.map((L) => ({ y: B(L), text: P(L, L % 1 ? 1 : 0) })), { y: C, text: "0" }],
       body: V`<defs><linearGradient id="sun-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ed-sun)" stop-opacity="0.28"></stop><stop offset="1" style="stop-color:var(--ed-sun)" stop-opacity="0"></stop></linearGradient></defs>
-          <path d=${js(S, D, c, z)} style="fill:var(--ed-sun);fill-opacity:0.24"></path>
-          <path d=${he(g, c, z)} fill="none" style="stroke:var(--ed-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path>
-          <path d=${Ve(d, c, z, C)} fill="url(#sun-area)"></path>
-          <path d=${he(d, c, z)} fill="none" style="stroke:var(--ed-sun)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
-      dot: (L) => d[L] === void 0 ? void 0 : { y: z(d[L]), color: "var(--ed-sun)" },
+          <path d=${js(M, D, c, B)} style="fill:var(--ed-sun);fill-opacity:0.24"></path>
+          <path d=${he(g, c, B)} fill="none" style="stroke:var(--ed-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path>
+          <path d=${Ve(d, c, B, C)} fill="url(#sun-area)"></path>
+          <path d=${he(d, c, B)} fill="none" style="stroke:var(--ed-sun)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
+      dot: (L) => d[L] === void 0 ? void 0 : { y: B(d[L]), color: "var(--ed-sun)" },
       read: (L) => {
-        const q = it(l + (L + 0.5) * ((h - l) / r)), kt = [d[L] !== void 0 ? tt(d[L]) : A[L] !== void 0 ? `${n.chartLegend.forecast.toLowerCase()} ≈ ${tt(A[L])}` : T];
-        return g[L] !== void 0 && kt.push(`${n.possibleShort} ${tt(g[L])}`), `${q} · ${kt.join(" · ")}`;
+        const q = it(l + (L + 0.5) * ((h - l) / r)), _t = [d[L] !== void 0 ? tt(d[L]) : A[L] !== void 0 ? `${n.chartLegend.forecast.toLowerCase()} ≈ ${tt(A[L])}` : T];
+        return g[L] !== void 0 && _t.push(`${n.possibleShort} ${tt(g[L])}`), `${q} · ${_t.join(" · ")}`;
       },
       time: k,
       from: it(l),
@@ -7661,7 +7732,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     return v`<div class="bat-card">
           <span class="bat-cap">${n.sun.powerNow}</span>
           <span class="bat-huge">${h}</span>
-          ${ot(e.sun, t.num.flows.idle_threshold) ? this.renderSunFlow(e, t, !0) : M}
+          ${ot(e.sun, t.num.flows.idle_threshold) ? this.renderSunFlow(e, t, !0) : S}
         </div>
         <div class="bat-card rel">
           <div class="bat-card-bar"><span class="sun-title">${n.sun.chartTitle}</span><span class="sun-unit">${n.sun.chartUnit}${this.hint("chart", n.sun.hints.chart)}</span></div>
@@ -7678,7 +7749,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
               <div class="mix-bar sun-bar large" aria-hidden="true">${r.map((c) => v`<div style="flex:${c.kwh.toFixed(3)} 1 0;background:var(${ce[c.key]})"></div>`)}</div>
               <div class="sun-legend" role="group" aria-label=${n.sun.whereTitle}>${r.map((c) => v`<span><span class="name"><i style="background:var(${ce[c.key]})"></i>${n.tile[c.key]}</span><b>${at(c.kwh)}</b></span>`)}</div>
               <span class="bat-sub">${l > 0 ? n.sun.whereUnit : T}</span>
-            </div>` : M}`;
+            </div>` : S}`;
   }
   // ----------------------------------------------------------------- Historie
   renderSunRange(t) {
@@ -7704,16 +7775,16 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     const i = o.length, r = (U - ie) / i, l = (u) => N(ie + u * r + r / 2), h = Math.max(1, ...o.map((u) => Math.max(u.total ?? 0, u.possible ?? 0))), c = me(h), d = 150, p = (u) => N(d - st(u, 0, c) / c * (d - 14)), b = this._sunMode === "parts";
     let y;
     if (b) {
-      const u = o.map((S, D) => l(D)), g = o.map((S) => S.blocks), m = g.map((S, D) => S ? D : -1).filter((S) => S >= 0), x = m.map((S) => g[S].reduce((D, E) => [...D, D[D.length - 1] + E], [0])), _ = Array.from({ length: 6 }, (S, D) => Go(m.map((E) => u[E]), x.map((E) => p(E[D])))), $ = (S) => S.map(([D, E]) => `${N(D)},${N(E)}`).join(" "), O = o.map((S) => S.possible), A = O.some((S) => S !== void 0) ? Ve(O, l, p, d) : "";
+      const u = o.map((M, D) => l(D)), g = o.map((M) => M.blocks), m = g.map((M, D) => M ? D : -1).filter((M) => M >= 0), x = m.map((M) => g[M].reduce((D, E) => [...D, D[D.length - 1] + E], [0])), _ = Array.from({ length: 6 }, (M, D) => Go(m.map((E) => u[E]), x.map((E) => p(E[D])))), $ = (M) => M.map(([D, E]) => `${N(D)},${N(E)}`).join(" "), O = o.map((M) => M.possible), A = O.some((M) => M !== void 0) ? Ve(O, l, p, d) : "";
       y = V`<path d=${A} style="fill:var(--ed-tile)"></path>
-          ${[0, 1, 2, 3, 4].map((S) => V`<polygon points=${`${$(_[S + 1])} ${$([..._[S]].reverse())}`} style="fill:${ls[S]}"></polygon>`)}
-          ${[1, 2, 3, 4].map((S) => V`<polyline points=${$(_[S])} fill="none" stroke="#fff" stroke-opacity="0.38" stroke-width="1"></polyline>`)}`;
+          ${[0, 1, 2, 3, 4].map((M) => V`<polygon points=${`${$(_[M + 1])} ${$([..._[M]].reverse())}`} style="fill:${ls[M]}"></polygon>`)}
+          ${[1, 2, 3, 4].map((M) => V`<polyline points=${$(_[M])} fill="none" stroke="#fff" stroke-opacity="0.38" stroke-width="1"></polyline>`)}`;
     } else {
       const u = Math.min(s === "7d" ? 26 : 7, r - 3);
       y = V`${o.map((g, m) => V`
-          ${g.possible === void 0 ? M : V`<rect x=${N(l(m) - u / 2)} y=${p(g.possible)} width=${u} height=${N(d - p(g.possible))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-tile)"></rect>`}
-          ${g.total === void 0 ? M : V`<rect x=${N(l(m) - u / 2)} y=${p(g.total)} width=${u} height=${N(Math.max(1, d - p(g.total)))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-sun)"></rect>`}
-          ${g.total !== void 0 && s === "7d" ? V`<text x=${l(m)} y=${p(g.total) - 5} text-anchor="middle" style="fill:var(--ed-text)" font-size="11" font-weight="600">${Y(g.total, 1)}</text>` : M}`)}`;
+          ${g.possible === void 0 ? S : V`<rect x=${N(l(m) - u / 2)} y=${p(g.possible)} width=${u} height=${N(d - p(g.possible))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-tile)"></rect>`}
+          ${g.total === void 0 ? S : V`<rect x=${N(l(m) - u / 2)} y=${p(g.total)} width=${u} height=${N(Math.max(1, d - p(g.total)))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-sun)"></rect>`}
+          ${g.total !== void 0 && s === "7d" ? V`<text x=${l(m)} y=${p(g.total) - 5} text-anchor="middle" style="fill:var(--ed-text)" font-size="11" font-weight="600">${Y(g.total, 1)}</text>` : S}`)}`;
     }
     const f = b ? v`<div class="sun-blocks" role="group">${n.blocks.map((u, g) => v`<span><i style="background:${ls[g]}"></i><span>${u}</span></span>`)}</div>` : v`<div class="bat-legend sun-legend-row"><span><i class="dot" style="background:var(--ed-sun)"></i>${n.production}</span><span><i class="dot" style="background:var(--ed-tile)"></i>${n.possible}</span></div>`;
     return {
@@ -7723,10 +7794,10 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       x: l,
       fade: 0,
       grid: [{ y: d, strong: !0 }, { y: p(c / 2) }, { y: p(c) }],
-      labels: [{ y: p(c), text: R(c) }, { y: p(c / 2), text: R(c / 2, c / 2 % 1 ? 1 : 0) }, { y: d, text: "0" }],
+      labels: [{ y: p(c), text: P(c) }, { y: p(c / 2), text: P(c / 2, c / 2 % 1 ? 1 : 0) }, { y: d, text: "0" }],
       time: { start: o[0].day, end: o[i - 1].day + Rt, x0: ie, x1: U, slot: Rt },
       valueNum: (u) => (d - u) / (d - 14) * c,
-      valueAt: (u) => R((d - u) / (d - 14) * c, (d - u) / (d - 14) * c % 1 ? 1 : 0),
+      valueAt: (u) => P((d - u) / (d - 14) * c, (d - u) / (d - 14) * c % 1 ? 1 : 0),
       body: y,
       dot: (u) => o[u].total === void 0 ? void 0 : { y: p(o[u].total), color: "var(--ed-sun)" },
       read: (u) => {
@@ -7753,15 +7824,15 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
         <div class="sun-half-text"><span style="color:color-mix(in srgb, var(--ed-warning) 45%, var(--ed-text))">${K(i)}</span><span style="color:color-mix(in srgb, var(--ed-sun) 45%, var(--ed-text))">${K(100 - i)}</span></div>`;
   }
   renderSunHistory(t, e) {
-    const s = this.t.sun, n = t.num.forecast, o = this.sunRange(t), i = this.histData(t, e, o), r = i.filter((w) => w.total !== void 0), l = !e.ready, h = r.reduce((w, z) => w + z.total, 0);
-    i.reduce((w, z) => w + (z.possible ?? 0), 0);
-    const c = r.filter((w) => w.possible !== void 0), d = c.length ? Math.round(c.reduce((w, z) => w + z.total, 0) / c.reduce((w, z) => w + z.possible, 0) * 100) : void 0, p = this.histChart(t, e, o), b = ["total", "parts"].map((w) => ({ value: w, label: s.hist.modes[w] })), y = r.reduce((w, z) => !w || z.total > w.total ? z : w, void 0), f = r.reduce((w, z) => !w || z.total < w.total ? z : w, void 0), u = (w) => s.hist.dayOfPossible(_e(w.day), w.possible ? K(Math.round(w.total / w.possible * 100)) : T), g = t.entities, m = g.pv.power && this._batData["sun:hist"]?.parts.power?.[g.pv.power] || [], x = i[0]?.day ?? e.today, _ = m.filter((w) => w.start >= x && w.start < e.today && typeof w.max == "number").reduce((w, z) => !w || z.max > w.max ? z : w, void 0), $ = (w) => {
-      const z = w.map((tt) => tt.hours ? tt.hours.filter((P) => (P ?? 0) >= 0.05).length : void 0).filter((tt) => tt !== void 0);
-      return z.length ? z.reduce((tt, P) => tt + P, 0) / z.length : void 0;
-    }, O = $(i), A = $(this.rangeDays(e, o, ea[o]).map((w) => ({ hours: e.days.get(w) }))), S = e.rise !== void 0 && e.set !== void 0 ? this.hourOf((e.rise + e.set) / 2) : 12;
+    const s = this.t.sun, n = t.num.forecast, o = this.sunRange(t), i = this.histData(t, e, o), r = i.filter((w) => w.total !== void 0), l = !e.ready, h = r.reduce((w, B) => w + B.total, 0);
+    i.reduce((w, B) => w + (B.possible ?? 0), 0);
+    const c = r.filter((w) => w.possible !== void 0), d = c.length ? Math.round(c.reduce((w, B) => w + B.total, 0) / c.reduce((w, B) => w + B.possible, 0) * 100) : void 0, p = this.histChart(t, e, o), b = ["total", "parts"].map((w) => ({ value: w, label: s.hist.modes[w] })), y = r.reduce((w, B) => !w || B.total > w.total ? B : w, void 0), f = r.reduce((w, B) => !w || B.total < w.total ? B : w, void 0), u = (w) => s.hist.dayOfPossible(_e(w.day), w.possible ? K(Math.round(w.total / w.possible * 100)) : T), g = t.entities, m = g.pv.power && this._batData["sun:hist"]?.parts.power?.[g.pv.power] || [], x = i[0]?.day ?? e.today, _ = m.filter((w) => w.start >= x && w.start < e.today && typeof w.max == "number").reduce((w, B) => !w || B.max > w.max ? B : w, void 0), $ = (w) => {
+      const B = w.map((tt) => tt.hours ? tt.hours.filter((R) => (R ?? 0) >= 0.05).length : void 0).filter((tt) => tt !== void 0);
+      return B.length ? B.reduce((tt, R) => tt + R, 0) / B.length : void 0;
+    }, O = $(i), A = $(this.rangeDays(e, o, ea[o]).map((w) => ({ hours: e.days.get(w) }))), M = e.rise !== void 0 && e.set !== void 0 ? this.hourOf((e.rise + e.set) / 2) : 12;
     let D = 0, E = 0;
-    for (const w of r) w.hours?.forEach((z, tt) => {
-      z && (tt + 0.5 < S ? D += z : E += z);
+    for (const w of r) w.hours?.forEach((B, tt) => {
+      B && (tt + 0.5 < M ? D += B : E += B);
     });
     const k = D + E > 0 ? D / (D + E) : void 0, C = r.filter((w) => w.total > n.good_day).length, j = e.pairs.slice(-7);
     return v`${this.renderSunRange(t)}
@@ -7779,17 +7850,17 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
           ${this.renderChartOrEmpty("sun:hist", 170, p)}
         </div>
         <div class="bat-kpis">
-          <div class="bat-kpi"><span class="sub">${s.hist.best}</span><span class="val">${y ? `${Y(y.total, 1)} kWh` : T}</span><span class="sub">${y ? Pt(u(y)) : ""}</span></div>
-          <div class="bat-kpi"><span class="sub">${s.hist.worst}</span><span class="val">${f ? `${Y(f.total, 1)} kWh` : T}</span><span class="sub">${f ? Pt(u(f)) : ""}</span></div>
+          <div class="bat-kpi"><span class="sub">${s.hist.best}</span><span class="val">${y ? `${Y(y.total, 1)} kWh` : T}</span><span class="sub">${y ? Nt(u(y)) : ""}</span></div>
+          <div class="bat-kpi"><span class="sub">${s.hist.worst}</span><span class="val">${f ? `${Y(f.total, 1)} kWh` : T}</span><span class="sub">${f ? Nt(u(f)) : ""}</span></div>
           <div class="bat-kpi"><span class="sub">${s.hist.peak}</span><span class="val">${_ ? nt(_.max, "kW") : T}</span><span class="sub">${_ ? `${_e(_.start)} ${s.at(it(_.start))}` : ""}</span></div>
           <div class="bat-kpi"><span class="sub">${s.hist.length}</span><span class="val">${O === void 0 ? T : s.hist.lengthValue(Y(O, 1))}</span><span class="sub">${A === void 0 ? "" : (o === "7d" ? s.hist.before7 : s.hist.before30)(Y(A, 1))}</span></div>
         </div>
         <div class="sun-two">
           <div class="bat-card"><span class="bat-cap">${s.hist.eastWest}</span>${k === void 0 ? v`<span class="bat-sub">${T}</span>` : this.eastWest(k)}</div>
-          <div class="bat-card"><span class="bat-cap">${s.hist.goodDays}</span><span class="val big">${r.length ? s.hist.goodOf(C, r.length) : T}</span><span class="bat-sub">${s.hist.over(R(n.good_day))}</span>
+          <div class="bat-card"><span class="bat-cap">${s.hist.goodDays}</span><span class="val big">${r.length ? s.hist.goodOf(C, r.length) : T}</span><span class="bat-sub">${s.hist.over(P(n.good_day))}</span>
             <div class="sun-dots" aria-hidden="true">${r.map((w) => v`<i class=${w.total > n.good_day ? "on" : ""}></i>`)}</div></div>
         </div>
-        ${j.length >= 3 ? this.renderAccuracy(j, e) : M}`;
+        ${j.length >= 3 ? this.renderAccuracy(j, e) : S}`;
   }
   renderAccuracy(t, e) {
     const s = this.t.sun, n = me(Math.max(...t.flatMap((h) => [h.forecast, h.actual]))), o = 310, i = 60, r = 14, l = o / t.length;
@@ -7800,8 +7871,8 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
           ${Array.from({ length: t.length + 1 }, (h, c) => V`<line x1=${N(c * l)} y1="0" x2=${N(c * l)} y2=${i} class="grid"></line>`)}
           <line x1="0" y1=${i - 25} x2=${o} y2=${i - 25} class="grid"></line>
           <line x1="0" y1=${i - 50} x2=${o} y2=${i - 50} class="grid"></line>
-          <text x=${o + 5} y=${i - 46} style="fill:var(--ed-secondary)" font-size="12">${R(n)} kWh</text>
-          <text x=${o + 5} y=${i - 21} style="fill:var(--ed-secondary)" font-size="12">${R(n / 2, n / 2 % 1 ? 1 : 0)}</text>
+          <text x=${o + 5} y=${i - 46} style="fill:var(--ed-secondary)" font-size="12">${P(n)} kWh</text>
+          <text x=${o + 5} y=${i - 21} style="fill:var(--ed-secondary)" font-size="12">${P(n / 2, n / 2 % 1 ? 1 : 0)}</text>
           <text x=${o + 5} y=${i + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
           <line x1="0" y1=${i} x2=${o} y2=${i} class="axis"></line>
           ${t.map((h, c) => {
@@ -7817,18 +7888,18 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   // ----------------------------------------------------------------- Výhled
   renderSunOutlook(t, e) {
     const s = this.t.sun, n = s.outlook, o = t.num.forecast, i = t.entities, r = e.estimate, l = o.good_power / 1e3, h = `${Y(o.good_power / 1e3, o.good_power % 1e3 ? 1 : 0)} kW`, c = r && e.done !== void 0 && r.value > 0 ? Math.min(100, Math.round(e.done / r.value * 100)) : void 0, d = r ? { low: 1, medium: 2, high: 3 }[r.certainty] : 0, p = [i.forecast.energy_today, i.forecast.energy_tomorrow, i.forecast.energy_day_2, i.forecast.energy_day_3, i.forecast.energy_day_4], b = this._sunWeather?.days ?? [], y = p.map((k, C) => {
-      const j = At(e.today, C), w = C === 0 ? r?.value : Jt(this.hass, k), z = C === 0 ? e.hours : w === void 0 ? void 0 : Ro(w, e.learned.curve), tt = C === 0 ? this.weatherGroup(i.forecast.weather ? vt(this.hass, i.forecast.weather)?.state : void 0) : this.weatherGroup(b.find((P) => P.day === j)?.condition);
-      return { i: C, day: j, kwh: w, hours: z, condition: tt };
-    }).filter((k) => k.kwh !== void 0 || k.i === 0), f = y.filter((k) => k.kwh !== void 0), u = (k) => k ? Wo(k, o.strip_from, o.strip_to, l) : void 0, g = f.filter((k) => k.i > 0 || f.length === 1).reduce((k, C) => !k || C.kwh > k.kwh ? C : k, void 0), m = g ? u(g.hours) : void 0, x = this.place(), _ = x ? Ae(e.today, x.latitude, x.longitude) : void 0, $ = x ? Ae(At(e.today, 1), x.latitude, x.longitude) : void 0, O = _ ? Math.round((_.set - _.rise) / 6e4) : void 0, A = _ && $ ? Math.round(($.set - $.rise - (_.set - _.rise)) / 6e4) : void 0, S = this.evening(t, e), D = Array.from({ length: o.strip_to - o.strip_from + 1 }, (k, C) => o.strip_from + C), E = new Date(e.now).getHours();
+      const j = At(e.today, C), w = C === 0 ? r?.value : Jt(this.hass, k), B = C === 0 ? e.hours : w === void 0 ? void 0 : Po(w, e.learned.curve), tt = C === 0 ? this.weatherGroup(i.forecast.weather ? vt(this.hass, i.forecast.weather)?.state : void 0) : this.weatherGroup(b.find((R) => R.day === j)?.condition);
+      return { i: C, day: j, kwh: w, hours: B, condition: tt };
+    }).filter((k) => k.kwh !== void 0 || k.i === 0), f = y.filter((k) => k.kwh !== void 0), u = (k) => k ? Wo(k, o.strip_from, o.strip_to, l) : void 0, g = f.filter((k) => k.i > 0 || f.length === 1).reduce((k, C) => !k || C.kwh > k.kwh ? C : k, void 0), m = g ? u(g.hours) : void 0, x = this.place(), _ = x ? Ae(e.today, x.latitude, x.longitude) : void 0, $ = x ? Ae(At(e.today, 1), x.latitude, x.longitude) : void 0, O = _ ? Math.round((_.set - _.rise) / 6e4) : void 0, A = _ && $ ? Math.round(($.set - $.rise - (_.set - _.rise)) / 6e4) : void 0, M = this.evening(t, e), D = Array.from({ length: o.strip_to - o.strip_from + 1 }, (k, C) => o.strip_from + C), E = new Date(e.now).getHours();
     return v`<div class="bat-card rel">
           <div class="sun-hero">
             <div class="text">
               <span class="bat-cap">${n.heroTitle}</span>
               <span class="sun-est"><span class="approx">≈</span> ${r ? `${at(r.value)} kWh` : T}</span>
               <span class="bat-sub">${r ? n.between(at(r.low), at(r.high)) : ""}</span>
-              ${r ? v`<span class="sun-conf"><span class="level" aria-hidden="true">${[1, 2, 3].map((k) => v`<i class=${k <= d ? "on" : ""}></i>`)}</span><b>${n.certainty[r.certainty]}</b>${this.hint("conf", s.hints.conf)}</span>` : M}
+              ${r ? v`<span class="sun-conf"><span class="level" aria-hidden="true">${[1, 2, 3].map((k) => v`<i class=${k <= d ? "on" : ""}></i>`)}</span><b>${n.certainty[r.certainty]}</b>${this.hint("conf", s.hints.conf)}</span>` : S}
             </div>
-            ${c === void 0 ? M : this.ring(c / 100, 76, 8, String(c), "", s.ringLabel(K(c)))}
+            ${c === void 0 ? S : this.ring(c / 100, 76, 8, String(c), "", s.ringLabel(K(c)))}
           </div>
         </div>
         ${y.length > 1 ? v`<div class="bat-card rel">
@@ -7840,23 +7911,23 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       return v`<div class="sun-five-row">
                     <span class="day"><b>${k.i === 0 ? n.today : de(k.day)}</b><span>${k.condition ? s.weather[k.condition] : ""}</span></span>
                     <span class="strip" aria-hidden="true">${D.map((j) => {
-        const w = k.hours?.[j], z = w === void 0 ? "none" : w >= l ? "strong" : w >= l * 0.35 ? "mid" : w >= l * 0.075 ? "faint" : "none";
-        return v`<i class="${z} ${k.i === 0 && j === E ? "now" : ""}"></i>`;
+        const w = k.hours?.[j], B = w === void 0 ? "none" : w >= l ? "strong" : w >= l * 0.35 ? "mid" : w >= l * 0.075 ? "faint" : "none";
+        return v`<i class="${B} ${k.i === 0 && j === E ? "now" : ""}"></i>`;
       })}</span>
                     <span class="end"><b>${k.kwh === void 0 ? T : `${k.i ? "≈ " : ""}${at(k.kwh)}`}</b><span class=${C ? "" : "off"}>${k.kwh === void 0 ? "" : C ? n.window(C[0], C[1]) : n.below(h)}</span></span>
                   </div>`;
     })}
               </div>
               <div class="bat-legend wrap"><span><i class="swatch" style="background:var(--ed-sun)"></i>${n.strong(h)}</span><span><i class="swatch" style="background:var(--ed-sun);opacity:.38"></i>${n.weak}</span></div>
-            </div>` : M}
-        ${S ? v`<div class="bat-card rel">
+            </div>` : S}
+        ${M ? v`<div class="bat-card rel">
               <div class="bat-card-bar"><span class="bat-cap">${n.eveningTitle}</span>${this.hint("eve", s.hints.eve)}</div>
-              <div class="bat-list">${S.map((k) => v`<div class="bat-line sun-line"><span><i style="background:var(${k.color})"></i>${k.label}</span><b>${Pt(k.value)}</b></div>`)}
+              <div class="bat-list">${M.map((k) => v`<div class="bat-line sun-line"><span><i style="background:var(${k.color})"></i>${k.label}</span><b>${Nt(k.value)}</b></div>`)}
               </div>
-            </div>` : M}
+            </div>` : S}
         <div class="bat-kpis">
           <div class="bat-kpi"><span class="sub">${n.dayLength}</span><span class="val">${O === void 0 ? T : n.hoursMinutes(Math.floor(O / 60), O % 60)}</span><span class="sub">${A === void 0 ? "" : n.dayChange(A)}</span></div>
-          <div class="bat-kpi"><span class="sub">${n.bestDay}</span><span class="val">${g ? g.i === 0 ? n.today : de(g.day) : T}</span><span class="sub">${g ? Pt(n.bestSub(at(g.kwh), m ? n.window(m[0], m[1]) : "")) : ""}</span></div>
+          <div class="bat-kpi"><span class="sub">${n.bestDay}</span><span class="val">${g ? g.i === 0 ? n.today : de(g.day) : T}</span><span class="sub">${g ? Nt(n.bestSub(at(g.kwh), m ? n.window(m[0], m[1]) : "")) : ""}</span></div>
         </div>`;
   }
   /** kWh per km of the car, from its charge, the capacity and the range it reports; undefined when it reports none of them. */
@@ -7879,11 +7950,11 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       efficiency: s.efficiency / 100,
       eveningHour: s.evening_hour,
       morningHour: s.morning_hour,
-      car: n.wallbox.power && ks(ct(this.hass, n.wallbox.status)) !== "disconnected" ? { startSoc: s.car_start_soc, stopSoc: s.car_stop_soc, minSun: s.car_min_sun, watts: t.num.wallbox.power_min } : void 0
+      car: n.wallbox.power && ks(ht(this.hass, n.wallbox.status)) !== "disconnected" ? { startSoc: s.car_start_soc, stopSoc: s.car_stop_soc, minSun: s.car_min_sun, watts: t.num.wallbox.power_min } : void 0
     }), l = this.t.sun.outlook, h = [], c = it(e.today + s.evening_hour * Q);
     if (r.socAtEvening !== void 0 && (h.push({ color: "--ed-battery", label: l.batteryNow, value: K(Math.round(o)) }), h.push({ color: "--ed-sun", label: l.sunUntil(c), value: `≈ ${at(r.sunUntilEvening)} kWh` }), h.push({ color: "--ed-house", label: l.houseUntil(c), value: `≈ ${at(r.houseUntilEvening)} kWh` })), r.fullAt !== void 0 && h.push({ color: "--ed-battery", label: l.full, value: `≈ ${it(r.fullAt)}` }), r.socAtEvening !== void 0 && h.push({ color: "--ed-battery", label: l.batteryAt(it(e.today + s.evening_hour * Q)), value: `≈ ${K(Math.round(r.socAtEvening))}` }), r.carTotal > 0) {
       const d = this.carKwhPerKm(t);
-      h.push({ color: "--ed-car", label: l.carSun, value: `≈ ${at(r.carSun)} kWh${d ? ` · ${R(r.carSun / d)} km` : ""}` });
+      h.push({ color: "--ed-car", label: l.carSun, value: `≈ ${at(r.carSun)} kWh${d ? ` · ${P(r.carSun / d)} km` : ""}` });
     }
     return r.socAtMorning !== void 0 && h.push({ color: "--ed-battery", label: l.batteryAt(it(At(e.today, 1) + s.morning_hour * Q)), value: `≈ ${K(Math.round(r.socAtMorning))}` }), h;
   }
@@ -7946,7 +8017,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   }
   /** The icon of the appliance (Home Assistant draws it from its name). */
   renderApplianceIcon(t) {
-    return t.icon ? v`<ha-icon class="house-icon" icon=${t.icon}></ha-icon>` : M;
+    return t.icon ? v`<ha-icon class="house-icon" icon=${t.icon}></ha-icon>` : S;
   }
   /** An appliance that draws no power: the grey power symbol instead of a word. */
   renderIdleMark() {
@@ -7962,7 +8033,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   /** Whether the appliance runs: the helper of its cycle, otherwise (an appliance without helpers) its power above the threshold. */
   applianceOn(t, e) {
     if (t.running) {
-      const n = ct(this.hass, t.running);
+      const n = ht(this.hass, t.running);
       if (n === "on") return !0;
       if (n === "off") return !1;
     }
@@ -8008,7 +8079,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   // ----------------------------------------------------------------- alerts
   /** One alert for each appliance whose socket reports a fault, and for each one that runs longer than its `warn_after` (CURRENT_SPEC.md, Upozornění). */
   houseAlerts(t) {
-    const e = this.appliances(t).flatMap((n) => n.problems.filter((i) => ct(this.hass, i.id) === "on").map((i) => ({ kind: "warn", title: this.applianceName(n), text: this.t.house.problem[i.kind] }))), s = this.popupItems(t).flatMap((n) => {
+    const e = this.appliances(t).flatMap((n) => n.problems.filter((i) => ht(this.hass, i.id) === "on").map((i) => ({ kind: "warn", title: this.applianceName(n), text: this.t.house.problem[i.kind] }))), s = this.popupItems(t).flatMap((n) => {
       if (!n.warnAfter || !n.running || this.applianceOn(n, t) !== !0) return [];
       const o = this.cycleTimes(n, !0).minutes;
       return o !== void 0 && o >= n.warnAfter ? [{ kind: "warn", title: n.name, text: this.t.house.runningLong(pe(o)) }] : [];
@@ -8047,7 +8118,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
         <div class="pop-rows">
           ${h.map((d) => {
       const p = F(this.hass, d.power), b = this.applianceOn(d, e), y = this.listed(e).find((x) => x.name === d.key), f = y ? this.applianceStatus(y, e) : void 0, u = this.cycleTimes(d, b).minutes, g = b && d.running && u !== void 0 ? `${d.name} · ${pe(u)}` : d.name, m = p === void 0 ? v`<b>${T}</b>` : ot(p, o) || b || !d.cycle ? v`<b>${nt(p, "W").replace(" ", " ")}</b>` : this.renderIdleMark();
-      return v`<div class="house-app" title=${f ?? ""}><span class="ell">${d.icon ? v`<ha-icon class="house-icon" icon=${d.icon}></ha-icon>` : M}${g}</span>${m}</div>`;
+      return v`<div class="house-app" title=${f ?? ""}><span class="ell">${d.icon ? v`<ha-icon class="house-icon" icon=${d.icon}></ha-icon>` : S}${g}</span>${m}</div>`;
     })}
           <div class="pop-row"><span>${n.pop.rows.consumed}</span><b>${r.house === void 0 ? T : `${at(r.house)} kWh`}</b></div>
         </div>
@@ -8246,29 +8317,29 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
               ${i.map((d) => v`<span class="house-cook-name">${d.name}</span><b>${l(d.watts)}</b><b>${h(d.kwh)}</b>`)}
             </div>
             ${this.renderDayChart(t.appliances.map((d, p) => ({ name: this.pickText(d.name) ?? "", energy: d.energy, power: d.power, color: re[p % re.length] })).sort((d, p) => (o.indexOf(d.power) < 0 ? 999 : o.indexOf(d.power)) - (o.indexOf(p.power) < 0 ? 999 : o.indexOf(p.power))))}
-          </div>` : M}
+          </div>` : S}
       </div>`;
   }
   renderApplianceRow(t, e, s) {
-    const n = this.t, o = this._houseOpen.includes(t.name), i = F(this.hass, t.power), r = this.applianceOn(t, e), l = this.applianceStatus(t, e) ?? (r === !1 ? n.house.notRunning : T), h = i !== void 0 && ot(i, e.num.flows.idle_threshold), c = i === void 0 ? v`<span class="bat-value">${T}</span>` : h ? v`<span class="bat-value">${nt(i, s)}</span>` : r ? v`<span class="bat-value">${R(i)}\u00a0W</span>` : this.renderIdleMark(), d = this.cycleTimes(t, r), p = this.cycleKwh(t), b = /* @__PURE__ */ new Date();
+    const n = this.t, o = this._houseOpen.includes(t.name), i = F(this.hass, t.power), r = this.applianceOn(t, e), l = this.applianceStatus(t, e) ?? (r === !1 ? n.house.notRunning : T), h = i !== void 0 && ot(i, e.num.flows.idle_threshold), c = i === void 0 ? v`<span class="bat-value">${T}</span>` : h ? v`<span class="bat-value">${nt(i, s)}</span>` : r ? v`<span class="bat-value">${P(i)}\u00a0W</span>` : this.renderIdleMark(), d = this.cycleTimes(t, r), p = this.cycleKwh(t), b = /* @__PURE__ */ new Date();
     b.setHours(0, 0, 0, 0);
-    const y = t.running ? this._houseCycles?.byId[t.running] : void 0, f = y ? y.starts.filter((D) => D >= b.getTime()).length : void 0, u = Math.max(0, this.listed(e).findIndex((D) => D.name === t.name)), g = re[u % re.length], m = (D, E) => `${this.stamp(D)} – ${E}`, x = t.running && d.start !== void 0 ? v`<div class="house-line wrap"><span>${r ? n.house.currentCycle : n.house.lastCycle}</span><b>${Lt([m(d.start, r ? n.house.axisTo : this.stamp(d.end ?? d.start, d.start)), ...p !== void 0 ? [`${at(p)} kWh`] : []])}</b></div>` : t.running && d.end !== void 0 && !r ? v`<div class="house-line wrap"><span>${n.house.lastCycle}</span><b>${n.house.endedAt(this.stamp(d.end))}</b></div>` : M, _ = this.renderDayChart([{ name: this.applianceName(t), energy: t.energy, power: t.power, color: g }]), $ = t.energy ? this._houseToday?.apps?.[t.energy] : void 0, O = t.plug ? ct(this.hass, t.plug) : void 0, A = t.problems.find((D) => ct(this.hass, D.id) === "on"), S = (D, E) => v`<div class="house-line"><span>${D}</span><b>${Pt(E)}</b></div>`;
+    const y = t.running ? this._houseCycles?.byId[t.running] : void 0, f = y ? y.starts.filter((D) => D >= b.getTime()).length : void 0, u = Math.max(0, this.listed(e).findIndex((D) => D.name === t.name)), g = re[u % re.length], m = (D, E) => `${this.stamp(D)} – ${E}`, x = t.running && d.start !== void 0 ? v`<div class="house-line wrap"><span>${r ? n.house.currentCycle : n.house.lastCycle}</span><b>${Lt([m(d.start, r ? n.house.axisTo : this.stamp(d.end ?? d.start, d.start)), ...p !== void 0 ? [`${at(p)} kWh`] : []])}</b></div>` : t.running && d.end !== void 0 && !r ? v`<div class="house-line wrap"><span>${n.house.lastCycle}</span><b>${n.house.endedAt(this.stamp(d.end))}</b></div>` : S, _ = this.renderDayChart([{ name: this.applianceName(t), energy: t.energy, power: t.power, color: g }]), $ = t.energy ? this._houseToday?.apps?.[t.energy] : void 0, O = t.plug ? ht(this.hass, t.plug) : void 0, A = t.problems.find((D) => ht(this.hass, D.id) === "on"), M = (D, E) => v`<div class="house-line"><span>${D}</span><b>${Nt(E)}</b></div>`;
     return v`<div class="bat-card flush house-item">
         <button type="button" class="bat-row" aria-expanded=${o ? "true" : "false"} @click=${() => {
       this._houseOpen = o ? this._houseOpen.filter((D) => D !== t.name) : [...this._houseOpen, t.name];
     }}>
           ${this.renderApplianceIcon(t)}
-          <span class="bat-col"><span class="bat-label">${this.applianceName(t)}</span><span class="bat-sub">${Pt(l)}</span></span>
+          <span class="bat-col"><span class="bat-label">${this.applianceName(t)}</span><span class="bat-sub">${Nt(l)}</span></span>
           ${c}
           <svg class="chev ${o ? "open" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"></path></svg>
         </button>
         ${o ? v`<div class="house-body">
-              ${A ? S(n.house.problem[A.kind], "") : M}
+              ${A ? M(n.house.problem[A.kind], "") : S}
               ${x}
-              ${t.running && f !== void 0 ? S(n.house.today, n.house.cyclesCount(f, $ === void 0 ? "" : at($))) : M}
+              ${t.running && f !== void 0 ? M(n.house.today, n.house.cyclesCount(f, $ === void 0 ? "" : at($))) : S}
               ${_}
-              ${O === "off" ? S(n.house.plug, n.house.plugOff) : M}
-            </div>` : M}
+              ${O === "off" ? M(n.house.plug, n.house.plugOff) : S}
+            </div>` : S}
       </div>`;
   }
   /** "Co se dělo": the consumption of the house (without the car and the boiler) in kWh per hour or per day, broken down by the appliances. */
@@ -8302,9 +8373,9 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
    */
   renderDayChart(t) {
     const e = this.t, s = this._houseData.day;
-    if (!s || s.status === "error" || !Object.keys(s.parts).length) return M;
+    if (!s || s.status === "error" || !Object.keys(s.parts).length) return S;
     const { n, counter: o, meanKwh: i } = this.houseSeries(s, "day"), r = t.map((x) => ({ ...x, list: x.energy ? o(x.energy) : i(x.power) })).filter((x) => x.list && x.list.some((_) => typeof _ == "number"));
-    if (!r.length) return M;
+    if (!r.length) return S;
     const l = (x, _) => x?.[_] ?? 0;
     let h = 0;
     for (let x = 0; x < n; x++) h = Math.max(h, r.reduce((_, $) => _ + l($.list, x), 0));
@@ -8314,9 +8385,9 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       let $ = 0;
       return r.map((O) => {
         const A = l(O.list, _);
-        if (A <= 0) return M;
-        const S = Math.max(1.5, A * b), D = d - $ - S;
-        return $ += S + 1, V`<rect x=${(_ * u + (u - g) / 2).toFixed(1)} y=${D.toFixed(1)} width=${g.toFixed(1)} height=${S.toFixed(1)} style="fill:${O.color}"></rect>`;
+        if (A <= 0) return S;
+        const M = Math.max(1.5, A * b), D = d - $ - M;
+        return $ += M + 1, V`<rect x=${(_ * u + (u - g) / 2).toFixed(1)} y=${D.toFixed(1)} width=${g.toFixed(1)} height=${M.toFixed(1)} style="fill:${O.color}"></rect>`;
       });
     });
     return v`<div class="house-micro">
@@ -8326,10 +8397,10 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
           <line x1="0" y1="6" x2=${U} y2="6" style="stroke:var(--ed-tick);stroke-width:1;opacity:0.7"></line>
           <line x1="0" y1=${d} x2=${U} y2=${d} style="stroke:var(--ed-tick);stroke-width:1.5"></line>
           ${m}
-          <text x=${U + 9} y="10" style="fill:var(--ed-secondary)" font-size="12">${p > 0 ? R(p, p % 1 ? 1 : 0) : ""}</text>
+          <text x=${U + 9} y="10" style="fill:var(--ed-secondary)" font-size="12">${p > 0 ? P(p, p % 1 ? 1 : 0) : ""}</text>
         </svg>
         <div class="bat-axis ticks" aria-hidden="true">${f.map((x) => v`<span style="left:${(x.x / (U + Vt) * 100).toFixed(1)}%;transform:translateX(${x.x < 8 ? "0" : x.x > U - 8 ? "-100%" : "-50%"})">${x.text}</span>`)}</div>
-        ${r.length > 1 ? v`<div class="house-micro-legend">${r.map((x) => v`<span><i style="background:${x.color}"></i>${x.name}</span>`)}</div>` : M}
+        ${r.length > 1 ? v`<div class="house-micro-legend">${r.map((x) => v`<span><i style="background:${x.color}"></i>${x.name}</span>`)}</div>` : S}
       </div>`;
   }
   houseChart(t, e) {
@@ -8338,52 +8409,52 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
     const o = t.entities, { w: i, n: r, counter: l, meanKwh: h } = this.houseSeries(n, e), c = l(o.pv.total_generation), d = l(o.battery.total_discharge), p = l(o.battery.total_charge), b = l(o.grid.total_import), y = l(o.grid.total_export), f = h(o.wallbox.power), u = h(o.boiler.power);
     if (!c && !d && !p && !b && !y) return;
     const g = (H, I) => H?.[I] ?? 0, m = !f || !u, x = Array.from({ length: r }, (H, I) => Math.max(0, g(c, I) + g(d, I) + g(b, I) - g(p, I) - g(y, I) - g(f, I) - g(u, I))), _ = (H) => {
-      const I = H.filter(($t) => !!$t);
-      return I.length ? Array.from({ length: r }, ($t, ne) => I.every((St) => St[ne] === void 0) ? void 0 : I.reduce((St, ft) => St + (ft[ne] ?? 0), 0)) : void 0;
+      const I = H.filter((xt) => !!xt);
+      return I.length ? Array.from({ length: r }, (xt, ne) => I.every((Mt) => Mt[ne] === void 0) ? void 0 : I.reduce((Mt, ft) => Mt + (ft[ne] ?? 0), 0)) : void 0;
     }, $ = [
       ...this.listed(t).map((H) => ({ name: this.applianceName(H), list: H.energy ? l(H.energy) : h(H.power) })),
       ...t.groups.map((H) => ({ name: this.pickText(H.name) ?? "", list: _(H.appliances.map((I) => I.energy ? l(I.energy) : h(I.power))) }))
-    ].map((H, I) => ({ ...H, color: re[I % re.length] })).filter((H) => H.list && H.list.some((I) => typeof I == "number")), O = (H) => Math.max(x[H], $.reduce((I, $t) => I + g($t.list, H), 0));
+    ].map((H, I) => ({ ...H, color: re[I % re.length] })).filter((H) => H.list && H.list.some((I) => typeof I == "number")), O = (H) => Math.max(x[H], $.reduce((I, xt) => I + g(xt.list, H), 0));
     let A = 0;
     for (let H = 0; H < r; H++) A = Math.max(A, O(H));
     if (A <= 0) return;
-    const S = me(A), D = 220, E = 200, k = 180 / S, C = 0, j = Math.min(18, (U - C) / r * 0.72), w = (H) => C + (H + 0.5) / r * (U - C), z = Array.from({ length: r }, (H, I) => {
-      let $t = 0;
+    const M = me(A), D = 220, E = 200, k = 180 / M, C = 0, j = Math.min(18, (U - C) / r * 0.72), w = (H) => C + (H + 0.5) / r * (U - C), B = Array.from({ length: r }, (H, I) => {
+      let xt = 0;
       const ne = $.reduce((ft, ye) => ft + g(ye.list, I), 0);
       return [...$.map((ft) => ({ value: g(ft.list, I), color: ft.color })), { value: Math.max(0, x[I] - ne), color: "#8E8E93" }].map((ft) => {
-        if (ft.value <= 0) return M;
-        const ye = Math.max(0.6, ft.value * k), Is = E - $t - ye;
-        return $t += ye + 1, V`<rect x=${(w(I) - j / 2).toFixed(1)} y=${Is.toFixed(1)} width=${j.toFixed(1)} height=${ye.toFixed(1)} style="fill:${ft.color}"></rect>`;
+        if (ft.value <= 0) return S;
+        const ye = Math.max(0.6, ft.value * k), Is = E - xt - ye;
+        return xt += ye + 1, V`<rect x=${(w(I) - j / 2).toFixed(1)} y=${Is.toFixed(1)} width=${j.toFixed(1)} height=${ye.toFixed(1)} style="fill:${ft.color}"></rect>`;
       });
     }), tt = (H) => {
       const I = i.start + H * i.step;
       return e === "1d" ? `${de(I)} ${it(I)}–${it(I + Q)}` : de(I);
-    }, P = (H) => Math.max(x[H], $.reduce((I, $t) => I + g($t.list, H), 0)), L = m ? s.house.houseTotal : s.house.sum, q = (H) => `${tt(H)} · ${L} ${at(P(H))} kWh`, kt = (H) => {
-      const I = P(H), $t = $.reduce((St, ft) => St + g(ft.list, H), 0), ne = $.length ? [...$.map((St) => ({ name: St.name, kwh: St.list?.[H], color: St.color })).sort((St, ft) => (ft.kwh ?? -1) - (St.kwh ?? -1)), { name: s.house.houseRest, kwh: Math.max(0, I - $t), color: "#8E8E93" }] : [];
+    }, R = (H) => Math.max(x[H], $.reduce((I, xt) => I + g(xt.list, H), 0)), L = m ? s.house.houseTotal : s.house.sum, q = (H) => `${tt(H)} · ${L} ${at(R(H))} kWh`, _t = (H) => {
+      const I = R(H), xt = $.reduce((Mt, ft) => Mt + g(ft.list, H), 0), ne = $.length ? [...$.map((Mt) => ({ name: Mt.name, kwh: Mt.list?.[H], color: Mt.color })).sort((Mt, ft) => (ft.kwh ?? -1) - (Mt.kwh ?? -1)), { name: s.house.houseRest, kwh: Math.max(0, I - xt), color: "#8E8E93" }] : [];
       return this.renderReading(tt(H), I, L, ne);
-    }, _t = Array.from({ length: r }, (H, I) => I), bt = $.map((H) => ({ name: H.name, kwh: _t.reduce((I, $t) => I + g(H.list, $t), 0), color: H.color })).sort((H, I) => I.kwh - H.kwh), lt = bt.reduce((H, I) => H + I.kwh, 0), Bt = e === "1d" ? this.today(t).house : void 0, se = Math.max(Bt ?? _t.reduce((H, I) => H + P(I), 0), lt), Kt = () => this.renderReading(Ca, se, L, $.length ? [...bt, { name: s.house.houseRest, kwh: Math.max(0, se - lt), color: "#8E8E93" }] : []), Ca = e === "1d" ? s.house.today : s.bat.ranges[e], Ps = () => `${Ca} · ${L} ${at(se)} kWh`, Ns = [c, d, p, b, y].some((H) => H && H[0] === void 0);
+    }, St = Array.from({ length: r }, (H, I) => I), bt = $.map((H) => ({ name: H.name, kwh: St.reduce((I, xt) => I + g(H.list, xt), 0), color: H.color })).sort((H, I) => I.kwh - H.kwh), lt = bt.reduce((H, I) => H + I.kwh, 0), Ht = e === "1d" ? this.today(t).house : void 0, se = Math.max(Ht ?? St.reduce((H, I) => H + R(I), 0), lt), Kt = () => this.renderReading(Ca, se, L, $.length ? [...bt, { name: s.house.houseRest, kwh: Math.max(0, se - lt), color: "#8E8E93" }] : []), Ca = e === "1d" ? s.house.today : s.bat.ranges[e], Rs = () => `${Ca} · ${L} ${at(se)} kWh`, Ns = [c, d, p, b, y].some((H) => H && H[0] === void 0);
     return {
       id: `house-${e}`,
       h: D,
       // The top line is the value `max` exactly (the bars are drawn on the scale of 180 above the base).
       grid: [{ y: E - 180 }, { y: E, strong: !0 }],
-      labels: [{ y: E - 180, text: `${S}` }, { y: E, text: "0" }],
+      labels: [{ y: E - 180, text: `${M}` }, { y: E, text: "0" }],
       time: { start: i.start, end: i.start + r * i.step, x0: C, x1: U, slot: i.step },
-      valueNum: (H) => (E - H) / 180 * S,
+      valueNum: (H) => (E - H) / 180 * M,
       valueAt: (H) => {
-        const I = (E - H) / 180 * S;
-        return I % 1 ? at(I) : R(I);
+        const I = (E - H) / 180 * M;
+        return I % 1 ? at(I) : P(I);
       },
-      body: V`${z}`,
+      body: V`${B}`,
       n: r,
       x: w,
       read: q,
       from: Ns ? s.house.dataFrom(de(i.start)) : s.house.axisFrom[e],
       to: s.house.axisTo,
       fade: 0,
-      panel: kt,
+      panel: _t,
       whole: Kt,
-      wholeText: Ps()
+      wholeText: Rs()
     };
   }
 };
@@ -8396,7 +8467,7 @@ function ni(a, t = fe, e = mt) {
   );
   return { width: a, tile: { w: s, h: n }, gap: o, height: r, left: h, right: l, xa: s - 8, xb: a - s + 8 };
 }
-const dt = (a) => a.toFixed(1);
+const ct = (a) => a.toFixed(1);
 function oi(a, t, e) {
   const s = a.filter((u) => u.to in t.right);
   if (!s.length) return [];
@@ -8429,8 +8500,8 @@ function oi(a, t, e) {
       to: u.to,
       watts: u.watts,
       thickness: g,
-      d: `M${b} ${dt(m)} C${dt(f)} ${dt(m)} ${dt(f)} ${dt(_)} ${y} ${dt(_)} L${y} ${dt($)} C${dt(f)} ${dt($)} ${dt(f)} ${dt(x)} ${b} ${dt(x)} Z`,
-      centre: `M${b} ${dt(m + g / 2)} C${dt(f)} ${dt(m + g / 2)} ${dt(f)} ${dt(_ + g / 2)} ${y} ${dt(_ + g / 2)}`
+      d: `M${b} ${ct(m)} C${ct(f)} ${ct(m)} ${ct(f)} ${ct(_)} ${y} ${ct(_)} L${y} ${ct($)} C${ct(f)} ${ct($)} ${ct(f)} ${ct(x)} ${b} ${ct(x)} Z`,
+      centre: `M${b} ${ct(m + g / 2)} C${ct(f)} ${ct(m + g / 2)} ${ct(f)} ${ct(_ + g / 2)} ${y} ${ct(_ + g / 2)}`
     };
   });
 }
@@ -8462,9 +8533,9 @@ const et = {
   // ----------------------------------------------------------------- alerts
   /** Deviations only (CURRENT_SPEC.md, Upozornění): a battery on its reserve and a house on the grid are not alerts. */
   alerts(t, e) {
-    const s = this.t, n = t.entities.wallbox, o = [], i = ct(this.hass, n.block_charging) === "on", r = ct(this.hass, n.prioritize_connected) === "on" && e.carLink === "connected" && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
-    if (i ? o.push({ kind: "warn", ...s.alerts.blocked }) : r && o.push({ kind: "info", ...s.alerts.priorityWaiting }), ct(this.hass, t.entities.boiler.boost) === "on") {
-      const l = ct(this.hass, t.entities.tank.water_heater);
+    const s = this.t, n = t.entities.wallbox, o = [], i = ht(this.hass, n.block_charging) === "on", r = ht(this.hass, n.prioritize_connected) === "on" && e.carLink === "connected" && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
+    if (i ? o.push({ kind: "warn", ...s.alerts.blocked }) : r && o.push({ kind: "info", ...s.alerts.priorityWaiting }), ht(this.hass, t.entities.boiler.boost) === "on") {
+      const l = ht(this.hass, t.entities.tank.water_heater);
       o.push({ kind: "warn", title: s.alerts.boostBoiler.title, text: l !== void 0 && l !== "off" ? s.alerts.boostBoilerGas : s.alerts.boostBoiler.text });
     }
     return o.push(...this.houseAlerts(t)), o;
@@ -8481,7 +8552,7 @@ const et = {
             </li>`
     )}
         </ul>
-      </section>` : M;
+      </section>` : S;
   }
   renderElectricity(t, e) {
     const s = e.summarySource ? `var(${Xt[e.summarySource]})` : void 0;
@@ -8496,7 +8567,7 @@ const et = {
           </h2>
           ${this.stateLine(e.summary, s)}
         </div>
-        ${this.renderFlow(t, e)} ${this._all ? this.renderDayPopup(t, e) : M}
+        ${this.renderFlow(t, e)} ${this._all ? this.renderDayPopup(t, e) : S}
       </section>`;
   }
   openAll() {
@@ -8540,7 +8611,7 @@ const et = {
         idleIcon: et.pause,
         idleText: s.idle.boil,
         level: $,
-        aria: [f === void 0 ? s.noData : s.tileSpoken.temperature(`${R(f)} °C`), u(e.boil) ? s.tileSpoken.heating : ""].filter(Boolean).join(", ")
+        aria: [f === void 0 ? s.noData : s.tileSpoken.temperature(`${P(f)} °C`), u(e.boil) ? s.tileSpoken.heating : ""].filter(Boolean).join(", ")
       });
     }
     return _.push(
@@ -8563,7 +8634,7 @@ const et = {
           <defs>${mt.map(h)}</defs>
           ${l.map((d) => V`<path d=${d.d} fill="url(#rg-${d.from})"></path>`)}
         </svg>
-        ${o.map((d) => this.renderTile(d, r, n, t))} ${c ? this.renderTilePopup(c, t, e, n) : M}
+        ${o.map((d) => this.renderTile(d, r, n, t))} ${c ? this.renderTilePopup(c, t, e, n) : S}
       </div>`;
   }
   /** A power "1,37 kW" as the number and a smaller grey unit next to it (uživatel 3. 11. 2026). */
@@ -8609,7 +8680,7 @@ const et = {
         @click=${() => this.openTile(t.key)}
       >
         <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-          <path d=${i ? t.icon : t.idleIcon}></path>${i && t.icon2 ? V`<path class="icon2" d=${t.icon2}></path>` : M}
+          <path d=${i ? t.icon : t.idleIcon}></path>${i && t.icon2 ? V`<path class="icon2" d=${t.icon2}></path>` : S}
         </svg>
         <span class="text">
           <span class="name">${t.name}</span>
@@ -8651,18 +8722,18 @@ const et = {
       boil: {
         title: o.tile.boil,
         now: c(s.boil) ? o.pop.heating(h(s.boil)) : s.boil === void 0 ? T : o.idle.boil,
-        level: u === void 0 ? void 0 : { label: o.pop.temperature, text: `${R(u)} °C`, percent: st((u - g) / (m - g) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
+        level: u === void 0 ? void 0 : { label: o.pop.temperature, text: `${P(u)} °C`, percent: st((u - g) / (m - g) * 100, 0, 100), color: "var(--ed-boiler)", note: "" },
         rows: [{ label: o.pop.rows.boilerHeated, value: l(r.boil) }]
       }
     }[t.key];
     return v`<ed-sheet open .heading=${_.title} .sub=${_.now} .closeLabel=${o.close} @hdk-close=${() => this.closePop()}><div class="pop">
         ${_.level ? v`<div class="pop-level">
               <div class="pop-level-row">
-                <span class="pop-label">${_.level.label}${_.level.note ? v`<span class="note"> ${_.level.note}</span>` : M}</span>
+                <span class="pop-label">${_.level.label}${_.level.note ? v`<span class="note"> ${_.level.note}</span>` : S}</span>
                 <span class="pop-big" style="color:${_.level.note ? "var(--ed-warning)" : "var(--ed-text)"}">${_.level.text}</span>
               </div>
               <div class="segs" aria-hidden="true">${Os(_.level.percent).map(($) => v`<span><i style="width:${$.toFixed(0)}%;background:${_.level.color}"></i></span>`)}</div>
-            </div>` : M}
+            </div>` : S}
         <div class="pop-rows">${_.rows.map(($) => v`<div class="pop-row"><span>${$.label}</span><b>${$.value}</b></div>`)}</div>
       </div></ed-sheet>`;
   }
@@ -8716,48 +8787,48 @@ const et = {
     t && (this._carHint = !1, t.startsWith("/") ? (window.history.pushState(null, "", t), window.dispatchEvent(new CustomEvent("location-changed", { detail: { replace: !1 } }))) : window.open(t, "_blank", "noopener"));
   }
   renderCar(t, e) {
-    const s = this.t, n = t.entities, o = t.num.flows, i = t.num.car.charge_limit, r = e.carLink, l = ot(e.car, o.idle_threshold) && r !== "disconnected", h = va(e.loadShare.car, o, s), c = ct(this.hass, n.wallbox.block_charging) === "on", d = this.shown(n.wallbox.boost), p = d === "on" ? `var(${Xt[h.main]})` : this.sourceColor(h), b = ct(this.hass, n.wallbox.prioritize_connected) === "on" && r === "connected" && !c && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
+    const s = this.t, n = t.entities, o = t.num.flows, i = t.num.car.charge_limit, r = e.carLink, l = ot(e.car, o.idle_threshold) && r !== "disconnected", h = va(e.loadShare.car, o, s), c = ht(this.hass, n.wallbox.block_charging) === "on", d = this.shown(n.wallbox.boost), p = d === "on" ? `var(${Xt[h.main]})` : this.sourceColor(h), b = ht(this.hass, n.wallbox.prioritize_connected) === "on" && r === "connected" && !c && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
     let y, f;
     const u = d === "on" ? [this.boostMark()] : [];
     l ? (y = [s.car.charging(h.text), ...u], f = p) : r === "connected" || r === "charging" ? (y = [s.car.connectedIdle, ...u], f = b ? "var(--ed-warning)" : void 0) : r === "disconnected" && (y = s.car.disconnected);
-    const g = $a(f ?? "#d8d8dc", f ? 42 : 28), m = vt(this.hass, n.car.image)?.attributes?.entity_picture, x = e.carSoc, _ = ma([ot(e.car, o.idle_threshold) ? e.car : void 0], o.kw_from), $ = i < 100, O = s.car.chargeLevel(x === void 0 ? s.noData : K(x), $ ? K(i) : void 0), A = n.wallbox, S = d === "on" ? "on" : d === "off" ? "off" : "", D = this.boostOptions, E = d === "on" ? s.car.modeBoost : d === "off" ? s.car.modeSurplus : T;
+    const g = $a(f ?? "#d8d8dc", f ? 42 : 28), m = vt(this.hass, n.car.image)?.attributes?.entity_picture, x = e.carSoc, _ = ma([ot(e.car, o.idle_threshold) ? e.car : void 0], o.kw_from), $ = i < 100, O = s.car.chargeLevel(x === void 0 ? s.noData : K(x), $ ? K(i) : void 0), A = n.wallbox, M = d === "on" ? "on" : d === "off" ? "off" : "", D = this.boostOptions, E = d === "on" ? s.car.modeBoost : d === "off" ? s.car.modeSurplus : T;
     return v`<section class="panel car-panel" aria-labelledby="h-car">
         <div class="car-top" style="height:${Math.round(168 + 40 * Math.max(0, t.num.car.image_scale - 1))}px">
           <div class="car-art" aria-hidden="true" style="transform:scale(${t.num.car.image_scale})">
             <div class="glow" style="background:radial-gradient(closest-side, ${g}, transparent)"></div><div class="shadow"></div>
-            ${typeof m == "string" && m ? v`<img src=${m} alt="" />` : M}
+            ${typeof m == "string" && m ? v`<img src=${m} alt="" />` : S}
           </div>
           ${t.carLink ? v`<div class="car-art car-hitbox" style="transform:scale(${t.num.car.image_scale})">
                 <button type="button" class="car-hit" aria-label=${s.car.openDashboard} @pointerdown=${this.carDown} @pointerup=${this.carRelease} @pointercancel=${this.carCancel} @pointerleave=${this.carRelease} @contextmenu=${(k) => k.preventDefault()} @click=${this.carClick}></button>
               </div>
-              ${this._carHint ? v`<div class="car-hint" aria-hidden="true">${s.hint.holdOrDouble}</div>` : M}` : M}
+              ${this._carHint ? v`<div class="car-hint" aria-hidden="true">${s.hint.holdOrDouble}</div>` : S}` : S}
           <div class="head"><h2 id="h-car">${this.pickText(t.titles.car) ?? s.titles.car}</h2>${this.stateLine(y, f)}</div>
           <div class="car-soc">
-            <span class="soc">${x === void 0 ? T : R(x)}<small>${this._i18n.percent("")}</small>${x === void 0 ? v`<span class="sr-only">${s.noData}</span>` : M}</span>
-            <span class="range">${s.car.range} <b>${e.carRange === void 0 ? T : `${R(e.carRange)} km`}</b></span>
+            <span class="soc">${x === void 0 ? T : P(x)}<small>${this._i18n.percent("")}</small>${x === void 0 ? v`<span class="sr-only">${s.noData}</span>` : S}</span>
+            <span class="range">${s.car.range} <b>${e.carRange === void 0 ? T : `${P(e.carRange)} km`}</b></span>
           </div>
         </div>
         <div class="meter-wrap">
           <div class="meter" role="img" aria-label=${O}>
             ${Os(st(x ?? 0, 0, 100)).map((k) => v`<span><i style="width:${k.toFixed(1)}%"></i></span>`)}
-            ${$ ? v`<div class="limit" style="left:${Xa(i)}"></div>` : M}
+            ${$ ? v`<div class="limit" style="left:${Xa(i)}"></div>` : S}
           </div>
-          ${$ ? v`<div class="meter-label" aria-hidden="true"><span style="left:${Xa(i)}">${s.car.limit(K(i))}</span></div>` : M}
+          ${$ ? v`<div class="meter-label" aria-hidden="true"><span style="left:${Xa(i)}">${s.car.limit(K(i))}</span></div>` : S}
         </div>
-        ${l ? this.renderCarSources(e, o, nt(e.car ?? 0, _), d === "on") : M}
+        ${l ? this.renderCarSources(e, o, nt(e.car ?? 0, _), d === "on") : S}
         ${A.boost ? v`<div class="mode">
               <div class="mode-head"><span id="mode-l">${s.car.mode}</span><span class="mode-sub">${d === "on" || d === "off" ? (
       // Both descriptions in one place, the other one invisible: the taller one sets the height, so switching moves nothing (CURRENT_SPEC.md, Klidné přepínání režimů).
-      [s.car.modeSurplus, s.car.modeBoost].map((k, C) => v`<span class=${C === 1 == (d === "on") ? "shown" : "spare"}>${Pt(k)}</span>`)
+      [s.car.modeSurplus, s.car.modeBoost].map((k, C) => v`<span class=${C === 1 == (d === "on") ? "shown" : "spare"}>${Nt(k)}</span>`)
     ) : E}</span></div>
               <ed-segmented
-                guarded .options=${D} .value=${S} label=${s.car.modeLabel} .hint=${s.hint.holdDragOrDouble} ?disabled=${d === void 0}
+                guarded .options=${D} .value=${M} .pending=${this.isPending(n.wallbox.boost)} label=${s.car.modeLabel} .hint=${s.hint.holdDragOrDouble} ?disabled=${d === void 0}
                 .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
                 @hdk-select=${(k) => this.setBoost("wallbox", k.detail.value === "on")}
               ></ed-segmented>
               ${this.renderPowerFold(t, d === "on")}
-            </div>` : M}
-        ${this.carVisible(t, e) ? this.renderWallboxGroup(t, e, l, p, _) : M}
+            </div>` : S}
+        ${this.carVisible(t, e) ? this.renderWallboxGroup(t, e, l, p, _) : S}
       </section>`;
   }
   renderCarSources(t, e, s, n) {
@@ -8773,17 +8844,17 @@ const et = {
   /** Charging power in boost: the card shows the total of all phases, the entity holds the power of one phase. */
   renderPowerFold(t, e) {
     const s = t.entities.wallbox.charging_power;
-    if (!s) return M;
+    if (!s) return S;
     const { phases: n, power_min: o, power_max: i, power_step: r } = t.num.wallbox, l = vt(this.hass, s), h = F(this.hass, s), c = h === void 0 ? void 0 : h * n / 1e3;
     let d = o / 1e3, p = i / 1e3;
-    const b = Nt(l, "min"), y = Nt(l, "max");
+    const b = It(l, "min"), y = It(l, "max");
     return b !== void 0 && (d = Math.max(d, b * n / 1e3)), y !== void 0 && (p = Math.min(p, y * n / 1e3)), v`<div class="fold ${e ? "open" : ""}" ?inert=${!e}><div>
         <div class="field">
-          <span class="field-label">${this.t.car.power}</span><span class="field-value">${c === void 0 ? T : R(c, 1)}<small> kW</small></span>
+          <span class="field-label">${this.t.car.power}</span><span class="field-value">${c === void 0 ? T : P(c, 1)}<small> kW</small></span>
           <ed-slider
             .min=${d} .max=${p} .step=${r / 1e3} .value=${c ?? d}
-            label=${this.t.car.powerLabel} valueText=${c === void 0 ? this.t.noData : `${R(c, 1)} kW`}
-            minLabel="${R(d, 1)} kW" maxLabel="${R(p, 1)} kW"
+            label=${this.t.car.powerLabel} valueText=${c === void 0 ? this.t.noData : `${P(c, 1)} kW`}
+            minLabel="${P(d, 1)} kW" maxLabel="${P(p, 1)} kW"
             ?disabled=${c === void 0}
             @hdk-change=${(f) => this.setNumber(s, Math.round(f.detail.value * 1e3 / n), this.t.car.power)}
           ></ed-slider>
@@ -8791,7 +8862,7 @@ const et = {
       </div></div>`;
   }
   renderWallboxGroup(t, e, s, n, o) {
-    const i = this.t, r = t.entities.wallbox, l = !!this._open.wallbox, h = !!(r.block_charging || r.prioritize_connected), c = e.carLink, d = s ? v`<span>${i.wallbox.charging} </span><b style="--c:${n}">${nt(e.car ?? 0, o)}</b>` : c === "connected" || c === "charging" ? v`${i.wallbox.idle}` : c === "disconnected" ? v`${i.wallbox.disconnected}` : v`${T}`, p = Wn(ct(this.hass, t.entities.car.last_message), this._now, i), b = this.shown(r.block_charging), y = this.shown(r.prioritize_connected);
+    const i = this.t, r = t.entities.wallbox, l = !!this._open.wallbox, h = !!(r.block_charging || r.prioritize_connected), c = e.carLink, d = s ? v`<span>${i.wallbox.charging} </span><b style="--c:${n}">${nt(e.car ?? 0, o)}</b>` : c === "connected" || c === "charging" ? v`${i.wallbox.idle}` : c === "disconnected" ? v`${i.wallbox.disconnected}` : v`${T}`, p = Wn(ht(this.hass, t.entities.car.last_message), this._now, i), b = this.shown(r.block_charging), y = this.shown(r.prioritize_connected);
     return v`<ul class="group">
         <li class=${l ? "open" : ""}>
           <button type="button" class="row row-btn" aria-expanded=${l ? "true" : "false"} ?disabled=${!h} @click=${() => this.toggle("wallbox")}>
@@ -8801,9 +8872,9 @@ const et = {
             ${h ? v`<svg class="chevron" viewBox="0 0 24 24" aria-hidden="true"><path d=${et.expand}></path></svg>` : v`<span></span>`}
           </button>
           ${h ? v`<div class="fold ${l ? "open" : ""}" ?inert=${!l}><div>
-                ${r.block_charging ? this.switchRow(i.wallbox.block, r.block_charging, b === "on" ? i.wallbox.blockOn : i.wallbox.blockOff, b === "on") : M}
-                ${r.prioritize_connected ? this.switchRow(i.wallbox.priority, r.prioritize_connected, y === "on" ? i.wallbox.priorityOn : i.wallbox.priorityOff, !1) : M}
-              </div></div>` : M}
+                ${r.block_charging ? this.switchRow(i.wallbox.block, r.block_charging, b === "on" ? i.wallbox.blockOn : i.wallbox.blockOff, b === "on") : S}
+                ${r.prioritize_connected ? this.switchRow(i.wallbox.priority, r.prioritize_connected, y === "on" ? i.wallbox.priorityOn : i.wallbox.priorityOff, !1) : S}
+              </div></div>` : S}
         </li>
       </ul>`;
   }
@@ -8848,17 +8919,17 @@ const gi = (a) => class extends a {
   gauge(t, e, s, n, o, i = !1) {
     return v`<div class="arc" role="img" aria-label=${o}>
         ${ui(t, e, s, n.tempScale)}
-        <div class="arc-num ${i ? "dim" : ""}"><b class=${t === void 0 ? "nodata" : ""}>${t === void 0 ? T : R(t)}</b>${t === void 0 ? v`<span class="sr-only">${this.t.noData}</span>` : v`<span>°C</span>`}</div>
-        <span class="arc-min" aria-hidden="true">${R(e)}</span><span class="arc-max" aria-hidden="true">${R(s)}</span>
+        <div class="arc-num ${i ? "dim" : ""}"><b class=${t === void 0 ? "nodata" : ""}>${t === void 0 ? T : P(t)}</b>${t === void 0 ? v`<span class="sr-only">${this.t.noData}</span>` : v`<span>°C</span>`}</div>
+        <span class="arc-min" aria-hidden="true">${P(e)}</span><span class="arc-max" aria-hidden="true">${P(s)}</span>
       </div>`;
   }
   renderBoilerTile(t, e, s, n, o) {
     const i = this.t, r = t.entities.boiler, l = this.shown(r.boost), h = l === "on", c = F(this.hass, r.target_temperature), d = F(this.hass, r.boost_target_temperature), p = h ? d : c, b = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, c ?? 0), f = e.boilTemp, u = !!this._open.targets, g = !!(r.target_temperature || r.boost_target_temperature), m = i.water.boilerLabel(
-      f === void 0 ? i.noData : `${R(f)} °C`,
+      f === void 0 ? i.noData : `${P(f)} °C`,
       s ? i.water.heatingWith(nt(e.boil, o)) : i.water.notHeating,
-      p === void 0 ? void 0 : `${R(p)} °C`,
-      R(b),
-      `${R(y)} °C`
+      p === void 0 ? void 0 : `${P(p)} °C`,
+      P(b),
+      `${P(y)} °C`
     );
     return v`<div class="source">
         <div class="source-top">
@@ -8868,14 +8939,14 @@ const gi = (a) => class extends a {
               <div class="source-title">${i.water.boilerTitle}</div>
               <div class="source-line">${Lt([
       v`<span class="src ${s ? "tinted" : ""}" style="--c:${s ? n : "var(--ed-secondary)"}">${s ? nt(e.boil, o) : e.boil === void 0 ? this.noData() : i.water.notHeating}</span>`,
-      ...p === void 0 ? [] : [v`<span class="dim">${i.water.target(`${R(p)} °C`)}</span>`]
+      ...p === void 0 ? [] : [v`<span class="dim">${i.water.target(`${P(p)} °C`)}</span>`]
     ])}</div>
             </div>
             ${r.boost ? v`<ed-segmented
-                  compact guarded .options=${this.boostOptions} .value=${l ?? ""} label=${i.water.boostMode} .hint=${i.hint.holdDragOrDouble} ?disabled=${l === void 0}
+                  compact guarded .options=${this.boostOptions} .value=${l ?? ""} .pending=${this.isPending(r.boost)} label=${i.water.boostMode} .hint=${i.hint.holdDragOrDouble} ?disabled=${l === void 0}
                   .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
                   @hdk-select=${(x) => this.setBoost("boiler", x.detail.value === "on")}
-                ></ed-segmented>` : M}
+                ></ed-segmented>` : S}
           </div>
         </div>
         ${g ? v`<div class="subrow">
@@ -8883,28 +8954,28 @@ const gi = (a) => class extends a {
                 <span class="rowbtn-title">${i.water.targets}</span>
                 <span class="rowbtn-value">${Lt([
       // On two lines both targets have the unit (uživatel 12. 11. 2026: „A °C bude na obou“).
-      v`${i.water.targetFlow} <b>${c === void 0 ? this.noData() : v`${R(c)}<span class="joined-only"> °C</span>`}</b>`,
-      v`${i.water.targetBoost} <b>${d === void 0 ? this.noData() : `${R(d)} °C`}</b>`
+      v`${i.water.targetFlow} <b>${c === void 0 ? this.noData() : v`${P(c)}<span class="joined-only"> °C</span>`}</b>`,
+      v`${i.water.targetBoost} <b>${d === void 0 ? this.noData() : `${P(d)} °C`}</b>`
     ], { whole: !0 })}</span>
                 <svg class="chevron ${u ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${et.expand}></path></svg>
               </button>
               <div class="fold ${u ? "open" : ""}" ?inert=${!u}><div>${this.renderTargets(t, c, d)}</div></div>
-            </div>` : M}
+            </div>` : S}
       </div>`;
   }
   /** The two targets of the boiler: Přetoky may not be below Boost (CURRENT_SPEC.md, Cíle ohřevu). */
   renderTargets(t, e, s) {
     const n = this.t, o = t.entities.boiler, i = t.num.boiler, r = (l, h, c, d, p, b) => {
-      if (!l) return M;
+      if (!l) return S;
       const y = vt(this.hass, l);
       let f = i.target_min, u = i.target_max;
-      const g = Nt(y, "min"), m = Nt(y, "max");
+      const g = It(y, "min"), m = It(y, "max");
       return g !== void 0 && (f = Math.max(f, g)), m !== void 0 && (u = Math.min(u, m)), p !== void 0 && (f = Math.max(f, p)), b !== void 0 && (u = Math.min(u, b)), v`<div class="field">
-          <span class="field-label">${c}<span class="hint">${d}</span></span><span class="field-value">${h === void 0 ? T : R(h)}<small> °C</small></span>
+          <span class="field-label">${c}<span class="hint">${d}</span></span><span class="field-value">${h === void 0 ? T : P(h)}<small> °C</small></span>
           <ed-slider
             .min=${f} .max=${u} .step=${i.target_step} .value=${h ?? f}
             label=${n.water.targetSliderLabel(c)} valueText=${h === void 0 ? n.noData : n.water.targetSliderSpoken(`${h} °C`, c)}
-            minLabel="${R(f)} °C" maxLabel="${R(u)} °C"
+            minLabel="${P(f)} °C" maxLabel="${P(u)} °C"
             ?disabled=${h === void 0}
             @hdk-change=${(x) => this.setNumber(l, x.detail.value, n.water.targetWhat(c))}
           ></ed-slider>
@@ -8919,7 +8990,7 @@ const gi = (a) => class extends a {
   /** Mixing: a capsule between the two tiles, joined to them by lines (solid when on, dotted when off). */
   renderMixing(t) {
     const e = t.entities.mixing;
-    if (!e.valve_c1 && !e.valve_c2) return M;
+    if (!e.valve_c1 && !e.valve_c2) return S;
     const s = Vn(this.shown(e.valve_c1), this.shown(e.valve_c2)), n = s === "on", o = !!(e.valve_c1 && e.valve_c2), i = s === "unclear" ? this.t.water.mixingUnclear : s === void 0 ? this.t.noData : "";
     return v`
         <div class="link ${n ? "on" : ""}" aria-hidden="true"></div>
@@ -8928,7 +8999,7 @@ const gi = (a) => class extends a {
             <path d="M12 2.5 C12 2.5 5.5 10 5.5 15 A6.5 6.5 0 0 0 12 21.5 Z" fill=${n ? t.colors.cold : "var(--ed-off)"}></path>
             <path d="M12 2.5 C12 2.5 18.5 10 18.5 15 A6.5 6.5 0 0 1 12 21.5 Z" fill=${n ? t.colors.hot : "var(--ed-off)"}></path>
           </svg>
-          <span class="mixcap-text"><span id="l-mix" style=${n ? "" : "color:var(--ed-secondary)"}>${this.t.water.mixing}</span>${i ? v`<span class="mixcap-note">${i}</span>` : M}</span>
+          <span class="mixcap-text"><span id="l-mix" style=${n ? "" : "color:var(--ed-secondary)"}>${this.t.water.mixing}</span>${i ? v`<span class="mixcap-note">${i}</span>` : S}</span>
           <ed-switch
             guarded hintPlacement="above" label=${this.t.water.mixing} .hint=${this.t.hint.holdOrDouble} .checked=${n} ?disabled=${s === void 0 || !o}
             .holdMs=${t.num.ui.hold_ms} .doubleTapMs=${t.num.ui.double_tap_ms} .hintSeconds=${t.num.ui.hint_seconds}
@@ -8938,21 +9009,21 @@ const gi = (a) => class extends a {
         <div class="link ${n ? "on" : ""}" aria-hidden="true"></div>`;
   }
   renderTankTile(t) {
-    const e = this.t, s = t.entities.tank, n = t.num.tank, o = s.water_heater, i = vt(this.hass, o), r = this.shown(o), l = r === "off", h = r === "heat", c = Nt(i, "temperature"), d = this._tankTemp, p = d && d.id === o ? d.value : c, b = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, F(this.hass, t.entities.boiler.target_temperature) ?? 0), f = l ? n.temp_min : p, u = Array.isArray(i?.attributes?.operation_list) ? i.attributes.operation_list : Object.keys(e.tank.modes), g = Object.keys(e.tank.modes).filter((D) => u.includes(D)).map((D) => ({ value: D, label: e.tank.modes[D] })), m = !!this._open.tank, { min: x, max: _ } = this.tankRange(t), $ = r === void 0 ? T : e.tank.modes[r] ?? r, O = l ? e.tank.keepsMinimum : h ? void 0 : e.tank.byPlan, A = f === void 0 ? this.noData() : v`<b class=${l ? "off" : ""}>${R(l ? n.temp_min : f)} °C</b>`, S = e.tank.label(
-      f === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${R(n.temp_min)} °C`) : e.tank.settingSet(`${R(f)} °C`),
+    const e = this.t, s = t.entities.tank, n = t.num.tank, o = s.water_heater, i = vt(this.hass, o), r = this.shown(o), l = r === "off", h = r === "heat", c = It(i, "temperature"), d = this._tankTemp, p = d && d.id === o ? d.value : c, b = t.num.water.gauge_min, y = Math.max(t.num.water.gauge_max, F(this.hass, t.entities.boiler.target_temperature) ?? 0), f = l ? n.temp_min : p, u = Array.isArray(i?.attributes?.operation_list) ? i.attributes.operation_list : Object.keys(e.tank.modes), g = Object.keys(e.tank.modes).filter((D) => u.includes(D)).map((D) => ({ value: D, label: e.tank.modes[D] })), m = !!this._open.tank, { min: x, max: _ } = this.tankRange(t), $ = r === void 0 ? T : e.tank.modes[r] ?? r, O = l ? e.tank.keepsMinimum : h ? void 0 : e.tank.byPlan, A = f === void 0 ? this.noData() : v`<b class=${l ? "off" : ""}>${P(l ? n.temp_min : f)} °C</b>`, M = e.tank.label(
+      f === void 0 ? e.tank.settingNoData : l ? e.tank.settingOff(`${P(n.temp_min)} °C`) : e.tank.settingSet(`${P(f)} °C`),
       $,
-      R(b),
-      `${R(y)} °C`
+      P(b),
+      `${P(y)} °C`
     );
     return v`<div class="source">
         <div class="source-top">
-          ${this.gauge(f, b, y, t, S, l)}
+          ${this.gauge(f, b, y, t, M, l)}
           <div class="source-body">
             <div>
               <div class="source-title">${e.tank.title}</div>
               <div class="source-line">${Lt([v`<span class="src" style="--c:${h ? "var(--ed-text)" : "var(--ed-secondary)"}">${r === void 0 ? this.noData() : $}</span>`, ...r === void 0 || O === void 0 ? [] : [v`<span class="dim">${O}</span>`]])}</div>
             </div>
-            ${o ? v`<ed-segmented compact .options=${g} .value=${r ?? ""} label=${e.tank.modeLabel} ?disabled=${r === void 0} @hdk-select=${(D) => this.setTank(o, D.detail.value)}></ed-segmented>` : M}
+            ${o ? v`<ed-segmented compact .options=${g} .value=${r ?? ""} .pending=${this.isPending(o)} label=${e.tank.modeLabel} ?disabled=${r === void 0} @hdk-select=${(D) => this.setTank(o, D.detail.value)}></ed-segmented>` : S}
           </div>
         </div>
         ${o ? v`<div class="subrow">
@@ -8965,25 +9036,25 @@ const gi = (a) => class extends a {
                 <div class="detail">
                   <div class="field ${l ? "off" : ""}">
                     <span class="field-label">${e.tank.temperature}<span class="hint">${l ? e.tank.hintOff : h ? e.tank.hintManual : e.tank.hintPlan}</span></span>
-                    <span class="field-value">${f === void 0 ? T : R(f)}<small> °C</small></span>
+                    <span class="field-value">${f === void 0 ? T : P(f)}<small> °C</small></span>
                     <ed-slider
                       .min=${x} .max=${_} .step=${n.temp_step} .tickStep=${5} .value=${f ?? x}
                       label=${e.tank.sliderLabel} valueText=${p === void 0 ? e.noData : e.tank.sliderSpoken(`${p} °C`)}
-                      minLabel="${R(x)} °C" maxLabel="${R(_)} °C"
+                      minLabel="${P(x)} °C" maxLabel="${P(_)} °C"
                       ?disabled=${p === void 0 || l}
                       @hdk-change=${(D) => this.setTankTemperature(o, D.detail.value, r)}
                     ></ed-slider>
                   </div>
                 </div>
               </div></div>
-            </div>` : M}
+            </div>` : S}
       </div>`;
   }
 }, Da = class Da extends gi(di(li(ai(qo(jo(_o(X))))))) {
   // ----------------------------------------------------------------- render
   render() {
     const t = this._config;
-    if (!t) return M;
+    if (!t) return S;
     const e = Fn(this.hass, t, this.t), s = t.colors, n = `--ed-sun:${s.sun};--ed-battery:${s.battery};--ed-grid:${s.grid};--ed-house:${s.house};--ed-car:${s.car};--ed-boiler:${s.boiler};--ed-discharge:${s.discharge};--ed-accent:${s.accent};--ed-warning:${s.warning};--ed-off:${s.neutral}`;
     return this._batDetail ? v`<div class="page" style=${n} @keydown=${this.onKey}>${this.renderBatteryDetail(t, e)}</div>` : this._houseDetail ? v`<div class="page" style=${n} @keydown=${this.onKey}>${this.renderHouseDetail(t, e)}</div>` : this._sunDetail ? v`<div class="page" style=${n} @keydown=${this.onKey}>${this.renderSunDetail(t, e)}</div>` : v`<div class="page" style=${n} @keydown=${this.onKey}>
       <!-- No title: the name of the dashboard is already at the top (uživatel 12. 11. 2026: „nechci title … To zrus“). -->
@@ -9005,4 +9076,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ne(Tn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.2.3 · 2026-11-13 18:21 UTC · po 24ae282 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.2.4 · 2026-11-14 04:46 UTC · po 4309852 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
