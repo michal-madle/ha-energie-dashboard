@@ -148,8 +148,8 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       const bare = structuredClone(config);
       for (const key of ["titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
-        battery: ["reserve"], car: ["charge_limit", "image_scale"],
-        wallbox: ["phases", "power_min", "power_max", "power_step", "priority_min_sun"],
+        battery: ["reserve"], car: ["image_scale"],
+        wallbox: ["phases", "power_min", "power_max", "power_step"],
         boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes"],
         tank: ["temp_min", "temp_max", "temp_step"],
       })) for (const key of keys) delete bare[section][key];
@@ -177,7 +177,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     await test.step("chybná hodnota zastaví kartu srozumitelnou chybou s názvem klíče; prázdná hodnota = výchozí", async () => {
       await open(page, "full");
       const cases: Array<[Record<string, unknown>, RegExp]> = [
-        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, prioritize_connected, charging_power, phases, /],
+        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, charging_power, mode, target_auto, target_boost, step, priority, shadow, phases, /],
         [{ wallbox: { boost: "sensor.wallbox_boost" } }, /wallbox\.boost must be a switch entity \(switch\.…\), not sensor\.wallbox_boost/],
         [{ wallbox: { charging_power: "sensor.wallbox_power" } }, /wallbox\.charging_power must be a number entity/],
         [{ boiler: { boost: "input_boolean.tuv_boost" } }, /boiler\.boost must be a switch entity/],
@@ -191,7 +191,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
         [{ pv: "sensor.goodwe_pv_power" }, /"pv" must be a mapping of keys/],
         [{ pv: { power: "Sensor.GoodWe PV" } }, /pv\.power must be an entity ID/],
         [{ battery: { power: 351 } }, /battery\.power must be an entity ID/],
-        [{ car: { soc: "sensor.vin_stav_nabiti_predikce_integrace" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, last_message, charge_limit, image_scale, link\)/],
+        [{ car: { soc: "sensor.vin_stav_nabiti_predikce_integrace" } }, /car: unknown key "soc" \(allowed: state_of_charge, range, capacity, image, last_message, image_scale, link\)/],
         [{ car: { image_scale: 5 } }, /car\.image_scale must be a number from 0\.5 to 3/],
         [{ titles: { car: "" } }, /titles\.car must be a text or a mapping/],
         [{ titles: { auto: "Auto" } }, /titles: unknown key "auto"/],
@@ -239,13 +239,14 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       const config = example();
       await reconfigure(page, {
         titles: { electricity: "Proud", car: "Moje auto", water: "Voda" },
-        car: { ...config.car, charge_limit: 90 },
         flows: { ...config.flows, kw_from: 100000 },
         colors: { ...config.colors, sun: "#FF0000" },
       });
       await expect(page.locator(".panel h2")).toHaveText(["Proud", "Moje auto", "Voda"]);
+      // The marker is the „Nabít do“ of the active mode (car.charge_limit is gone, CURRENT_SPEC.md, Wallbox).
+      await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "input_number.nabijeni_auta_cil_auto": "90.0" });
       await expect(page.locator(".meter .limit")).toHaveAttribute("style", /calc\(.*\* 0\.9 \+ 16px\)/);
-      await expect(page.locator(".meter-label")).toContainText("limit 90 %");
+      await expect(page.locator(".meter-label")).toContainText("cíl 90 %");
       await expect(page.locator(".page")).toHaveAttribute("style", /--ed-sun:#FF0000/);
       expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
     });
@@ -1011,14 +1012,13 @@ test.describe("dům (CURRENT_SPEC.md, Dům: popup a detail)", () => {
 test.describe("upozornění (CURRENT_SPEC.md, Upozornění)", () => {
   test("upozornění: zablokované nabíjení a Boost bojleru jsou varování, Boost wallboxu ne", async ({ page }) => {
     test.setTimeout(60000);
-    await test.step("baterie na rezervě a dům na síti upozornění nejsou; auto čeká na rozjezd je info; zablokované nabíjení je varování", async () => {
+    await test.step("baterie na rezervě a dům na síti upozornění nejsou; auto čeká bez upozornění (důvod je ve stavu); zablokované nabíjení je varování", async () => {
       await open(page, "full");
       await expect(page.locator(".alerts")).toHaveCount(0);
       await update(page, { "sensor.goodwe_battery_state_of_charge": "12" });
       await expect(page.locator(".alerts")).toHaveCount(0);
       await update(page, { "sensor.goodwe_pv_power": "900" });
-      expect(await alertTitles(page)).toEqual(["Auto je připojené, ale nenabíjí"]);
-      await expect(page.locator(".alert.info")).toHaveCount(1);
+      await expect(page.locator(".alerts")).toHaveCount(0);
       await update(page, { "switch.wallbox_1_block_charging": "on" });
       expect(await alertTitles(page)).toEqual(["Nabíjení auta je zablokované"]);
       await expect(page.locator(".alert.warn")).toHaveCount(1);
@@ -1092,8 +1092,69 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       // Deset bloků po 10 % s mezerou 2 px; 62 % = šest plných a sedmý z 20 %.
       expect(await page.locator(".meter > span > i").evaluateAll((bars) => bars.map((bar) => (bar as HTMLElement).style.width))).toEqual(["100%", "100%", "100%", "100%", "100%", "100%", "20%", "0%", "0%", "0%"]);
       expect(await page.locator(".meter").evaluate((el) => getComputedStyle(el).columnGap)).toBe("2px");
-      await reconfigure(page, { car: { ...example().car, charge_limit: 80 } });
-      await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %, limit 80 %");
+      await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "input_number.nabijeni_auta_cil_auto": "80.0" });
+      await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %, cíl 80 %");
+      await update(page, { "input_select.nabijeni_auta_rezim": "Boost" });
+      await expect(page.locator(".meter")).toHaveAttribute("aria-label", "Nabití auta 62 %");
+    });
+  });
+
+  test("režim Auto: stínový provoz, Nabít do s odhadem, důvod čekání a konce (CURRENT_SPEC.md, Důvod ve stavové větě a scénáře nabíjení)", async ({ page }) => {
+    test.setTimeout(90000);
+    await test.step("stínový provoz: volba Auto se nenabízí, dokud není zvolená", async () => {
+      await open(page, "full");
+      await expect(page.locator("ed-segmented").first().getByRole("radio")).toHaveText(["Přetoky", "Auto", "Boost"]);
+      await update(page, { "input_boolean.nabijeni_auta_stin": "on" });
+      await expect(page.locator("ed-segmented").first().getByRole("radio")).toHaveText(["Přetoky", "Boost"]);
+      await update(page, { "input_select.nabijeni_auta_rezim": "Auto" });
+      await expect(page.locator("ed-segmented").first().getByRole("radio")).toHaveText(["Přetoky", "Auto", "Boost"]);
+    });
+    await test.step("Nabít do: jen v Auto a v Boostu, každý režim svou hodnotu, odhad doby, 100 % do plna, zápis do input_number", async () => {
+      await open(page, "full");
+      await expect(page.locator('ed-slider[label="Nabít auto do"]')).toBeHidden();
+      await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "sensor.vin_stav_nabiti_predikce_integrace": "50.2", "sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana": "36.7" });
+      const slider = page.locator('ed-slider[label="Nabít auto do"]');
+      await expect(slider).toBeVisible();
+      // (75 − 50,2) % × 36,7 kWh ÷ 4,2 kW = 2,17 h → 2 h 10 min
+      await expect(page.locator(".field-value").filter({ hasText: "%" })).toHaveText("75 % · asi 2 h 10 min");
+      await slider.locator("input").evaluate((input: HTMLInputElement) => {
+        input.value = "80";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      expect(await calls(page)).toEqual([{ domain: "input_number", service: "set_value", data: { entity_id: "input_number.nabijeni_auta_cil_auto", value: 80 } }]);
+      await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on" });
+      await expect(page.locator(".field-value").filter({ hasText: "%" })).toHaveText("100 % · do plna");
+      await expect(page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]')).toBeVisible();
+    });
+    await test.step("krok pravidla ve stavové větě připojeného auta; nabíjení domem končí šedým Auto, ne oranžovým Boost", async () => {
+      await open(page, "full");
+      await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "sensor.nabijeni_auta_krok": "ceka_slunce" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · čeká na slunce");
+      await update(page, { "sensor.nabijeni_auta_krok": "dnes_hotovo" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · dnes už 2 pokusy, znovu po připojení");
+      await update(page, { "sensor.nabijeni_auta_krok": "konci" });
+      await expect(stateLine(page, 1)).toHaveText("Končí nabíjení");
+      await update(page, {
+        "sensor.nabijeni_auta_krok": "nabiji", "switch.wallbox_boost": "on", "sensor.wallbox_charge_status": "Charging",
+        "sensor.wallbox_total_power": "4100", "sensor.goodwe_pv_power": "6000", "sensor.goodwe_house_consumption": "4600",
+      });
+      await expect(stateLine(page, 1)).toContainText("· Auto");
+      await expect(page.locator(".car-panel .state .auto-mark")).toHaveText("Auto");
+      await expect(page.locator(".car-panel .state .boost-mark")).toHaveCount(0);
+    });
+    await test.step("proč a kdy dnes skončilo nabíjení domem: v řádku Wallbox, včerejší ne", async () => {
+      await open(page, "full");
+      // 14:20 in the time zone of the browser (the card shows the time of the profile, Playwright has its own zone).
+      const [today, yesterday] = await page.evaluate(() => {
+        const at = new Date();
+        at.setHours(14, 20, 0, 0);
+        return [at.toISOString(), new Date(at.getTime() - 86400000).toISOString()];
+      });
+      await update(page, { "sensor.nabijeni_auta_krok": { state: "ceka_slunce", attributes: { posledni_konec: `odmitlo|${today}` } } });
+      await expect(page.locator(".row-btn .row-sub")).toContainText("skončilo 14:20: auto přestalo brát");
+      await update(page, { "sensor.nabijeni_auta_krok": { state: "ceka_slunce", attributes: { posledni_konec: `odmitlo|${yesterday}` } } });
+      await expect(page.locator(".row-btn .row-sub")).not.toContainText("skončilo");
     });
   });
 
@@ -1412,10 +1473,18 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       expect(await calls(page)).toEqual([]);
       await expect(page.locator("ed-segmented .hint").first()).toContainText("Podržte, přetáhněte nebo klepněte dvakrát.");
       await radio(page, "Režim nabíjení auta", "Boost").dblclick();
-      expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
+      expect(await calls(page)).toEqual([{ domain: "input_select", service: "select_option", data: { entity_id: "input_select.nabijeni_auta_rezim", option: "Boost" } }]);
       await expect(radio(page, "Režim nabíjení auta", "Boost")).toHaveAttribute("aria-checked", "true");
       await hold(radio(page, "Režim nabíjení auta", "Přetoky"));
-      expect((await calls(page)).at(-1)).toEqual({ domain: "switch", service: "turn_off", data: { entity_id: "switch.wallbox_boost" } });
+      expect((await calls(page)).at(-1)).toEqual({ domain: "input_select", service: "select_option", data: { entity_id: "input_select.nabijeni_auta_rezim", option: "Přetoky" } });
+    });
+    await test.step("bez wallbox.mode je přepínač Přetoky | Boost přímo na switch.wallbox_boost", async () => {
+      await open(page, "full");
+      const { mode: _mode, ...wallbox } = example().wallbox;
+      await reconfigure(page, { wallbox });
+      await expect(page.locator("ed-segmented").first().getByRole("radio")).toHaveText(["Přetoky", "Boost"]);
+      await radio(page, "Režim nabíjení auta", "Boost").dblclick();
+      expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
     });
     await test.step("Přetoky | Boost jde přetáhnout jezdcem", async () => {
       await open(page, "full");
@@ -1424,9 +1493,9 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await page.mouse.move(box.x + box.width * 0.25, box.y + box.height / 2);
       await page.mouse.down();
       await page.mouse.move(box.x + box.width * 0.6, box.y + box.height / 2, { steps: 6 });
-      await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2, { steps: 4 });
+      await page.mouse.move(box.x + box.width * 0.85, box.y + box.height / 2, { steps: 4 });
       await page.mouse.up();
-      expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
+      expect(await calls(page)).toEqual([{ domain: "input_select", service: "select_option", data: { entity_id: "input_select.nabijeni_auta_rezim", option: "Boost" } }]);
     });
     await test.step("Boost při zablokovaném nabíjení nejdřív zablokování vypne a řekne to", async () => {
       await open(page, "full");
@@ -1434,7 +1503,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await radio(page, "Režim nabíjení auta", "Boost").dblclick();
       expect((await calls(page)).map((call) => `${call.service} ${call.data.entity_id}`)).toEqual([
         "turn_off switch.wallbox_1_block_charging",
-        "turn_on switch.wallbox_boost",
+        "select_option input_select.nabijeni_auta_rezim",
       ]);
       await expect(page.locator(".feedback")).toContainText("blokování jsem vypnul");
     });
@@ -1447,7 +1516,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await page.waitForTimeout(6300);
       await expect(block).toHaveAttribute("aria-checked", "false");
     });
-    await test.step("přepínače Zablokovat nabíjení a Přednost před bojlerem volají switch jedním klepnutím", async () => {
+    await test.step("přepínače Zablokovat nabíjení a Přednost před bojlerem (pomocník pravidla Auto) se přepnou jedním klepnutím", async () => {
       await open(page, "full");
       await expand(page, "Wallbox");
       const block = page.getByRole("switch", { name: "Zablokovat nabíjení" });
@@ -1458,7 +1527,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await priority.click();
       expect(await calls(page)).toEqual([
         { domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_1_block_charging" } },
-        { domain: "switch", service: "turn_off", data: { entity_id: "switch.wallbox_2_prioritize_when_connected" } },
+        { domain: "input_boolean", service: "turn_off", data: { entity_id: "input_boolean.nabijeni_auta_prednost" } },
       ]);
     });
   });
@@ -1504,8 +1573,11 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       // Switching Surplus | Boost moves nothing: both descriptions take one place, the taller sets the height.
       const head = () => page.locator(".mode-head").evaluate((el) => el.getBoundingClientRect().height);
       const before = await head();
-      await update(page, { "switch.wallbox_boost": "on" });
+      await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on" });
       await expect(page.locator(".mode-sub .shown")).toHaveText("also grid and battery");
+      await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "switch.wallbox_boost": "off" });
+      await expect(page.locator(".mode-sub .shown")).toHaveText("by itself with the sun");
+      expect(await head()).toBe(before);
       expect(await head()).toBe(before);
       expect(await page.locator("#mode-l").evaluate((el) => el.getBoundingClientRect().height)).toBeLessThanOrEqual(23);
       await open(page, "grid", 320, 852, "dark", "en");
@@ -1667,7 +1739,7 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
       const first = page.locator("ed-segmented").first().getByRole("radio", { name: "Přetoky" });
       await first.focus();
       await page.keyboard.press("ArrowRight");
-      expect(await calls(page)).toEqual([{ domain: "switch", service: "turn_on", data: { entity_id: "switch.wallbox_boost" } }]);
+      expect(await calls(page)).toEqual([{ domain: "input_select", service: "select_option", data: { entity_id: "input_select.nabijeni_auta_rezim", option: "Auto" } }]);
     });
     await test.step("klávesnice: mezerník na chráněném přepínači přepne hned; nechráněný taky", async () => {
       await open(page, "full");

@@ -152,7 +152,6 @@ car:
   capacity: sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana  # užitečná energie plné baterie (kWh); z ní, z nabití a z dojezdu se počítá spotřeba auta a km ze slunce; ID obsahuje VIN, doplňte své
   image: image.vin                                      # obrázek auta (image.…); ID obsahuje VIN, doplňte své
   last_message: sensor.garaz_bmw_i3_2                   # čas poslední zprávy z auta (timestamp); v řádku Wallbox „data auta před 3 h“
-  charge_limit: 100                                     # % limit nabití auta; značka na měřiči se kreslí jen pod 100
   image_scale: 2                                        # × velikost obrázku auta (roste nahoru a do stran, spodek zůstává); 0,5–3
   link: /dashboard-bmw                                  # kam vede dvojklep nebo podržení obrázku auta (cesta nebo https://…); "" = nikam
 wallbox:
@@ -161,13 +160,17 @@ wallbox:
   boost: switch.wallbox_boost                           # boost wallboxu (switch.…)
   block_charging: switch.wallbox_1_block_charging       # zablokovat nabíjení (bojler má přednost)
   block_by_automation: input_boolean.nabijeni_blokace_automatikou  # zapnuté, když blokaci drží automatika (bezpečné ukončení nabíjení); varování se pak neukazuje
-  prioritize_connected: switch.wallbox_2_prioritize_when_connected  # přednost před bojlerem, když je auto připojené
+  mode: input_select.nabijeni_auta_rezim                # režim Přetoky / Auto / Boost (pomocník HA); bez klíče přepínač Přetoky | Boost na boost
+  target_auto: input_number.nabijeni_auta_cil_auto      # „Nabít do“ v režimu Auto (% auta); značka na měřiči pod 100
+  target_boost: input_number.nabijeni_auta_cil_boost    # „Nabít do“ v Boostu (% auta)
+  step: sensor.nabijeni_auta_krok                       # kde je pravidlo Auto (kód); atribut posledni_konec „kód|čas“
+  priority: input_boolean.nabijeni_auta_prednost        # přednost auta před vodou (pravidlo Auto)
+  shadow: input_boolean.nabijeni_auta_stin              # stínový provoz pravidla Auto: dokud je zapnutý, karta volbu Auto nenabízí
   charging_power: number.wallbox_7_1_manual_charging_power  # nabíjecí výkon v boostu (number.…, W na fázi); k ověření
   phases: 3                                             # počet fází (celkový výkon = hodnota entity × fáze)
   power_min: 4200                                       # W nejnižší nabíjecí výkon (všechny fáze)
   power_max: 11100                                      # W nejvyšší nabíjecí výkon (všechny fáze)
   power_step: 300                                       # W krok nabíjecího výkonu (všechny fáze)
-  priority_min_sun: 200                                 # W slunce, od kterého karta hlásí, že přednostní auto čeká
 
 # ---------------------------------------------------------------------- teplá voda
 boiler:

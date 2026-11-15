@@ -40,10 +40,6 @@ export const sv: Texts = {
 
   alerts: {
     heading: "Varningar",
-    priorityWaiting: {
-      title: "Bilen är ansluten men laddar inte",
-      text: "Företräde före beredaren är på, men solen räcker troligen inte för att starta laddboxen.",
-    },
     blocked: { title: "Billaddningen är blockerad", text: "Bilen laddar inte, inte ens i Boost. Överskottet värmer vattnet." },
     boostWallbox: { title: "Laddboxens Boost är på", text: "Bilen får ladda även från nätet och batteriet." },
     boostBoilerGas: "Gasberedaren är på, så boost av solcellsberedaren är meningslös.",
@@ -107,11 +103,32 @@ export const sv: Texts = {
   car: {
     charging: (sources: string) => `Laddar ${sources}`,
     connectedIdle: "Ansluten, laddar inte",
+    connected: "Ansluten",
+    ending: "Avslutar laddningen",
+    autoMark: "Auto",
+    step: {
+      zablokovano: "laddning blockerad",
+      bez_dat: "Auto utan data",
+      auto_nabite: "laddad till målet",
+      dnes_hotovo: "2 försök i dag, igen efter anslutning",
+      ceka_baterie: "väntar på fullt batteri",
+      ceka_voda: "väntar på varmvatten",
+      ceka_slunce: "väntar på solen",
+      start: "Auto startar laddningen",
+      nabiji: "Auto startar laddningen",
+    } as Record<string, string>,
+    modeAuto: "själv efter solen",
+    target: "Ladda till",
+    targetLabel: "Ladda bilen till",
+    targetFull: "fullt",
+    targetReached: "redan laddad",
+    targetTime: (duration: string) => `cirka ${duration}`,
+    duration: (hours: number, minutes: number) => (hours ? `${hours} h${minutes ? ` ${minutes} min` : ""}` : `${minutes} min`),
     disconnected: "Urkopplad",
     openDashboard: "Öppna bilens dashboard",
-    chargeLevel: (value: string, limit: string | undefined) => `Bilens laddning ${value}${limit === undefined ? "" : `, gräns ${limit}`}`,
+    chargeLevel: (value: string, limit: string | undefined) => `Bilens laddning ${value}${limit === undefined ? "" : `, mål ${limit}`}`,
     range: "räckvidd",
-    limit: (value: string) => `gräns ${value}`,
+    limit: (value: string) => `mål ${value}`,
     mode: "Laddningsläge",
     modeLabel: "Bilens laddningsläge",
     modeSurplus: "bara från överskottet",
@@ -122,6 +139,7 @@ export const sv: Texts = {
     powerLabel: "Laddboxens laddeffekt",
   },
   boostOptions: { off: "Överskott", on: "Boost" },
+  chargeModes: { "Přetoky": "Överskott", Auto: "Auto", Boost: "Boost" } as Record<string, string>,
 
   wallbox: {
     title: "Laddbox",
@@ -135,6 +153,19 @@ export const sv: Texts = {
     priority: "Företräde före beredaren",
     priorityOn: "Bilen laddar före beredaren",
     priorityOff: "Bilen har inget företräde",
+    lastEnd: (time: string, why: string) => `slutade ${time}: ${why}`,
+    endReason: {
+      dno: "husets batteri på sin gräns",
+      slunce: "för lite sol",
+      cil: "bilen på målet",
+      odmitlo: "bilen slutade ta emot",
+      nezacalo: "bilen började inte ta emot",
+      odpojeno: "urkopplad",
+      blokace: "blockerad",
+      rezim: "läget ändrat",
+      uzivatel: "Boost avstängd för hand",
+      restart: "Home Assistant startade om",
+    } as Record<string, string>,
   },
 
   water: {

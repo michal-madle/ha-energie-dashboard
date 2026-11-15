@@ -45,13 +45,10 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
       // A block the automation holds for a moment (safe end of charging, uživatel 15. 11. 2026: „Q248 go h9-1“) is no deviation.
       const blocked = readText(this.hass, w.block_charging) === "on";
       const held = blocked && readText(this.hass, w.block_by_automation) === "on";
-      const priorityWaiting = readText(this.hass, w.prioritize_connected) === "on" && model.carLink === "connected" && (model.sun ?? 0) > s.num.wallbox.priority_min_sun;
       // A blocked wallbox and the Boost of the boiler are not usual (uživatel 2. 11. 2026); the Boost of the wallbox is a normal choice, not an alert.
-      if (blocked && !held) {
-        result.push({ kind: "warn", ...t.alerts.blocked });
-      } else if (!blocked && priorityWaiting) {
-        result.push({ kind: "info", ...t.alerts.priorityWaiting });
-      }
+      // The guess „slunce zřejmě nestačí“ is gone: why the car waits is the step of the rule Auto in the state of the car
+      // (CURRENT_SPEC.md, Důvod ve stavové větě a scénáře nabíjení; uživatel 14. 11. 2026: „Q243 ano“).
+      if (blocked && !held) result.push({ kind: "warn", ...t.alerts.blocked });
       if (readText(this.hass, s.entities.boiler.boost) === "on") {
         // With the gas tank on, the Boost of the PV boiler makes no sense.
         const tank = readText(this.hass, s.entities.tank.water_heater);

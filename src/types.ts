@@ -45,7 +45,17 @@ export interface EntitySections {
     block_charging?: EntityId;
     /** On while an automation holds the block itself (safe end of charging, CURRENT_SPEC.md, Upozornění): no warning then. */
     block_by_automation?: EntityId;
-    prioritize_connected?: EntityId;
+    /** Mode of charging (input_select Přetoky / Auto / Boost); without it the control is Přetoky | Boost on the boost switch. */
+    mode?: EntityId;
+    /** „Nabít do“ of the modes Auto and Boost (input_number, % of the car). */
+    target_auto?: EntityId;
+    target_boost?: EntityId;
+    /** Where the rule Auto is (sensor with a code, attribute posledni_konec „code|time“). */
+    step?: EntityId;
+    /** The car before the water (input_boolean the rule Auto reads). */
+    priority?: EntityId;
+    /** Shadow run of the rule Auto (input_boolean): while on, the card does not offer Auto. */
+    shadow?: EntityId;
     charging_power?: EntityId;
   };
   boiler: { power?: EntityId; temperature?: EntityId; boost?: EntityId; target_temperature?: EntityId; boost_target_temperature?: EntityId };
@@ -77,8 +87,8 @@ export type SectionName = keyof EntitySections;
 /** Numeric settings (limits, thresholds, scales); every one has a default (config.ts, NUMBERS). */
 export interface NumberSettings {
   battery: { reserve: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
-  car: { charge_limit: number; image_scale: number };
-  wallbox: { phases: number; power_min: number; power_max: number; power_step: number; priority_min_sun: number };
+  car: { image_scale: number };
+  wallbox: { phases: number; power_min: number; power_max: number; power_step: number };
   boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
   water: { gauge_min: number; gauge_max: number };
   tank: { temp_min: number; temp_max: number; temp_step: number };

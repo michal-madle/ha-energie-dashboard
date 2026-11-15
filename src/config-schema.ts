@@ -23,7 +23,8 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
   grid: { power: undefined, total_import: undefined, total_export: undefined },
   house: { power: undefined },
   car: { state_of_charge: undefined, range: undefined, capacity: undefined, image: "image", last_message: undefined },
-  wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", block_by_automation: "input_boolean", prioritize_connected: "switch", charging_power: "number" },
+  wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", block_by_automation: "input_boolean", charging_power: "number",
+    mode: "input_select", target_auto: "input_number", target_boost: "input_number", step: undefined, priority: "input_boolean", shadow: "input_boolean" },
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch" },
@@ -77,7 +78,6 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     imbalance_fault: range(100, 0, 1000, "mV cell imbalance above which it is called a fault"),
   },
   car: {
-    charge_limit: range(100, 1, 100, "% charge limit of the car (the marker is drawn below 100)"),
     image_scale: range(2, 0.5, 3, "× size of the car picture (grows up and to the sides, the bottom stays)"),
   },
   wallbox: {
@@ -85,7 +85,6 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     power_min: range(4200, 0, 100000, "W, lowest charging power (all phases)"),
     power_max: range(11100, 0, 100000, "W, highest charging power (all phases)"),
     power_step: range(300, 1, 100000, "W, step of the charging power (all phases)"),
-    priority_min_sun: range(200, 0, 100000, "W of sun above which a waiting car is reported"),
   },
   boiler: {
     target_min: range(20, 0, 100, "°C, lowest target"),

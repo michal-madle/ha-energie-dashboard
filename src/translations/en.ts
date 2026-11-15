@@ -40,10 +40,6 @@ export const en: Texts = {
 
   alerts: {
     heading: "Alerts",
-    priorityWaiting: {
-      title: "The car is connected but not charging",
-      text: "Priority over the boiler is on, but the sun is probably too weak to start the wallbox.",
-    },
     blocked: { title: "Car charging is blocked", text: "The car does not charge, not even in Boost. The surplus heats the water." },
     boostWallbox: { title: "Wallbox Boost is on", text: "The car may also charge from the grid and the battery." },
     boostBoilerGas: "The gas tank is on, so the Boost of the PV boiler makes no sense.",
@@ -107,11 +103,32 @@ export const en: Texts = {
   car: {
     charging: (sources: string) => `Charging ${sources}`,
     connectedIdle: "Plugged in, not charging",
+    connected: "Plugged in",
+    ending: "Ending the charge",
+    autoMark: "Auto",
+    step: {
+      zablokovano: "charging blocked",
+      bez_dat: "Auto without data",
+      auto_nabite: "charged to the target",
+      dnes_hotovo: "2 tries today, again after plugging in",
+      ceka_baterie: "waiting for a full battery",
+      ceka_voda: "waiting for hot water",
+      ceka_slunce: "waiting for the sun",
+      start: "Auto is starting the charge",
+      nabiji: "Auto is starting the charge",
+    } as Record<string, string>,
+    modeAuto: "by itself with the sun",
+    target: "Charge to",
+    targetLabel: "Charge the car to",
+    targetFull: "full",
+    targetReached: "already charged",
+    targetTime: (duration: string) => `about ${duration}`,
+    duration: (hours: number, minutes: number) => (hours ? `${hours} h${minutes ? ` ${minutes} min` : ""}` : `${minutes} min`),
     disconnected: "Unplugged",
     openDashboard: "Open the car dashboard",
-    chargeLevel: (value: string, limit: string | undefined) => `Car charge ${value}${limit === undefined ? "" : `, limit ${limit}`}`,
+    chargeLevel: (value: string, limit: string | undefined) => `Car charge ${value}${limit === undefined ? "" : `, target ${limit}`}`,
     range: "range",
-    limit: (value: string) => `limit ${value}`,
+    limit: (value: string) => `target ${value}`,
     mode: "Charging mode",
     modeLabel: "Car charging mode",
     modeSurplus: "from the surplus only",
@@ -122,6 +139,7 @@ export const en: Texts = {
     powerLabel: "Wallbox charging power",
   },
   boostOptions: { off: "Surplus", on: "Boost" },
+  chargeModes: { "Přetoky": "Surplus", Auto: "Auto", Boost: "Boost" } as Record<string, string>,
 
   wallbox: {
     title: "Wallbox",
@@ -135,6 +153,19 @@ export const en: Texts = {
     priority: "Priority over the boiler",
     priorityOn: "The car charges before the boiler",
     priorityOff: "The car has no priority",
+    lastEnd: (time: string, why: string) => `ended ${time}: ${why}`,
+    endReason: {
+      dno: "house battery at its floor",
+      slunce: "too little sun",
+      cil: "car at its target",
+      odmitlo: "car stopped taking power",
+      nezacalo: "car did not start taking power",
+      odpojeno: "unplugged",
+      blokace: "blocked",
+      rezim: "mode changed",
+      uzivatel: "Boost switched off by hand",
+      restart: "Home Assistant restarted",
+    } as Record<string, string>,
   },
 
   water: {

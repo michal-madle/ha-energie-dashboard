@@ -201,6 +201,11 @@ export const styles = css`
     color: color-mix(in srgb, var(--ed-warning) 45%, #000);
   }
 
+  /* „· Auto“: the house charges by itself, a normal state, so grey (uživatel 15. 11. 2026: „Q269 auto“). */
+  .auto-mark {
+    color: var(--ed-secondary);
+  }
+
   /* Beside the first line when the state has two. */
   .state .dot {
     flex: none;

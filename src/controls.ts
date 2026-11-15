@@ -63,10 +63,31 @@ export const withControls = <T extends Constructor<CardBase>>(Base: T) =>
       }
     }
 
+    /** A switch or an input_boolean (the priority of the car is a helper of the rule Auto): the service of its domain. */
     async setSwitch(id: string, on: boolean, what: string): Promise<void> {
       this._feedback = "";
       this.choose(id, on ? "on" : "off");
-      await this.call("switch", on ? "turn_on" : "turn_off", { entity_id: id }, id, what);
+      const domain = id.startsWith("input_boolean.") ? "input_boolean" : "switch";
+      await this.call(domain, on ? "turn_on" : "turn_off", { entity_id: id }, id, what);
+    }
+
+    /** The mode of charging (wallbox.mode, input_select): Home Assistant switches the Boost itself. */
+    async setChargeMode(id: string, option: string): Promise<void> {
+      const e = this._config!.entities.wallbox;
+      this._feedback = "";
+      // Boost with blocked charging would end at once: unblock first and say so (as with the Boost switch).
+      if (option === "Boost" && e.block_charging && readText(this.hass, e.block_charging) === "on") {
+        await this.setSwitch(e.block_charging, false, this.t.wallbox.block);
+        this._feedback = this.t.feedback.unblocked;
+      }
+      this.choose(id, option);
+      await this.call("input_select", "select_option", { entity_id: id, option }, id, this.t.car.modeLabel);
+    }
+
+    async setInputNumber(id: string, value: number, what: string): Promise<void> {
+      this._feedback = "";
+      this.choose(id, String(value));
+      await this.call("input_number", "set_value", { entity_id: id, value }, id, what);
     }
 
     async setBoost(kind: "wallbox" | "boiler", on: boolean): Promise<void> {

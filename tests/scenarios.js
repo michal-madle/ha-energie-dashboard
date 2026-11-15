@@ -30,7 +30,13 @@ const EVENING = {
   "switch.wallbox_boost": state("off"),
   "switch.wallbox_1_block_charging": state("off"),
   "input_boolean.nabijeni_blokace_automatikou": state("off"),
-  "switch.wallbox_2_prioritize_when_connected": state("on"),
+  // Helpers of the rule Auto (ha-config, yaml/packages/nabijeni_auta.yaml): mode, „Nabít do“, step, priority, shadow.
+  "input_select.nabijeni_auta_rezim": state("Přetoky", { options: ["Přetoky", "Auto", "Boost"] }),
+  "input_number.nabijeni_auta_cil_auto": state("75.0", { min: 50, max: 100, step: 5, unit_of_measurement: "%" }),
+  "input_number.nabijeni_auta_cil_boost": state("100.0", { min: 50, max: 100, step: 5, unit_of_measurement: "%" }),
+  "sensor.nabijeni_auta_krok": state("vypnuto", { posledni_konec: "" }),
+  "input_boolean.nabijeni_auta_prednost": state("on"),
+  "input_boolean.nabijeni_auta_stin": state("off"),
   "sensor.tuv_power_total": state("0", { unit_of_measurement: "W" }),
   "sensor.tuv_temperature": state("15", { unit_of_measurement: "°C" }),
   "switch.tuv_boost": state("off"),
@@ -96,6 +102,7 @@ const GRID = {
   "sensor.wallbox_total_power": state("5300", { unit_of_measurement: "W" }),
   "sensor.wallbox_charge_status": state("Charging"),
   "switch.wallbox_boost": state("on"),
+  "input_select.nabijeni_auta_rezim": state("Boost", { options: ["Přetoky", "Auto", "Boost"] }),
   "sensor.tuv_power_total": state("4000", { unit_of_measurement: "W" }),
   "switch.tuv_boost": state("on"),
 };

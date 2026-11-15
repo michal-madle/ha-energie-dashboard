@@ -54,10 +54,6 @@ export const cs = {
   // Alerts (Upozornění)
   alerts: {
     heading: "Upozornění",
-    priorityWaiting: {
-      title: "Auto je připojené, ale nenabíjí",
-      text: "Přednost před bojlerem je zapnutá, ale slunce zřejmě nestačí na rozjezd wallboxu.",
-    },
     blocked: { title: "Nabíjení auta je zablokované", text: "Auto nenabíjí, ani v Boostu. Přebytek ohřívá vodu." },
     boostWallbox: { title: "Boost wallboxu je zapnutý", text: "Auto smí nabíjet i ze sítě a z baterie." },
     boostBoilerGas: "Plynový zásobník je zapnutý, Boost bojleru FVE nemá smysl.",
@@ -125,11 +121,33 @@ export const cs = {
   car: {
     charging: (sources: string) => `Nabíjí ${sources}`,
     connectedIdle: "Připojeno, nenabíjí",
+    connected: "Připojeno",
+    // The rule Auto (CURRENT_SPEC.md, Důvod ve stavové větě a scénáře nabíjení): why the car waits, grey after „Připojeno“.
+    ending: "Končí nabíjení",
+    autoMark: "Auto",
+    step: {
+      zablokovano: "nabíjení zablokované",
+      bez_dat: "Auto bez dat",
+      auto_nabite: "nabito do cíle",
+      dnes_hotovo: "dnes už 2 pokusy, znovu po připojení",
+      ceka_baterie: "čeká na plnou baterii",
+      ceka_voda: "čeká na dohřátou vodu",
+      ceka_slunce: "čeká na slunce",
+      start: "Auto zapíná nabíjení",
+      nabiji: "Auto zapíná nabíjení",
+    } as Record<string, string>,
+    modeAuto: "sám podle slunce",
+    target: "Nabít do",
+    targetLabel: "Nabít auto do",
+    targetFull: "do plna",
+    targetReached: "už nabito",
+    targetTime: (duration: string) => `asi ${duration}`,
+    duration: (hours: number, minutes: number) => (hours ? `${hours} h${minutes ? ` ${minutes} min` : ""}` : `${minutes} min`),
     disconnected: "Odpojeno",
     openDashboard: "Otevřít dashboard auta",
-    chargeLevel: (value: string, limit: string | undefined) => `Nabití auta ${value}${limit === undefined ? "" : `, limit ${limit}`}`,
+    chargeLevel: (value: string, limit: string | undefined) => `Nabití auta ${value}${limit === undefined ? "" : `, cíl ${limit}`}`,
     range: "dojezd",
-    limit: (value: string) => `limit ${value}`,
+    limit: (value: string) => `cíl ${value}`,
     mode: "Režim nabíjení",
     modeLabel: "Režim nabíjení auta",
     modeSurplus: "jen z\u00a0přebytku",
@@ -143,6 +161,7 @@ export const cs = {
   },
   /** The two charging and heating modes (segmented control). */
   boostOptions: { off: "Přetoky", on: "Boost" },
+  chargeModes: { "Přetoky": "Přetoky", Auto: "Auto", Boost: "Boost" } as Record<string, string>,
 
   // Wallbox
   wallbox: {
@@ -157,6 +176,20 @@ export const cs = {
     priority: "Přednost před bojlerem",
     priorityOn: "Auto nabíjí dřív než bojler",
     priorityOff: "Auto nemá přednost",
+    // Why the Boost of the house ended last (input_text.nabijeni_auta_posledni_konec through wallbox.step, „code|time“).
+    lastEnd: (time: string, why: string) => `skončilo ${time}: ${why}`,
+    endReason: {
+      dno: "baterie domu na dně",
+      slunce: "málo slunce",
+      cil: "auto na cíli",
+      odmitlo: "auto přestalo brát",
+      nezacalo: "auto nezačalo brát",
+      odpojeno: "odpojeno",
+      blokace: "zablokováno",
+      rezim: "změna režimu",
+      uzivatel: "Boost vypnut ručně",
+      restart: "restart Home Assistantu",
+    } as Record<string, string>,
   },
 
   // Hot water panel
