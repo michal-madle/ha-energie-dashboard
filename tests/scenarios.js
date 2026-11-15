@@ -29,6 +29,7 @@ const EVENING = {
   "sensor.wallbox_charge_status": state("Waiting"),
   "switch.wallbox_boost": state("off"),
   "switch.wallbox_1_block_charging": state("off"),
+  "input_boolean.nabijeni_blokace_automatikou": state("off"),
   "switch.wallbox_2_prioritize_when_connected": state("on"),
   "sensor.tuv_power_total": state("0", { unit_of_measurement: "W" }),
   "sensor.tuv_temperature": state("15", { unit_of_measurement: "°C" }),

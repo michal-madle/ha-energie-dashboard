@@ -177,7 +177,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     await test.step("chybná hodnota zastaví kartu srozumitelnou chybou s názvem klíče; prázdná hodnota = výchozí", async () => {
       await open(page, "full");
       const cases: Array<[Record<string, unknown>, RegExp]> = [
-        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, prioritize_connected, charging_power, phases, /],
+        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, prioritize_connected, charging_power, phases, /],
         [{ wallbox: { boost: "sensor.wallbox_boost" } }, /wallbox\.boost must be a switch entity \(switch\.…\), not sensor\.wallbox_boost/],
         [{ wallbox: { charging_power: "sensor.wallbox_power" } }, /wallbox\.charging_power must be a number entity/],
         [{ boiler: { boost: "input_boolean.tuv_boost" } }, /boiler\.boost must be a switch entity/],
@@ -1022,6 +1022,12 @@ test.describe("upozornění (CURRENT_SPEC.md, Upozornění)", () => {
       await update(page, { "switch.wallbox_1_block_charging": "on" });
       expect(await alertTitles(page)).toEqual(["Nabíjení auta je zablokované"]);
       await expect(page.locator(".alert.warn")).toHaveCount(1);
+    });
+    await test.step("blokaci drží automatika (bezpečné ukončení nabíjení): žádné varování ani info", async () => {
+      await update(page, { "input_boolean.nabijeni_blokace_automatikou": "on" });
+      await expect(page.locator(".alerts")).toHaveCount(0);
+      await update(page, { "input_boolean.nabijeni_blokace_automatikou": "off" });
+      expect(await alertTitles(page)).toEqual(["Nabíjení auta je zablokované"]);
     });
     await test.step("Boost bojleru je varování (s plynovým zásobníkem „nemá smysl“); Boost wallboxu upozornění není", async () => {
       await open(page, "grid");

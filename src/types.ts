@@ -43,6 +43,8 @@ export interface EntitySections {
     status?: EntityId;
     boost?: EntityId;
     block_charging?: EntityId;
+    /** On while an automation holds the block itself (safe end of charging, CURRENT_SPEC.md, Upozornění): no warning then. */
+    block_by_automation?: EntityId;
     prioritize_connected?: EntityId;
     charging_power?: EntityId;
   };

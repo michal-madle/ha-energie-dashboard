@@ -23,7 +23,7 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
   grid: { power: undefined, total_import: undefined, total_export: undefined },
   house: { power: undefined },
   car: { state_of_charge: undefined, range: undefined, capacity: undefined, image: "image", last_message: undefined },
-  wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", prioritize_connected: "switch", charging_power: "number" },
+  wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", block_by_automation: "input_boolean", prioritize_connected: "switch", charging_power: "number" },
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch" },

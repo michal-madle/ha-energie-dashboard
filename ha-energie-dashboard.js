@@ -1992,62 +1992,62 @@ Ta.styles = [
       }
     `
 ];
-let dt = Ta;
+let ct = Ta;
 gt([
   z()
-], dt.prototype, "name");
+], ct.prototype, "name");
 gt([
   z()
-], dt.prototype, "text");
+], ct.prototype, "text");
 gt([
   z({ reflect: !0 })
-], dt.prototype, "state");
+], ct.prototype, "state");
 gt([
   z()
-], dt.prototype, "kind");
+], ct.prototype, "kind");
 gt([
   z({ type: Number })
-], dt.prototype, "count");
+], ct.prototype, "count");
 gt([
   z({ type: Boolean, reflect: !0 })
-], dt.prototype, "centered");
+], ct.prototype, "centered");
 gt([
   z({ type: Boolean })
-], dt.prototype, "disabled");
+], ct.prototype, "disabled");
 gt([
   z({ type: Boolean, reflect: !0 })
-], dt.prototype, "pending");
+], ct.prototype, "pending");
 gt([
   z({ type: Boolean })
-], dt.prototype, "pressed");
+], ct.prototype, "pressed");
 gt([
   z()
-], dt.prototype, "label");
+], ct.prototype, "label");
 gt([
   z({ type: Boolean })
-], dt.prototype, "guarded");
+], ct.prototype, "guarded");
 gt([
   z({ type: Number })
-], dt.prototype, "holdMs");
+], ct.prototype, "holdMs");
 gt([
   z({ type: Number })
-], dt.prototype, "doubleTapMs");
+], ct.prototype, "doubleTapMs");
 gt([
   z({ type: Number })
-], dt.prototype, "hintSeconds");
+], ct.prototype, "hintSeconds");
 gt([
   z()
-], dt.prototype, "hint");
+], ct.prototype, "hint");
 gt([
   z()
-], dt.prototype, "hintAlign");
+], ct.prototype, "hintAlign");
 function wn(a) {
   const t = [
     [`${a}-switch`, wt],
     [`${a}-segmented`, pt],
     [`${a}-slider`, ut],
     [`${a}-ring`, Wt],
-    [`${a}-tile`, dt],
+    [`${a}-tile`, ct],
     [`${a}-sheet`, jt]
   ];
   for (const [e, s] of t)
@@ -2060,12 +2060,12 @@ function _n(a) {
 function vt(a, t) {
   return t ? a?.states?.[t] : void 0;
 }
-function ht(a, t) {
+function dt(a, t) {
   const e = vt(a, t)?.state;
   return e === void 0 || _n(e) ? void 0 : e;
 }
 function Sn(a, t) {
-  const e = ht(a, t);
+  const e = dt(a, t);
   if (e === void 0)
     return;
   const s = Number(e);
@@ -3420,7 +3420,7 @@ function K(a) {
   return rt.percent(typeof a == "number" ? P(a) : a);
 }
 function Jt(a, t) {
-  const e = vt(a, t), s = ht(a, t);
+  const e = vt(a, t), s = dt(a, t);
   if (s === void 0) return;
   const n = Number(s);
   if (!Number.isFinite(n)) return;
@@ -3488,7 +3488,7 @@ function Fn(a, t, e) {
     carSoc: F(a, s.car.state_of_charge),
     carRange: F(a, s.car.range),
     boilTemp: F(a, s.boiler.temperature),
-    carLink: ks(ht(a, s.wallbox.status))
+    carLink: ks(dt(a, s.wallbox.status))
   };
   return Object.assign(C, Un(C, t.num.flows, e)), C;
 }
@@ -6017,7 +6017,7 @@ const Xe = {
   grid: { power: void 0, total_import: void 0, total_export: void 0 },
   house: { power: void 0 },
   car: { state_of_charge: void 0, range: void 0, capacity: void 0, image: "image", last_message: void 0 },
-  wallbox: { power: void 0, status: void 0, boost: "switch", block_charging: "switch", prioritize_connected: "switch", charging_power: "number" },
+  wallbox: { power: void 0, status: void 0, boost: "switch", block_charging: "switch", block_by_automation: "input_boolean", prioritize_connected: "switch", charging_power: "number" },
   boiler: { power: void 0, temperature: void 0, boost: "switch", target_temperature: "number", boost_target_temperature: "number" },
   tank: { water_heater: "water_heater" },
   mixing: { valve_c1: "switch", valve_c2: "switch" },
@@ -6518,7 +6518,7 @@ const _o = (a) => class extends a {
   /** The state shown: a just chosen value, until Home Assistant reports it. */
   shown(t) {
     if (t)
-      return this._optimistic[t] ?? ht(this.hass, t);
+      return this._optimistic[t] ?? dt(this.hass, t);
   }
   /** A change on its way (spec kitu, Odezva): chosen here, not yet reported by Home Assistant. The control pulses. */
   isPending(t) {
@@ -6546,7 +6546,7 @@ const _o = (a) => class extends a {
   }
   /** Calls a service on an entity that is reported; never on a missing or unavailable one (CURRENT_SPEC.md, Pojistky). */
   async call(t, e, s, n, o) {
-    if (!this.hass || ht(this.hass, n) === void 0)
+    if (!this.hass || dt(this.hass, n) === void 0)
       return this._feedback = this.t.feedback.noData(o), !1;
     try {
       return await this.hass.callService(t, e, s), !0;
@@ -6559,7 +6559,7 @@ const _o = (a) => class extends a {
   }
   async setBoost(t, e) {
     const s = this._config.entities, n = t === "wallbox" ? s.wallbox.boost : s.boiler.boost;
-    n && (this._feedback = "", t === "wallbox" && e && s.wallbox.block_charging && ht(this.hass, s.wallbox.block_charging) === "on" && (await this.setSwitch(s.wallbox.block_charging, !1, this.t.wallbox.block), this._feedback = this.t.feedback.unblocked), this.choose(n, e ? "on" : "off"), await this.call("switch", e ? "turn_on" : "turn_off", { entity_id: n }, n, t === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title));
+    n && (this._feedback = "", t === "wallbox" && e && s.wallbox.block_charging && dt(this.hass, s.wallbox.block_charging) === "on" && (await this.setSwitch(s.wallbox.block_charging, !1, this.t.wallbox.block), this._feedback = this.t.feedback.unblocked), this.choose(n, e ? "on" : "off"), await this.call("switch", e ? "turn_on" : "turn_off", { entity_id: n }, n, t === "wallbox" ? this.t.alerts.boostWallbox.title : this.t.alerts.boostBoiler.title));
   }
   async setNumber(t, e, s) {
     this._feedback = "", await this.call("number", "set_value", { entity_id: t, value: e }, t, s);
@@ -7950,7 +7950,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
       efficiency: s.efficiency / 100,
       eveningHour: s.evening_hour,
       morningHour: s.morning_hour,
-      car: n.wallbox.power && ks(ht(this.hass, n.wallbox.status)) !== "disconnected" ? { startSoc: s.car_start_soc, stopSoc: s.car_stop_soc, minSun: s.car_min_sun, watts: t.num.wallbox.power_min } : void 0
+      car: n.wallbox.power && ks(dt(this.hass, n.wallbox.status)) !== "disconnected" ? { startSoc: s.car_start_soc, stopSoc: s.car_stop_soc, minSun: s.car_min_sun, watts: t.num.wallbox.power_min } : void 0
     }), l = this.t.sun.outlook, h = [], c = it(e.today + s.evening_hour * Q);
     if (r.socAtEvening !== void 0 && (h.push({ color: "--ed-battery", label: l.batteryNow, value: K(Math.round(o)) }), h.push({ color: "--ed-sun", label: l.sunUntil(c), value: `≈ ${at(r.sunUntilEvening)} kWh` }), h.push({ color: "--ed-house", label: l.houseUntil(c), value: `≈ ${at(r.houseUntilEvening)} kWh` })), r.fullAt !== void 0 && h.push({ color: "--ed-battery", label: l.full, value: `≈ ${it(r.fullAt)}` }), r.socAtEvening !== void 0 && h.push({ color: "--ed-battery", label: l.batteryAt(it(e.today + s.evening_hour * Q)), value: `≈ ${K(Math.round(r.socAtEvening))}` }), r.carTotal > 0) {
       const d = this.carKwhPerKm(t);
@@ -8033,7 +8033,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   /** Whether the appliance runs: the helper of its cycle, otherwise (an appliance without helpers) its power above the threshold. */
   applianceOn(t, e) {
     if (t.running) {
-      const n = ht(this.hass, t.running);
+      const n = dt(this.hass, t.running);
       if (n === "on") return !0;
       if (n === "off") return !1;
     }
@@ -8079,7 +8079,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   // ----------------------------------------------------------------- alerts
   /** One alert for each appliance whose socket reports a fault, and for each one that runs longer than its `warn_after` (CURRENT_SPEC.md, Upozornění). */
   houseAlerts(t) {
-    const e = this.appliances(t).flatMap((n) => n.problems.filter((i) => ht(this.hass, i.id) === "on").map((i) => ({ kind: "warn", title: this.applianceName(n), text: this.t.house.problem[i.kind] }))), s = this.popupItems(t).flatMap((n) => {
+    const e = this.appliances(t).flatMap((n) => n.problems.filter((i) => dt(this.hass, i.id) === "on").map((i) => ({ kind: "warn", title: this.applianceName(n), text: this.t.house.problem[i.kind] }))), s = this.popupItems(t).flatMap((n) => {
       if (!n.warnAfter || !n.running || this.applianceOn(n, t) !== !0) return [];
       const o = this.cycleTimes(n, !0).minutes;
       return o !== void 0 && o >= n.warnAfter ? [{ kind: "warn", title: n.name, text: this.t.house.runningLong(pe(o)) }] : [];
@@ -8323,7 +8323,7 @@ const Zo = 5 * 6e4, Yo = 30 * 6e4, we = 12, ie = 2, ls = [
   renderApplianceRow(t, e, s) {
     const n = this.t, o = this._houseOpen.includes(t.name), i = F(this.hass, t.power), r = this.applianceOn(t, e), l = this.applianceStatus(t, e) ?? (r === !1 ? n.house.notRunning : T), h = i !== void 0 && ot(i, e.num.flows.idle_threshold), c = i === void 0 ? v`<span class="bat-value">${T}</span>` : h ? v`<span class="bat-value">${nt(i, s)}</span>` : r ? v`<span class="bat-value">${P(i)}\u00a0W</span>` : this.renderIdleMark(), d = this.cycleTimes(t, r), p = this.cycleKwh(t), b = /* @__PURE__ */ new Date();
     b.setHours(0, 0, 0, 0);
-    const y = t.running ? this._houseCycles?.byId[t.running] : void 0, f = y ? y.starts.filter((D) => D >= b.getTime()).length : void 0, u = Math.max(0, this.listed(e).findIndex((D) => D.name === t.name)), g = re[u % re.length], m = (D, E) => `${this.stamp(D)} – ${E}`, x = t.running && d.start !== void 0 ? v`<div class="house-line wrap"><span>${r ? n.house.currentCycle : n.house.lastCycle}</span><b>${Lt([m(d.start, r ? n.house.axisTo : this.stamp(d.end ?? d.start, d.start)), ...p !== void 0 ? [`${at(p)} kWh`] : []])}</b></div>` : t.running && d.end !== void 0 && !r ? v`<div class="house-line wrap"><span>${n.house.lastCycle}</span><b>${n.house.endedAt(this.stamp(d.end))}</b></div>` : S, _ = this.renderDayChart([{ name: this.applianceName(t), energy: t.energy, power: t.power, color: g }]), $ = t.energy ? this._houseToday?.apps?.[t.energy] : void 0, O = t.plug ? ht(this.hass, t.plug) : void 0, A = t.problems.find((D) => ht(this.hass, D.id) === "on"), M = (D, E) => v`<div class="house-line"><span>${D}</span><b>${Nt(E)}</b></div>`;
+    const y = t.running ? this._houseCycles?.byId[t.running] : void 0, f = y ? y.starts.filter((D) => D >= b.getTime()).length : void 0, u = Math.max(0, this.listed(e).findIndex((D) => D.name === t.name)), g = re[u % re.length], m = (D, E) => `${this.stamp(D)} – ${E}`, x = t.running && d.start !== void 0 ? v`<div class="house-line wrap"><span>${r ? n.house.currentCycle : n.house.lastCycle}</span><b>${Lt([m(d.start, r ? n.house.axisTo : this.stamp(d.end ?? d.start, d.start)), ...p !== void 0 ? [`${at(p)} kWh`] : []])}</b></div>` : t.running && d.end !== void 0 && !r ? v`<div class="house-line wrap"><span>${n.house.lastCycle}</span><b>${n.house.endedAt(this.stamp(d.end))}</b></div>` : S, _ = this.renderDayChart([{ name: this.applianceName(t), energy: t.energy, power: t.power, color: g }]), $ = t.energy ? this._houseToday?.apps?.[t.energy] : void 0, O = t.plug ? dt(this.hass, t.plug) : void 0, A = t.problems.find((D) => dt(this.hass, D.id) === "on"), M = (D, E) => v`<div class="house-line"><span>${D}</span><b>${Nt(E)}</b></div>`;
     return v`<div class="bat-card flush house-item">
         <button type="button" class="bat-row" aria-expanded=${o ? "true" : "false"} @click=${() => {
       this._houseOpen = o ? this._houseOpen.filter((D) => D !== t.name) : [...this._houseOpen, t.name];
@@ -8467,7 +8467,7 @@ function ni(a, t = fe, e = mt) {
   );
   return { width: a, tile: { w: s, h: n }, gap: o, height: r, left: h, right: l, xa: s - 8, xb: a - s + 8 };
 }
-const ct = (a) => a.toFixed(1);
+const ht = (a) => a.toFixed(1);
 function oi(a, t, e) {
   const s = a.filter((u) => u.to in t.right);
   if (!s.length) return [];
@@ -8500,8 +8500,8 @@ function oi(a, t, e) {
       to: u.to,
       watts: u.watts,
       thickness: g,
-      d: `M${b} ${ct(m)} C${ct(f)} ${ct(m)} ${ct(f)} ${ct(_)} ${y} ${ct(_)} L${y} ${ct($)} C${ct(f)} ${ct($)} ${ct(f)} ${ct(x)} ${b} ${ct(x)} Z`,
-      centre: `M${b} ${ct(m + g / 2)} C${ct(f)} ${ct(m + g / 2)} ${ct(f)} ${ct(_ + g / 2)} ${y} ${ct(_ + g / 2)}`
+      d: `M${b} ${ht(m)} C${ht(f)} ${ht(m)} ${ht(f)} ${ht(_)} ${y} ${ht(_)} L${y} ${ht($)} C${ht(f)} ${ht($)} ${ht(f)} ${ht(x)} ${b} ${ht(x)} Z`,
+      centre: `M${b} ${ht(m + g / 2)} C${ht(f)} ${ht(m + g / 2)} ${ht(f)} ${ht(_ + g / 2)} ${y} ${ht(_ + g / 2)}`
     };
   });
 }
@@ -8533,10 +8533,10 @@ const et = {
   // ----------------------------------------------------------------- alerts
   /** Deviations only (CURRENT_SPEC.md, Upozornění): a battery on its reserve and a house on the grid are not alerts. */
   alerts(t, e) {
-    const s = this.t, n = t.entities.wallbox, o = [], i = ht(this.hass, n.block_charging) === "on", r = ht(this.hass, n.prioritize_connected) === "on" && e.carLink === "connected" && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
-    if (i ? o.push({ kind: "warn", ...s.alerts.blocked }) : r && o.push({ kind: "info", ...s.alerts.priorityWaiting }), ht(this.hass, t.entities.boiler.boost) === "on") {
-      const l = ht(this.hass, t.entities.tank.water_heater);
-      o.push({ kind: "warn", title: s.alerts.boostBoiler.title, text: l !== void 0 && l !== "off" ? s.alerts.boostBoilerGas : s.alerts.boostBoiler.text });
+    const s = this.t, n = t.entities.wallbox, o = [], i = dt(this.hass, n.block_charging) === "on", r = i && dt(this.hass, n.block_by_automation) === "on", l = dt(this.hass, n.prioritize_connected) === "on" && e.carLink === "connected" && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
+    if (i && !r ? o.push({ kind: "warn", ...s.alerts.blocked }) : !i && l && o.push({ kind: "info", ...s.alerts.priorityWaiting }), dt(this.hass, t.entities.boiler.boost) === "on") {
+      const h = dt(this.hass, t.entities.tank.water_heater);
+      o.push({ kind: "warn", title: s.alerts.boostBoiler.title, text: h !== void 0 && h !== "off" ? s.alerts.boostBoilerGas : s.alerts.boostBoiler.text });
     }
     return o.push(...this.houseAlerts(t)), o;
   }
@@ -8787,7 +8787,7 @@ const et = {
     t && (this._carHint = !1, t.startsWith("/") ? (window.history.pushState(null, "", t), window.dispatchEvent(new CustomEvent("location-changed", { detail: { replace: !1 } }))) : window.open(t, "_blank", "noopener"));
   }
   renderCar(t, e) {
-    const s = this.t, n = t.entities, o = t.num.flows, i = t.num.car.charge_limit, r = e.carLink, l = ot(e.car, o.idle_threshold) && r !== "disconnected", h = va(e.loadShare.car, o, s), c = ht(this.hass, n.wallbox.block_charging) === "on", d = this.shown(n.wallbox.boost), p = d === "on" ? `var(${Xt[h.main]})` : this.sourceColor(h), b = ht(this.hass, n.wallbox.prioritize_connected) === "on" && r === "connected" && !c && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
+    const s = this.t, n = t.entities, o = t.num.flows, i = t.num.car.charge_limit, r = e.carLink, l = ot(e.car, o.idle_threshold) && r !== "disconnected", h = va(e.loadShare.car, o, s), c = dt(this.hass, n.wallbox.block_charging) === "on", d = this.shown(n.wallbox.boost), p = d === "on" ? `var(${Xt[h.main]})` : this.sourceColor(h), b = dt(this.hass, n.wallbox.prioritize_connected) === "on" && r === "connected" && !c && (e.sun ?? 0) > t.num.wallbox.priority_min_sun;
     let y, f;
     const u = d === "on" ? [this.boostMark()] : [];
     l ? (y = [s.car.charging(h.text), ...u], f = p) : r === "connected" || r === "charging" ? (y = [s.car.connectedIdle, ...u], f = b ? "var(--ed-warning)" : void 0) : r === "disconnected" && (y = s.car.disconnected);
@@ -8862,7 +8862,7 @@ const et = {
       </div></div>`;
   }
   renderWallboxGroup(t, e, s, n, o) {
-    const i = this.t, r = t.entities.wallbox, l = !!this._open.wallbox, h = !!(r.block_charging || r.prioritize_connected), c = e.carLink, d = s ? v`<span>${i.wallbox.charging} </span><b style="--c:${n}">${nt(e.car ?? 0, o)}</b>` : c === "connected" || c === "charging" ? v`${i.wallbox.idle}` : c === "disconnected" ? v`${i.wallbox.disconnected}` : v`${T}`, p = Wn(ht(this.hass, t.entities.car.last_message), this._now, i), b = this.shown(r.block_charging), y = this.shown(r.prioritize_connected);
+    const i = this.t, r = t.entities.wallbox, l = !!this._open.wallbox, h = !!(r.block_charging || r.prioritize_connected), c = e.carLink, d = s ? v`<span>${i.wallbox.charging} </span><b style="--c:${n}">${nt(e.car ?? 0, o)}</b>` : c === "connected" || c === "charging" ? v`${i.wallbox.idle}` : c === "disconnected" ? v`${i.wallbox.disconnected}` : v`${T}`, p = Wn(dt(this.hass, t.entities.car.last_message), this._now, i), b = this.shown(r.block_charging), y = this.shown(r.prioritize_connected);
     return v`<ul class="group">
         <li class=${l ? "open" : ""}>
           <button type="button" class="row row-btn" aria-expanded=${l ? "true" : "false"} ?disabled=${!h} @click=${() => this.toggle("wallbox")}>
@@ -9076,4 +9076,4 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   description: Ne(Tn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.2.4 · 2026-11-14 04:46 UTC · po 4309852 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.2.4 · 2026-11-15 11:02 UTC · po 8bd9baa ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

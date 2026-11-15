@@ -160,6 +160,7 @@ wallbox:
   status: sensor.wallbox_charge_status                  # Disconnected / Waiting / Charging
   boost: switch.wallbox_boost                           # boost wallboxu (switch.…)
   block_charging: switch.wallbox_1_block_charging       # zablokovat nabíjení (bojler má přednost)
+  block_by_automation: input_boolean.nabijeni_blokace_automatikou  # zapnuté, když blokaci drží automatika (bezpečné ukončení nabíjení); varování se pak neukazuje
   prioritize_connected: switch.wallbox_2_prioritize_when_connected  # přednost před bojlerem, když je auto připojené
   charging_power: number.wallbox_7_1_manual_charging_power  # nabíjecí výkon v boostu (number.…, W na fázi); k ověření
   phases: 3                                             # počet fází (celkový výkon = hodnota entity × fáze)
