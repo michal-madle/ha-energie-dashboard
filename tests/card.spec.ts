@@ -1114,9 +1114,21 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await update(page, { "input_select.nabijeni_auta_rezim": "Auto" });
       await expect(page.locator("ed-segmented").first().getByRole("radio")).toHaveText(["Přetoky", "Auto", "Boost"]);
     });
-    await test.step("Nastavení nabíjení: jeden řádek jen v Auto a v Boostu, posuvníky po rozbalení; pod nabitím cíl a čas jen při nabíjení", async () => {
+    await test.step("Nastavení nabíjení: jeden řádek ve všech režimech (v Přetokách jen rozjezd), posuvníky po rozbalení; pod nabitím cíl a čas jen při nabíjení", async () => {
       await open(page, "full");
-      await expect(page.locator(".charge-settings")).toBeHidden();
+      // In Přetoky only the start of the AZ Router from the surplus, in total kW (Q305): 1100 W per phase = 3,3 kW.
+      await expect(page.locator(".charge-settings .rowbtn-value")).toHaveText("rozjezd 3,3 kW");
+      await page.locator(".charge-settings .rowbtn").click();
+      const start = page.locator('ed-slider[label="Přetok, od kterého AZ Router rozjede nabíjení"]');
+      await expect(start).toBeVisible();
+      await start.locator("input").evaluate((input: HTMLInputElement) => {
+        input.value = "2.7";
+        input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+      expect(await calls(page)).toEqual([{ domain: "number", service: "set_value", data: { entity_id: "number.wallbox_6_4_trigger_on_power", value: 900 } }]);
+      await page.locator(".charge-settings .rowbtn").click();
+      await page.evaluate(() => { (window as unknown as { __test: { calls: unknown[] } }).__test.calls.length = 0; });
       await expect(page.locator(".eta")).toHaveText("");
       await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "sensor.vin_stav_nabiti_predikce_integrace": "50.2", "sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana": "36.7" });
       await expect(page.locator(".charge-settings .rowbtn-value")).toHaveText("do 75 %");
@@ -1954,7 +1966,7 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
   const noCzech = async (page: Page, at: string) => expect((await allText(page)).filter((text) => CZECH.test(text)), at).toEqual([]);
 
   const expandEverything = async (page: Page) => {
-    // Rows folded away (Nastavení nabíjení in Přetoky) are not there to expand.
+    // Folded rows (Nastavení nabíjení, cílová teplota) are expanded so their sliders are checked too.
     for (const row of await page.locator(".row-btn:visible, .rowbtn:visible").all()) {
       if ((await row.getAttribute("aria-expanded")) === "false") await row.click();
     }

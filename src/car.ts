@@ -284,13 +284,20 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const power = manualBoost && w.charging_power ? readNumber(this.hass, w.charging_power) : undefined;
       const showPower = manualBoost && !!w.charging_power;
       const targetId = w.mode ? this.targetId(s, mode) : undefined;
-      // In Přetoky the row folds away smoothly instead of disappearing (CURRENT_SPEC.md, Klidné přepínání režimů).
-      const shown = showPower || !!targetId;
+      // The start of the AZ Router from the surplus in total kW (uživatel 16. 11. 2026: „Jsou to hodnoty na 1f, což nechci me
+      // zajímá celkový výkon“; „Q305 ano“); not in Boost, which ignores it. STOP is not offered: Home Assistant reads it as 0
+      // while the AZ cloud shows −800 W, so a write would change it (Q300).
+      const startId = !manualBoost ? w.solar_start : undefined;
+      const start = startId ? readNumber(this.hass, startId) : undefined;
+      // Without anything to set the row folds away smoothly instead of disappearing (CURRENT_SPEC.md, Klidné přepínání režimů).
+      const shown = showPower || !!targetId || !!startId;
       const open = !!this._open.charge;
       const target = targetId ? Number(this.shown(targetId)) : NaN;
       const parts = [
         ...(showPower ? [html`${t.car.powerShort} <b>${power === undefined ? this.noData() : `${formatNumber((power * s.num.wallbox.phases) / 1000, 1)} kW`}</b>`] : []),
         ...(targetId ? [html`${t.car.targetShort} <b>${Number.isFinite(target) ? formatPercent(target) : this.noData()}</b>`] : []),
+        // The start only when it is the one setting (Přetoky): next to the target the summary wrapped to two lines at 393 px.
+        ...(startId && !targetId ? [html`${t.car.startShort} <b>${start === undefined ? this.noData() : `${formatNumber((start * s.num.wallbox.phases) / 1000, 1)} kW`}</b>`] : []),
       ];
       return html`<div class="fold ${shown ? "open" : ""}" ?inert=${!shown}><div><div class="charge-settings">
         <button type="button" class="rowbtn" aria-expanded=${open ? "true" : "false"} @click=${() => this.toggle("charge")}>
@@ -301,6 +308,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         <div class="fold ${open && shown ? "open" : ""}" ?inert=${!open || !shown}><div class="charge-fields">
           ${showPower ? this.renderPowerField(s) : nothing}
           ${targetId ? this.renderTargetField(s, mode) : nothing}
+          ${startId ? this.renderStartField(s, startId) : nothing}
         </div></div>
       </div></div></div>`;
     }
@@ -445,6 +453,27 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
     }
 
     /** Charging power in boost: the card shows the total of all phases, the entity holds the power of one phase. */
+    /** „Rozjezd z přetoku“: the START of the AZ Router per phase × phases, written back ÷ phases (100 W per phase steps). */
+    renderStartField(s: Settings, id: string): TemplateResult {
+      const t = this.t;
+      const { phases, power_max } = s.num.wallbox;
+      const perPhase = readNumber(this.hass, id);
+      const total = perPhase === undefined ? undefined : (perPhase * phases) / 1000;
+      const step = (100 * phases) / 1000;
+      const max = power_max / 1000;
+      return html`<div class="field">
+          <span class="field-label">${t.car.start}</span><span class="field-value">${total === undefined ? NO_DATA : formatNumber(total, 1)}<small> kW</small></span>
+          <ed-slider
+            .min=${step} .max=${max} .step=${step} .tickStep=${max * 2 /* no ticks: they would not sit on the usual values */} .value=${total ?? step}
+            label=${t.car.startLabel} valueText=${total === undefined ? t.noData : `${formatNumber(total, 1)} kW`}
+            minLabel="${formatNumber(step, 1)} kW" maxLabel="${formatNumber(max, 1)} kW"
+            ?disabled=${total === undefined}
+            @hdk-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases / 100) * 100, t.car.start)}
+          ></ed-slider>
+          <p class="hint">${t.car.startHint}</p>
+        </div>`;
+    }
+
     renderPowerField(s: Settings): TemplateResult | typeof nothing {
       const id = s.entities.wallbox.charging_power;
       if (!id) return nothing;
