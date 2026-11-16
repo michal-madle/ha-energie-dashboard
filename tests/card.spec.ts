@@ -149,7 +149,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       for (const key of ["titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
         battery: ["reserve", "full"], car: ["image_scale"],
-        wallbox: ["phases", "power_min", "power_max", "power_step", "boost_grace"],
+        wallbox: ["phases", "power_min", "power_max", "power_step", "start_min", "start_max", "boost_grace"],
         boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes", "hot_margin"],
         tank: ["temp_min", "temp_max", "temp_step"],
       })) for (const key of keys) delete bare[section][key];
@@ -1121,6 +1121,8 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await page.locator(".charge-settings .rowbtn").click();
       const start = page.locator('ed-slider[label="Přetok, od kterého AZ Router rozjede nabíjení"]');
       await expect(start).toBeVisible();
+      // Range 1,2–4,2 kW (uživatel 16. 11. 2026: „1.2-4.2 na rozjezd musi stacit“).
+      expect(await start.locator("input").evaluate((input: HTMLInputElement) => [input.min, input.max])).toEqual(["1.2", "4.2"]);
       await start.locator("input").evaluate((input: HTMLInputElement) => {
         input.value = "2.7";
         input.dispatchEvent(new Event("input", { bubbles: true }));

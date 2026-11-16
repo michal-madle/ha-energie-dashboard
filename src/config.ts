@@ -312,6 +312,7 @@ function titles(config: DashboardConfig): Partial<Record<keyof Titles, Localized
 function checkOrder(num: NumberSettings): void {
   const pairs: Array<[number, number, string, string, boolean]> = [
     [num.wallbox.power_min, num.wallbox.power_max, "wallbox.power_min", "wallbox.power_max", true],
+    [num.wallbox.start_min, num.wallbox.start_max, "wallbox.start_min", "wallbox.start_max", true],
     [num.boiler.target_min, num.boiler.target_max, "boiler.target_min", "boiler.target_max", true],
     [num.water.gauge_min, num.water.gauge_max, "water.gauge_min", "water.gauge_max", true],
     [num.tank.temp_min, num.tank.temp_max, "tank.temp_min", "tank.temp_max", true],

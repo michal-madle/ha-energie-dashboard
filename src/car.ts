@@ -456,17 +456,19 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
     /** „Rozjezd z přetoku“: the START of the AZ Router per phase × phases, written back ÷ phases (100 W per phase steps). */
     renderStartField(s: Settings, id: string): TemplateResult {
       const t = this.t;
-      const { phases, power_max } = s.num.wallbox;
+      const { phases, start_min, start_max } = s.num.wallbox;
       const perPhase = readNumber(this.hass, id);
       const total = perPhase === undefined ? undefined : (perPhase * phases) / 1000;
       const step = (100 * phases) / 1000;
-      const max = power_max / 1000;
+      // Range 1,2–4,2 kW (uživatel 16. 11. 2026: „1.2-4.2 na rozjezd musi stacit“): above 4,2 kW the start is no real choice.
+      const min = start_min / 1000;
+      const max = start_max / 1000;
       return html`<div class="field">
           <span class="field-label">${t.car.start}</span><span class="field-value">${total === undefined ? NO_DATA : formatNumber(total, 1)}<small> kW</small></span>
           <ed-slider
-            .min=${step} .max=${max} .step=${step} .tickStep=${max * 2 /* no ticks: they would not sit on the usual values */} .value=${total ?? step}
+            .min=${min} .max=${max} .step=${step} .tickStep=${max * 2 /* no ticks: they would not sit on the usual values */} .value=${total ?? min}
             label=${t.car.startLabel} valueText=${total === undefined ? t.noData : `${formatNumber(total, 1)} kW`}
-            minLabel="${formatNumber(step, 1)} kW" maxLabel="${formatNumber(max, 1)} kW"
+            minLabel="${formatNumber(min, 1)} kW" maxLabel="${formatNumber(max, 1)} kW"
             ?disabled=${total === undefined}
             @hdk-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases / 100) * 100, t.car.start)}
           ></ed-slider>

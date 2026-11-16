@@ -179,6 +179,8 @@ wallbox:
   power_min: 4200                                       # W nejnižší nabíjecí výkon (všechny fáze)
   power_max: 11100                                      # W nejvyšší nabíjecí výkon (všechny fáze)
   power_step: 300                                       # W krok nabíjecího výkonu (všechny fáze)
+  start_min: 1200                                       # W nejnižší „Rozjezd z přetoku“ (všechny fáze)
+  start_max: 4200                                       # W nejvyšší „Rozjezd z přetoku“ (všechny fáze)
   boost_grace: 120                                      # s po zapnutí Boostu, než karta řekne „auto nebere“ (auto se chvíli rozjíždí)
 
 # ---------------------------------------------------------------------- teplá voda

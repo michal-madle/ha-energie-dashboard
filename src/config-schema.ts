@@ -87,6 +87,8 @@ export const NUMBERS: { [Section in keyof NumberSettings]: { [Key in keyof Numbe
     power_min: range(4200, 0, 100000, "W, lowest charging power (all phases)"),
     power_max: range(11100, 0, 100000, "W, highest charging power (all phases)"),
     power_step: range(300, 1, 100000, "W, step of the charging power (all phases)"),
+    start_min: range(1200, 0, 100000, "W, lowest „Rozjezd z přetoku“ (all phases)"),
+    start_max: range(4200, 0, 100000, "W, highest „Rozjezd z přetoku“ (all phases)"),
     boost_grace: range(120, 0, 3600, "s after Boost is switched on before the car counts as not taking it (the reason „auto nebere“)", true),
   },
   boiler: {
