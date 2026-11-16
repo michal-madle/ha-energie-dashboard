@@ -163,6 +163,20 @@ export const cs = {
   boostOptions: { off: "Přetoky", on: "Boost" },
   chargeModes: { "Přetoky": "Přetoky", Auto: "Auto", Boost: "Boost" } as Record<string, string>,
 
+  /** Why a device does not take the surplus (src/reasons.ts), grey after its state. */
+  reasons: {
+    blocked: "nabíjení zablokované",
+    solarBlocked: "přetoky zablokované",
+    outsideWindow: (window: string) => `mimo okno ${window}`,
+    noSun: "bez slunce",
+    waterFirst: "přetok ohřívá vodu",
+    batteryCharges: "slunce nabíjí baterii",
+    littleSurplus: "málo přetoku",
+    heated: "nahřáto",
+    batteryFull: "baterie plná",
+    inverterMode: (mode: string) => `střídač v režimu ${mode}`,
+    inverterModes: { off_grid: "Off-grid", backup: "Záloha", eco: "Eco", peak_shaving: "Peak shaving" } as Record<string, string>,
+  },
   // Wallbox
   wallbox: {
     title: "Wallbox",
@@ -177,7 +191,7 @@ export const cs = {
     priorityOn: "Auto nabíjí dřív než bojler",
     priorityOff: "Auto nemá přednost",
     // Why the Boost of the house ended last (input_text.nabijeni_auta_posledni_konec through wallbox.step, „code|time“).
-    lastEnd: (time: string, why: string) => `skončilo ${time}: ${why}`,
+    lastEnd: (time: string) => `skončilo ${time}`,
     endReason: {
       dno: "baterie domu na dně",
       slunce: "málo slunce",

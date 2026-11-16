@@ -5,7 +5,8 @@ import { isOn, mixingState, sourceText } from "./model";
 import type { FlowModel } from "./model";
 import { arcSvg } from "./gauge";
 import type { Settings } from "./types";
-import { entityState, formatNumber, formatPower, powerUnit, readNumber } from "./utils";
+import { entityState, formatNumber, formatPower, powerUnit, readNumber, readText } from "./utils";
+import { boilerReason } from "./reasons";
 import type { PowerUnit } from "./utils";
 import type { SegmentOption } from "ha-dashboard-kit/controls";
 import { ICON } from "./icons";
@@ -29,7 +30,11 @@ export const withWater = <T extends Constructor<Controlled>>(Base: T) =>
 
       let stateText: string | unknown[] | undefined;
       if (heating) stateText = [t.water.boilerHeats(src.text), ...(boostOn ? [this.boostMark()] : [])];
-      else if (model.boil !== undefined) stateText = [t.water.noHeating, ...(boostOn ? [this.boostMark()] : [])];
+      else if (model.boil !== undefined) {
+        // Why the surplus goes to the grid and not to the water (H8, src/reasons.ts); in Boost the mark only.
+        const why = boostOn ? undefined : boilerReason((id) => readText(this.hass, id), s, model, t, this._now);
+        stateText = [t.water.noHeating, ...(boostOn ? [this.boostMark()] : why ? [why] : [])];
+      }
 
       return html`<section class="panel" aria-labelledby="h-water">
         <div class="head"><h2 id="h-water">${this.pickText(s.titles.water) ?? t.titles.water}</h2>${this.stateLine(stateText, heating ? srcColor : undefined)}</div>

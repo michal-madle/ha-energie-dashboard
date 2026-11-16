@@ -141,6 +141,19 @@ export const sv: Texts = {
   boostOptions: { off: "Överskott", on: "Boost" },
   chargeModes: { "Přetoky": "Överskott", Auto: "Auto", Boost: "Boost" } as Record<string, string>,
 
+  reasons: {
+    blocked: "laddning blockerad",
+    solarBlocked: "solladdning blockerad",
+    outsideWindow: (window: string) => `utanför fönstret ${window}`,
+    noSun: "ingen sol",
+    waterFirst: "överskottet värmer vattnet",
+    batteryCharges: "solen laddar batteriet",
+    littleSurplus: "för lite överskott",
+    heated: "uppvärmt",
+    batteryFull: "batteriet fullt",
+    inverterMode: (mode: string) => `växelriktaren i läge ${mode}`,
+    inverterModes: { off_grid: "Off-grid", backup: "Reserv", eco: "Eco", peak_shaving: "Peak shaving" } as Record<string, string>,
+  },
   wallbox: {
     title: "Laddbox",
     charging: "laddar",
@@ -153,7 +166,7 @@ export const sv: Texts = {
     priority: "Företräde före beredaren",
     priorityOn: "Bilen laddar före beredaren",
     priorityOff: "Bilen har inget företräde",
-    lastEnd: (time: string, why: string) => `slutade ${time}: ${why}`,
+    lastEnd: (time: string) => `slutade ${time}`,
     endReason: {
       dno: "husets batteri på sin gräns",
       slunce: "för lite sol",

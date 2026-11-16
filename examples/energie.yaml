@@ -33,6 +33,7 @@ battery:
   state_of_charge: sensor.goodwe_battery_state_of_charge  # nabití baterie (%)
   depth_of_discharge: number.goodwe_depth_of_discharge_on_grid  # hloubka vybití ze střídače (%); rezerva = 100 − hodnota (80 % → rezerva 20 %)
   reserve: 20                                           # % rezerva baterie, jen když střídač hloubku vybití nehlásí (pod ní je výplň dlaždice Baterie oranžová)
+  full: 99                                              # % od kterého je baterie plná (důvod „baterie plná“ za „Přebytek jde do sítě“; uživatel: plná od 99 %)
   # Detail baterie (klepnutí na dlaždici Baterie → Detail baterie); všechno je volitelné, bez entity je hodnota „––“
   state_of_health: sensor.goodwe_battery_state_of_health  # zdraví baterie SOH (%)
   voltage: sensor.goodwe_battery_voltage                # napětí baterie (V)
@@ -51,6 +52,7 @@ battery:
   discharge_limit: sensor.goodwe_battery_discharge_limit  # limit vybíjení (A)
   error: sensor.goodwe_battery_error                    # chyba baterie, prázdné = žádná
   warning: sensor.goodwe_battery_warning                # varování baterie, prázdné = žádné
+  operation_mode: select.goodwe_inverter_operation_mode  # režim střídače (select.…); jiný než general se napíše za „Přebytek jde do sítě“
   capacity: 11.2                                        # kWh využitelná kapacita (odhady času, ekvivalentní cykly, zátěž v C)
   imbalance_good: 15                                    # mV rozbalancování článků, do kterého je „výborné“ (návrh)
   imbalance_warn: 30                                    # mV rozbalancování, do kterého je „dobré“ (nad tím „pozor“) (návrh)
@@ -166,6 +168,10 @@ wallbox:
   step: sensor.nabijeni_auta_krok                       # kde je pravidlo Auto (kód); atribut posledni_konec „kód|čas“
   priority: input_boolean.nabijeni_auta_prednost        # přednost auta před vodou (pravidlo Auto)
   shadow: input_boolean.nabijeni_auta_stin              # stínový provoz pravidla Auto: dokud je zapnutý, karta volbu Auto nenabízí
+  block_solar: switch.wallbox_3_block_solar_charging    # blokace nabíjení z přetoků (AZ Router); důvod „přetoky zablokované“
+  window: switch.wallbox_6_1_allow_solar_charging_only_in_time_window  # nabíjení z přetoků jen v okně (AZ Router)
+  window_start: time.wallbox_6_2_start_time             # začátek okna (time.…); důvod „mimo okno 8:00–17:30“
+  window_end: time.wallbox_6_3_stop_time                # konec okna (time.…)
   charging_power: number.wallbox_7_1_manual_charging_power  # nabíjecí výkon v boostu (number.…, W na fázi); k ověření
   phases: 3                                             # počet fází (celkový výkon = hodnota entity × fáze)
   power_min: 4200                                       # W nejnižší nabíjecí výkon (všechny fáze)
@@ -179,11 +185,16 @@ boiler:
   boost: switch.tuv_boost                               # boost bojleru (switch.…)
   target_temperature: number.tuv_2_1_target_temperature # cíl ohřevu z přebytku (number.…)
   boost_target_temperature: number.tuv_2_2_boost_target_temperature  # cíl ohřevu v boostu (number.…); nesmí být vyšší než cíl z přebytku
+  block_solar: switch.tuv_3_2_block_solar_heating      # blokace ohřevu z přetoků (AZ Router); důvod „přetoky zablokované“
+  window: switch.tuv_3_4_allow_solar_heating_only_in_time_window  # ohřev z přetoků jen v okně (AZ Router)
+  window_start: time.tuv_3_4_1_window_start             # začátek okna (time.…); důvod „mimo okno 7:00–19:00“
+  window_end: time.tuv_3_4_2_window_stop                # konec okna (time.…)
   target_min: 20                                        # °C nejnižší cíl ohřevu
   target_max: 85                                        # °C nejvyšší cíl ohřevu
   target_step: 5                                        # °C krok cíle ohřevu
   show: heating                                         # heating = dlaždice Bojler jen při ohřevu a hold_minutes po něm; always = v diagramu vždy
   hold_minutes: 15                                      # min, jak dlouho po konci ohřevu zůstane dlaždice vidět (jen při show: heating)
+  hot_margin: 2                                         # °C pod cílem z přebytku, od kterých je voda nahřátá (důvod „nahřáto“, když přebytek jde do sítě)
 water:
   gauge_min: 15                                         # °C začátek obou obloukových měřičů a výplně dlaždice Bojler
   gauge_max: 65                                         # °C konec měřičů (platí vyšší z této hodnoty a cíle Přetoky)

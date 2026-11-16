@@ -12,6 +12,7 @@ import type { Controlled } from "./controls";
 import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages, segments } from "./view";
 import type { Constructor } from "./view";
 import { joined, joinedText } from "ha-dashboard-kit/joined";
+import { carReason } from "./reasons";
 
 export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
   class extends Base {
@@ -97,7 +98,9 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const manualBoost = chargeMode ? chargeMode === "Boost" : boost === "on";
       const boostMark = manualBoost ? [this.boostMark()] : [];
       const autoMark = html`<span class="auto-mark">${t.car.autoMark}</span>`;
-      const why = step ? t.car.step[step] : undefined;
+      // Auto: the step of the rule; Přetoky (or the Boost switch off without wallbox.mode): what the AZ Router waits for (H7).
+      const surplusMode = chargeMode ? chargeMode === "Přetoky" : boost === "off";
+      const why = step ? t.car.step[step] : surplusMode ? carReason((id) => readText(this.hass, id), s, model, t, this._now) : undefined;
       if (step === "konci" && link !== "disconnected") {
         stateText = t.car.ending;
       } else if (charging) {
@@ -220,7 +223,8 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
         const minutes = Math.max(10, Math.round((((value - soc) / 100) * capacity * 60) / kw / 10) * 10);
         estimate = t.car.targetTime(t.car.duration(Math.floor(minutes / 60), minutes % 60));
       }
-      const shownValue = known ? formatPercent(value) : NO_DATA;
+      // The unit small and grey beside the number, like kW of the power and % of the charge (ux-architect 15. 11. 2026).
+      const shownValue = known ? html`${formatNumber(value)}<small>${this._i18n.percent("")}</small>` : NO_DATA;
       return html`<div class="fold ${id ? "open" : ""}" ?inert=${!id}><div>
         <div class="field">
           <span class="field-label">${t.car.target}</span><span class="field-value">${shownValue}${estimate ? html`<small> · ${estimate}</small>` : nothing}</span>
@@ -236,14 +240,14 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
     }
 
     /** Why and when the Boost of the house ended last, only today (attribute posledni_konec of wallbox.step, „code|time“). */
-    lastEnd(s: Settings): string | undefined {
+    lastEnd(s: Settings): string[] | undefined {
       const raw = entityState(this.hass, s.entities.wallbox.step)?.attributes?.posledni_konec;
       if (typeof raw !== "string" || !raw.includes("|")) return undefined;
       const [code, time] = raw.split("|");
       const at = Date.parse(time);
       const why = this.t.wallbox.endReason[code];
       if (!why || !Number.isFinite(at) || new Date(at).toDateString() !== new Date(this._now).toDateString()) return undefined;
-      return this.t.wallbox.lastEnd(formatClock(at), why);
+      return [this.t.wallbox.lastEnd(formatClock(at)), why];
     }
 
     renderCarSources(model: FlowModel, flows: Settings["num"]["flows"], total: string, boostOn: boolean): TemplateResult {
@@ -309,7 +313,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       // 12. 11. 2026: „Q136 A“), not the change of the charge, which follows the prediction of the integration while charging.
       const age = ago(readText(this.hass, s.entities.car.last_message), this._now, t);
       const ended = charging ? undefined : this.lastEnd(s);
-      const subParts = [sub, ...(ended ? [ended] : []), ...(age ? [t.wallbox.fromCar(age)] : [])];
+      const subParts = [sub, ...(ended ?? []), ...(age ? [t.wallbox.fromCar(age)] : [])];
       const block = this.shown(w.block_charging);
       const prio = this.shown(w.priority);
       return html`<ul class="group">

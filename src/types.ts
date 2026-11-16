@@ -34,6 +34,8 @@ export interface EntitySections {
     discharge_limit?: EntityId;
     error?: EntityId;
     warning?: EntityId;
+    /** Operation mode of the inverter (select.…); a mode other than general is named after „Přebytek jde do sítě“. */
+    operation_mode?: EntityId;
   };
   grid: { power?: EntityId; total_import?: EntityId; total_export?: EntityId };
   house: { power?: EntityId };
@@ -56,9 +58,18 @@ export interface EntitySections {
     priority?: EntityId;
     /** Shadow run of the rule Auto (input_boolean): while on, the card does not offer Auto. */
     shadow?: EntityId;
+    /** Settings of the AZ Router that say why the car does not take the surplus (CURRENT_SPEC.md, Důvod ve stavové větě). */
+    block_solar?: EntityId;
+    window?: EntityId;
+    window_start?: EntityId;
+    window_end?: EntityId;
     charging_power?: EntityId;
   };
-  boiler: { power?: EntityId; temperature?: EntityId; boost?: EntityId; target_temperature?: EntityId; boost_target_temperature?: EntityId };
+  boiler: {
+    power?: EntityId; temperature?: EntityId; boost?: EntityId; target_temperature?: EntityId; boost_target_temperature?: EntityId;
+    /** Settings of the AZ Router that say why the boiler does not take the surplus. */
+    block_solar?: EntityId; window?: EntityId; window_start?: EntityId; window_end?: EntityId;
+  };
   tank: { water_heater?: EntityId };
   mixing: { valve_c1?: EntityId; valve_c2?: EntityId };
   /** Forecast of the sun (CURRENT_SPEC.md, Slunce): the energy of the day in kWh from Open-Meteo Solar Forecast, Forecast.Solar or Solcast, and a weather entity for the days; all optional. */
@@ -86,10 +97,10 @@ export type SectionName = keyof EntitySections;
 
 /** Numeric settings (limits, thresholds, scales); every one has a default (config.ts, NUMBERS). */
 export interface NumberSettings {
-  battery: { reserve: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
+  battery: { reserve: number; full: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
   car: { image_scale: number };
   wallbox: { phases: number; power_min: number; power_max: number; power_step: number };
-  boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number };
+  boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number; hot_margin: number };
   water: { gauge_min: number; gauge_max: number };
   tank: { temp_min: number; temp_max: number; temp_step: number };
   flows: {

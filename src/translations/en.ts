@@ -141,6 +141,19 @@ export const en: Texts = {
   boostOptions: { off: "Surplus", on: "Boost" },
   chargeModes: { "Přetoky": "Surplus", Auto: "Auto", Boost: "Boost" } as Record<string, string>,
 
+  reasons: {
+    blocked: "charging blocked",
+    solarBlocked: "solar blocked",
+    outsideWindow: (window: string) => `outside the window ${window}`,
+    noSun: "no sun",
+    waterFirst: "the surplus heats the water",
+    batteryCharges: "the sun charges the battery",
+    littleSurplus: "too little surplus",
+    heated: "heated",
+    batteryFull: "battery full",
+    inverterMode: (mode: string) => `inverter in mode ${mode}`,
+    inverterModes: { off_grid: "Off-grid", backup: "Backup", eco: "Eco", peak_shaving: "Peak shaving" } as Record<string, string>,
+  },
   wallbox: {
     title: "Wallbox",
     charging: "charging",
@@ -153,7 +166,7 @@ export const en: Texts = {
     priority: "Priority over the boiler",
     priorityOn: "The car charges before the boiler",
     priorityOff: "The car has no priority",
-    lastEnd: (time: string, why: string) => `ended ${time}: ${why}`,
+    lastEnd: (time: string) => `ended ${time}`,
     endReason: {
       dno: "house battery at its floor",
       slunce: "too little sun",

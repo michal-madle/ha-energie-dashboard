@@ -5,6 +5,7 @@ import { SOURCES, isOn } from "./model";
 import type { FlowModel, Sink, Source } from "./model";
 import { bands, layout, order } from "./sankey";
 import type { Layout } from "./sankey";
+import { gridReason } from "./reasons";
 import type { Settings } from "./types";
 import { formatFixed, formatKwh, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
@@ -83,10 +84,16 @@ export const withElectricity = <T extends Constructor<Housed>>(Base: T) =>
               ${this.pickText(s.titles.electricity) ?? this.t.titles.electricity}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.chevron}></path></svg>
             </button>
           </h2>
-          ${this.stateLine(model.summary, color)}
+          ${this.stateLine(this.summaryWithReason(s, model), color)}
         </div>
         ${this.renderFlow(s, model)} ${this._all ? this.renderDayPopup(s, model) : nothing}
       </section>`;
+    }
+
+    /** „Přebytek jde do sítě“ with why the battery does not take it (H8, src/reasons.ts). */
+    summaryWithReason(s: Settings, model: FlowModel): string | string[] | undefined {
+      const why = gridReason((id) => readText(this.hass, id), s, model, this.t);
+      return why && model.summary ? [model.summary, why] : model.summary;
     }
 
     openAll(): void {

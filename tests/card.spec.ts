@@ -148,9 +148,9 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       const bare = structuredClone(config);
       for (const key of ["titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
-        battery: ["reserve"], car: ["image_scale"],
+        battery: ["reserve", "full"], car: ["image_scale"],
         wallbox: ["phases", "power_min", "power_max", "power_step"],
-        boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes"],
+        boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes", "hot_margin"],
         tank: ["temp_min", "temp_max", "temp_step"],
       })) for (const key of keys) delete bare[section][key];
       // The title and the headings of the panels are in the example in all three languages (uživatel 4. 11. 2026); without them the card
@@ -177,7 +177,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     await test.step("chybná hodnota zastaví kartu srozumitelnou chybou s názvem klíče; prázdná hodnota = výchozí", async () => {
       await open(page, "full");
       const cases: Array<[Record<string, unknown>, RegExp]> = [
-        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, charging_power, mode, target_auto, target_boost, step, priority, shadow, phases, /],
+        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, charging_power, mode, target_auto, target_boost, step, priority, shadow, block_solar, window, window_start, window_end, phases, /],
         [{ wallbox: { boost: "sensor.wallbox_boost" } }, /wallbox\.boost must be a switch entity \(switch\.…\), not sensor\.wallbox_boost/],
         [{ wallbox: { charging_power: "sensor.wallbox_power" } }, /wallbox\.charging_power must be a number entity/],
         [{ boiler: { boost: "input_boolean.tuv_boost" } }, /boiler\.boost must be a switch entity/],
@@ -1063,7 +1063,8 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
     });
     await test.step("večer: auto připojené, nenabíjí; bez „Odkud auto nabíjí“; odpojené", async () => {
       await open(page, "full");
-      await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí");
+      // In Přetoky the state says why (H7): in the evening there is no sun.
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · bez slunce");
       await expect(page.locator(".mix")).toHaveCount(0);
       await expect(page.locator(".row-btn .row-sub")).toHaveText("nenabíjí · data auta právě teď");
       await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
@@ -1152,9 +1153,70 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
         return [at.toISOString(), new Date(at.getTime() - 86400000).toISOString()];
       });
       await update(page, { "sensor.nabijeni_auta_krok": { state: "ceka_slunce", attributes: { posledni_konec: `odmitlo|${today}` } } });
-      await expect(page.locator(".row-btn .row-sub")).toContainText("skončilo 14:20: auto přestalo brát");
+      await expect(page.locator(".row-btn .row-sub")).toContainText("skončilo 14:20 · auto přestalo brát");
       await update(page, { "sensor.nabijeni_auta_krok": { state: "ceka_slunce", attributes: { posledni_konec: `odmitlo|${yesterday}` } } });
       await expect(page.locator(".row-btn .row-sub")).not.toContainText("skončilo");
+    });
+  });
+
+  test("důvody ve stavové větě: auto v Přetokách, Teplá voda a Elektřina při přetoku do sítě (CURRENT_SPEC.md, Důvod ve stavové větě a scénáře nabíjení)", async ({ page }) => {
+    test.setTimeout(90000);
+    /** A window of the AZ Router around now (inside) or two hours ahead (outside), in the time zone of the browser. */
+    const window = (inside: boolean) =>
+      page.evaluate((within) => {
+        const pad = (n: number) => String(n).padStart(2, "0");
+        const at = new Date();
+        const from = new Date(at.getTime() + (within ? -3600000 : 7200000));
+        const to = new Date(at.getTime() + (within ? 3600000 : 10800000));
+        const text = (d: Date) => `${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+        const clock = (d: Date) => `${d.getHours()}:${pad(d.getMinutes())}`;
+        return { start: text(from), end: text(to), shown: `${clock(from)}–${clock(to)}` };
+      }, inside);
+    await test.step("auto v Přetokách: blokace, přetoky zablokované, okno, voda, baterie, málo přetoku, bez slunce; v pořadí", async () => {
+      await open(page, "day");
+      // Noon, the car connected and waiting: the sun charges the battery.
+      const waiting = { "sensor.wallbox_charge_status": "Waiting", "sensor.wallbox_total_power": "0", "sensor.goodwe_house_consumption": "1700", "sensor.tuv_power_total": "0" };
+      await update(page, { ...waiting, "sensor.goodwe_battery_power": "-4500", "sensor.goodwe_meter_active_power_total": "0" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · slunce nabíjí baterii");
+      await update(page, { "sensor.tuv_power_total": "1200", "sensor.goodwe_house_consumption": "2900", "sensor.goodwe_battery_power": "-3300" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · přetok ohřívá vodu");
+      await update(page, { "sensor.tuv_power_total": "0", "sensor.goodwe_house_consumption": "6500", "sensor.goodwe_battery_power": "0", "sensor.goodwe_meter_active_power_total": "300" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · málo přetoku");
+      const outside = await window(false);
+      await update(page, { "switch.wallbox_6_1_allow_solar_charging_only_in_time_window": "on", "time.wallbox_6_2_start_time": outside.start, "time.wallbox_6_3_stop_time": outside.end });
+      await expect(stateLine(page, 1)).toHaveText(`Připojeno · mimo okno ${outside.shown}`);
+      const inside = await window(true);
+      await update(page, { "time.wallbox_6_2_start_time": inside.start, "time.wallbox_6_3_stop_time": inside.end });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · málo přetoku");
+      await update(page, { "switch.wallbox_3_block_solar_charging": "on" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · přetoky zablokované");
+      await update(page, { "switch.wallbox_1_block_charging": "on" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · nabíjení zablokované");
+      // The block the automation holds (safe end) is no reason of the user.
+      await update(page, { "input_boolean.nabijeni_blokace_automatikou": "on" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · přetoky zablokované");
+      // In Boost no reason of Přetoky, only the mark.
+      await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on", "switch.wallbox_1_block_charging": "off", "input_boolean.nabijeni_blokace_automatikou": "off" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí · Boost");
+    });
+    await test.step("Teplá voda a Elektřina při přetoku do sítě: nahřáto, přetoky zablokované, okno; baterie plná, režim střídače", async () => {
+      await open(page, "day");
+      // Full battery, the surplus to the grid, the boiler at its target, the car charges.
+      await update(page, { "sensor.goodwe_battery_power": "0", "sensor.goodwe_battery_state_of_charge": "100", "sensor.tuv_power_total": "0", "sensor.tuv_temperature": "59", "sensor.goodwe_house_consumption": "4800", "sensor.goodwe_meter_active_power_total": "2000" });
+      await expect(stateLine(page, 0)).toHaveText("Přebytek jde do sítě · baterie plná");
+      await expect(stateLine(page, 2)).toHaveText("Bez ohřevu · nahřáto");
+      await update(page, { "sensor.tuv_temperature": "45" });
+      await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
+      const outside = await window(false);
+      await update(page, { "switch.tuv_3_4_allow_solar_heating_only_in_time_window": "on", "time.tuv_3_4_1_window_start": outside.start, "time.tuv_3_4_2_window_stop": outside.end });
+      await expect(stateLine(page, 2)).toHaveText(`Bez ohřevu · mimo okno ${outside.shown}`);
+      await update(page, { "switch.tuv_3_2_block_solar_heating": "on" });
+      await expect(stateLine(page, 2)).toHaveText("Bez ohřevu · přetoky zablokované");
+      await update(page, { "select.goodwe_inverter_operation_mode": "eco" });
+      await expect(stateLine(page, 0)).toHaveText("Přebytek jde do sítě · střídač v režimu Eco");
+      // Without the surplus to the grid no reason.
+      await update(page, { "sensor.goodwe_meter_active_power_total": "0", "sensor.goodwe_house_consumption": "6800" });
+      await expect(stateLine(page, 2)).toHaveText("Bez ohřevu");
     });
   });
 
