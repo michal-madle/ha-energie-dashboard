@@ -1135,12 +1135,12 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await update(page, { "sensor.nabijeni_auta_krok": "dnes_hotovo" });
       await expect(stateLine(page, 1)).toHaveText("Připojeno · dnes už 2 pokusy, znovu zítra nebo po připojení");
       await update(page, { "sensor.nabijeni_auta_krok": "start", "input_boolean.nabijeni_auta_stin": "on" });
-      await expect(stateLine(page, 1)).toHaveText("Připojeno · Auto by teď zapnulo, zatím jen zkouška");
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · dům by teď zapnul, zatím jen zkouška");
       await update(page, { "sensor.nabijeni_auta_krok": "dnes_hotovo" });
-      await expect(stateLine(page, 1)).toHaveText("Připojeno · Auto zatím jen zkouší, nenabíjí");
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · dům zatím jen zkouší, nenabíjí");
       await update(page, { "sensor.nabijeni_auta_krok": "start" });
       await update(page, { "input_boolean.nabijeni_auta_stin": "off" });
-      await expect(stateLine(page, 1)).toHaveText("Připojeno · Auto zapíná nabíjení");
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · dům zapíná nabíjení");
       await update(page, { "sensor.nabijeni_auta_krok": "konci" });
       await expect(stateLine(page, 1)).toHaveText("Končí nabíjení");
       await update(page, {
