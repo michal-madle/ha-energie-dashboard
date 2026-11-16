@@ -177,7 +177,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
     await test.step("chybná hodnota zastaví kartu srozumitelnou chybou s názvem klíče; prázdná hodnota = výchozí", async () => {
       await open(page, "full");
       const cases: Array<[Record<string, unknown>, RegExp]> = [
-        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, charging_power, mode, target_auto, target_boost, step, priority, shadow, block_solar, window, window_start, window_end, phases, /],
+        [{ wallbox: { boots: "switch.wallbox_boost" } }, /^Energie Dashboard: wallbox: unknown key "boots" \(allowed: power, status, boost, block_charging, block_by_automation, charging_power, mode, target_auto, target_boost, step, priority, shadow, last_end, solar_start, block_solar, window, window_start, window_end, phases, /],
         [{ wallbox: { boost: "sensor.wallbox_boost" } }, /wallbox\.boost must be a switch entity \(switch\.…\), not sensor\.wallbox_boost/],
         [{ wallbox: { charging_power: "sensor.wallbox_power" } }, /wallbox\.charging_power must be a number entity/],
         [{ boiler: { boost: "input_boolean.tuv_boost" } }, /boiler\.boost must be a switch entity/],
@@ -1196,16 +1196,35 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(sheet).toContainText("Boost skončil 09:40: auto na cíli");
       await expect(sheet).toContainText("auto 75 % · dodáno 3,7 kWh");
       await expect(sheet).toContainText("Při konci ukazoval odhad integrace 75 %, auto teď hlásí 70 %");
-      await expect(sheet).toContainText("Auto se nabije samo z přetoku, až bude voda dohřátá a přebytek stačí na 4,2 kW.");
+      await expect(sheet).toContainText("Auto se nabije samo z přetoku, až bude voda dohřátá a přebytek stačí na 3,3 kW.");
       await page.keyboard.press("Escape");
       await expect(page.locator("ed-sheet")).toHaveCount(0);
+    });
+    await test.step("časová osa dne (Q298 varianta 2): Boost, konec s důvodem a nabitím, teď a dál; spojené změny v jednom řádku", async () => {
+      await open(page, "full");
+      // @ts-expect-error test hook
+      await page.evaluate(() => (window.__test.carDay = true));
+      await update(page, { "input_select.nabijeni_auta_rezim": "Přetoky", "sensor.vin_stav_nabiti_predikce_integrace": "78" });
+      await page.getByRole("button", { name: /BMW i3, Co se děje s autem/ }).click();
+      const rows = page.locator("ed-sheet .timeline > li");
+      await expect(rows).toHaveCount(4);
+      await expect(rows.nth(0)).toContainText("09:38");
+      await expect(rows.nth(0)).toContainText("Boost zapnutý");
+      await expect(rows.nth(0)).toContainText("režim Boost · začalo nabíjet · auto 70 %");
+      await expect(rows.nth(1)).toContainText("10:34");
+      await expect(rows.nth(1)).toContainText("Boost skončil: auto na cíli");
+      await expect(rows.nth(1)).toContainText("režim Přetoky");
+      await expect(rows.nth(2)).toContainText("Připojeno");
+      await expect(rows.nth(3)).toContainText("Auto se nabije samo z přetoku");
+      const request = await page.evaluate(() => window.__test.requests.filter((r: { type: string }) => r.type === "history/history_during_period").at(-1));
+      expect(request.entity_ids).toEqual(expect.arrayContaining(["switch.wallbox_boost", "input_select.nabijeni_auta_rezim", "sensor.wallbox_charge_status", "input_text.nabijeni_auta_posledni_konec"]));
     });
     await test.step("ruční Boost do 75 %: co dál; Boost do 100 %: dokud auto bere", async () => {
       await open(page, "full");
       await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on", "input_number.nabijeni_auta_cil_boost": "75.0" });
       await page.getByRole("button", { name: /BMW i3, Co se děje s autem/ }).click();
       await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto podle odhadu integrace dosáhne 75 %");
-      await expect(page.locator("ed-sheet .car-info")).toContainText("Boost zatím neskončil.");
+      await expect(page.locator("ed-sheet .car-info")).toContainText("Dnes se s nabíjením nic nestalo.");
       await update(page, { "input_number.nabijeni_auta_cil_boost": "100.0" });
       await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto přestane brát.");
     });

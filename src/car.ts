@@ -13,6 +13,8 @@ import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages,
 import type { Constructor } from "./view";
 import { joined, joinedText } from "ha-dashboard-kit/joined";
 import { boostReason, carReason } from "./reasons";
+import { timeline } from "./car-timeline";
+import type { Point, Series } from "./car-timeline";
 
 export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
   class extends Base {
@@ -151,7 +153,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
             : nothing}
           <div class="head">
             <h2 id="h-car">
-              <button type="button" class="title-btn" aria-haspopup="dialog" aria-expanded=${this._carInfo ? "true" : "false"} aria-label="${this.pickText(s.titles.car) ?? t.titles.car}, ${t.car.info.heading}" @click=${() => (this._carInfo = true)}>
+              <button type="button" class="title-btn" aria-haspopup="dialog" aria-expanded=${this._carInfo ? "true" : "false"} aria-label="${this.pickText(s.titles.car) ?? t.titles.car}, ${t.car.info.heading}" @click=${() => this.openCarInfo(s)}>
                 ${this.pickText(s.titles.car) ?? t.titles.car}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.info}></path></svg>
               </button>
             </h2>
@@ -343,7 +345,12 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       else if (at.manualBoost) next = Number.isFinite(target) && target < 100 ? i.nextBoost(goal!) : i.nextBoostFull;
       else if (at.chargeMode === "Auto" && at.shadow) next = i.nextShadow;
       else if (at.chargeMode === "Auto") next = at.step === "nabiji" ? i.nextAutoCharging(goal ?? t.car.etaFull) : i.nextAutoWait;
-      else next = i.nextSurplus(`${formatNumber(s.num.wallbox.power_min / 1000, 1)} kW`);
+      else {
+        // The start of the AZ Router (per phase × phases) when known, otherwise the lowest charging power.
+        const start = readNumber(this.hass, s.entities.wallbox.solar_start);
+        const watts = start !== undefined ? start * s.num.wallbox.phases : s.num.wallbox.power_min;
+        next = i.nextSurplus(`${formatNumber(watts / 1000, 1)}\u00a0kW`);
+      }
       const when = end ? (end.today ? formatClock(end.at) : `${formatDayShort(end.at)} ${formatClock(end.at)}`) : undefined;
       const detail = end
         ? [
@@ -354,14 +361,62 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       // The charge can fall when the car reports its real charge after the end (the prediction of the integration overshoots
       // while charging: 16. 11. 2026 75,3 % predicted, 70 % reported).
       const drop = end?.soc !== undefined && soc !== undefined && end.soc - soc >= 2 ? i.socDrop(formatPercent(end.soc), formatPercent(soc)) : undefined;
+      // Variant 2 (uživatel 16. 11. 2026: „Q298 varianta 2“): the day as a timeline, then now and what comes next.
+      // Without the history (wallbox.last_end and the recorder) the last end of a Boost stands in for it.
+      const tl = this._carTimeline;
+      const rows = tl?.status === "ready" ? tl.rows : [];
+      const past = rows.length
+        ? rows.map((row) => html`<li class="ev"><time>${formatClock(row.at)}</time><span class="line" aria-hidden="true"></span><span class="t"><b>${row.title}</b>${row.detail.length ? html`<span>${row.detail.join(" · ")}</span>` : nothing}</span></li>`)
+        : tl?.status === "loading"
+          ? html`<li class="ev"><time></time><span class="line" aria-hidden="true"></span><span class="t"><span>${i.loading}</span></span></li>`
+          : end
+            ? html`<li class="ev"><time>${when}</time><span class="line" aria-hidden="true"></span><span class="t"><b>${i.lastEnd(when!, end.why)}</b>${detail.length ? html`<span>${detail.join(" · ")}</span>` : nothing}</span></li>`
+            : html`<li class="ev"><time></time><span class="line" aria-hidden="true"></span><span class="t"><span>${i.empty}</span></span></li>`;
       return html`<ed-sheet open .heading=${i.heading} .closeLabel=${t.close} @hdk-close=${() => (this._carInfo = false)}><div class="pop car-info">
-        <div class="info-row"><span class="pop-label">${i.now}</span>${this.stateLine(stateText, stateColor)}</div>
-        <div class="info-row"><span class="pop-label">${i.last}</span>
-          <p class="info-text">${end ? html`${i.lastEnd(when!, end.why)}${detail.length ? html`<br /><span class="dim">${joinedText(detail.join(" · "))}</span>` : nothing}` : i.lastNone}</p>
-          ${drop ? html`<p class="info-text dim">${drop}</p>` : nothing}
-        </div>
-        <div class="info-row"><span class="pop-label">${i.next}</span><p class="info-text">${next}</p></div>
+        <ol class="timeline" aria-label=${i.today}>
+          ${past}
+          <li class="ev now"><time>${i.now}</time><span class="line" aria-hidden="true"></span><span class="t">${this.stateLine(stateText, stateColor)}${drop ? html`<span>${drop}</span>` : nothing}</span></li>
+          <li class="ev next"><time>${i.next}</time><span class="line" aria-hidden="true"></span><span class="t"><span class="next-text">${next}</span></span></li>
+        </ol>
       </div></ed-sheet>`;
+    }
+
+    /** Opens „Co se děje s autem“ and reads today's history of the car from the recorder. */
+    async openCarInfo(s: Settings): Promise<void> {
+      this._carInfo = true;
+      const hass = this.hass;
+      const w = s.entities.wallbox;
+      const ids: Partial<Record<keyof Series, string>> = { boost: w.boost, mode: w.mode, status: w.status, end: w.last_end, soc: s.entities.car.state_of_charge };
+      const wanted = Object.values(ids).filter((id): id is string => !!id);
+      if (!hass || !wanted.length) return;
+      this._carTimeline = { status: "loading", rows: this._carTimeline?.rows ?? [] };
+      const midnight = new Date(this._now);
+      midnight.setHours(0, 0, 0, 0);
+      try {
+        const result = await hass.callWS<Record<string, Array<{ s?: string; state?: string; lu?: number; last_updated?: number | string }>> | null>({
+          type: "history/history_during_period",
+          // From an hour before midnight, so the state at midnight is known (a Boost that ran over midnight).
+          start_time: new Date(midnight.getTime() - 3600000).toISOString(),
+          end_time: new Date().toISOString(),
+          entity_ids: wanted,
+          minimal_response: true,
+          no_attributes: true,
+          significant_changes_only: false,
+        });
+        const series: Series = {};
+        for (const [key, id] of Object.entries(ids) as Array<[keyof Series, string | undefined]>) {
+          if (!id) continue;
+          series[key] = (result?.[id] ?? []).flatMap((item): Point[] => {
+            const raw = item.lu ?? item.last_updated;
+            const at = typeof raw === "number" ? raw * 1000 : raw ? Date.parse(raw) : NaN;
+            const state = item.s ?? item.state;
+            return Number.isFinite(at) && state !== undefined ? [{ at, state }] : [];
+          });
+        }
+        this._carTimeline = { status: "ready", rows: timeline(series, midnight.getTime(), this.t, (value) => formatPercent(value)) };
+      } catch {
+        this._carTimeline = { status: "error", rows: [] };
+      }
     }
 
     renderCarSources(model: FlowModel, flows: Settings["num"]["flows"], total: string, boostOn: boolean): TemplateResult {

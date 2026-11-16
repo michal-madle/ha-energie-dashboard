@@ -34,6 +34,8 @@ export class CardBase extends LitElement {
   @state() _carHint = false;
   /** The sheet „Co se děje s autem“ (the title of the car panel). */
   @state() _carInfo = false;
+  /** The timeline of the car today (src/car-timeline.ts), read from the recorder when the sheet opens. */
+  @state() _carTimeline?: { status: "loading" | "ready" | "error"; rows: import("./car-timeline").TimelineRow[] };
   /** The battery detail (a page of its own inside the card) and what is open in it. */
   @state() _batDetail = false;
   @state() _batTab: BatTab = "now";

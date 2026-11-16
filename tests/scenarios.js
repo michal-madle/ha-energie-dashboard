@@ -39,6 +39,7 @@ const EVENING = {
   "input_boolean.nabijeni_auta_stin": state("off"),
   // Settings of the AZ Router and the inverter for the reasons (src/reasons.ts); windows off, so no test depends on the clock.
   "switch.wallbox_3_block_solar_charging": state("off"),
+  "number.wallbox_6_4_trigger_on_power": state("1100", { min: 0, max: 30000, step: 100, unit_of_measurement: "W" }),
   "switch.wallbox_6_1_allow_solar_charging_only_in_time_window": state("off"),
   "time.wallbox_6_2_start_time": state("08:00:00"),
   "time.wallbox_6_3_stop_time": state("17:30:00"),
@@ -346,6 +347,15 @@ let current = { states, devices: registry.devices, entities: registry.entities, 
         // The oven runs for 12 minutes; Home Assistant restarted (unavailable) at 30 minutes and the helper is on again: the start stays at 55 minutes ago.
         "binary_sensor.kuchyne_trouba_bezi": [{ s: "off", lu: at(4000) }, { s: "on", lu: at(55) }, { s: "unavailable", lu: at(30) }, { s: "on", lu: at(12) }],
       };
+      // The car this morning (export 16. 11. 2026): Boost at 9:38 from 70 %, ended at 10:34 on its target at 80 %, back to Přetoky.
+      const today = (h, m, s = 0) => new Date(new Date().setHours(h, m, s, 0)).getTime() / 1000;
+      if (test.carDay) Object.assign(sequences, {
+        "switch.wallbox_boost": [{ s: "off", lu: today(0, 0) }, { s: "on", lu: today(9, 38, 50) }, { s: "off", lu: today(10, 34, 0) }],
+        "input_select.nabijeni_auta_rezim": [{ s: "Přetoky", lu: today(0, 0) }, { s: "Boost", lu: today(9, 38, 50) }, { s: "Přetoky", lu: today(10, 34, 0) }],
+        "sensor.wallbox_charge_status": [{ s: "Waiting", lu: today(0, 0) }, { s: "Charging", lu: today(9, 39, 2) }, { s: "Waiting", lu: today(10, 34, 5) }],
+        "input_text.nabijeni_auta_posledni_konec": [{ s: "", lu: today(0, 0) }, { s: `cil|${new Date(today(10, 34) * 1000).toISOString()}|80.4|3.7`, lu: today(10, 34, 0) }],
+        "sensor.vin_stav_nabiti_predikce_integrace": [{ s: "70", lu: today(0, 0) }, { s: "75.2", lu: today(10, 5) }, { s: "80.35", lu: today(10, 33) }, { s: "78", lu: today(10, 34, 46) }],
+      });
       const result = {};
       for (const id of message.entity_ids) result[id] = sequences[id] ?? [{ s: "off", lu: Date.parse(message.start_time) / 1000 }];
       return result;

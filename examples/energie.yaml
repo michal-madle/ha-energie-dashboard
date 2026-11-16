@@ -168,6 +168,8 @@ wallbox:
   step: sensor.nabijeni_auta_krok                       # kde je pravidlo Auto (kód); atribut posledni_konec „kód|čas“
   priority: input_boolean.nabijeni_auta_prednost        # přednost auta před vodou (pravidlo Auto)
   shadow: input_boolean.nabijeni_auta_stin              # stínový provoz pravidla Auto: dokud je zapnutý, karta volbu Auto nenabízí
+  last_end: input_text.nabijeni_auta_posledni_konec     # proč a kdy skončil Boost; z jeho historie je časová osa dne v (i)
+  solar_start: number.wallbox_6_4_trigger_on_power      # přetok na fázi, od kterého AZ Router rozjede nabíjení (karta ukazuje × fáze)
   block_solar: switch.wallbox_3_block_solar_charging    # blokace nabíjení z přetoků (AZ Router); důvod „přetoky zablokované“
   window: switch.wallbox_6_1_allow_solar_charging_only_in_time_window  # nabíjení z přetoků jen v okně (AZ Router)
   window_start: time.wallbox_6_2_start_time             # začátek okna (time.…); důvod „mimo okno 8:00–17:30“

@@ -24,7 +24,7 @@ export const SECTION_KEYS: { [Name in SectionName]: Record<keyof EntitySections[
   house: { power: undefined },
   car: { state_of_charge: undefined, range: undefined, capacity: undefined, image: "image", last_message: undefined },
   wallbox: { power: undefined, status: undefined, boost: "switch", block_charging: "switch", block_by_automation: "input_boolean", charging_power: "number",
-    mode: "input_select", target_auto: "input_number", target_boost: "input_number", step: undefined, priority: "input_boolean", shadow: "input_boolean",
+    mode: "input_select", target_auto: "input_number", target_boost: "input_number", step: undefined, priority: "input_boolean", shadow: "input_boolean", last_end: "input_text", solar_start: "number",
     block_solar: "switch", window: "switch", window_start: "time", window_end: "time" },
   boiler: { power: undefined, temperature: undefined, boost: "switch", target_temperature: "number", boost_target_temperature: "number", block_solar: "switch", window: "switch", window_start: "time", window_end: "time" },
   tank: { water_heater: "water_heater" },

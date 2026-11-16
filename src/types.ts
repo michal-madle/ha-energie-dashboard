@@ -58,6 +58,10 @@ export interface EntitySections {
     priority?: EntityId;
     /** Shadow run of the rule Auto (input_boolean): while on, the card does not offer Auto. */
     shadow?: EntityId;
+    /** Why and when the last Boost ended (input_text „kód|čas|nabití|energie“); its history is the timeline of the car. */
+    last_end?: EntityId;
+    /** Surplus on one phase from which the AZ Router starts charging (number.…, W per phase); the card shows it × phases. */
+    solar_start?: EntityId;
     /** Settings of the AZ Router that say why the car does not take the surplus (CURRENT_SPEC.md, Důvod ve stavové větě). */
     block_solar?: EntityId;
     window?: EntityId;

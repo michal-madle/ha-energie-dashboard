@@ -562,6 +562,99 @@ export const styles = css`
     gap: 14px;
   }
 
+  /* The day of the car as a timeline (variant 2): time, a dot on a line, what happened; now is filled, next is dashed. */
+  .timeline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ev {
+    display: grid;
+    grid-template-columns: 44px 14px minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .ev time {
+    color: var(--ed-pop-sec);
+    font-size: 13px;
+    line-height: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ev .line {
+    position: relative;
+  }
+
+  .ev .line::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--ed-pop-line);
+  }
+
+  .ev:last-child .line::before {
+    bottom: auto;
+    height: 10px;
+  }
+
+  .ev .line::after {
+    content: "";
+    position: absolute;
+    left: 2px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ed-pop-sec);
+  }
+
+  .ev.now .line::after {
+    background: var(--ed-accent);
+  }
+
+  .ev.next .line::after {
+    box-sizing: border-box;
+    background: transparent;
+    border: 2px dashed var(--ed-accent);
+  }
+
+  .ev .t {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding-bottom: 14px;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .ev .t b {
+    font-weight: 600;
+  }
+
+  .ev .t > span {
+    color: var(--ed-pop-sec);
+  }
+
+  .ev .t > .next-text {
+    color: var(--ed-text);
+  }
+
+  .ev .t .state {
+    margin: 0;
+  }
+
+  /* The dot of the timeline marks now; the dot of the state line would be a second one. */
+  .ev .t .state .dot {
+    display: none;
+  }
+
   .info-row {
     display: flex;
     flex-direction: column;
