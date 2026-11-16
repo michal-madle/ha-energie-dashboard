@@ -47,9 +47,23 @@ export function carReason(read: Read, s: Settings, model: FlowModel, t: Texts, n
   if (window) return t.reasons.outsideWindow(window);
   if (model.sun === undefined) return undefined;
   if (!isOn(model.sun, idle)) return t.reasons.noSun;
-  if (isOn(model.boil, idle)) return t.reasons.waterFirst;
+  // Only the boiler heated from the surplus takes it from the car; its Boost heats from the grid as well.
+  if (isOn(model.boil, idle) && read(s.entities.boiler.boost) !== "on") return t.reasons.waterFirst;
   if (isOn(model.batIn, idle) && (model.soc === undefined || model.soc < s.num.battery.full)) return t.reasons.batteryCharges;
+  // Enough surplus goes to the grid for the lowest charging power, and the car still does not take it (full, own limit).
+  if ((model.exp ?? 0) >= s.num.wallbox.power_min) return t.reasons.carNotTaking;
   return t.reasons.littleSurplus;
+}
+
+/**
+ * Boost chosen and the car does not charge („klikám a nejde to“, uživatel 15. 11. 2026): the user's block, otherwise the
+ * car does not take it, after `wallbox.boost_grace` seconds (the car needs a moment to start).
+ */
+export function boostReason(read: Read, s: Settings, t: Texts, now: number, since?: number): string | undefined {
+  const w = s.entities.wallbox;
+  if (read(w.block_charging) === "on" && read(w.block_by_automation) !== "on") return t.reasons.blocked;
+  if (since !== undefined && Number.isFinite(since) && now - since < s.num.wallbox.boost_grace * 1000) return undefined;
+  return t.reasons.carNotTaking;
 }
 
 /** The surplus goes to the grid and the boiler does not heat (H8): solar heating blocked, outside the window, heated. */

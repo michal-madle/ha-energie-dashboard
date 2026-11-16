@@ -177,6 +177,7 @@ wallbox:
   power_min: 4200                                       # W nejnižší nabíjecí výkon (všechny fáze)
   power_max: 11100                                      # W nejvyšší nabíjecí výkon (všechny fáze)
   power_step: 300                                       # W krok nabíjecího výkonu (všechny fáze)
+  boost_grace: 120                                      # s po zapnutí Boostu, než karta řekne „auto nebere“ (auto se chvíli rozjíždí)
 
 # ---------------------------------------------------------------------- teplá voda
 boiler:

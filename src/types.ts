@@ -99,7 +99,7 @@ export type SectionName = keyof EntitySections;
 export interface NumberSettings {
   battery: { reserve: number; full: number; capacity: number; imbalance_good: number; imbalance_warn: number; imbalance_fault: number };
   car: { image_scale: number };
-  wallbox: { phases: number; power_min: number; power_max: number; power_step: number };
+  wallbox: { phases: number; power_min: number; power_max: number; power_step: number; boost_grace: number };
   boiler: { target_min: number; target_max: number; target_step: number; hold_minutes: number; hot_margin: number };
   water: { gauge_min: number; gauge_max: number };
   tank: { temp_min: number; temp_max: number; temp_step: number };

@@ -112,7 +112,7 @@ const expandAll = async (page: Page) => {
 /** The sentence of the n-th state line (0 Elektřina, 1 auto, 2 voda). */
 const stateLine = (page: Page, index: number) => page.locator(".state").nth(index);
 
-const update = (page: Page, changes: Record<string, string | { state: string; attributes: Record<string, unknown> }>) =>
+const update = (page: Page, changes: Record<string, string | { state: string; attributes?: Record<string, unknown>; last_changed?: string }>) =>
   page.evaluate((value) => {
     // @ts-expect-error test hook
     window.__test.update(value);
@@ -149,7 +149,7 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       for (const key of ["titles", "flows", "scale", "ui", "colors", "water"]) delete bare[key];
       for (const [section, keys] of Object.entries({
         battery: ["reserve", "full"], car: ["image_scale"],
-        wallbox: ["phases", "power_min", "power_max", "power_step"],
+        wallbox: ["phases", "power_min", "power_max", "power_step", "boost_grace"],
         boiler: ["show", "target_min", "target_max", "target_step", "hold_minutes", "hot_margin"],
         tank: ["temp_min", "temp_max", "temp_step"],
       })) for (const key of keys) delete bare[section][key];
@@ -1133,7 +1133,14 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "sensor.nabijeni_auta_krok": "ceka_slunce" });
       await expect(stateLine(page, 1)).toHaveText("Připojeno · čeká na slunce");
       await update(page, { "sensor.nabijeni_auta_krok": "dnes_hotovo" });
-      await expect(stateLine(page, 1)).toHaveText("Připojeno · dnes už 2 pokusy, znovu po připojení");
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · dnes už 2 pokusy, znovu zítra nebo po připojení");
+      await update(page, { "sensor.nabijeni_auta_krok": "start", "input_boolean.nabijeni_auta_stin": "on" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · Auto by teď zapnulo, zatím jen zkouška");
+      await update(page, { "sensor.nabijeni_auta_krok": "dnes_hotovo" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · Auto zatím jen zkouší, nenabíjí");
+      await update(page, { "sensor.nabijeni_auta_krok": "start" });
+      await update(page, { "input_boolean.nabijeni_auta_stin": "off" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · Auto zapíná nabíjení");
       await update(page, { "sensor.nabijeni_auta_krok": "konci" });
       await expect(stateLine(page, 1)).toHaveText("Končí nabíjení");
       await update(page, {
@@ -1192,12 +1199,25 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(stateLine(page, 1)).toHaveText("Připojeno · přetoky zablokované");
       await update(page, { "switch.wallbox_1_block_charging": "on" });
       await expect(stateLine(page, 1)).toHaveText("Připojeno · nabíjení zablokované");
-      // The block the automation holds (safe end) is no reason of the user.
+      // The block the automation holds is the safe end, not a reason of the user: „Končí nabíjení“ (dashboard-critic 16. 11.).
       await update(page, { "input_boolean.nabijeni_blokace_automatikou": "on" });
-      await expect(stateLine(page, 1)).toHaveText("Připojeno · přetoky zablokované");
+      await expect(stateLine(page, 1)).toHaveText("Končí nabíjení");
       // In Boost no reason of Přetoky, only the mark.
       await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on", "switch.wallbox_1_block_charging": "off", "input_boolean.nabijeni_blokace_automatikou": "off" });
       await expect(stateLine(page, 1)).toHaveText("Připojeno, nenabíjí · Boost");
+      // After wallbox.boost_grace (120 s) the car that does not take the Boost says so („klikám a nejde to“).
+      await update(page, { "switch.wallbox_boost": { state: "on", last_changed: new Date(Date.now() - 300000).toISOString() } });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · auto nebere · Boost");
+      // The safe end blocks charging in every mode: „Končí nabíjení“, not a reason of Přetoky.
+      await update(page, { "input_select.nabijeni_auta_rezim": "Přetoky", "switch.wallbox_boost": "off", "switch.wallbox_1_block_charging": "on", "input_boolean.nabijeni_blokace_automatikou": "on" });
+      await expect(stateLine(page, 1)).toHaveText("Končí nabíjení");
+    });
+    await test.step("auto v Přetokách: přetok do sítě stačí na rozjezd a auto nebere; Boost bojleru není přetok pro vodu", async () => {
+      await open(page, "day");
+      await update(page, { "sensor.wallbox_charge_status": "Waiting", "sensor.wallbox_total_power": "0", "sensor.tuv_power_total": "0", "sensor.goodwe_battery_power": "0", "sensor.goodwe_house_consumption": "1800", "sensor.goodwe_meter_active_power_total": "5000" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · auto nebere");
+      await update(page, { "sensor.tuv_power_total": "4000", "switch.tuv_boost": "on", "sensor.goodwe_house_consumption": "5800", "sensor.goodwe_meter_active_power_total": "1000" });
+      await expect(stateLine(page, 1)).toHaveText("Připojeno · málo přetoku");
     });
     await test.step("Teplá voda a Elektřina při přetoku do sítě: nahřáto, přetoky zablokované, okno; baterie plná, režim střídače", async () => {
       await open(page, "day");

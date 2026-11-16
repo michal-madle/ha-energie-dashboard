@@ -376,7 +376,10 @@ test.dropThemes = () => {
 test.update = (changes) => {
   const next = { ...current, states: { ...current.states } };
   for (const [id, value] of Object.entries(changes)) {
-    next.states[id] = typeof value === "object" ? state(value.state, value.attributes) : state(value);
+    // An object may carry last_changed (how long a state has lasted, e.g. the Boost before „auto nebere“).
+    next.states[id] = typeof value === "object"
+      ? { ...state(value.state, value.attributes ?? {}), ...(value.last_changed ? { last_changed: value.last_changed, last_updated: value.last_changed } : {}) }
+      : state(value);
   }
   current = next;
   card.hass = next;

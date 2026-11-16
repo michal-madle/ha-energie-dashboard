@@ -12,7 +12,7 @@ import type { Controlled } from "./controls";
 import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages, segments } from "./view";
 import type { Constructor } from "./view";
 import { joined, joinedText } from "ha-dashboard-kit/joined";
-import { carReason } from "./reasons";
+import { boostReason, carReason } from "./reasons";
 
 export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
   class extends Base {
@@ -100,8 +100,21 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const autoMark = html`<span class="auto-mark">${t.car.autoMark}</span>`;
       // Auto: the step of the rule; Přetoky (or the Boost switch off without wallbox.mode): what the AZ Router waits for (H7).
       const surplusMode = chargeMode ? chargeMode === "Přetoky" : boost === "off";
-      const why = step ? t.car.step[step] : surplusMode ? carReason((id) => readText(this.hass, id), s, model, t, this._now) : undefined;
-      if (step === "konci" && link !== "disconnected") {
+      // In the shadow run the rule only writes down that it would start (yaml/packages/nabijeni_auta.yaml, 1794310000112).
+      // The shadow run counts its tries too, so „dnes už 2 pokusy“ would claim tries that never charged (dashboard-critic 16. 11.).
+      const shadow = readText(this.hass, e.wallbox.shadow) === "on";
+      const stepKey = shadow && (step === "start" || step === "dnes_hotovo") ? `${step}_stin` : step;
+      const read = (id: string | undefined) => readText(this.hass, id);
+      const why = stepKey
+        ? t.car.step[stepKey]
+        : surplusMode
+          ? carReason(read, s, model, t, this._now)
+          : manualBoost && !charging
+            ? boostReason(read, s, t, this._now, Date.parse(entityState(this.hass, e.wallbox.boost)?.last_changed ?? ""))
+            : undefined;
+      // The safe end blocks charging for a moment in every mode, not only in Auto (yaml/packages/nabijeni_auta.yaml, script).
+      const ending = step === "konci" || read(e.wallbox.block_by_automation) === "on";
+      if (ending && link !== "disconnected") {
         stateText = t.car.ending;
       } else if (charging) {
         stateText = [t.car.charging(src.text), ...(step === "nabiji" ? [autoMark] : boostMark)];
@@ -109,7 +122,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       } else if (link === "connected" || link === "charging") {
         // Every state of a connected car says why it does not charge (uživatel 15. 11. 2026: „Všechny takový stavy musí být
         // v nějakém stavu - pro neco jede auto nebo proc nejede.“).
-        stateText = why ? [t.car.connected, why] : [t.car.connectedIdle, ...boostMark];
+        stateText = why ? [t.car.connected, why, ...boostMark] : [t.car.connectedIdle, ...boostMark];
       } else if (link === "disconnected") {
         stateText = t.car.disconnected;
       }
