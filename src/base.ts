@@ -32,6 +32,8 @@ export class CardBase extends LitElement {
   /** Room the Elektřina panel adds above and below the diagram so that an open popup is not cut off. */
   @state() _now = Date.now();
   @state() _carHint = false;
+  /** The sheet „Co se děje s autem“ (the title of the car panel). */
+  @state() _carInfo = false;
   /** The battery detail (a page of its own inside the card) and what is open in it. */
   @state() _batDetail = false;
   @state() _batTab: BatTab = "now";

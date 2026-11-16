@@ -4,7 +4,7 @@ import type { TemplateResult } from "lit";
 import { SOURCES, isOn, sourceText } from "./model";
 import type { FlowModel, Source } from "./model";
 import type { Settings } from "./types";
-import { ago, entityState, formatClock, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
+import { ago, entityState, formatClock, formatDayShort, formatNumber, formatPercent, formatPower, powerUnit, readNumber, readText } from "./utils";
 import type { PowerUnit } from "./utils";
 import { HoldOrDoubleTap } from "ha-dashboard-kit/gesture";
 import { ICON } from "./icons";
@@ -147,7 +147,15 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
               </div>
               ${this._carHint ? html`<div class="car-hint" aria-hidden="true">${t.hint.holdOrDouble}</div>` : nothing}`
             : nothing}
-          <div class="head"><h2 id="h-car">${this.pickText(s.titles.car) ?? t.titles.car}</h2>${this.stateLine(stateText, stateColor)}</div>
+          <div class="head">
+            <h2 id="h-car">
+              <button type="button" class="title-btn" aria-haspopup="dialog" aria-expanded=${this._carInfo ? "true" : "false"} aria-label="${this.pickText(s.titles.car) ?? t.titles.car}, ${t.car.info.heading}" @click=${() => (this._carInfo = true)}>
+                ${this.pickText(s.titles.car) ?? t.titles.car}<svg viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.info}></path></svg>
+              </button>
+            </h2>
+            ${this.stateLine(stateText, stateColor)}
+          </div>
+          ${this._carInfo ? this.renderCarInfo(s, model, stateText, stateColor, { chargeMode, step: stepKey, shadow, charging, manualBoost }) : nothing}
           <div class="car-soc">
             <span class="soc">${soc === undefined ? NO_DATA : formatNumber(soc)}<small>${this._i18n.percent("")}</small>${soc === undefined ? html`<span class="sr-only">${t.noData}</span>` : nothing}</span>
             <span class="range">${t.car.range} <b>${model.carRange === undefined ? NO_DATA : `${formatNumber(model.carRange)} km`}</b></span>
@@ -295,13 +303,63 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
 
     /** Why and when the Boost of the house ended last, only today (attribute posledni_konec of wallbox.step, „code|time“). */
     lastEnd(s: Settings): string[] | undefined {
+      const end = this.lastEndRecord(s);
+      if (!end || !end.today) return undefined;
+      return [this.t.wallbox.lastEnd(formatClock(end.at)), end.why];
+    }
+
+    /** „kód|čas|nabití auta|energie“ of the last end of a Boost (input_text.nabijeni_auta_posledni_konec through wallbox.step). */
+    lastEndRecord(s: Settings): { at: number; why: string; today: boolean; soc?: number; kwh?: number } | undefined {
       const raw = entityState(this.hass, s.entities.wallbox.step)?.attributes?.posledni_konec;
       if (typeof raw !== "string" || !raw.includes("|")) return undefined;
-      const [code, time] = raw.split("|");
+      const [code, time, soc, kwh] = raw.split("|");
       const at = Date.parse(time);
       const why = this.t.wallbox.endReason[code];
-      if (!why || !Number.isFinite(at) || new Date(at).toDateString() !== new Date(this._now).toDateString()) return undefined;
-      return [this.t.wallbox.lastEnd(formatClock(at)), why];
+      if (!why || !Number.isFinite(at)) return undefined;
+      const num = (value: string | undefined) => (value !== undefined && value !== "" && Number.isFinite(Number(value)) ? Number(value) : undefined);
+      return { at, why, today: new Date(at).toDateString() === new Date(this._now).toDateString(), soc: num(soc), kwh: num(kwh) };
+    }
+
+    /**
+     * „Co se děje s autem“ (uživatel 16. 11. 2026: „Potrebuju videt co se s autem deje. Treba nejake (i) kde se mi zobrazi proc
+     * se stala poslední akce a co bude následovat.“): now, the last end of a Boost with its reason, what comes next.
+     */
+    renderCarInfo(
+      s: Settings, model: FlowModel, stateText: string | unknown[] | undefined, stateColor: string | undefined,
+      at: { chargeMode: string | undefined; step: string | undefined; shadow: boolean; charging: boolean; manualBoost: boolean },
+    ): TemplateResult {
+      const t = this.t;
+      const i = t.car.info;
+      const end = this.lastEndRecord(s);
+      const soc = model.carSoc;
+      const targetId = this.targetId(s, at.chargeMode);
+      const target = targetId ? Number(this.shown(targetId)) : NaN;
+      const goal = Number.isFinite(target) ? (target >= 100 ? t.car.etaFull : formatPercent(target)) : undefined;
+      let next: string;
+      if (model.carLink === "disconnected") next = i.nextDisconnected;
+      else if (Number.isFinite(target) && target < 100 && soc !== undefined && soc >= target) next = i.nextDone;
+      else if (at.manualBoost) next = Number.isFinite(target) && target < 100 ? i.nextBoost(goal!) : i.nextBoostFull;
+      else if (at.chargeMode === "Auto" && at.shadow) next = i.nextShadow;
+      else if (at.chargeMode === "Auto") next = at.step === "nabiji" ? i.nextAutoCharging(goal ?? t.car.etaFull) : i.nextAutoWait;
+      else next = i.nextSurplus(`${formatNumber(s.num.wallbox.power_min / 1000, 1)} kW`);
+      const when = end ? (end.today ? formatClock(end.at) : `${formatDayShort(end.at)} ${formatClock(end.at)}`) : undefined;
+      const detail = end
+        ? [
+            ...(end.soc !== undefined ? [i.atEnd(formatPercent(end.soc))] : []),
+            ...(end.kwh !== undefined ? [i.delivered(`${formatNumber(end.kwh, 1)} kWh`)] : []),
+          ]
+        : [];
+      // The charge from the prediction of the integration can fall when the car reports its real charge (the reason of
+      // „Boost do 75 %, auto má 70 %“).
+      const drop = end?.soc !== undefined && soc !== undefined && end.soc - soc >= 2 ? i.socDrop(formatPercent(end.soc), formatPercent(soc)) : undefined;
+      return html`<ed-sheet open .heading=${i.heading} .closeLabel=${t.close} @hdk-close=${() => (this._carInfo = false)}><div class="pop car-info">
+        <div class="info-row"><span class="pop-label">${i.now}</span>${this.stateLine(stateText, stateColor)}</div>
+        <div class="info-row"><span class="pop-label">${i.last}</span>
+          <p class="info-text">${end ? html`${i.lastEnd(when!, end.why)}${detail.length ? html`<br /><span class="dim">${joinedText(detail.join(" · "))}</span>` : nothing}` : i.lastNone}</p>
+          ${drop ? html`<p class="info-text dim">${drop}</p>` : nothing}
+        </div>
+        <div class="info-row"><span class="pop-label">${i.next}</span><p class="info-text">${next}</p></div>
+      </div></ed-sheet>`;
     }
 
     renderCarSources(model: FlowModel, flows: Settings["num"]["flows"], total: string, boostOn: boolean): TemplateResult {

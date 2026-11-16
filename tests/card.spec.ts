@@ -694,7 +694,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
     });
     await test.step("klepnutí na záhlaví: Dnes, každá hodnota s kWh a dvěma desetinnými místy (Q210), Zdroje a Spotřeba; Dům je zbytek; bez čítačů auta a bojleru „––“", async () => {
       await open(page, "day", 393, 852, "dark", "cs", "&stats=none");
-      await page.locator(".title-btn").click();
+      await page.locator("#h-el .title-btn").click();
       const day = popup(page, /Dnes/);
       await expect(day).toBeVisible();
       await expect(day.getByRole("list", { name: "Zdroje" })).toContainText("18,40\u00a0kWh");
@@ -702,7 +702,7 @@ test.describe("toky energie (CURRENT_SPEC.md, Karta Elektřina = Sankey)", () =>
       await page.keyboard.press("Escape");
       const config = example();
       await reconfigure(page, { daily: { ...config.daily, car: "sensor.test_auto_dnes", boiler: "sensor.test_bojler_dnes" } });
-      await page.locator(".title-btn").click();
+      await page.locator("#h-el .title-btn").click();
       // 18,4 + 2,6 + 3,1 − 4,9 − 5,2 − 6,0 − 2,5 = 5,5 kWh; zdroje i spotřeba dají 24,1.
       const use = day.getByRole("list", { name: "Spotřeba" });
       await expect(use).toContainText("24,10\u00a0kWh");
@@ -1181,6 +1181,46 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
     });
   });
 
+  test("Co se děje s autem: (i) u nadpisu, poslední konec Boostu s důvodem, co dál; barva zvoleného segmentu (CURRENT_SPEC.md, Auto)", async ({ page }) => {
+    test.setTimeout(90000);
+    await test.step("Boost do 75 % skončil podle odhadu integrace, auto teď hlásí 70 %: list to řekne", async () => {
+      await open(page, "full");
+      const end = await page.evaluate(() => { const at = new Date(); at.setHours(9, 40, 0, 0); return at.toISOString(); });
+      await update(page, {
+        "input_select.nabijeni_auta_rezim": "Přetoky", "input_number.nabijeni_auta_cil_boost": "75.0", "sensor.vin_stav_nabiti_predikce_integrace": "70",
+        "sensor.nabijeni_auta_krok": { state: "vypnuto", attributes: { posledni_konec: `cil|${end}|75.2|3.7` } },
+      });
+      await expect(page.locator(".row-btn .row-sub")).toContainText("skončilo 09:40 · auto na cíli");
+      await page.getByRole("button", { name: /BMW i3, Co se děje s autem/ }).click();
+      const sheet = page.locator("ed-sheet .car-info");
+      await expect(sheet).toContainText("Boost skončil 09:40: auto na cíli");
+      await expect(sheet).toContainText("auto 75 % · dodáno 3,7 kWh");
+      await expect(sheet).toContainText("Při konci ukazoval odhad integrace 75 %, auto teď hlásí 70 %");
+      await expect(sheet).toContainText("Auto se nabije samo z přetoku, až bude voda dohřátá a přebytek stačí na 4,2 kW.");
+      await page.keyboard.press("Escape");
+      await expect(page.locator("ed-sheet")).toHaveCount(0);
+    });
+    await test.step("ruční Boost do 75 %: co dál; Boost do 100 %: dokud auto bere", async () => {
+      await open(page, "full");
+      await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on", "input_number.nabijeni_auta_cil_boost": "75.0" });
+      await page.getByRole("button", { name: /BMW i3, Co se děje s autem/ }).click();
+      await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto podle odhadu integrace dosáhne 75 %");
+      await expect(page.locator("ed-sheet .car-info")).toContainText("Boost zatím neskončil.");
+      await update(page, { "input_number.nabijeni_auta_cil_boost": "100.0" });
+      await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto přestane brát.");
+    });
+    await test.step("zvolený segment: tmavě šedý #636366 s bílým popiskem, světle bílý s černým (Q289)", async () => {
+      const colors = async () => page.evaluate(() => {
+        const seg = document.querySelector("ha-energie-dashboard")!.shadowRoot!.querySelector("ed-segmented")!.shadowRoot!;
+        return [getComputedStyle(seg.querySelector(".thumb")!).backgroundColor, getComputedStyle(seg.querySelector('button[aria-checked="true"]')!).color];
+      });
+      await open(page, "full");
+      expect(await colors()).toEqual(["rgb(99, 99, 102)", "rgb(255, 255, 255)"]);
+      await open(page, "full", 393, 852, "light");
+      expect(await colors()).toEqual(["rgb(255, 255, 255)", "rgb(0, 0, 0)"]);
+    });
+  });
+
   test("důvody ve stavové větě: auto v Přetokách, Teplá voda a Elektřina při přetoku do sítě (CURRENT_SPEC.md, Důvod ve stavové větě a scénáře nabíjení)", async ({ page }) => {
     test.setTimeout(90000);
     /** A window of the AZ Router around now (inside) or two hours ahead (outside), in the time zone of the browser. */
@@ -1403,7 +1443,7 @@ test.describe("rozložení (CURRENT_SPEC.md, Mobil)", () => {
         expect(await layout(), `${scenario} ${width} ${key}`).toEqual(before);
         await page.keyboard.press("Escape");
       }
-      await page.locator(".title-btn").click();
+      await page.locator("#h-el .title-btn").click();
       await page.waitForTimeout(250);
       expect(await layout(), `${scenario} ${width} záhlaví`).toEqual(before);
       await page.keyboard.press("Escape");
@@ -1456,7 +1496,7 @@ test.describe("chybějící data (CURRENT_SPEC.md, Chybějící a zastaralá dat
     });
     await test.step("denní součty bez čítačů: „––“ v popoveru i v záhlaví, žádné odhady", async () => {
       await open(page, "unavailable");
-      await page.locator(".title-btn").click();
+      await page.locator("#h-el .title-btn").click();
       const day = popup(page, /Dnes/);
       await expect(day.locator(".day-total b")).toHaveText(["––", "––"]);
     });
@@ -1824,7 +1864,7 @@ test.describe("přístupnost (CURRENT_SPEC.md, Mobil, režimy, přístupnost)", 
       await page.locator('.tile[data-tile="batIn"]').click();
       expect(await axeViolations(page), "popover dlaždice").toEqual([]);
       await page.keyboard.press("Escape");
-      await page.locator(".title-btn").click();
+      await page.locator("#h-el .title-btn").click();
       expect(await axeViolations(page), "popover záhlaví").toEqual([]);
 
     }
@@ -1912,7 +1952,7 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
           await noCzech(page, `${lang} ${scenario} ${key}`);
           await page.keyboard.press("Escape");
         }
-        await page.locator(".title-btn").click();
+        await page.locator("#h-el .title-btn").click();
         await noCzech(page, `${lang} ${scenario} záhlaví`);
       }
       // Feedback and hints

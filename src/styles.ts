@@ -23,9 +23,10 @@ export const styles = css`
     --ed-bar: rgb(255 255 255 / 14%);
     --ed-tick: rgb(255 255 255 / 28%);
     --ed-switch-off: rgb(120 120 128 / 36%);
-    --ed-seg-thumb: #ffffff;
+    /* Selected segment: grey #636366 with white text in the dark, white with black in the light (uživatel 16. 11. 2026: „Q289 dark V4, light V0“). */
+    --ed-seg-thumb: #636366;
     --ed-seg-text: #ebebf5;
-    --ed-seg-selected: #000000;
+    --ed-seg-selected: #ffffff;
     --ed-btn: rgb(118 118 128 / 24%);
     --ed-badge: rgb(255 255 255 / 8%);
     --ed-fill-idle: rgb(255 255 255 / 17%);
@@ -58,6 +59,8 @@ export const styles = css`
     --ed-bar: rgb(60 60 67 / 18%);
     --ed-tick: rgb(60 60 67 / 30%);
     --ed-switch-off: rgb(120 120 128 / 32%);
+    --ed-seg-thumb: #ffffff;
+    --ed-seg-selected: #000000;
     --ed-seg-text: #000000;
     --ed-badge: rgb(60 60 67 / 8%);
     --ed-fill-idle: rgb(60 60 67 / 16%);
@@ -554,6 +557,28 @@ export const styles = css`
     font-variant-numeric: tabular-nums;
   }
 
+  /* „Co se děje s autem“: three blocks, each a grey label and a sentence. */
+  .car-info {
+    gap: 14px;
+  }
+
+  .info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .info-text {
+    margin: 0;
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .info-text .dim,
+  .info-text.dim {
+    color: var(--ed-pop-sec);
+  }
+
   .pop.day {
     gap: 6px;
   }
@@ -613,8 +638,15 @@ export const styles = css`
     height: 168px;
   }
 
+  /* The title (ⓘ „Co se děje s autem“) lies above the enlarged hit area of the picture; the rest of the head lets taps through. */
   .car-top .head {
     position: relative;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .car-top .head .title-btn {
+    pointer-events: auto;
   }
 
   .car-art {
