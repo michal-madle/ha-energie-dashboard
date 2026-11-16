@@ -354,6 +354,7 @@ let current = { states, devices: registry.devices, entities: registry.entities, 
         "input_select.nabijeni_auta_rezim": [{ s: "Přetoky", lu: today(0, 0) }, { s: "Boost", lu: today(9, 38, 50) }, { s: "Přetoky", lu: today(10, 34, 0) }],
         "sensor.wallbox_charge_status": [{ s: "Waiting", lu: today(0, 0) }, { s: "Charging", lu: today(9, 39, 2) }, { s: "Waiting", lu: today(10, 34, 5) }],
         "input_text.nabijeni_auta_posledni_konec": [{ s: "", lu: today(0, 0) }, { s: `cil|${new Date(today(10, 34) * 1000).toISOString()}|80.4|3.7`, lu: today(10, 34, 0) }],
+        "input_number.nabijeni_auta_cil_boost": [{ s: "75.0", lu: today(0, 0) }],
         "sensor.vin_stav_nabiti_predikce_integrace": [{ s: "70", lu: today(0, 0) }, { s: "75.2", lu: today(10, 5) }, { s: "80.35", lu: today(10, 33) }, { s: "78", lu: today(10, 34, 46) }],
       });
       const result = {};

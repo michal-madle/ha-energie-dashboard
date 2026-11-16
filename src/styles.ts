@@ -577,7 +577,8 @@ export const styles = css`
     gap: 8px;
   }
 
-  .ev time {
+  .ev time,
+  .ev .when {
     color: var(--ed-pop-sec);
     font-size: 13px;
     line-height: 20px;
@@ -614,14 +615,20 @@ export const styles = css`
     background: var(--ed-pop-sec);
   }
 
+  /* Now: a dot in the colour of the text (blue would read as the grid); next: an open ring on a dashed line. */
   .ev.now .line::after {
-    background: var(--ed-accent);
+    background: var(--ed-text);
   }
 
   .ev.next .line::after {
     box-sizing: border-box;
     background: transparent;
-    border: 2px dashed var(--ed-accent);
+    border: 1.5px solid var(--ed-pop-sec);
+  }
+
+  .ev.now .line::before {
+    background: repeating-linear-gradient(var(--ed-pop-line) 0 4px, transparent 4px 7px);
+    top: 10px;
   }
 
   .ev .t {
@@ -648,6 +655,8 @@ export const styles = css`
 
   .ev .t .state {
     margin: 0;
+    color: var(--ed-text);
+    font-weight: 600;
   }
 
   /* The dot of the timeline marks now; the dot of the state line would be a second one. */

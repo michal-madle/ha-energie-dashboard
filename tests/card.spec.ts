@@ -1195,8 +1195,8 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       const sheet = page.locator("ed-sheet .car-info");
       await expect(sheet).toContainText("Boost skončil 09:40: auto na cíli");
       await expect(sheet).toContainText("auto 75 % · dodáno 3,7 kWh");
-      await expect(sheet).toContainText("Při konci ukazoval odhad integrace 75 %, auto teď hlásí 70 %");
-      await expect(sheet).toContainText("Auto se nabije samo z přetoku, až bude voda dohřátá a přebytek stačí na 3,3 kW.");
+      await expect(sheet).toContainText("Při konci bylo podle energie 75 %, auto teď hlásí 70 %.");
+      await expect(sheet).toContainText("Nejdřív se nabije baterie domu; pak se auto rozjede, až bude přetok aspoň 3,3 kW. Přetoky nemají cíl.");
       await page.keyboard.press("Escape");
       await expect(page.locator("ed-sheet")).toHaveCount(0);
     });
@@ -1209,13 +1209,15 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       const rows = page.locator("ed-sheet .timeline > li");
       await expect(rows).toHaveCount(4);
       await expect(rows.nth(0)).toContainText("09:38");
-      await expect(rows.nth(0)).toContainText("Boost zapnutý");
-      await expect(rows.nth(0)).toContainText("režim Boost · začalo nabíjet · auto 70 %");
+      await expect(rows.nth(0)).toContainText("Boost zapnutý do 75 %");
+      await expect(rows.nth(0)).toContainText("začalo nabíjet · auto 70 %");
+      await expect(rows.nth(0)).not.toContainText("režim Boost");
       await expect(rows.nth(1)).toContainText("10:34");
       await expect(rows.nth(1)).toContainText("Boost skončil: auto na cíli");
-      await expect(rows.nth(1)).toContainText("režim Přetoky");
+      await expect(rows.nth(1)).toContainText("režim Přetoky · přestalo nabíjet · auto 80 % · dodáno 3,7 kWh");
       await expect(rows.nth(2)).toContainText("Připojeno");
-      await expect(rows.nth(3)).toContainText("Auto se nabije samo z přetoku");
+      // The house battery is not full: the AZ Router starts only after it (now and next do not contradict).
+      await expect(rows.nth(3)).toContainText("Nejdřív se nabije baterie domu; pak se auto rozjede, až bude přetok aspoň 3,3 kW.");
       const request = await page.evaluate(() => window.__test.requests.filter((r: { type: string }) => r.type === "history/history_during_period").at(-1));
       expect(request.entity_ids).toEqual(expect.arrayContaining(["switch.wallbox_boost", "input_select.nabijeni_auta_rezim", "sensor.wallbox_charge_status", "input_text.nabijeni_auta_posledni_konec"]));
     });
@@ -1223,7 +1225,7 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await open(page, "full");
       await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on", "input_number.nabijeni_auta_cil_boost": "75.0" });
       await page.getByRole("button", { name: /BMW i3, Co se děje s autem/ }).click();
-      await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto podle odhadu integrace dosáhne 75 %");
+      await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto dosáhne 75 % (počítáno z energie z wallboxu)");
       await expect(page.locator("ed-sheet .car-info")).toContainText("Dnes se s nabíjením nic nestalo.");
       await update(page, { "input_number.nabijeni_auta_cil_boost": "100.0" });
       await expect(page.locator("ed-sheet .car-info")).toContainText("Boost skončí, až auto přestane brát.");
@@ -2652,3 +2654,33 @@ test.describe("baterie (CURRENT_SPEC.md, Baterie)", () => {
     });
   });
 });
+
+test.describe("časová osa auta (src/car-timeline.ts)", () => {
+  test("Boost přes půlnoc, oblačný den v Přetokách, neznámý stav wallboxu", async () => {
+    const { timeline } = await import("../src/car-timeline.ts");
+    const { cs } = await import("../src/translations/cs.ts");
+    const midnight = new Date(2026, 10, 16).getTime();
+    const at = (h: number, m: number) => midnight + (h * 60 + m) * 60000;
+    const pct = (v: number) => `${Math.round(v)} %`;
+    const clock = (ms: number) => { const d = new Date(ms); return `${d.getHours()}:${String(d.getMinutes()).padStart(2, "0")}`; };
+    // Boost on since 22:30 yesterday, ends at 1:10 at the target.
+    const night = timeline({
+      boost: [{ at: at(-1, 0), state: "on" }, { at: at(1, 10), state: "off" }],
+      mode: [{ at: at(-1, 0), state: "Boost" }, { at: at(1, 10), state: "Přetoky" }],
+      end: [{ at: at(-1, 0), state: "" }, { at: at(1, 10), state: `cil|x|75.1|9.8` }],
+    }, midnight, cs as never, pct, clock);
+    expect(night.map((r) => r.title)).toEqual(["Boost běží od včera", "Boost skončil: auto na cíli"]);
+    expect(night[1].detail).toEqual(["režim Přetoky", "auto\u00a075 %", "dodáno 9,8\u00a0kWh"]);
+    // A cloudy day: the AZ Router starts and stops five times; one row with the count and the last time.
+    const status = [{ at: at(9, 0), state: "Waiting" }];
+    for (let k = 0; k < 5; k++) status.push({ at: at(11, k * 20), state: "Charging" }, { at: at(11, k * 20 + 7), state: "Waiting" });
+    const cloudy = timeline({ status }, midnight, cs as never, pct, clock);
+    expect(cloudy).toHaveLength(1);
+    expect(cloudy[0].title).toBe("Nabíjelo z přetoku 5× (AZ Router rozjíždí a zastavuje)");
+    expect(cloudy[0].detail).toEqual(["naposledy 12:27"]);
+    // A state the card does not know is shown as it is (CURRENT_SPEC.md, Wallbox).
+    const fault = timeline({ status: [{ at: at(9, 0), state: "Waiting" }, { at: at(10, 0), state: "Error" }] }, midnight, cs as never, pct, clock);
+    expect(fault.map((r) => r.title)).toEqual(["wallbox hlásí Error"]);
+  });
+});
+

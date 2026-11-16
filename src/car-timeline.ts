@@ -7,7 +7,7 @@ import type { Texts } from "./i18n";
 
 /** One state of an entity at a moment (ms), as the recorder returns it. */
 export interface Point { at: number; state: string }
-export type Series = Partial<Record<"boost" | "mode" | "status" | "end" | "soc", Point[]>>;
+export type Series = Partial<Record<"boost" | "mode" | "status" | "end" | "soc" | "target", Point[]>>;
 
 export interface TimelineRow { at: number; title: string; detail: string[] }
 
@@ -40,53 +40,92 @@ function changes(points: Point[] | undefined): Array<{ at: number; from: string 
  * Rows of the timeline since `from`, oldest first. `percent` formats the charge, `reasons` names the codes of the end of a
  * Boost (the same as the row Wallbox).
  */
-export function timeline(series: Series, from: number, t: Texts, percent: (value: number) => string): TimelineRow[] {
+export function timeline(series: Series, from: number, t: Texts, percent: (value: number) => string, clock: (ms: number) => string): TimelineRow[] {
   const i = t.car.info.timeline;
-  type Raw = { at: number; kind: string; text: string };
+  type Raw = { at: number; kind: string; text: string; house?: boolean; extra?: string[] };
   const raw: Raw[] = [];
+  const target = (at: number) => {
+    const value = Number(valueAt(series.target, at + SAME));
+    return Number.isFinite(value) && value < 100 ? percent(value) : undefined;
+  };
+  // A Boost that already ran at midnight: the first row says since when (dashboard-critic 16. 11. 2026).
+  let house = false;
+  const firstBoost = (series.boost ?? []).find((point) => !UNKNOWN.has(point.state));
+  if (firstBoost?.state === "on" && firstBoost.at < from) raw.push({ at: from, kind: "start", text: i.overnight });
   for (const c of changes(series.boost)) {
     if (c.to === "on") {
-      const mode = valueAt(series.mode, c.at + SAME);
-      raw.push({ at: c.at, kind: "start", text: mode === "Auto" ? i.houseStart : i.boostOn });
-    } else if (c.to === "off") raw.push({ at: c.at, kind: "end", text: i.boostOff });
+      house = valueAt(series.mode, c.at + SAME) === "Auto";
+      const goal = target(c.at);
+      const text = house ? i.houseStart : goal ? i.boostTo(goal) : i.boostOn;
+      raw.push({ at: c.at < from ? from : c.at, kind: "start", text: c.at < from ? i.since(text, clock(c.at)) : text });
+    } else if (c.to === "off") raw.push({ at: c.at, kind: "end", text: house ? i.houseEnd : i.boostOff, house });
   }
-  // Every new reason is an end, also the first of the day (the helper may start empty).
+  // Every new reason is an end, also the first of the day (the helper may start empty). It carries the charge the end
+  // was decided on and the energy the wallbox delivered („kód|čas|nabití|energie“).
   let lastEnd: string | undefined;
   for (const point of series.end ?? []) {
     if (point.state === "unknown" || point.state === "unavailable" || point.state === lastEnd) continue;
     const first = lastEnd === undefined;
     lastEnd = point.state;
-    const why = t.wallbox.endReason[point.state.split("|")[0]];
-    if (why && !(first && point.at < from)) raw.push({ at: point.at, kind: "why", text: why });
+    const [code, , soc, kwh] = point.state.split("|");
+    const why = t.wallbox.endReason[code];
+    if (!why || (first && point.at < from)) continue;
+    const extra: string[] = [];
+    if (soc !== undefined && soc !== "" && Number.isFinite(Number(soc))) extra.push(i.soc(percent(Number(soc))));
+    if (kwh !== undefined && kwh !== "" && Number.isFinite(Number(kwh))) extra.push(i.delivered(kwh.replace(".", ",")));
+    raw.push({ at: point.at, kind: "why", text: why, extra });
   }
   for (const c of changes(series.status)) {
-    const text = c.to === "Charging" ? i.charging : c.to === "Disconnected" ? i.unplugged : c.from === "Disconnected" ? i.plugged : c.from === "Charging" ? i.stopped : undefined;
+    const text = c.to === "Charging" ? i.charging : c.to === "Disconnected" ? i.unplugged : c.from === "Disconnected" ? i.plugged
+      : c.from === "Charging" ? i.stopped : c.to !== "Waiting" ? i.wallbox(c.to) : undefined;
     if (text) raw.push({ at: c.at, kind: "status", text });
   }
   for (const c of changes(series.mode)) raw.push({ at: c.at, kind: "mode", text: i.mode(t.chargeModes[c.to] ?? c.to) });
   raw.sort((a, b) => a.at - b.at);
 
-  // Changes a few seconds apart are one row: the most telling one is the title, the others go to the detail.
+  // Changes a few seconds apart are one row (counted from the first one): the most telling one is the title.
   const weight: Record<string, number> = { end: 5, start: 4, status: 3, mode: 2, why: 1 };
-  const rows: TimelineRow[] = [];
+  const lower = (text: string) => text.charAt(0).toLocaleLowerCase() + text.slice(1);
+  type Row = TimelineRow & { statusOnly: boolean; charging: boolean };
+  const rows: Row[] = [];
   let group: Raw[] = [];
   const flush = () => {
     if (!group.length) return;
     const main = [...group].sort((a, b) => weight[b.kind] - weight[a.kind])[0];
     const why = group.find((item) => item.kind === "why");
     const title = main.kind === "end" && why ? `${main.text}: ${why.text}` : main.text;
-    // The other changes of the moment follow the title in small letters („režim Přetoky · přestalo nabíjet“).
-    const lower = (text: string) => text.charAt(0).toLocaleLowerCase() + text.slice(1);
-    const detail = group.filter((item) => item !== main && !(main.kind === "end" && item === why) && item.kind !== "why").map((item) => lower(item.text));
-    const soc = Number(valueAt(series.soc, group[group.length - 1].at + SAME));
-    if (Number.isFinite(soc)) detail.push(i.soc(percent(soc)));
-    if (group[0].at >= from) rows.push({ at: group[0].at, title, detail });
+    // The mode the Boost switched to says nothing new; the return to Přetoky after it does.
+    const detail = group
+      .filter((item) => item !== main && item.kind !== "why" && !(main.kind === "start" && item.kind === "mode"))
+      .map((item) => lower(item.text));
+    if (why?.extra?.length) detail.push(...why.extra);
+    else {
+      const soc = Number(valueAt(series.soc, main.kind === "end" ? main.at - 1 : group[group.length - 1].at + SAME));
+      if (Number.isFinite(soc)) detail.push(i.soc(percent(soc)));
+    }
+    if (group[0].at >= from) {
+      const statusOnly = group.every((item) => item.kind === "status");
+      rows.push({ at: group[0].at, title, detail, statusOnly, charging: statusOnly && main.text === i.charging });
+    }
     group = [];
   };
   for (const item of raw) {
-    if (group.length && item.at - group[group.length - 1].at > SAME) flush();
+    if (group.length && item.at - group[0].at > SAME) flush();
     group.push(item);
   }
   flush();
-  return rows;
+
+  // A cloudy day in Přetoky: the AZ Router starts and stops many times. Runs of bare starts and stops are one row.
+  const out: TimelineRow[] = [];
+  for (let n = 0; n < rows.length; n++) {
+    const row = rows[n];
+    let m = n;
+    while (m + 1 < rows.length && rows[m + 1].statusOnly && row.statusOnly) m++;
+    const starts = rows.slice(n, m + 1).filter((r) => r.charging).length;
+    if (m - n >= 2 && starts >= 2) {
+      out.push({ at: row.at, title: i.surplusRuns(starts), detail: [i.until(clock(rows[m].at))] });
+      n = m;
+    } else out.push({ at: row.at, title: row.title, detail: row.detail });
+  }
+  return out;
 }

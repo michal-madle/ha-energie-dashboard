@@ -12,7 +12,7 @@ import type { Controlled } from "./controls";
 import { NO_DATA, SOURCE_VAR, attribute, clamp, meterPosition, mix, percentages, segments } from "./view";
 import type { Constructor } from "./view";
 import { joined, joinedText } from "ha-dashboard-kit/joined";
-import { boostReason, carReason } from "./reasons";
+import { boostReason, carReason, outsideWindow } from "./reasons";
 import { timeline } from "./car-timeline";
 import type { Point, Series } from "./car-timeline";
 
@@ -340,16 +340,24 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const target = targetId ? Number(this.shown(targetId)) : NaN;
       const goal = Number.isFinite(target) ? (target >= 100 ? t.car.etaFull : formatPercent(target)) : undefined;
       let next: string;
-      if (model.carLink === "disconnected") next = i.nextDisconnected;
+      if (model.carLink === "disconnected") next = i.nextDisconnected(t.chargeModes[at.chargeMode ?? ""] ?? t.boostOptions.off);
       else if (Number.isFinite(target) && target < 100 && soc !== undefined && soc >= target) next = i.nextDone;
       else if (at.manualBoost) next = Number.isFinite(target) && target < 100 ? i.nextBoost(goal!) : i.nextBoostFull;
       else if (at.chargeMode === "Auto" && at.shadow) next = i.nextShadow;
       else if (at.chargeMode === "Auto") next = at.step === "nabiji" ? i.nextAutoCharging(goal ?? t.car.etaFull) : i.nextAutoWait;
       else {
-        // The start of the AZ Router (per phase × phases) when known, otherwise the lowest charging power.
+        // The start of the AZ Router (per phase × phases) when known, otherwise the lowest charging power; the same reasons
+        // as the state line come first, so now and next never contradict (dashboard-critic 16. 11. 2026).
         const start = readNumber(this.hass, s.entities.wallbox.solar_start);
-        const watts = start !== undefined ? start * s.num.wallbox.phases : s.num.wallbox.power_min;
-        next = i.nextSurplus(`${formatNumber(watts / 1000, 1)}\u00a0kW`);
+        const power = `${formatNumber((start !== undefined ? start * s.num.wallbox.phases : s.num.wallbox.power_min) / 1000, 1)}\u00a0kW`;
+        const read = (id: string | undefined) => readText(this.hass, id);
+        const w = s.entities.wallbox;
+        const window = outsideWindow(read, w.window, w.window_start, w.window_end, this._now);
+        if (read(w.block_charging) === "on" && read(w.block_by_automation) !== "on") next = i.nextBlocked;
+        else if (read(w.block_solar) === "on") next = i.nextSolarBlocked;
+        else if (window) next = i.nextWindow(window);
+        else if ((model.soc ?? 0) < s.num.battery.full && model.soc !== undefined) next = i.nextBattery(power);
+        else next = i.nextSurplus(power);
       }
       const when = end ? (end.today ? formatClock(end.at) : `${formatDayShort(end.at)} ${formatClock(end.at)}`) : undefined;
       const detail = end
@@ -367,16 +375,16 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const rows = tl?.status === "ready" ? tl.rows : [];
       const past = rows.length
         ? rows.map((row) => html`<li class="ev"><time>${formatClock(row.at)}</time><span class="line" aria-hidden="true"></span><span class="t"><b>${row.title}</b>${row.detail.length ? html`<span>${row.detail.join(" · ")}</span>` : nothing}</span></li>`)
-        : tl?.status === "loading"
-          ? html`<li class="ev"><time></time><span class="line" aria-hidden="true"></span><span class="t"><span>${i.loading}</span></span></li>`
+        : tl?.status === "loading" || tl?.status === "error"
+          ? html`<li class="ev"><time></time><span class="line" aria-hidden="true"></span><span class="t"><span>${tl.status === "error" ? i.error : i.loading}</span></span></li>`
           : end
             ? html`<li class="ev"><time>${when}</time><span class="line" aria-hidden="true"></span><span class="t"><b>${i.lastEnd(when!, end.why)}</b>${detail.length ? html`<span>${detail.join(" · ")}</span>` : nothing}</span></li>`
             : html`<li class="ev"><time></time><span class="line" aria-hidden="true"></span><span class="t"><span>${i.empty}</span></span></li>`;
       return html`<ed-sheet open .heading=${i.heading} .closeLabel=${t.close} @hdk-close=${() => (this._carInfo = false)}><div class="pop car-info">
         <ol class="timeline" aria-label=${i.today}>
           ${past}
-          <li class="ev now"><time>${i.now}</time><span class="line" aria-hidden="true"></span><span class="t">${this.stateLine(stateText, stateColor)}${drop ? html`<span>${drop}</span>` : nothing}</span></li>
-          <li class="ev next"><time>${i.next}</time><span class="line" aria-hidden="true"></span><span class="t"><span class="next-text">${next}</span></span></li>
+          <li class="ev now"><span class="when">${i.now}</span><span class="line" aria-hidden="true"></span><span class="t">${this.stateLine(stateText, stateColor)}${soc !== undefined ? html`<span>${t.car.info.timeline.soc(formatPercent(soc))}</span>` : nothing}${drop ? html`<span>${drop}</span>` : nothing}</span></li>
+          <li class="ev next"><span class="when">${i.next}</span><span class="line" aria-hidden="true"></span><span class="t"><span class="next-text">${next}</span></span></li>
         </ol>
       </div></ed-sheet>`;
     }
@@ -386,7 +394,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       this._carInfo = true;
       const hass = this.hass;
       const w = s.entities.wallbox;
-      const ids: Partial<Record<keyof Series, string>> = { boost: w.boost, mode: w.mode, status: w.status, end: w.last_end, soc: s.entities.car.state_of_charge };
+      const ids: Partial<Record<keyof Series, string>> = { boost: w.boost, mode: w.mode, status: w.status, end: w.last_end, soc: s.entities.car.state_of_charge, target: w.target_boost };
       const wanted = Object.values(ids).filter((id): id is string => !!id);
       if (!hass || !wanted.length) return;
       this._carTimeline = { status: "loading", rows: this._carTimeline?.rows ?? [] };
@@ -413,7 +421,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
             return Number.isFinite(at) && state !== undefined ? [{ at, state }] : [];
           });
         }
-        this._carTimeline = { status: "ready", rows: timeline(series, midnight.getTime(), this.t, (value) => formatPercent(value)) };
+        this._carTimeline = { status: "ready", rows: timeline(series, midnight.getTime(), this.t, (value) => formatPercent(value), (ms) => formatClock(ms)) };
       } catch {
         this._carTimeline = { status: "error", rows: [] };
       }
