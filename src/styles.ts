@@ -732,6 +732,28 @@ export const styles = css`
     font-weight: 500;
   }
 
+  /* „→ 75 % za asi 40 min“: what the user wants to know after the charge (uživatel 16. 11. 2026), one reserved line. */
+  .eta {
+    color: var(--ed-text);
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20px;
+  }
+
+  /* The settings of charging as one row like Cílové teploty, under the mode. */
+  .charge-settings {
+    margin: 0 -4px;
+  }
+
+  .charge-settings .rowbtn {
+    padding: 4px;
+  }
+
+  /* The sliders line up with the title and the mode (the row is widened by 4 px for its touch area). */
+  .charge-fields {
+    padding: 0 4px;
+  }
+
   .meter-wrap {
     display: flex;
     flex-direction: column;

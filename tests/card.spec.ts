@@ -246,7 +246,9 @@ test.describe("konfigurace (CURRENT_SPEC.md, Konfigurace)", () => {
       // The marker is the „Nabít do“ of the active mode (car.charge_limit is gone, CURRENT_SPEC.md, Wallbox).
       await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "input_number.nabijeni_auta_cil_auto": "90.0" });
       await expect(page.locator(".meter .limit")).toHaveAttribute("style", /calc\(.*\* 0\.9 \+ 16px\)/);
-      await expect(page.locator(".meter-label")).toContainText("cíl 90 %");
+      // The target is only the marker; „cíl 90 %“ is in the line under the charge, not under the meter (uživatel 16. 11. 2026).
+      await expect(page.locator(".meter-label")).toHaveCount(0);
+      await expect(page.locator(".eta")).toHaveText("→ cíl 90 %");
       await expect(page.locator(".page")).toHaveAttribute("style", /--ed-sun:#FF0000/);
       expect((await tile(page, "sun")).value).toMatch(/^6\s800 W$/);
     });
@@ -1053,7 +1055,9 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await expect(page.locator(".range")).toContainText("95 km");
       await expect(page.locator(".mix-head")).toContainText("Odkud auto nabíjí");
       await expect(page.locator(".mix-legend")).toContainText("Slunce100 %");
-      await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí 4,10 kW");
+      // The power only once, at „Odkud auto nabíjí“ (uživatel 16. 11. 2026: „dole ve Wallbox kartě nechat jen stav a poslední aktualizaci“).
+      await expect(page.locator(".row-btn .row-sub")).toContainText("nabíjí");
+      await expect(page.locator(".row-btn .row-sub")).not.toContainText("kW");
       // The age of the car data under the power (uživatel 12. 11. 2026: „Q132 A“).
       await expect(page.locator(".row-sub.wrap")).toContainText("data auta právě teď");
       await expect(page.locator(".car-art img")).toHaveAttribute("src", /^data:image\/svg/);
@@ -1110,14 +1114,19 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       await update(page, { "input_select.nabijeni_auta_rezim": "Auto" });
       await expect(page.locator("ed-segmented").first().getByRole("radio")).toHaveText(["Přetoky", "Auto", "Boost"]);
     });
-    await test.step("Nabít do: jen v Auto a v Boostu, každý režim svou hodnotu, odhad doby, 100 % do plna, zápis do input_number", async () => {
+    await test.step("Nastavení nabíjení: jeden řádek jen v Auto a v Boostu, posuvníky po rozbalení; pod nabitím cíl a čas jen při nabíjení", async () => {
       await open(page, "full");
-      await expect(page.locator('ed-slider[label="Nabít auto do"]')).toBeHidden();
+      await expect(page.locator(".charge-settings")).toBeHidden();
+      await expect(page.locator(".eta")).toHaveText("");
       await update(page, { "input_select.nabijeni_auta_rezim": "Auto", "sensor.vin_stav_nabiti_predikce_integrace": "50.2", "sensor.vin_vyuzitelne_energie_z_vysokonapetove_baterie_plne_nabita_predpokladana": "36.7" });
+      await expect(page.locator(".charge-settings .rowbtn-value")).toHaveText("do 75 %");
+      // Waiting: the target without a time (a time would contradict the reason in the state).
+      await expect(page.locator(".eta")).toHaveText("→ cíl 75 %");
       const slider = page.locator('ed-slider[label="Nabít auto do"]');
+      await expect(slider).toBeHidden();
+      await page.locator(".charge-settings .rowbtn").click();
       await expect(slider).toBeVisible();
-      // (75 − 50,2) % × 36,7 kWh ÷ 4,2 kW = 2,17 h → 2 h 10 min
-      await expect(page.locator(".field-value").filter({ hasText: "%" })).toHaveText("75 % · asi 2 h 10 min");
+      await expect(page.locator(".field-value").filter({ hasText: "%" })).toHaveText("75 %");
       await slider.locator("input").evaluate((input: HTMLInputElement) => {
         input.value = "80";
         input.dispatchEvent(new Event("input", { bubbles: true }));
@@ -1125,8 +1134,14 @@ test.describe("karty auto a teplá voda (CURRENT_SPEC.md, Auto, Wallbox, Bojler,
       });
       expect(await calls(page)).toEqual([{ domain: "input_number", service: "set_value", data: { entity_id: "input_number.nabijeni_auta_cil_auto", value: 80 } }]);
       await update(page, { "input_select.nabijeni_auta_rezim": "Boost", "switch.wallbox_boost": "on" });
-      await expect(page.locator(".field-value").filter({ hasText: "%" })).toHaveText("100 % · do plna");
+      await expect(page.locator(".field-value").filter({ hasText: "%" })).toHaveText("100 %");
       await expect(page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]')).toBeVisible();
+      await expect(page.locator(".charge-settings .rowbtn-value")).toHaveText("výkon 4,2 kW · do 100 %");
+      // Charging: the time at the measured power, (100 − 50,2) % × 36,7 kWh ÷ 4,1 kW = 4,46 h → 4 h 30 min.
+      await update(page, { "sensor.wallbox_charge_status": "Charging", "sensor.wallbox_total_power": "4100", "sensor.goodwe_house_consumption": "4600" });
+      await expect(page.locator(".eta")).toHaveText("→ cíl plno za asi 4 h 30 min");
+      await update(page, { "input_number.nabijeni_auta_cil_boost": "50.0" });
+      await expect(page.locator(".eta")).toHaveText("nabito do cíle");
     });
     await test.step("krok pravidla ve stavové větě připojeného auta; nabíjení domem končí šedým Auto, ne oranžovým Boost", async () => {
       await open(page, "full");
@@ -1621,6 +1636,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       await expect(page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]')).toBeHidden();
       await open(page, "grid");
       const slider = page.locator('ed-slider[label="Nabíjecí výkon wallboxu"]');
+      await page.locator(".charge-settings .rowbtn").click();
       await expect(slider).toBeVisible();
       expect(await slider.evaluate((el: HTMLElement & { min: number; max: number; step: number; value: number }) => [el.min, el.max, el.step, el.value])).toEqual([4.2, 11.1, 0.3, 4.2]);
       await expect(page.locator(".field-value").first()).toHaveText("4,2 kW");
@@ -1633,15 +1649,15 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
     });
     await test.step("Cílové teploty: Přetoky ≥ Boost, slidery volají number.set_value", async () => {
       await open(page, "full");
-      await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky 60 · Boost 55 °C", { useInnerText: true });
+      await expect(page.locator(".water .rowbtn-value").first()).toContainText("Přetoky 60 · Boost 55 °C", { useInnerText: true });
       // On two lines the line break is the separator: no dot, °C at both (uživatel 12. 11. 2026); the other texts of the section the same.
       await open(page, "full", 320);
       const lines = (selector: string, i = 0) => joinedLines(page.locator(selector).nth(i));
-      await expect.poll(() => lines(".rowbtn-value")).toEqual(["Přetoky 60 °C", "Boost 55 °C"]);
+      await expect.poll(() => lines(".water .rowbtn-value")).toEqual(["Přetoky 60 °C", "Boost 55 °C"]);
       await open(page, "full", 320, 852, "dark", "en");
-      await expect.poll(() => lines(".rowbtn-value")).toEqual(["Surplus 60 °C", "Boost 55 °C"]);
+      await expect.poll(() => lines(".water .rowbtn-value")).toEqual(["Surplus 60 °C", "Boost 55 °C"]);
       await expect.poll(() => lines(".source-line")).toEqual(["not heating", "target 60 °C"]);
-      await expect.poll(() => lines(".rowbtn-value", 1)).toEqual(["40 °C"]);
+      await expect.poll(() => lines(".water .rowbtn-value", 1)).toEqual(["40 °C"]);
       // A long part wraps on its own lines and is never cut by the tile.
       await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": "off" });
       await expect.poll(() => lines(".source-line", 1)).toEqual(["Off", "held at the minimum"]);
@@ -1676,7 +1692,7 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       expect(await colour(page.locator(".source-line .src").first())).toBe(await colour(page.locator(".source-line .joined-sep").first()));
       await update(page, { "water_heater.technicka_mistnost_tado_ce_tepla_voda": "off", "number.tuv_2_1_target_temperature": "unavailable" });
       expect(await colour(page.locator(".arc-num b").nth(1))).toBe(await colour(page.locator(".source-line .joined-sep").first()));
-      await expect(page.locator(".rowbtn-value").first()).toContainText("Přetoky ––bez dat");
+      await expect(page.locator(".water .rowbtn-value").first()).toContainText("Přetoky ––bez dat");
       await open(page, "full");
       await expand(page, "Cílové teploty");
       const solar = page.locator('ed-slider[label="Cíl ohřevu bojleru, Přetoky"]');
@@ -1763,13 +1779,13 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
       for (const toggle of await page.getByRole("switch").all()) await toggle.dispatchEvent("click");
       expect(await calls(page)).toEqual([]);
     });
-    await test.step("prvky podle HIG: přepínač 60 × 32 s jezdcem 40 × 26, kapsle 48 px, slider 52 px s jezdcem 38 × 24", async () => {
+    await test.step("prvky podle HIG: přepínač 60 × 32 s jezdcem 40 × 26, segmenty karty compact 40 px (i režim auta, uživatel 16. 11. 2026), slider 52 px s jezdcem 38 × 24", async () => {
       await open(page, "full");
       await expandAll(page);
       const sizes = await page.evaluate(() => {
         const root = document.querySelector("ha-energie-dashboard")!.shadowRoot!;
         const rect = (el: Element) => el.getBoundingClientRect();
-        const seg = rect(root.querySelector("ed-segmented:not([compact])")!.shadowRoot!.querySelector(".track")!);
+        const seg = root.querySelectorAll("ed-segmented:not([compact])").length;
         const compact = rect(root.querySelector("ed-segmented[compact]")!.shadowRoot!.querySelector(".track")!);
         const input = root.querySelector('ed-slider[label^="Cíl ohřevu bojleru"]')!.shadowRoot!.querySelector("input")!;
         const sheets = [...((input.getRootNode() as ShadowRoot).adoptedStyleSheets ?? []), ...(input.getRootNode() as ShadowRoot).styleSheets];
@@ -1778,9 +1794,9 @@ test.describe("ovládání (CURRENT_SPEC.md, Ovládání a pojistky)", () => {
         const toggle = root.querySelector("ed-switch")!.shadowRoot!;
         const track = rect(toggle.querySelector("button")!);
         const knob = rect(toggle.querySelector(".thumb")!);
-        return { seg: seg.height, compact: compact.height, slider: rect(input).height, thumb: [parseFloat(thumb.width), parseFloat(thumb.height)], track: [track.width, track.height], knob: [knob.width, knob.height] };
+        return { seg, compact: compact.height, slider: rect(input).height, thumb: [parseFloat(thumb.width), parseFloat(thumb.height)], track: [track.width, track.height], knob: [knob.width, knob.height] };
       });
-      expect(sizes.seg).toBeGreaterThanOrEqual(48);
+      expect(sizes.seg).toBe(0);
       expect(sizes.compact).toBe(40);
       expect(sizes.slider).toBe(52);
       expect(sizes.thumb).toEqual([38, 24]);
@@ -1877,7 +1893,8 @@ test.describe("jazyky (CURRENT_SPEC.md, Jazyky)", () => {
   const noCzech = async (page: Page, at: string) => expect((await allText(page)).filter((text) => CZECH.test(text)), at).toEqual([]);
 
   const expandEverything = async (page: Page) => {
-    for (const row of await page.locator(".row-btn, .rowbtn").all()) {
+    // Rows folded away (Nastavení nabíjení in Přetoky) are not there to expand.
+    for (const row of await page.locator(".row-btn:visible, .rowbtn:visible").all()) {
       if ((await row.getAttribute("aria-expanded")) === "false") await row.click();
     }
     await settle(page);

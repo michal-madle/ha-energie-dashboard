@@ -136,7 +136,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const control = this.modeControl(s, chargeMode, boost);
 
       return html`<section class="panel car-panel" aria-labelledby="h-car">
-        <div class="car-top" style="height:${Math.round(168 + 40 * Math.max(0, s.num.car.image_scale - 1))}px">
+        <div class="car-top" style="height:${Math.round(168 + (e.wallbox.mode ? 20 : 0) + 40 * Math.max(0, s.num.car.image_scale - 1))}px">
           <div class="car-art" aria-hidden="true" style="transform:scale(${s.num.car.image_scale})">
             <div class="glow" style="background:radial-gradient(closest-side, ${glow}, transparent)"></div><div class="shadow"></div>
             ${typeof picture === "string" && picture ? html`<img src=${picture} alt="" />` : nothing}
@@ -151,6 +151,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
           <div class="car-soc">
             <span class="soc">${soc === undefined ? NO_DATA : formatNumber(soc)}<small>${this._i18n.percent("")}</small>${soc === undefined ? html`<span class="sr-only">${t.noData}</span>` : nothing}</span>
             <span class="range">${t.car.range} <b>${model.carRange === undefined ? NO_DATA : `${formatNumber(model.carRange)} km`}</b></span>
+            ${e.wallbox.mode ? this.renderEta(this.eta(s, chargeMode, soc, model, charging)) : nothing}
           </div>
         </div>
         <div class="meter-wrap">
@@ -158,7 +159,6 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
             ${segments(clamp(soc ?? 0, 0, 100)).map((fill) => html`<span><i style="width:${fill.toFixed(1)}%"></i></span>`)}
             ${hasLimit ? html`<div class="limit" style="left:${meterPosition(limit)}"></div>` : nothing}
           </div>
-          ${hasLimit ? html`<div class="meter-label" aria-hidden="true"><span style="left:${meterPosition(limit)}">${t.car.limit(formatPercent(limit))}</span></div>` : nothing}
         </div>
         ${charging ? this.renderCarSources(model, flows, formatPower(model.car ?? 0, unit), boost === "on") : nothing}
         ${w.boost
@@ -168,13 +168,12 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
                   control.subs.map((text, i) => html`<span class=${control.options[i].value === control.value ? "shown" : "spare"}>${joinedText(text)}</span>`)
                 : NO_DATA}</span></div>
               <ed-segmented
-                guarded .options=${control.options} .value=${control.value} .pending=${this.isPending(control.id)} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${!control.value}
+                compact guarded .options=${control.options} .value=${control.value} .pending=${this.isPending(control.id)} label=${t.car.modeLabel} .hint=${t.hint.holdDragOrDouble} ?disabled=${!control.value}
                 .holdMs=${s.num.ui.hold_ms} .doubleTapMs=${s.num.ui.double_tap_ms} .hintSeconds=${s.num.ui.hint_seconds}
                 @hdk-select=${(event: CustomEvent<{ value: string }>) =>
                   e.wallbox.mode ? this.setChargeMode(e.wallbox.mode, event.detail.value) : this.setBoost("wallbox", event.detail.value === "on")}
               ></ed-segmented>
-              ${this.renderPowerFold(s, manualBoost)}
-              ${e.wallbox.mode ? this.renderTargetFold(s, chargeMode, soc) : nothing}
+              ${this.renderChargeSettings(s, chargeMode, manualBoost)}
             </div>`
           : nothing}
         ${this.carVisible(s, model) ? this.renderWallboxGroup(s, model, charging, srcColor, unit) : nothing}
@@ -216,7 +215,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
      * „Nabít do“ in % of the car, for Auto and Boost, each mode with its own value (uživatel 15. 11. 2026: „Q273 ano“), with
      * an estimate of the time: (target − charge) × capacity ÷ power; Boost at its power, Auto at the lowest one (power_min).
      */
-    renderTargetFold(s: Settings, mode: string | undefined, soc: number | undefined): TemplateResult {
+    renderTargetField(s: Settings, mode: string | undefined): TemplateResult {
       const t = this.t;
       const id = this.targetId(s, mode);
       const entity = entityState(this.hass, id);
@@ -225,31 +224,73 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const min = attribute(entity, "min") ?? 50;
       const max = attribute(entity, "max") ?? 100;
       const step = attribute(entity, "step") ?? 5;
-      const capacity = readNumber(this.hass, s.entities.car.capacity);
-      const { phases, power_min } = s.num.wallbox;
-      const perPhase = readNumber(this.hass, s.entities.wallbox.charging_power);
-      const kw = mode === "Boost" && perPhase !== undefined ? (perPhase * phases) / 1000 : power_min / 1000;
-      let estimate: string | undefined;
-      if (known && value >= 100) estimate = t.car.targetFull;
-      else if (known && soc !== undefined && soc >= value) estimate = t.car.targetReached;
-      else if (known && soc !== undefined && capacity !== undefined && kw > 0) {
-        const minutes = Math.max(10, Math.round((((value - soc) / 100) * capacity * 60) / kw / 10) * 10);
-        estimate = t.car.targetTime(t.car.duration(Math.floor(minutes / 60), minutes % 60));
-      }
       // The unit small and grey beside the number, like kW of the power and % of the charge (ux-architect 15. 11. 2026).
       const shownValue = known ? html`${formatNumber(value)}<small>${this._i18n.percent("")}</small>` : NO_DATA;
-      return html`<div class="fold ${id ? "open" : ""}" ?inert=${!id}><div>
-        <div class="field">
-          <span class="field-label">${t.car.target}</span><span class="field-value">${shownValue}${estimate ? html`<small> · ${estimate}</small>` : nothing}</span>
+      return html`<div class="field">
+          <span class="field-label">${t.car.target}</span><span class="field-value">${shownValue}</span>
           <ed-slider
             .min=${min} .max=${max} .step=${step} .value=${known ? value : max}
-            label=${t.car.targetLabel} valueText=${known ? `${formatPercent(value)}${estimate ? `, ${estimate}` : ""}` : t.noData}
+            label=${t.car.targetLabel} valueText=${known ? formatPercent(value) : t.noData}
             minLabel=${formatPercent(min)} maxLabel=${formatPercent(max)}
             ?disabled=${!known}
             @hdk-change=${(event: CustomEvent<{ value: number }>) => id && this.setInputNumber(id, event.detail.value, t.car.target)}
           ></ed-slider>
-        </div>
-      </div></div>`;
+        </div>`;
+    }
+
+    /**
+     * „Kolik % mám a kdy odjedu“ (uživatel 16. 11. 2026) under the charge: the target of the active mode, the time only while
+     * charging (at the measured power; waiting, a time would contradict „čeká na slunce“), undefined in Přetoky.
+     */
+    eta(s: Settings, mode: string | undefined, soc: number | undefined, model: FlowModel, charging: boolean): { text: string; toward: boolean } | undefined {
+      const t = this.t;
+      const id = this.targetId(s, mode);
+      const target = id ? Number(this.shown(id)) : NaN;
+      if (!Number.isFinite(target) || soc === undefined || model.carLink === "disconnected") return undefined;
+      if (target < 100 && soc >= target) return { text: t.car.etaReached, toward: false };
+      const goal = target >= 100 ? t.car.etaFull : formatPercent(target);
+      const capacity = readNumber(this.hass, s.entities.car.capacity);
+      const kw = (model.car ?? 0) / 1000;
+      if (!charging || capacity === undefined || kw <= 0) return { text: t.car.eta(goal), toward: true };
+      const minutes = Math.max(10, Math.round((((Math.min(target, 100) - soc) / 100) * capacity * 60) / kw / 10) * 10);
+      return { text: t.car.eta(goal, t.car.duration(Math.floor(minutes / 60), minutes % 60)), toward: true };
+    }
+
+    /** The reserved line; the arrow is drawn, a screen reader hears „cíl“ instead (dashboard-critic 16. 11.). */
+    renderEta(eta: { text: string; toward: boolean } | undefined): TemplateResult {
+      if (!eta) return html`<span class="eta">\u00a0</span>`;
+      return html`<span class="eta">${eta.toward ? html`<span aria-hidden="true">→ </span><span class="sr-only">${this.t.car.etaLabel} </span>` : nothing}${eta.text}</span>`;
+    }
+
+    /**
+     * One row „Nastavení nabíjení 4,2 kW · do 75 %“ that opens the sliders (uživatel 16. 11. 2026: „Režim Boost je moc
+     * dominantní“; the pattern of Cílové teploty): the power in Boost, „Nabít do“ in Auto and Boost; no row in Přetoky.
+     */
+    renderChargeSettings(s: Settings, mode: string | undefined, manualBoost: boolean): TemplateResult | typeof nothing {
+      const t = this.t;
+      const w = s.entities.wallbox;
+      const power = manualBoost && w.charging_power ? readNumber(this.hass, w.charging_power) : undefined;
+      const showPower = manualBoost && !!w.charging_power;
+      const targetId = w.mode ? this.targetId(s, mode) : undefined;
+      // In Přetoky the row folds away smoothly instead of disappearing (CURRENT_SPEC.md, Klidné přepínání režimů).
+      const shown = showPower || !!targetId;
+      const open = !!this._open.charge;
+      const target = targetId ? Number(this.shown(targetId)) : NaN;
+      const parts = [
+        ...(showPower ? [html`${t.car.powerShort} <b>${power === undefined ? this.noData() : `${formatNumber((power * s.num.wallbox.phases) / 1000, 1)} kW`}</b>`] : []),
+        ...(targetId ? [html`${t.car.targetShort} <b>${Number.isFinite(target) ? formatPercent(target) : this.noData()}</b>`] : []),
+      ];
+      return html`<div class="fold ${shown ? "open" : ""}" ?inert=${!shown}><div><div class="charge-settings">
+        <button type="button" class="rowbtn" aria-expanded=${open ? "true" : "false"} @click=${() => this.toggle("charge")}>
+          <span class="rowbtn-title">${t.car.settings}</span>
+          <span class="rowbtn-value">${shown ? joined(parts, { whole: true }) : nothing}</span>
+          <svg class="chevron ${open ? "turned" : ""}" viewBox="0 0 24 24" aria-hidden="true"><path d=${ICON.expand}></path></svg>
+        </button>
+        <div class="fold ${open && shown ? "open" : ""}" ?inert=${!open || !shown}><div class="charge-fields">
+          ${showPower ? this.renderPowerField(s) : nothing}
+          ${targetId ? this.renderTargetField(s, mode) : nothing}
+        </div></div>
+      </div></div></div>`;
     }
 
     /** Why and when the Boost of the house ended last, only today (attribute posledni_konec of wallbox.step, „code|time“). */
@@ -281,7 +322,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
     }
 
     /** Charging power in boost: the card shows the total of all phases, the entity holds the power of one phase. */
-    renderPowerFold(s: Settings, open: boolean): TemplateResult | typeof nothing {
+    renderPowerField(s: Settings): TemplateResult | typeof nothing {
       const id = s.entities.wallbox.charging_power;
       if (!id) return nothing;
       const { phases, power_min, power_max, power_step } = s.num.wallbox;
@@ -294,8 +335,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const entityMax = attribute(entity, "max");
       if (entityMin !== undefined) min = Math.max(min, (entityMin * phases) / 1000);
       if (entityMax !== undefined) max = Math.min(max, (entityMax * phases) / 1000);
-      return html`<div class="fold ${open ? "open" : ""}" ?inert=${!open}><div>
-        <div class="field">
+      return html`<div class="field">
           <span class="field-label">${this.t.car.power}</span><span class="field-value">${total === undefined ? NO_DATA : formatNumber(total, 1)}<small> kW</small></span>
           <ed-slider
             .min=${min} .max=${max} .step=${power_step / 1000} .value=${total ?? min}
@@ -304,8 +344,7 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
             ?disabled=${total === undefined}
             @hdk-change=${(event: CustomEvent<{ value: number }>) => this.setNumber(id, Math.round((event.detail.value * 1000) / phases), this.t.car.power)}
           ></ed-slider>
-        </div>
-      </div></div>`;
+        </div>`;
     }
 
     renderWallboxGroup(s: Settings, model: FlowModel, charging: boolean, srcColor: string, unit: PowerUnit): TemplateResult {
@@ -316,7 +355,8 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const link = model.carLink;
       const sub =
         charging
-          ? html`<span>${t.wallbox.charging} </span><b style="--c:${srcColor}">${formatPower(model.car ?? 0, unit)}</b>`
+          ? // The power is once, at „Odkud auto nabíjí“ (uživatel 16. 11. 2026: „dole ve Wallbox kartě nechat jen stav a poslední aktualizaci“).
+            html`${t.wallbox.charging}`
           : link === "connected" || link === "charging"
             ? html`${t.wallbox.idle}`
             : link === "disconnected"

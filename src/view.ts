@@ -62,7 +62,7 @@ export interface Alert {
   text: string;
 }
 
-export type Panel = "wallbox" | "targets" | "tank";
+export type Panel = "wallbox" | "targets" | "tank" | "charge";
 
 /** Parts of the battery detail and its accordion rows (CURRENT_SPEC.md, Baterie). */
 export type BatTab = "now" | "hist" | "health";
