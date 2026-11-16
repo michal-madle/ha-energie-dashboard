@@ -136,7 +136,9 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
       const control = this.modeControl(s, chargeMode, boost);
 
       return html`<section class="panel car-panel" aria-labelledby="h-car">
-        <div class="car-top" style="height:${Math.round(168 + (e.wallbox.mode ? 20 : 0) + 40 * Math.max(0, s.num.car.image_scale - 1))}px">
+        <!-- The height does not grow with car.image_scale: the picture of the car has transparent margins, so the space would stay
+             empty above the charge (uživatel 16. 11. 2026: „mezera nad 76% je hrozně velká, i když auto je celkem malé“). -->
+        <div class="car-top" style="height:${e.wallbox.mode ? 188 : 168}px">
           <div class="car-art" aria-hidden="true" style="transform:scale(${s.num.car.image_scale})">
             <div class="glow" style="background:radial-gradient(closest-side, ${glow}, transparent)"></div><div class="shadow"></div>
             ${typeof picture === "string" && picture ? html`<img src=${picture} alt="" />` : nothing}
@@ -349,8 +351,8 @@ export const withCar = <T extends Constructor<Controlled>>(Base: T) =>
             ...(end.kwh !== undefined ? [i.delivered(`${formatNumber(end.kwh, 1)} kWh`)] : []),
           ]
         : [];
-      // The charge from the prediction of the integration can fall when the car reports its real charge (the reason of
-      // „Boost do 75 %, auto má 70 %“).
+      // The charge can fall when the car reports its real charge after the end (the prediction of the integration overshoots
+      // while charging: 16. 11. 2026 75,3 % predicted, 70 % reported).
       const drop = end?.soc !== undefined && soc !== undefined && end.soc - soc >= 2 ? i.socDrop(formatPercent(end.soc), formatPercent(soc)) : undefined;
       return html`<ed-sheet open .heading=${i.heading} .closeLabel=${t.close} @hdk-close=${() => (this._carInfo = false)}><div class="pop car-info">
         <div class="info-row"><span class="pop-label">${i.now}</span>${this.stateLine(stateText, stateColor)}</div>

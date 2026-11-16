@@ -232,6 +232,7 @@ export const cs = {
       uzivatel: "Boost vypnut ručně",
       restart: "restart Home Assistantu",
       energie: "pojistka: wallbox dodal energii na cíl",
+      wallbox: "Boost vypnul sám wallbox (AZ Router)",
     } as Record<string, string>,
   },
 

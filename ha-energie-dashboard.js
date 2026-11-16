@@ -247,9 +247,9 @@ let le = class extends HTMLElement {
   }
 };
 le.elementStyles = [], le.shadowRootOptions = { mode: "open" }, le[ke("elementProperties")] = /* @__PURE__ */ new Map(), le[ke("finalized")] = /* @__PURE__ */ new Map(), Js?.({ ReactiveElement: le }), (Ze.reactiveElementVersions ??= []).push("2.1.2");
-const ha = globalThis, Ba = (a) => a, Pe = ha.trustedTypes, za = Pe ? Pe.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, gs = "$lit$", Ut = `lit$${Math.random().toFixed(9).slice(2)}$`, bs = "?" + Ut, Qs = `<${bs}>`, te = document, Se = () => te.createComment(""), Me = (a) => a === null || typeof a != "object" && typeof a != "function", pa = Array.isArray, tn = (a) => pa(a) || typeof a?.[Symbol.iterator] == "function", Je = `[ 	
+const ha = globalThis, Ba = (a) => a, Re = ha.trustedTypes, za = Re ? Re.createPolicy("lit-html", { createHTML: (a) => a }) : void 0, gs = "$lit$", Ut = `lit$${Math.random().toFixed(9).slice(2)}$`, bs = "?" + Ut, Qs = `<${bs}>`, te = document, Se = () => te.createComment(""), Me = (a) => a === null || typeof a != "object" && typeof a != "function", pa = Array.isArray, tn = (a) => pa(a) || typeof a?.[Symbol.iterator] == "function", Je = `[ 	
 \f\r]`, we = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Oa = /-->/g, Na = />/g, Zt = RegExp(`>|${Je}(?:([^\\s"'>=/]+)(${Je}*=${Je}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Ha = /'/g, Pa = /"/g, fs = /^(?:script|style|textarea|title)$/i, ms = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), f = ms(1), K = ms(2), ge = /* @__PURE__ */ Symbol.for("lit-noChange"), k = /* @__PURE__ */ Symbol.for("lit-nothing"), Ra = /* @__PURE__ */ new WeakMap(), qt = te.createTreeWalker(te, 129);
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Ha = /'/g, Ra = /"/g, fs = /^(?:script|style|textarea|title)$/i, ms = (a) => (t, ...e) => ({ _$litType$: a, strings: t, values: e }), f = ms(1), K = ms(2), ge = /* @__PURE__ */ Symbol.for("lit-noChange"), k = /* @__PURE__ */ Symbol.for("lit-nothing"), Pa = /* @__PURE__ */ new WeakMap(), qt = te.createTreeWalker(te, 129);
 function vs(a, t) {
   if (!pa(a) || !a.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return za !== void 0 ? za.createHTML(t) : t;
@@ -260,7 +260,7 @@ const en = (a, t) => {
   for (let r = 0; r < e; r++) {
     const l = a[r];
     let c, d, h = -1, p = 0;
-    for (; p < l.length && (i.lastIndex = p, d = i.exec(l), d !== null); ) p = i.lastIndex, i === we ? d[1] === "!--" ? i = Oa : d[1] !== void 0 ? i = Na : d[2] !== void 0 ? (fs.test(d[2]) && (n = RegExp("</" + d[2], "g")), i = Zt) : d[3] !== void 0 && (i = Zt) : i === Zt ? d[0] === ">" ? (i = n ?? we, h = -1) : d[1] === void 0 ? h = -2 : (h = i.lastIndex - d[2].length, c = d[1], i = d[3] === void 0 ? Zt : d[3] === '"' ? Pa : Ha) : i === Pa || i === Ha ? i = Zt : i === Oa || i === Na ? i = we : (i = Zt, n = void 0);
+    for (; p < l.length && (i.lastIndex = p, d = i.exec(l), d !== null); ) p = i.lastIndex, i === we ? d[1] === "!--" ? i = Oa : d[1] !== void 0 ? i = Na : d[2] !== void 0 ? (fs.test(d[2]) && (n = RegExp("</" + d[2], "g")), i = Zt) : d[3] !== void 0 && (i = Zt) : i === Zt ? d[0] === ">" ? (i = n ?? we, h = -1) : d[1] === void 0 ? h = -2 : (h = i.lastIndex - d[2].length, c = d[1], i = d[3] === void 0 ? Zt : d[3] === '"' ? Ra : Ha) : i === Ra || i === Ha ? i = Zt : i === Oa || i === Na ? i = we : (i = Zt, n = void 0);
     const b = i === Zt && a[r + 1].startsWith("/>") ? " " : "";
     o += i === we ? l + Qs : h >= 0 ? (s.push(c), l.slice(0, h) + gs + l.slice(h) + Ut + b) : l + Ut + (h === -2 ? r : b);
   }
@@ -285,7 +285,7 @@ class Te {
         if (fs.test(n.tagName)) {
           const h = n.textContent.split(Ut), p = h.length - 1;
           if (p > 0) {
-            n.textContent = Pe ? Pe.emptyScript : "";
+            n.textContent = Re ? Re.emptyScript : "";
             for (let b = 0; b < p; b++) n.append(h[b], Se()), qt.nextNode(), l.push({ type: 2, index: ++o });
             n.append(h[p], Se());
           }
@@ -376,8 +376,8 @@ class De {
     }
   }
   _$AC(t) {
-    let e = Ra.get(t.strings);
-    return e === void 0 && Ra.set(t.strings, e = new Te(t)), e;
+    let e = Pa.get(t.strings);
+    return e === void 0 && Pa.set(t.strings, e = new Te(t)), e;
   }
   k(t) {
     pa(this._$AH) || (this._$AH = [], this._$AR());
@@ -2355,7 +2355,8 @@ const Nn = {
       rezim: "změna režimu",
       uzivatel: "Boost vypnut ručně",
       restart: "restart Home Assistantu",
-      energie: "pojistka: wallbox dodal energii na cíl"
+      energie: "pojistka: wallbox dodal energii na cíl",
+      wallbox: "Boost vypnul sám wallbox (AZ Router)"
     }
   },
   // Hot water panel
@@ -2832,7 +2833,8 @@ const Nn = {
       rezim: "mode changed",
       uzivatel: "Boost switched off by hand",
       restart: "Home Assistant restarted",
-      energie: "safeguard: the wallbox delivered the energy for the target"
+      energie: "safeguard: the wallbox delivered the energy for the target",
+      wallbox: "the wallbox (AZ Router) switched Boost off by itself"
     }
   },
   water: {
@@ -3112,7 +3114,7 @@ const Nn = {
       hoursMinutes: (a, t) => `${a} h ${t} min`
     }
   }
-}, Pn = {
+}, Rn = {
   title: "Energi",
   cardDescription: "Hemmets energi: flöden som Sankey-diagram, bilen med laddbox och varmvatten (beredare, tank, blandning) med styrning.",
   titles: { electricity: "El", car: "BMW i3", water: "Varmvatten" },
@@ -3305,7 +3307,8 @@ const Nn = {
       rezim: "läget ändrat",
       uzivatel: "Boost avstängd för hand",
       restart: "Home Assistant startade om",
-      energie: "skydd: laddboxen levererade energin för målet"
+      energie: "skydd: laddboxen levererade energin för målet",
+      wallbox: "laddboxen (AZ Router) stängde av Boost själv"
     }
   },
   water: {
@@ -3585,16 +3588,16 @@ const Nn = {
       hoursMinutes: (a, t) => `${a} h ${t} min`
     }
   }
-}, Rn = { cs: Nn, en: Hn, sv: Pn };
-function Re(a, t) {
-  return jn(Rn, a, t);
+}, Pn = { cs: Nn, en: Hn, sv: Rn };
+function Pe(a, t) {
+  return jn(Pn, a, t);
 }
 function V(a, t) {
   const e = Tn(a, t);
   if (e !== void 0)
     return pt(a, t)?.attributes?.unit_of_measurement === "kW" ? e * 1e3 : e;
 }
-let lt = Re("cs"), Ie = "auto";
+let lt = Pe("cs"), Ie = "auto";
 function In(a, t = "auto") {
   lt = a, Ie = t;
 }
@@ -3674,9 +3677,9 @@ function Un(a, t, e) {
     if (!Q(x, n)) continue;
     let z = x;
     const tt = { sun: 0, bat: 0, grid: 0 };
-    for (const P of yt) {
-      const T = Math.min(w[P], z);
-      w[P] -= T, z -= T, tt[P] = T / x, (B === "house" || B === "car" || B === "boil") && (M[P] += T), T > 0.5 && j.push({ from: P, to: B, watts: T });
+    for (const R of yt) {
+      const T = Math.min(w[R], z);
+      w[R] -= T, z -= T, tt[R] = T / x, (B === "house" || B === "car" || B === "boil") && (M[R] += T), T > 0.5 && j.push({ from: R, to: B, watts: T });
     }
     L[B] = tt;
   }
@@ -6602,7 +6605,7 @@ var So = Object.defineProperty, J = (a, t, e, s) => {
 };
 class X extends Lt {
   constructor() {
-    super(...arguments), this._width = 329, this._optimistic = {}, this._feedback = "", this._open = {}, this._all = !1, this._now = Date.now(), this._carHint = !1, this._carInfo = !1, this._batDetail = !1, this._batTab = "now", this._batSpan = "24h", this._batScrub = {}, this._batData = {}, this._sunDetail = !1, this._sunTab = "today", this._sunMode = "total", this._houseDetail = !1, this._houseOpen = [], this._houseTab = "now", this._houseData = {}, this._i18n = Re("cs"), this._fonts = 0, this._onFonts = () => {
+    super(...arguments), this._width = 329, this._optimistic = {}, this._feedback = "", this._open = {}, this._all = !1, this._now = Date.now(), this._carHint = !1, this._carInfo = !1, this._batDetail = !1, this._batTab = "now", this._batSpan = "24h", this._batScrub = {}, this._batData = {}, this._sunDetail = !1, this._sunTab = "today", this._sunMode = "total", this._houseDetail = !1, this._houseOpen = [], this._houseTab = "now", this._houseData = {}, this._i18n = Pe("cs"), this._fonts = 0, this._onFonts = () => {
       this._fonts++, this.requestUpdate();
     }, this._timers = /* @__PURE__ */ new Map(), this._lastHeating = 0, this._storedHeating = 0;
   }
@@ -6635,7 +6638,7 @@ class X extends Lt {
     return [{ value: "off", label: this.t.boostOptions.off }, { value: "on", label: this.t.boostOptions.on }];
   }
   willUpdate() {
-    this._i18n = Re(Dn(this._config?.language ?? "auto", this.hass), this.hass), In(this._i18n, this._config?.powerDecimals), this.lang !== this._i18n.language && (this.lang = this._i18n.language), this.toggleAttribute("data-light", this.hass?.themes?.darkMode === !1);
+    this._i18n = Pe(Dn(this._config?.language ?? "auto", this.hass), this.hass), In(this._i18n, this._config?.powerDecimals), this.lang !== this._i18n.language && (this.lang = this._i18n.language), this.toggleAttribute("data-light", this.hass?.themes?.darkMode === !1);
     const t = this._config;
     if (t && Q(V(this.hass, t.entities.boiler.power), t.num.flows.idle_threshold) && (this._lastHeating = Date.now(), this._lastHeating - this._storedHeating > 6e4)) {
       this._storedHeating = this._lastHeating;
@@ -6920,7 +6923,7 @@ async function Wt(a, t, e, s, n, o) {
     types: o
   }) ?? {} : {};
 }
-function Rt(a) {
+function Pt(a) {
   const t = new Date(a);
   return t.setHours(0, 0, 0, 0), t.getTime();
 }
@@ -6943,7 +6946,7 @@ function Ct(a, t, e, s, n, o = "mean", i = 0) {
 function At(a, t) {
   return (a ?? []).some((e) => ia(e[t]));
 }
-const R = (a) => Math.round(a * 10) / 10;
+const P = (a) => Math.round(a * 10) / 10;
 function he(a, t, e) {
   let s = "", n = !1;
   return a.forEach((o, i) => {
@@ -6951,16 +6954,16 @@ function he(a, t, e) {
       n = !1;
       return;
     }
-    s += `${n ? " L" : s ? " M" : "M"}${R(t(i))} ${R(e(o))}`, n = !0;
+    s += `${n ? " L" : s ? " M" : "M"}${P(t(i))} ${P(e(o))}`, n = !0;
   }), s;
 }
 function Ve(a, t, e, s) {
   let n = "", o = -1;
   const i = (r) => {
     if (!(o < 0)) {
-      n += `${n ? " " : ""}M${R(t(o))} ${R(s)}`;
-      for (let l = o; l <= r; l++) n += ` L${R(t(l))} ${R(e(a[l]))}`;
-      n += ` L${R(t(r))} ${R(s)} Z`, o = -1;
+      n += `${n ? " " : ""}M${P(t(o))} ${P(s)}`;
+      for (let l = o; l <= r; l++) n += ` L${P(t(l))} ${P(e(a[l]))}`;
+      n += ` L${P(t(r))} ${P(s)} Z`, o = -1;
     }
   };
   return a.forEach((r, l) => {
@@ -6971,9 +6974,9 @@ function zs(a, t, e, s) {
   let n = "", o = -1;
   const i = (l) => a[l] !== void 0 && t[l] !== void 0, r = (l) => {
     if (!(o < 0)) {
-      n += `${n ? " " : ""}M${R(e(o))} ${R(s(t[o]))}`;
-      for (let c = o + 1; c <= l; c++) n += ` L${R(e(c))} ${R(s(t[c]))}`;
-      for (let c = l; c >= o; c--) n += ` L${R(e(c))} ${R(s(a[c]))}`;
+      n += `${n ? " " : ""}M${P(e(o))} ${P(s(t[o]))}`;
+      for (let c = o + 1; c <= l; c++) n += ` L${P(e(c))} ${P(s(t[c]))}`;
+      for (let c = l; c >= o; c--) n += ` L${P(e(c))} ${P(s(a[c]))}`;
       n += " Z", o = -1;
     }
   };
@@ -7282,10 +7285,10 @@ const Bo = 5 * 6e4, $e = 48, as = 60, zo = 0, Oo = (a) => class extends a {
     if (!l.some((L) => L !== void 0) && !c.some((L) => L !== void 0)) return;
     const d = V(this.hass, e.state_of_charge), h = V(this.hass, e.power);
     d !== void 0 && (l[$e - 1] = d), h !== void 0 && (c[$e - 1] = -h / 1e3);
-    const p = $e, b = (L) => R(L / (p - 1) * G), y = (L) => R(98 - nt(L, 0, 100) / 100 * 90), m = me(Math.max(1, ...c.map((L) => Math.abs(L ?? 0)))), u = 172, g = (L) => R(u - nt(L, -m, m) / m * 44), v = 4.2, $ = c.map((L, M) => {
+    const p = $e, b = (L) => P(L / (p - 1) * G), y = (L) => P(98 - nt(L, 0, 100) / 100 * 90), m = me(Math.max(1, ...c.map((L) => Math.abs(L ?? 0)))), u = 172, g = (L) => P(u - nt(L, -m, m) / m * 44), v = 4.2, $ = c.map((L, M) => {
       if (L === void 0) return k;
       const C = Math.min(u, g(L)), E = Math.max(1.5, Math.abs(g(L) - u));
-      return K`<rect x=${R(b(M) - v / 2)} y=${L >= 0 ? C : u} width=${v} height=${R(E)} rx="1.5" style="fill:${L >= 0 ? "var(--ed-battery)" : "var(--ed-discharge)"}"></rect>`;
+      return K`<rect x=${P(b(M) - v / 2)} y=${L >= 0 ? C : u} width=${v} height=${P(E)} rx="1.5" style="fill:${L >= 0 ? "var(--ed-battery)" : "var(--ed-discharge)"}"></rect>`;
     }), S = he(l, b, y), w = Ve(l, b, y, 98), j = (L) => `${q(L, L % 1 === 0 ? 0 : 1)} kW`;
     return {
       id: "level",
@@ -7321,13 +7324,13 @@ const Bo = 5 * 6e4, $e = 48, as = 60, zo = 0, Oo = (a) => class extends a {
     if (!o) return;
     const i = this.histWindow(e, o.at), r = e === "1d", l = i.bins, c = r ? at : It, d = i.start + l * c, h = r ? 0 : 6 * at, p = this.batRows(n, "energy", s.total_charge), b = this.batRows(n, "energy", s.total_discharge), y = Ct(p, "change", i.start, d, l, "sum", h), m = Ct(b, "change", i.start, d, l, "sum", h);
     if (!y.some((x) => x !== void 0) && !m.some((x) => x !== void 0)) return;
-    const u = y.map((x) => x ?? 0), g = m.map((x) => x ?? 0), v = me(Math.max(0.5, ...u, ...g)), $ = r ? 3 : l <= 7 ? 10 : 2, S = (G - (l - 1) * $) / l, w = (x) => R(x * (S + $) + S / 2), j = 100, L = (x) => nt(x, 0, v) / v * 92, M = u.flatMap((x, z) => {
-      const tt = g[z], P = z === l - 1 ? 1 : 0.85;
+    const u = y.map((x) => x ?? 0), g = m.map((x) => x ?? 0), v = me(Math.max(0.5, ...u, ...g)), $ = r ? 3 : l <= 7 ? 10 : 2, S = (G - (l - 1) * $) / l, w = (x) => P(x * (S + $) + S / 2), j = 100, L = (x) => nt(x, 0, v) / v * 92, M = u.flatMap((x, z) => {
+      const tt = g[z], R = z === l - 1 ? 1 : 0.85;
       return [
-        K`<rect x=${R(z * (S + $))} y=${R(j - Math.max(x > 0 ? 1 : 0, L(x)))} width=${R(S)} height=${R(Math.max(x > 0 ? 1 : 0, L(x)))} rx="2" style="fill:var(--ed-battery);fill-opacity:${P}"></rect>`,
-        K`<rect x=${R(z * (S + $))} y=${j} width=${R(S)} height=${R(Math.max(tt > 0 ? 1 : 0, L(tt)))} rx="2" style="fill:var(--ed-discharge);fill-opacity:${P}"></rect>`
+        K`<rect x=${P(z * (S + $))} y=${P(j - Math.max(x > 0 ? 1 : 0, L(x)))} width=${P(S)} height=${P(Math.max(x > 0 ? 1 : 0, L(x)))} rx="2" style="fill:var(--ed-battery);fill-opacity:${R}"></rect>`,
+        K`<rect x=${P(z * (S + $))} y=${j} width=${P(S)} height=${P(Math.max(tt > 0 ? 1 : 0, L(tt)))} rx="2" style="fill:var(--ed-discharge);fill-opacity:${R}"></rect>`
       ];
-    }), C = (x) => R(j - nt(x, -v, v) / v * 92), E = u.map((x, z) => x - g[z]), _ = r ? 2 : 1, A = (x) => `${x >= 0 ? "+" : "−"}${q(Math.abs(x), _)}`, B = (x) => r ? ot(i.start + x * at) : _e(i.start + x * It);
+    }), C = (x) => P(j - nt(x, -v, v) / v * 92), E = u.map((x, z) => x - g[z]), _ = r ? 2 : 1, A = (x) => `${x >= 0 ? "+" : "−"}${q(Math.abs(x), _)}`, B = (x) => r ? ot(i.start + x * at) : _e(i.start + x * It);
     return {
       charged: u,
       discharged: g,
@@ -7363,7 +7366,7 @@ const Bo = 5 * 6e4, $e = 48, as = 60, zo = 0, Oo = (a) => class extends a {
     if (!o) return;
     const i = oe[e], r = o.at, l = r - i * It, c = as, d = (_) => Ct(this.batRows(n, "health", _), "mean", l, r, c), h = d(s.min_cell_voltage), p = d(s.max_cell_voltage), b = h.map((_, A) => _ === void 0 || p[A] === void 0 ? void 0 : Math.max(0, (p[A] - _) * 1e3)), y = b.filter((_) => _ !== void 0);
     if (!y.length) return;
-    const { imbalance_good: m, imbalance_warn: u } = t.num.battery, g = Math.max(m > 0 ? m * 1.5 : 10, Math.max(...y) * 1.2), v = (_) => R(130 - nt(_, 0, g) / g * 120), $ = (_) => R(_ / (c - 1) * G), S = (_) => this.back((1 - _ / (c - 1)) * i * 24 * 60), w = this.t.bat.health, j = "var(--ed-battery)", L = "var(--ed-warning)", M = (_) => _ > u ? L : j, C = `bg-${e}`, E = nt(1 - (130 - v(u)) / 120, 0, 1);
+    const { imbalance_good: m, imbalance_warn: u } = t.num.battery, g = Math.max(m > 0 ? m * 1.5 : 10, Math.max(...y) * 1.2), v = (_) => P(130 - nt(_, 0, g) / g * 120), $ = (_) => P(_ / (c - 1) * G), S = (_) => this.back((1 - _ / (c - 1)) * i * 24 * 60), w = this.t.bat.health, j = "var(--ed-battery)", L = "var(--ed-warning)", M = (_) => _ > u ? L : j, C = `bg-${e}`, E = nt(1 - (130 - v(u)) / 120, 0, 1);
     return {
       id: "health-gap",
       h: 140,
@@ -7378,7 +7381,7 @@ const Bo = 5 * 6e4, $e = 48, as = 60, zo = 0, Oo = (a) => class extends a {
             </linearGradient>
             <linearGradient id=${C}-area x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0.18"></stop><stop offset="1" stop-color="#fff" stop-opacity="0"></stop></linearGradient>
           </defs>
-          <rect x="0" y=${v(m)} width=${G} height=${R(130 - v(m))} style="fill:${j};fill-opacity:0.12"></rect>
+          <rect x="0" y=${v(m)} width=${G} height=${P(130 - v(m))} style="fill:${j};fill-opacity:0.12"></rect>
           <path d=${Ve(b, $, v, 130)} fill="url(#${C}-area)"></path>
           <path d=${he(b, $, v)} fill="none" stroke="url(#${C})" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path>`,
       dot: (_) => b[_] === void 0 ? void 0 : { y: v(b[_]), color: M(b[_]) },
@@ -7393,7 +7396,7 @@ const Bo = 5 * 6e4, $e = 48, as = 60, zo = 0, Oo = (a) => class extends a {
     if (t === "gap") return this.balanceChart(e, s);
     const n = e.entities.battery, o = `health:${s}`, i = this._batData[o];
     if (!i) return;
-    const r = oe[s], l = i.at, c = l - r * It, d = as, h = (E) => this.batRows(o, "health", E), p = (E) => Ct(h(E), "mean", c, l, d), b = (E) => R(E / (d - 1) * G), y = (E) => this.back((1 - E / (d - 1)) * r * 24 * 60), m = r === 1 ? "−24 h" : `−${r} d`;
+    const r = oe[s], l = i.at, c = l - r * It, d = as, h = (E) => this.batRows(o, "health", E), p = (E) => Ct(h(E), "mean", c, l, d), b = (E) => P(E / (d - 1) * G), y = (E) => this.back((1 - E / (d - 1)) * r * 24 * 60), m = r === 1 ? "−24 h" : `−${r} d`;
     let u;
     if (t === "temp") {
       const E = p(n.min_cell_temperature), _ = p(n.max_cell_temperature), A = p(n.temperature);
@@ -7429,7 +7432,7 @@ const Bo = 5 * 6e4, $e = 48, as = 60, zo = 0, Oo = (a) => class extends a {
     const v = Hs(g.hi - g.lo, 4), $ = Math.floor(g.lo / v + 1e-9) * v;
     let S = Math.ceil(g.hi / v - 1e-9) * v;
     Math.round((S - $) / v) % 2 === 1 && (S += v);
-    const w = { lo: $, hi: S }, j = (E) => R(130 - (nt(E, w.lo, w.hi) - w.lo) / (w.hi - w.lo) * 120), L = t === "life" ? "" : zs(u.low, u.high, b, j), M = u.line ? he(u.line, b, j) : "", C = u.colour;
+    const w = { lo: $, hi: S }, j = (E) => P(130 - (nt(E, w.lo, w.hi) - w.lo) / (w.hi - w.lo) * 120), L = t === "life" ? "" : zs(u.low, u.high, b, j), M = u.line ? he(u.line, b, j) : "", C = u.colour;
     return {
       id: `health-${t}`,
       h: 140,
@@ -7582,7 +7585,7 @@ function ta(a, t) {
   for (const s of a ?? []) {
     const n = s[t];
     if (!ss(n) || !ss(s.start)) continue;
-    const o = new Date(s.start), i = Rt(s.start), r = e.get(i) ?? new Array(24).fill(void 0);
+    const o = new Date(s.start), i = Pt(s.start), r = e.get(i) ?? new Array(24).fill(void 0);
     r[o.getHours()] = Math.max(0, t === "mean" ? n / 1e3 : n), e.set(i, r);
   }
   return e;
@@ -7598,7 +7601,7 @@ function Ke(a, t) {
   return e[n] + (e[o] - e[n]) * (s - n);
 }
 const ns = (a) => Ke(a, 50);
-function Ps(a, t) {
+function Rs(a, t) {
   const e = [], s = new Date(a);
   for (let n = 0; n < t; n++)
     s.setDate(s.getDate() - 1), e.push(s.getTime());
@@ -7609,18 +7612,18 @@ function Et(a, t) {
   return e.setDate(e.getDate() + t), e.setHours(0, 0, 0, 0), e.getTime();
 }
 function Ho(a, t, e, s) {
-  const n = Ps(t, e).filter((r) => a.has(r)), o = Array.from({ length: 24 }, (r, l) => {
+  const n = Rs(t, e).filter((r) => a.has(r)), o = Array.from({ length: 24 }, (r, l) => {
     const c = n.map((d) => a.get(d)[l]).filter((d) => d !== void 0);
     return c.length >= 3 ? Ke(c, s) : void 0;
   }), i = n.map((r) => Ge(a.get(r), 20)).filter((r) => r !== void 0);
   return { curve: o, daily: i.length >= 3 ? Ke(i, s) : void 0, days: n.length };
 }
-function Po(a) {
+function Ro(a) {
   const t = a.reduce((e, s) => e + (s ?? 0), 0);
   return t > 0 ? a.map((e) => (e ?? 0) / t) : void 0;
 }
-function Ro(a, t) {
-  const e = Po(t);
+function Po(a, t) {
+  const e = Ro(t);
   return e ? e.map((s) => s * a) : void 0;
 }
 function Io(a, t, e, s) {
@@ -7682,7 +7685,7 @@ function Ko(a) {
   let s = a.soc / 100 * t;
   const n = a.reserve / 100 * t, o = { carSun: 0, carTotal: 0, sunUntilEvening: 0, houseUntilEvening: 0 };
   let i = Math.ceil(a.now / (at / 4)) * (at / 4);
-  const r = Rt(a.now), l = r + a.eveningHour * at, c = Et(r, 1) + a.morningHour * at;
+  const r = Pt(a.now), l = r + a.eveningHour * at, c = Et(r, 1) + a.morningHour * at;
   let d = !1, h = s >= t - 0.01;
   for (; i <= c; i += at / 4) {
     !o.socAtEvening && i >= l && a.now < l && (o.socAtEvening = s / t * 100);
@@ -7717,7 +7720,7 @@ function Zo(a, t, e = 8) {
   return i.push([a[s - 1], t[s - 1]]), i;
 }
 function Yo(a, t, e, s) {
-  const n = Ps(t, e).map((o) => Ge(a.get(o), 20)).filter((o) => o !== void 0);
+  const n = Rs(t, e).map((o) => Ge(a.get(o), 20)).filter((o) => o !== void 0);
   return n.length >= 3 ? Ke(n, s) : void 0;
 }
 const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
@@ -7752,7 +7755,7 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
     return this._sunDetail || this._pop === "sun" ? ["sun:hist", "sun:five"] : [];
   }
   sunRequests(t, e, s) {
-    const n = t.entities, o = (...l) => l.filter((c) => !!c), i = Rt(s);
+    const n = t.entities, o = (...l) => l.filter((c) => !!c), i = Pt(s);
     if (e === "sun:five")
       return [{ part: "power", ids: o(n.pv.power), start: Et(i, -10), end: s, period: "5minute", types: ["mean"] }];
     const r = Et(i, -(Math.max(30, t.num.forecast.learn_days) + t.num.forecast.learn_days + 1));
@@ -7800,7 +7803,7 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
         target: { entity_id: e },
         return_response: !0
       }))?.response?.[e]?.forecast ?? [];
-      this._sunWeather = { at: n, days: i.filter((r) => r.datetime).map((r) => ({ day: Rt(Date.parse(r.datetime)), condition: r.condition })) };
+      this._sunWeather = { at: n, days: i.filter((r) => r.datetime).map((r) => ({ day: Pt(Date.parse(r.datetime)), condition: r.condition })) };
     } catch {
       this._sunWeather = { at: n, days: [] };
     } finally {
@@ -7829,17 +7832,17 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
     return typeof t?.latitude == "number" && typeof t.longitude == "number" ? { latitude: t.latitude, longitude: t.longitude } : void 0;
   }
   sunView(t) {
-    const e = Date.now(), s = Rt(e), n = t.num.forecast, o = this._batData["sun:hist"], i = this._batData["sun:five"], r = t.entities;
+    const e = Date.now(), s = Pt(e), n = t.num.forecast, o = this._batData["sun:hist"], i = this._batData["sun:five"], r = t.entities;
     let l = /* @__PURE__ */ new Map(), c = new Array(24).fill(void 0), d = [];
     if (o && Object.keys(o.parts).length) {
       if (this._sunCache?.entry !== o) {
-        const P = r.pv.total_generation ? o.parts.energy?.[r.pv.total_generation] : void 0;
-        let T = ta(P, "change");
+        const R = r.pv.total_generation ? o.parts.energy?.[r.pv.total_generation] : void 0;
+        let T = ta(R, "change");
         T.size || (T = ta(r.pv.power ? o.parts.power?.[r.pv.power] : void 0, "mean"));
-        const W = ta(r.house.power ? o.parts.house?.[r.house.power] : void 0, "mean"), ft = Array.from({ length: 24 }, (dt, Pt) => {
-          const se = [...W.entries()].filter(([Kt]) => Kt < s).map(([, Kt]) => Kt[Pt]).filter((Kt) => Kt !== void 0);
+        const W = ta(r.house.power ? o.parts.house?.[r.house.power] : void 0, "mean"), ft = Array.from({ length: 24 }, (dt, Rt) => {
+          const se = [...W.entries()].filter(([Kt]) => Kt < s).map(([, Kt]) => Kt[Rt]).filter((Kt) => Kt !== void 0);
           return se.length >= 3 ? ns(se) : void 0;
-        }), mt = ((r.forecast.energy_today ? o.parts.forecast?.[r.forecast.energy_today] : void 0) ?? []).filter((dt) => typeof dt.mean == "number" && new Date(dt.start).getHours() === 8).map((dt) => ({ day: Rt(dt.start), forecast: dt.mean, actual: Ge(T.get(Rt(dt.start)), 20) })).filter((dt) => dt.actual !== void 0 && dt.day < s);
+        }), mt = ((r.forecast.energy_today ? o.parts.forecast?.[r.forecast.energy_today] : void 0) ?? []).filter((dt) => typeof dt.mean == "number" && new Date(dt.start).getHours() === 8).map((dt) => ({ day: Pt(dt.start), forecast: dt.mean, actual: Ge(T.get(Pt(dt.start)), 20) })).filter((dt) => dt.actual !== void 0 && dt.day < s);
         this._sunCache = { entry: o, days: T, houseCurve: ft, pairs: mt };
       }
       l = this._sunCache.days, c = this._sunCache.houseCurve, d = this._sunCache.pairs;
@@ -7847,33 +7850,33 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
     const h = Ho(l, s, n.learn_days, n.possible_percentile), p = r.pv.power ? i?.parts.power?.[r.pv.power] : void 0;
     let b = l.get(s);
     if (p?.length) {
-      const P = new Array(24).fill(void 0);
+      const R = new Array(24).fill(void 0);
       for (const T of p) {
         if (T.start < s || typeof T.mean != "number") continue;
         const W = new Date(T.start).getHours();
-        P[W] = (P[W] ?? 0) + Math.max(0, T.mean) / 1e3 / xe;
+        R[W] = (R[W] ?? 0) + Math.max(0, T.mean) / 1e3 / xe;
       }
-      b = P;
+      b = R;
     }
-    const m = Jt(this.hass, t.entities.daily.pv_generation) ?? (b && b.some((P) => P !== void 0) ? b.reduce((P, T) => P + (T ?? 0), 0) : void 0), u = Jt(this.hass, r.forecast.energy_today), g = new Date(e), v = g.getHours() + g.getMinutes() / 60, $ = h.curve.some((P) => P !== void 0) ? h.curve.reduce((P, T, W) => P + (T ?? 0) * nt(v - W, 0, 1), 0) : void 0, S = Wo(d) ?? n.typical_deviation / 100;
+    const m = Jt(this.hass, t.entities.daily.pv_generation) ?? (b && b.some((R) => R !== void 0) ? b.reduce((R, T) => R + (T ?? 0), 0) : void 0), u = Jt(this.hass, r.forecast.energy_today), g = new Date(e), v = g.getHours() + g.getMinutes() / 60, $ = h.curve.some((R) => R !== void 0) ? h.curve.reduce((R, T, W) => R + (T ?? 0) * nt(v - W, 0, 1), 0) : void 0, S = Wo(d) ?? n.typical_deviation / 100;
     let w;
     if (p?.length) {
-      let P = 0, T = 0;
+      let R = 0, T = 0;
       for (const W of p)
-        W.start < e - at || W.start >= e || typeof W.mean != "number" || (P += Math.max(0, W.mean) / 1e3 / xe, T += (h.curve[new Date(W.start).getHours()] ?? 0) / xe);
-      w = { actual: P, possible: T };
+        W.start < e - at || W.start >= e || typeof W.mean != "number" || (R += Math.max(0, W.mean) / 1e3 / xe, T += (h.curve[new Date(W.start).getHours()] ?? 0) / xe);
+      w = { actual: R, possible: T };
     }
     const j = Fo(m, u, h.curve, e, S, w), L = j ? Math.max(0, j.value - (m ?? 0)) : 0, M = Io(b, j ? L : 0, h.curve, e);
-    if (!j) for (let P = new Date(e).getHours(); P < 24; P++) M[P] = void 0;
-    const C = this.place(), E = C ? Le(s, C.latitude, C.longitude) : void 0, _ = t.num.flows.idle_threshold, A = (p ?? []).filter((P) => P.start >= s && typeof P.mean == "number"), B = A.filter((P) => P.mean >= _), x = B.length ? B[0].start : void 0, z = A.reduce((P, T) => !P || T.mean > P.mean ? T : P, void 0);
+    if (!j) for (let R = new Date(e).getHours(); R < 24; R++) M[R] = void 0;
+    const C = this.place(), E = C ? Le(s, C.latitude, C.longitude) : void 0, _ = t.num.flows.idle_threshold, A = (p ?? []).filter((R) => R.start >= s && typeof R.mean == "number"), B = A.filter((R) => R.mean >= _), x = B.length ? B[0].start : void 0, z = A.reduce((R, T) => !R || T.mean > R.mean ? T : R, void 0);
     let tt;
     if (E) {
-      const P = [];
-      for (const St of [...new Set((p ?? []).map((mt) => Rt(mt.start)))].filter((mt) => mt < s)) {
-        const mt = (p ?? []).filter((Pt) => Rt(Pt.start) === St && Pt.mean >= _).pop(), dt = C ? Le(St, C.latitude, C.longitude) : void 0;
-        mt && dt && P.push(dt.set - (mt.start + 5 * 6e4));
+      const R = [];
+      for (const St of [...new Set((p ?? []).map((mt) => Pt(mt.start)))].filter((mt) => mt < s)) {
+        const mt = (p ?? []).filter((Rt) => Pt(Rt.start) === St && Rt.mean >= _).pop(), dt = C ? Le(St, C.latitude, C.longitude) : void 0;
+        mt && dt && R.push(dt.set - (mt.start + 5 * 6e4));
       }
-      const T = P.length >= 3 ? ns(P) : 0, W = B.length ? B[B.length - 1].start + 5 * 6e4 : void 0;
+      const T = R.length >= 3 ? ns(R) : 0, W = B.length ? B[B.length - 1].start + 5 * 6e4 : void 0;
       tt = e > E.set && (W === void 0 || e - W > 15 * 6e4) && W !== void 0 ? { at: W, over: !0 } : { at: E.set - T, over: !1 };
     }
     return {
@@ -7991,14 +7994,14 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
   /** The chart of the power today: the production, the learned "possible" curve and the band of the forecast. */
   todayChart(t, e) {
     if (!t.entities.pv.power || !e.fiveRows?.some((T) => T.start >= e.today)) return;
-    const n = this.t.sun, o = e.rise !== void 0 ? nt(Math.floor(this.hourOf(e.rise) - 0.5), 0, 22) : 6, i = e.set !== void 0 ? nt(Math.ceil(this.hourOf(e.set) + 0.5), o + 2, 24) : 18, r = (i - o) * xe, l = e.today + o * at, c = e.today + i * at, d = (T) => R(ie + T / (r - 1) * (G - ie)), h = Ct(e.fiveRows, "mean", l, c, r).map((T) => T === void 0 ? void 0 : T / 1e3), p = (T) => o + (T + 0.5) / xe, b = Math.floor((e.now - l) / (c - l) * r), y = V(this.hass, t.entities.pv.power);
+    const n = this.t.sun, o = e.rise !== void 0 ? nt(Math.floor(this.hourOf(e.rise) - 0.5), 0, 22) : 6, i = e.set !== void 0 ? nt(Math.ceil(this.hourOf(e.set) + 0.5), o + 2, 24) : 18, r = (i - o) * xe, l = e.today + o * at, c = e.today + i * at, d = (T) => P(ie + T / (r - 1) * (G - ie)), h = Ct(e.fiveRows, "mean", l, c, r).map((T) => T === void 0 ? void 0 : T / 1e3), p = (T) => o + (T + 0.5) / xe, b = Math.floor((e.now - l) / (c - l) * r), y = V(this.hass, t.entities.pv.power);
     y !== void 0 && h.some((T) => T !== void 0) && b >= 0 && b < r && (h[b] = Math.max(0, y) / 1e3);
     const m = (T, W) => {
       const ft = W - 0.5, St = Math.floor(ft), mt = T[St], dt = T[St + 1];
       if (mt === void 0 && dt === void 0) return;
-      const Pt = ft - St;
-      return (mt ?? 0) * (1 - Pt) + (dt ?? 0) * Pt;
-    }, u = e.learned.curve.some((T) => T !== void 0), g = Array.from({ length: r }, (T, W) => u ? m(e.learned.curve, p(W)) : void 0), v = e.estimate, $ = v ? Math.max(0, v.value - (e.done ?? 0)) : 0, S = v && $ > 0 ? (v.low - (e.done ?? 0)) / $ : 1, w = v && $ > 0 ? (v.high - (e.done ?? 0)) / $ : 1, j = (T) => T >= b, L = Array.from({ length: r }, (T, W) => v && j(W) ? m(e.hours.map((ft, St) => St >= new Date(e.now).getHours() ? ft : void 0), p(W)) : void 0), M = L.map((T) => T === void 0 ? void 0 : T * S), C = L.map((T, W) => T === void 0 ? void 0 : Math.min(T * w, Math.max(T, g[W] ?? 1 / 0))), E = Math.max(1, ...h.map((T) => T ?? 0), ...g.map((T) => T ?? 0), ...C.map((T) => T ?? 0)), _ = { start: l, end: c, x0: ie, x1: G }, A = 150, B = Hs(E, Math.round((A - 12) / Ns($a(_)))), x = Math.ceil(E / B) * B, z = (T) => R(A - nt(T, 0, x) / x * (A - 12)), tt = (T) => it(T * 1e3, "kW"), P = Array.from({ length: Math.round(x / B) }, (T, W) => (W + 1) * B);
+      const Rt = ft - St;
+      return (mt ?? 0) * (1 - Rt) + (dt ?? 0) * Rt;
+    }, u = e.learned.curve.some((T) => T !== void 0), g = Array.from({ length: r }, (T, W) => u ? m(e.learned.curve, p(W)) : void 0), v = e.estimate, $ = v ? Math.max(0, v.value - (e.done ?? 0)) : 0, S = v && $ > 0 ? (v.low - (e.done ?? 0)) / $ : 1, w = v && $ > 0 ? (v.high - (e.done ?? 0)) / $ : 1, j = (T) => T >= b, L = Array.from({ length: r }, (T, W) => v && j(W) ? m(e.hours.map((ft, St) => St >= new Date(e.now).getHours() ? ft : void 0), p(W)) : void 0), M = L.map((T) => T === void 0 ? void 0 : T * S), C = L.map((T, W) => T === void 0 ? void 0 : Math.min(T * w, Math.max(T, g[W] ?? 1 / 0))), E = Math.max(1, ...h.map((T) => T ?? 0), ...g.map((T) => T ?? 0), ...C.map((T) => T ?? 0)), _ = { start: l, end: c, x0: ie, x1: G }, A = 150, B = Hs(E, Math.round((A - 12) / Ns($a(_)))), x = Math.ceil(E / B) * B, z = (T) => P(A - nt(T, 0, x) / x * (A - 12)), tt = (T) => it(T * 1e3, "kW"), R = Array.from({ length: Math.round(x / B) }, (T, W) => (W + 1) * B);
     return {
       id: "sun-today",
       h: 170,
@@ -8006,8 +8009,8 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
       x: d,
       fade: 0,
       start: nt(b / (r - 1) * 100, 0, 100),
-      grid: [{ y: A, strong: !0 }, ...P.map((T) => ({ y: z(T) }))],
-      labels: [...P.map((T) => ({ y: z(T), text: N(T, T % 1 ? 1 : 0) })), { y: A, text: "0" }],
+      grid: [{ y: A, strong: !0 }, ...R.map((T) => ({ y: z(T) }))],
+      labels: [...R.map((T) => ({ y: z(T), text: N(T, T % 1 ? 1 : 0) })), { y: A, text: "0" }],
       body: K`<defs><linearGradient id="sun-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ed-sun)" stop-opacity="0.28"></stop><stop offset="1" style="stop-color:var(--ed-sun)" stop-opacity="0"></stop></linearGradient></defs>
           <path d=${zs(M, C, d, z)} style="fill:var(--ed-sun);fill-opacity:0.24"></path>
           <path d=${he(g, d, z)} fill="none" style="stroke:var(--ed-secondary)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="0.1 6"></path>
@@ -8082,18 +8085,18 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
   histChart(t, e, s) {
     const n = this.t.sun.hist, o = this.histData(t, e, s);
     if (!o.some((u) => u.total !== void 0)) return;
-    const i = o.length, r = (G - ie) / i, l = (u) => R(ie + u * r + r / 2), c = Math.max(1, ...o.map((u) => Math.max(u.total ?? 0, u.possible ?? 0))), d = me(c), h = 150, p = (u) => R(h - nt(u, 0, d) / d * (h - 14)), b = this._sunMode === "parts";
+    const i = o.length, r = (G - ie) / i, l = (u) => P(ie + u * r + r / 2), c = Math.max(1, ...o.map((u) => Math.max(u.total ?? 0, u.possible ?? 0))), d = me(c), h = 150, p = (u) => P(h - nt(u, 0, d) / d * (h - 14)), b = this._sunMode === "parts";
     let y;
     if (b) {
-      const u = o.map((M, C) => l(C)), g = o.map((M) => M.blocks), v = g.map((M, C) => M ? C : -1).filter((M) => M >= 0), $ = v.map((M) => g[M].reduce((C, E) => [...C, C[C.length - 1] + E], [0])), S = Array.from({ length: 6 }, (M, C) => Zo(v.map((E) => u[E]), $.map((E) => p(E[C])))), w = (M) => M.map(([C, E]) => `${R(C)},${R(E)}`).join(" "), j = o.map((M) => M.possible), L = j.some((M) => M !== void 0) ? Ve(j, l, p, h) : "";
+      const u = o.map((M, C) => l(C)), g = o.map((M) => M.blocks), v = g.map((M, C) => M ? C : -1).filter((M) => M >= 0), $ = v.map((M) => g[M].reduce((C, E) => [...C, C[C.length - 1] + E], [0])), S = Array.from({ length: 6 }, (M, C) => Zo(v.map((E) => u[E]), $.map((E) => p(E[C])))), w = (M) => M.map(([C, E]) => `${P(C)},${P(E)}`).join(" "), j = o.map((M) => M.possible), L = j.some((M) => M !== void 0) ? Ve(j, l, p, h) : "";
       y = K`<path d=${L} style="fill:var(--ed-tile)"></path>
           ${[0, 1, 2, 3, 4].map((M) => K`<polygon points=${`${w(S[M + 1])} ${w([...S[M]].reverse())}`} style="fill:${rs[M]}"></polygon>`)}
           ${[1, 2, 3, 4].map((M) => K`<polyline points=${w(S[M])} fill="none" stroke="#fff" stroke-opacity="0.38" stroke-width="1"></polyline>`)}`;
     } else {
       const u = Math.min(s === "7d" ? 26 : 7, r - 3);
       y = K`${o.map((g, v) => K`
-          ${g.possible === void 0 ? k : K`<rect x=${R(l(v) - u / 2)} y=${p(g.possible)} width=${u} height=${R(h - p(g.possible))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-tile)"></rect>`}
-          ${g.total === void 0 ? k : K`<rect x=${R(l(v) - u / 2)} y=${p(g.total)} width=${u} height=${R(Math.max(1, h - p(g.total)))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-sun)"></rect>`}
+          ${g.possible === void 0 ? k : K`<rect x=${P(l(v) - u / 2)} y=${p(g.possible)} width=${u} height=${P(h - p(g.possible))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-tile)"></rect>`}
+          ${g.total === void 0 ? k : K`<rect x=${P(l(v) - u / 2)} y=${p(g.total)} width=${u} height=${P(Math.max(1, h - p(g.total)))} rx=${s === "7d" ? 5 : 2} style="fill:var(--ed-sun)"></rect>`}
           ${g.total !== void 0 && s === "7d" ? K`<text x=${l(v)} y=${p(g.total) - 5} text-anchor="middle" style="fill:var(--ed-text)" font-size="11" font-weight="600">${q(g.total, 1)}</text>` : k}`)}`;
     }
     const m = b ? f`<div class="sun-blocks" role="group">${n.blocks.map((u, g) => f`<span><i style="background:${rs[g]}"></i><span>${u}</span></span>`)}</div>` : f`<div class="bat-legend sun-legend-row"><span><i class="dot" style="background:var(--ed-sun)"></i>${n.production}</span><span><i class="dot" style="background:var(--ed-tile)"></i>${n.possible}</span></div>`;
@@ -8127,7 +8130,7 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
   /** A half ring: the share of the production in the morning (east) and in the afternoon (west). */
   eastWest(t) {
     const e = this.t.sun.hist, s = 46, n = (r, l, c) => {
-      const d = (h) => `${R(70 + s * Math.cos(h * Math.PI / 180))},${R(64 - s * Math.sin(h * Math.PI / 180))}`;
+      const d = (h) => `${P(70 + s * Math.cos(h * Math.PI / 180))},${P(64 - s * Math.sin(h * Math.PI / 180))}`;
       return K`<path d="M${d(r)} A${s},${s} 0 0 1 ${d(l)}" fill="none" style="stroke:${c}" stroke-width="10"></path>`;
     }, o = 180 - 180 * t, i = Math.round(t * 100);
     return f`<svg viewBox="0 0 140 78" class="sun-half" role="img" aria-label=${e.eastWestLabel(U(i), U(100 - i))}>${n(180, o + 1.5, "var(--ed-warning)")}${n(o - 1.5, 0, "var(--ed-sun)")}</svg>
@@ -8137,8 +8140,8 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
     const s = this.t.sun, n = t.num.forecast, o = this.sunRange(t), i = this.histData(t, e, o), r = i.filter((x) => x.total !== void 0), l = !e.ready, c = r.reduce((x, z) => x + z.total, 0);
     i.reduce((x, z) => x + (z.possible ?? 0), 0);
     const d = r.filter((x) => x.possible !== void 0), h = d.length ? Math.round(d.reduce((x, z) => x + z.total, 0) / d.reduce((x, z) => x + z.possible, 0) * 100) : void 0, p = this.histChart(t, e, o), b = ["total", "parts"].map((x) => ({ value: x, label: s.hist.modes[x] })), y = r.reduce((x, z) => !x || z.total > x.total ? z : x, void 0), m = r.reduce((x, z) => !x || z.total < x.total ? z : x, void 0), u = (x) => s.hist.dayOfPossible(_e(x.day), x.possible ? U(Math.round(x.total / x.possible * 100)) : D), g = t.entities, v = g.pv.power && this._batData["sun:hist"]?.parts.power?.[g.pv.power] || [], $ = i[0]?.day ?? e.today, S = v.filter((x) => x.start >= $ && x.start < e.today && typeof x.max == "number").reduce((x, z) => !x || z.max > x.max ? z : x, void 0), w = (x) => {
-      const z = x.map((tt) => tt.hours ? tt.hours.filter((P) => (P ?? 0) >= 0.05).length : void 0).filter((tt) => tt !== void 0);
-      return z.length ? z.reduce((tt, P) => tt + P, 0) / z.length : void 0;
+      const z = x.map((tt) => tt.hours ? tt.hours.filter((R) => (R ?? 0) >= 0.05).length : void 0).filter((tt) => tt !== void 0);
+      return z.length ? z.reduce((tt, R) => tt + R, 0) / z.length : void 0;
     }, j = w(i), L = w(this.rangeDays(e, o, ea[o]).map((x) => ({ hours: e.days.get(x) }))), M = e.rise !== void 0 && e.set !== void 0 ? this.hourOf((e.rise + e.set) / 2) : 12;
     let C = 0, E = 0;
     for (const x of r) x.hours?.forEach((z, tt) => {
@@ -8178,7 +8181,7 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
         <div class="bat-card-bar"><span class="bat-cap">${s.hist.accuracyTitle}</span>${this.hint("acc", s.hints.acc)}</div>
         <div class="sun-acc"><b>±${U(Math.round(e.deviation * 100))}</b><span class="bat-sub">${s.hist.accuracyAverage(e.pairs.length)}</span></div>
         <svg viewBox="0 0 ${o + Vt} 80" class="sun-pairs" role="img" aria-label=${s.hist.accuracyLabel}>
-          ${Array.from({ length: t.length + 1 }, (c, d) => K`<line x1=${R(d * l)} y1="0" x2=${R(d * l)} y2=${i} class="grid"></line>`)}
+          ${Array.from({ length: t.length + 1 }, (c, d) => K`<line x1=${P(d * l)} y1="0" x2=${P(d * l)} y2=${i} class="grid"></line>`)}
           <line x1="0" y1=${i - 25} x2=${o} y2=${i - 25} class="grid"></line>
           <line x1="0" y1=${i - 50} x2=${o} y2=${i - 50} class="grid"></line>
           <text x=${o + 5} y=${i - 46} style="fill:var(--ed-secondary)" font-size="12">${N(n)} kWh</text>
@@ -8186,10 +8189,10 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
           <text x=${o + 5} y=${i + 4} style="fill:var(--ed-secondary)" font-size="12">0</text>
           <line x1="0" y1=${i} x2=${o} y2=${i} class="axis"></line>
           ${t.map((c, d) => {
-      const h = d * l + (l - 2 * r - 2) / 2, p = (b) => R(b / n * 50);
-      return K`<rect x=${R(h)} y=${R(i - p(c.forecast))} width=${r} height=${p(c.forecast)} rx="3" style="fill:var(--ed-off)"></rect>
-              <rect x=${R(h + r + 2)} y=${R(i - p(c.actual))} width=${r} height=${p(c.actual)} rx="3" style="fill:var(--ed-sun)"></rect>
-              <text x=${R(h + r + 1)} y="76" text-anchor="middle" style="fill:var(--ed-secondary)" font-size="11">${new Intl.DateTimeFormat(this._i18n.locale, { weekday: "short" }).format(c.day)}</text>`;
+      const h = d * l + (l - 2 * r - 2) / 2, p = (b) => P(b / n * 50);
+      return K`<rect x=${P(h)} y=${P(i - p(c.forecast))} width=${r} height=${p(c.forecast)} rx="3" style="fill:var(--ed-off)"></rect>
+              <rect x=${P(h + r + 2)} y=${P(i - p(c.actual))} width=${r} height=${p(c.actual)} rx="3" style="fill:var(--ed-sun)"></rect>
+              <text x=${P(h + r + 1)} y="76" text-anchor="middle" style="fill:var(--ed-secondary)" font-size="11">${new Intl.DateTimeFormat(this._i18n.locale, { weekday: "short" }).format(c.day)}</text>`;
     })}
         </svg>
         <div class="bat-legend"><span><i class="dot" style="background:var(--ed-off)"></i>${s.hist.forecast}</span><span><i class="dot" style="background:var(--ed-sun)"></i>${s.hist.actual}</span></div>
@@ -8198,7 +8201,7 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
   // ----------------------------------------------------------------- Výhled
   renderSunOutlook(t, e) {
     const s = this.t.sun, n = s.outlook, o = t.num.forecast, i = t.entities, r = e.estimate, l = o.good_power / 1e3, c = `${q(o.good_power / 1e3, o.good_power % 1e3 ? 1 : 0)} kW`, d = r && e.done !== void 0 && r.value > 0 ? Math.min(100, Math.round(e.done / r.value * 100)) : void 0, h = r ? { low: 1, medium: 2, high: 3 }[r.certainty] : 0, p = [i.forecast.energy_today, i.forecast.energy_tomorrow, i.forecast.energy_day_2, i.forecast.energy_day_3, i.forecast.energy_day_4], b = this._sunWeather?.days ?? [], y = p.map((_, A) => {
-      const B = Et(e.today, A), x = A === 0 ? r?.value : Jt(this.hass, _), z = A === 0 ? e.hours : x === void 0 ? void 0 : Ro(x, e.learned.curve), tt = A === 0 ? this.weatherGroup(i.forecast.weather ? pt(this.hass, i.forecast.weather)?.state : void 0) : this.weatherGroup(b.find((P) => P.day === B)?.condition);
+      const B = Et(e.today, A), x = A === 0 ? r?.value : Jt(this.hass, _), z = A === 0 ? e.hours : x === void 0 ? void 0 : Po(x, e.learned.curve), tt = A === 0 ? this.weatherGroup(i.forecast.weather ? pt(this.hass, i.forecast.weather)?.state : void 0) : this.weatherGroup(b.find((R) => R.day === B)?.condition);
       return { i: A, day: B, kwh: x, hours: z, condition: tt };
     }).filter((_) => _.kwh !== void 0 || _.i === 0), m = y.filter((_) => _.kwh !== void 0), u = (_) => _ ? Uo(_, o.strip_from, o.strip_to, l) : void 0, g = m.filter((_) => _.i > 0 || m.length === 1).reduce((_, A) => !_ || A.kwh > _.kwh ? A : _, void 0), v = g ? u(g.hours) : void 0, $ = this.place(), S = $ ? Le(e.today, $.latitude, $.longitude) : void 0, w = $ ? Le(Et(e.today, 1), $.latitude, $.longitude) : void 0, j = S ? Math.round((S.set - S.rise) / 6e4) : void 0, L = S && w ? Math.round((w.set - w.rise - (S.set - S.rise)) / 6e4) : void 0, M = this.evening(t, e), C = Array.from({ length: o.strip_to - o.strip_from + 1 }, (_, A) => o.strip_from + A), E = new Date(e.now).getHours();
     return f`<div class="bat-card rel">
@@ -8739,10 +8742,10 @@ const qo = 5 * 6e4, Xo = 30 * 6e4, xe = 12, ie = 2, rs = [
     }), tt = (H) => {
       const I = i.start + H * i.step;
       return e === "1d" ? `${de(I)} ${ot(I)}–${ot(I + at)}` : de(I);
-    }, P = (H) => Math.max($[H], w.reduce((I, xt) => I + g(xt.list, H), 0)), T = v ? s.house.houseTotal : s.house.sum, W = (H) => `${tt(H)} · ${T} ${st(P(H))} kWh`, ft = (H) => {
-      const I = P(H), xt = w.reduce((Mt, vt) => Mt + g(vt.list, H), 0), ne = w.length ? [...w.map((Mt) => ({ name: Mt.name, kwh: Mt.list?.[H], color: Mt.color })).sort((Mt, vt) => (vt.kwh ?? -1) - (Mt.kwh ?? -1)), { name: s.house.houseRest, kwh: Math.max(0, I - xt), color: "#8E8E93" }] : [];
+    }, R = (H) => Math.max($[H], w.reduce((I, xt) => I + g(xt.list, H), 0)), T = v ? s.house.houseTotal : s.house.sum, W = (H) => `${tt(H)} · ${T} ${st(R(H))} kWh`, ft = (H) => {
+      const I = R(H), xt = w.reduce((Mt, vt) => Mt + g(vt.list, H), 0), ne = w.length ? [...w.map((Mt) => ({ name: Mt.name, kwh: Mt.list?.[H], color: Mt.color })).sort((Mt, vt) => (vt.kwh ?? -1) - (Mt.kwh ?? -1)), { name: s.house.houseRest, kwh: Math.max(0, I - xt), color: "#8E8E93" }] : [];
       return this.renderReading(tt(H), I, T, ne);
-    }, St = Array.from({ length: r }, (H, I) => I), mt = w.map((H) => ({ name: H.name, kwh: St.reduce((I, xt) => I + g(H.list, xt), 0), color: H.color })).sort((H, I) => I.kwh - H.kwh), dt = mt.reduce((H, I) => H + I.kwh, 0), Pt = e === "1d" ? this.today(t).house : void 0, se = Math.max(Pt ?? St.reduce((H, I) => H + P(I), 0), dt), Kt = () => this.renderReading(Ca, se, T, w.length ? [...mt, { name: s.house.houseRest, kwh: Math.max(0, se - dt), color: "#8E8E93" }] : []), Ca = e === "1d" ? s.house.today : s.bat.ranges[e], Is = () => `${Ca} · ${T} ${st(se)} kWh`, Fs = [d, h, p, b, y].some((H) => H && H[0] === void 0);
+    }, St = Array.from({ length: r }, (H, I) => I), mt = w.map((H) => ({ name: H.name, kwh: St.reduce((I, xt) => I + g(H.list, xt), 0), color: H.color })).sort((H, I) => I.kwh - H.kwh), dt = mt.reduce((H, I) => H + I.kwh, 0), Rt = e === "1d" ? this.today(t).house : void 0, se = Math.max(Rt ?? St.reduce((H, I) => H + R(I), 0), dt), Kt = () => this.renderReading(Ca, se, T, w.length ? [...mt, { name: s.house.houseRest, kwh: Math.max(0, se - dt), color: "#8E8E93" }] : []), Ca = e === "1d" ? s.house.today : s.bat.ranges[e], Is = () => `${Ca} · ${T} ${st(se)} kWh`, Fs = [d, h, p, b, y].some((H) => H && H[0] === void 0);
     return {
       id: `house-${e}`,
       h: C,
@@ -8819,7 +8822,7 @@ function hs(a) {
   const t = a?.match(/^(\d{1,2}):(\d{2})/);
   return t ? Number(t[1]) * 60 + Number(t[2]) : void 0;
 }
-function Rs(a, t, e, s, n) {
+function Ps(a, t, e, s, n) {
   if (a(t) !== "on") return;
   const o = hs(a(e)), i = hs(a(s));
   if (o === void 0 || i === void 0 || o === i) return;
@@ -8832,7 +8835,7 @@ function li(a, t, e, s, n) {
   const o = t.entities.wallbox, i = t.num.flows.idle_threshold;
   if (a(o.block_charging) === "on" && a(o.block_by_automation) !== "on") return s.reasons.blocked;
   if (a(o.block_solar) === "on") return s.reasons.solarBlocked;
-  const r = Rs(a, o.window, o.window_start, o.window_end, n);
+  const r = Ps(a, o.window, o.window_start, o.window_end, n);
   if (r) return s.reasons.outsideWindow(r);
   if (e.sun !== void 0)
     return Q(e.sun, i) ? Q(e.boil, i) && a(t.entities.boiler.boost) !== "on" ? s.reasons.waterFirst : Q(e.batIn, i) && (e.soc === void 0 || e.soc < t.num.battery.full) ? s.reasons.batteryCharges : (e.exp ?? 0) >= t.num.wallbox.power_min ? s.reasons.carNotTaking : s.reasons.littleSurplus : s.reasons.noSun;
@@ -8847,7 +8850,7 @@ function ci(a, t, e, s, n) {
   const o = t.entities.boiler;
   if ((e.exp ?? 0) <= t.num.flows.export_notice || Q(e.boil, t.num.flows.idle_threshold)) return;
   if (a(o.block_solar) === "on") return s.reasons.solarBlocked;
-  const i = Rs(a, o.window, o.window_start, o.window_end, n);
+  const i = Ps(a, o.window, o.window_start, o.window_end, n);
   if (i) return s.reasons.outsideWindow(i);
   const r = Number(a(o.target_temperature));
   if (e.boilTemp !== void 0 && Number.isFinite(r) && e.boilTemp >= r - t.num.boiler.hot_margin) return s.reasons.heated;
@@ -9151,9 +9154,11 @@ const et = {
     let u, g;
     const v = r ? r === "Boost" : y === "on", $ = v ? [this.boostMark()] : [], S = f`<span class="auto-mark">${s.car.autoMark}</span>`, w = r ? r === "Přetoky" : y === "off", j = rt(this.hass, n.wallbox.shadow) === "on", L = j && (l === "start" || l === "dnes_hotovo") ? `${l}_stin` : l, M = (W) => rt(this.hass, W), C = L ? s.car.step[L] : w ? li(M, t, e, s, this._now) : v && !p ? di(M, t, s, this._now, Date.parse(pt(this.hass, n.wallbox.boost)?.last_changed ?? "")) : void 0;
     (l === "konci" || M(n.wallbox.block_by_automation) === "on") && i !== "disconnected" ? u = s.car.ending : p ? (u = [s.car.charging(b.text), ...l === "nabiji" ? [S] : $], g = m) : i === "connected" || i === "charging" ? u = C ? [s.car.connected, C, ...$] : [s.car.connectedIdle, ...$] : i === "disconnected" && (u = s.car.disconnected);
-    const _ = wa(g ?? "#d8d8dc", g ? 42 : 28), A = pt(this.hass, n.car.image)?.attributes?.entity_picture, B = e.carSoc, x = ma([Q(e.car, o.idle_threshold) ? e.car : void 0], o.kw_from), z = h < 100, tt = s.car.chargeLevel(B === void 0 ? s.noData : U(B), z ? U(h) : void 0), P = n.wallbox, T = this.modeControl(t, r, y);
+    const _ = wa(g ?? "#d8d8dc", g ? 42 : 28), A = pt(this.hass, n.car.image)?.attributes?.entity_picture, B = e.carSoc, x = ma([Q(e.car, o.idle_threshold) ? e.car : void 0], o.kw_from), z = h < 100, tt = s.car.chargeLevel(B === void 0 ? s.noData : U(B), z ? U(h) : void 0), R = n.wallbox, T = this.modeControl(t, r, y);
     return f`<section class="panel car-panel" aria-labelledby="h-car">
-        <div class="car-top" style="height:${Math.round(168 + (n.wallbox.mode ? 20 : 0) + 40 * Math.max(0, t.num.car.image_scale - 1))}px">
+        <!-- The height does not grow with car.image_scale: the picture of the car has transparent margins, so the space would stay
+             empty above the charge (uživatel 16. 11. 2026: „mezera nad 76% je hrozně velká, i když auto je celkem malé“). -->
+        <div class="car-top" style="height:${n.wallbox.mode ? 188 : 168}px">
           <div class="car-art" aria-hidden="true" style="transform:scale(${t.num.car.image_scale})">
             <div class="glow" style="background:radial-gradient(closest-side, ${_}, transparent)"></div><div class="shadow"></div>
             ${typeof A == "string" && A ? f`<img src=${A} alt="" />` : k}
@@ -9184,7 +9189,7 @@ const et = {
           </div>
         </div>
         ${p ? this.renderCarSources(e, o, it(e.car ?? 0, x), y === "on") : k}
-        ${P.boost ? f`<div class="mode">
+        ${R.boost ? f`<div class="mode">
               <div class="mode-head"><span id="mode-l">${s.car.mode}</span><span class="mode-sub">${T.value ? (
       // All descriptions in one place, the others invisible: the tallest sets the height, so switching moves nothing (CURRENT_SPEC.md, Klidné přepínání režimů).
       T.subs.map((W, ft) => f`<span class=${T.options[ft].value === T.value ? "shown" : "spare"}>${zt(W)}</span>`)
@@ -9563,7 +9568,7 @@ window.customCards.some((a) => a.type === "ha-energie-dashboard") || window.cust
   type: "ha-energie-dashboard",
   name: "Energie Dashboard",
   // The card picker has no `hass` yet: the language Home Assistant set on the page.
-  description: Re(Cn()).t.cardDescription,
+  description: Pe(Cn()).t.cardDescription,
   preview: !1
 });
-console.info("%c ENERGIE-DASHBOARD %c 0.6.0 · 2026-11-16 08:52 UTC · po 61e4f55 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");
+console.info("%c ENERGIE-DASHBOARD %c 0.6.1 · 2026-11-16 09:17 UTC · po 8cbef68 ", "color:#000;background:#FFD60A;font-weight:700", "color:inherit");

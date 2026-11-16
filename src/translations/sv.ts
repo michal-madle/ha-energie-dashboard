@@ -205,6 +205,7 @@ export const sv: Texts = {
       uzivatel: "Boost avstängd för hand",
       restart: "Home Assistant startade om",
       energie: "skydd: laddboxen levererade energin för målet",
+      wallbox: "laddboxen (AZ Router) stängde av Boost själv",
     } as Record<string, string>,
   },
 

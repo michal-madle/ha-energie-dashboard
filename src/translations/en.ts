@@ -205,6 +205,7 @@ export const en: Texts = {
       uzivatel: "Boost switched off by hand",
       restart: "Home Assistant restarted",
       energie: "safeguard: the wallbox delivered the energy for the target",
+      wallbox: "the wallbox (AZ Router) switched Boost off by itself",
     } as Record<string, string>,
   },
 
